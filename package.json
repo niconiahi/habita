@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "bun run dev:db & bun run dev:app",
-    "dev:app": "react-router dev",
+    "dev": "react-router dev",
     "dev:db": "cd run/development && docker-compose up",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",

@@ -1,4 +1,4 @@
-import { Welcome } from "../welcome/welcome"
+import { Link } from "react-router"
 
 export function meta() {
   return [
@@ -11,5 +11,5 @@ export function meta() {
 }
 
 export default function Home() {
-  return <Welcome />
+  return <Link to="properties" />
 }
