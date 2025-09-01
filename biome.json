@@ -1,0 +1,69 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "formatter": {
+    "includes": [
+      "**",
+      "!**/.wrangler/**",
+      "!**/.react-router/**",
+      "!**/worker-configuration.d.ts"
+    ],
+    "enabled": true,
+    "lineWidth": 60,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "bracketSpacing": true
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "includes": [
+      "**",
+      "!**/.wrangler/**",
+      "!**/.react-router/**",
+      "!**/worker-configuration.d.ts",
+      "!**/src/chain/eip155",
+      "!**/dist/**"
+    ],
+    "rules": {
+      "recommended": true,
+      "nursery": {
+        "useUniqueElementIds": "off"
+      },
+      "a11y": {
+        "useSemanticElements": "off",
+        "useFocusableInteractive": "off",
+        "noNoninteractiveElementToInteractiveRole": "off",
+        "noStaticElementInteractions": "off"
+      },
+      "style": {
+        "noParameterAssign": "error",
+        "useConst": "off",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
+      }
+    }
+  }
+}
