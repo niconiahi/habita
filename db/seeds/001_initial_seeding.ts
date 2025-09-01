@@ -1,7 +1,7 @@
 import { hash } from "@node-rs/argon2"
 import { encodeBase32LowerCase } from "@oslojs/encoding"
 import { sql } from "kysely"
-import { query_builder } from "../db"
+import { query_builder } from "../query_builder"
 
 function generate_id(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(15))
