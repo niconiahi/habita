@@ -1,6 +1,6 @@
 import type { Route } from "./+types/:id"
 import { Link } from "react-router"
-import { fetch_property } from "./fetchers/property"
+import { fetch_property } from "./fetchers/server/property"
 
 export async function action({ params }: Route.LoaderArgs) {
   params.id

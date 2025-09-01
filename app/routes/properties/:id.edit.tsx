@@ -1,17 +1,50 @@
 import type { Route } from "./+types/:id"
 import { Form } from "react-router"
-import { fetch_property } from "./fetchers/property"
+import { fetch_property } from "./fetchers/server/property"
+import { error } from "~/lib/server/error"
+import * as v from "valibot"
+import { query_builder } from "~/lib/server/query_builder"
+
+const INTENT = {
+  UPDATE_ROOM: "update_room",
+  DESTROY_ROOM: "destroy_room",
+} as const
 
 export async function action({
   request,
 }: Route.ActionArgs) {
   const form_data = await request.formData()
-  const lengths = form_data.get("length")
-  console.log("lengths", lengths)
-  const widths = form_data.get("width")
-  console.log("widths", widths)
-  const id = form_data.get("id")
-  console.log("id", id)
+  const intent = form_data.get("intent")
+  if (!intent) {
+    throw error(400, "intent is required")
+  }
+  switch (intent) {
+    case INTENT.UPDATE_ROOM: {
+      const length = v.parse(
+        v.pipe(v.string(), v.transform(Number)),
+        form_data.get("length"),
+      )
+      const width = v.parse(
+        v.pipe(v.string(), v.transform(Number)),
+        form_data.get("width"),
+      )
+      const id = v.parse(v.string(), form_data.get("id"))
+      await query_builder
+        .updateTable("room")
+        .set({ width, length, updated_at: new Date() })
+        .where("room.id", "=", id)
+        .execute()
+      return null
+    }
+    case INTENT.DESTROY_ROOM: {
+      const id = v.parse(v.string(), form_data.get("id"))
+      await query_builder
+        .deleteFrom("room")
+        .where("room.id", "=", id)
+        .execute()
+      return null
+    }
+  }
   return null
 }
 
@@ -46,12 +79,18 @@ export default function ({
                     value={room.id}
                     name="id"
                   />
+                  <input
+                    type="hidden"
+                    value={INTENT.UPDATE_ROOM}
+                    name="intent"
+                  />
                   <p>
                     <label htmlFor={id}>length</label>
                     <input
                       id={id}
                       type="number"
                       name="length"
+                      step={0.1}
                       defaultValue={room.length}
                     />
                   </p>
@@ -65,6 +104,21 @@ export default function ({
                     />
                   </p>
                   <button type="submit">save room</button>
+                  <Form method="POST">
+                    <input
+                      type="hidden"
+                      value={room.id}
+                      name="id"
+                    />
+                    <input
+                      type="hidden"
+                      value={INTENT.DESTROY_ROOM}
+                      name="intent"
+                    />
+                    <button type="submit">
+                      delete room
+                    </button>
+                  </Form>
                 </Form>
               </li>
             )
