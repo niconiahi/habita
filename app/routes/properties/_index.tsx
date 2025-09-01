@@ -1,6 +1,6 @@
 import type { Route } from "./+types/_index"
 import { Link } from "react-router"
-import { fetch_properties } from "./fetchers/properties"
+import { fetch_properties } from "./fetchers/server/properties"
 
 export async function loader() {
   const properties = await fetch_properties()
