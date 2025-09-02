@@ -1,4 +1,4 @@
-:80 {
-  encode zstd gzip
-  reverse_proxy go:8081
+dev.memudo.rent {
+  tls /etc/ssl/certs/dev.memudo.rent+1.pem /etc/ssl/private/dev.memudo.rent+1-key.pem
+  reverse_proxy app:5173
 }
