@@ -4,14 +4,16 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "cd run/development && docker-compose up",
+    "dev": "react-router dev",
+    "up": "docker compose --file run/development/docker-compose.yml up --build",
+    "down": "docker compose --file run/development/docker-compose.yml down --volumes --remove-orphans",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
+    "db:reset": "bun run db:migrate && bun run db:seed",
     "db:types": "bun run db/generate_types.mjs",
     "db:seed": "kysely seed:run",
-    "db:drop": "docker compose --file run/development/docker-compose.yml down --volumes --remove-orphans",
     "db:migrate": "kysely migrate:latest",
     "format": "biome format --write ."
   },

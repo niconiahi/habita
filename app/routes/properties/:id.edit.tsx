@@ -79,15 +79,10 @@ export default function ({
                     value={room.id}
                     name="id"
                   />
-                  <input
-                    type="hidden"
-                    value={INTENT.UPDATE_ROOM}
-                    name="intent"
-                  />
                   <p>
-                    <label htmlFor={id}>length</label>
+                    <label htmlFor="length">length</label>
                     <input
-                      id={id}
+                      id="length"
                       type="number"
                       name="length"
                       step={0.1}
@@ -95,30 +90,29 @@ export default function ({
                     />
                   </p>
                   <p>
-                    <label htmlFor={id}>width</label>
+                    <label htmlFor="width">width</label>
                     <input
-                      id={id}
+                      id="width"
                       type="number"
                       name="width"
                       defaultValue={room.width}
                     />
                   </p>
-                  <button type="submit">save room</button>
-                  <Form method="POST">
-                    <input
-                      type="hidden"
-                      value={room.id}
-                      name="id"
-                    />
-                    <input
-                      type="hidden"
-                      value={INTENT.DESTROY_ROOM}
-                      name="intent"
-                    />
-                    <button type="submit">
-                      delete room
-                    </button>
-                  </Form>
+                  <button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.UPDATE_ROOM}
+                  >
+                    guardar cambios
+                  </button>
+                  <input type="hidden" />
+                  <button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.DESTROY_ROOM}
+                  >
+                    eliminar habitacion
+                  </button>
                 </Form>
               </li>
             )

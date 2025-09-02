@@ -16,3 +16,6 @@ export async function fetch_property(id: string) {
     .where("property.id", "=", id)
     .executeTakeFirst()
 }
+export type Property = NonNullable<
+  Awaited<ReturnType<typeof fetch_property>>
+>
