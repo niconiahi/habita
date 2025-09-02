@@ -5,8 +5,8 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "up": "docker compose --file run/development/docker-compose.yml up --build",
-    "down": "docker compose --file run/development/docker-compose.yml down --volumes --remove-orphans",
+    "up": "docker compose --file run/development/docker-compose.yml up",
+    "down": "docker compose --file run/development/docker-compose.yml down --volumes --remove-orphans && docker system prune -f",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "biome check .",

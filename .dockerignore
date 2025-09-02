@@ -1,4 +1,11 @@
 .react-router
 build
+dist
 node_modules
-README.md
+.env*
+*.pem
+*.key
+docker-compose*.yml
+Dockerfile*
+*.db
+.DS_Store
