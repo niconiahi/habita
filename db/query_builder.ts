@@ -7,11 +7,9 @@ export const query_builder = new Kysely<DB>({
   plugins: [new ParseJSONResultsPlugin()],
   log(event) {
     if (event.level === "error") {
-      // eslint-disable-next-line no-console
       console.error("kysely error =>", event.error)
     }
     if (event.level === "query") {
-      // eslint-disable-next-line no-console
       console.log(
         `duration: ${event.queryDurationMillis} ms`,
       )

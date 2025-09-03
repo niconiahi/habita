@@ -17,11 +17,11 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Access {
   created_at: Timestamp;
-  id: string;
-  property_id: string;
+  id: Generated<number>;
+  property_id: number;
   role: Numeric;
   updated_at: Timestamp;
-  user_id: string;
+  user_id: number;
 }
 
 export interface Contract {
@@ -29,19 +29,19 @@ export interface Contract {
   end_date: Timestamp;
   formula: string;
   frequency: string;
-  id: string;
-  property_id: string;
+  id: Generated<number>;
+  property_id: number;
   start_date: Timestamp;
-  type: Numeric;
+  type: number;
   updated_at: Timestamp;
 }
 
 export interface FormulaParameter {
   created_at: Timestamp;
   end_date: Timestamp;
-  id: string;
+  id: Generated<number>;
   key: string;
-  period_id: string;
+  period_id: number;
   start_date: Timestamp;
   updated_at: Timestamp;
   value: Numeric;
@@ -74,7 +74,7 @@ export interface Location {
   country: string;
   created_at: Timestamp;
   house_number: Numeric;
-  id: string;
+  id: Generated<number>;
   point: string;
   postcode: string;
   road: string;
@@ -83,10 +83,10 @@ export interface Location {
 }
 
 export interface Period {
-  contract_id: string;
+  contract_id: number;
   created_at: Timestamp;
   end_date: Timestamp;
-  id: string;
+  id: Generated<number>;
   price: Numeric;
   start_date: Timestamp;
   updated_at: Timestamp;
@@ -94,17 +94,17 @@ export interface Period {
 
 export interface Property {
   created_at: Timestamp;
-  id: string;
-  location_id: string;
+  id: Generated<number>;
+  location_id: number;
   updated_at: Timestamp;
 }
 
 export interface Room {
   created_at: Timestamp;
-  id: string;
+  id: Generated<number>;
   length: Numeric;
-  property_id: string;
-  type: Numeric;
+  property_id: number;
+  type: number;
   updated_at: Timestamp;
   width: Numeric;
 }
@@ -112,9 +112,9 @@ export interface Room {
 export interface Session {
   created_at: Timestamp;
   expires_at: Timestamp;
-  id: string;
+  id: Generated<number>;
   updated_at: Timestamp;
-  user_id: string;
+  user_id: number;
 }
 
 export interface SpatialRefSys {
@@ -691,7 +691,7 @@ export interface TopologyTopology {
 
 export interface User {
   created_at: Timestamp;
-  id: string;
+  id: Generated<number>;
   password_hash: string;
   updated_at: Timestamp;
   username: string;

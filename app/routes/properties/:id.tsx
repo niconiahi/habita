@@ -10,7 +10,6 @@ export async function action({ params }: Route.LoaderArgs) {
       `property does not exist for id ${params.id}`,
     )
   }
-  console.log("property", JSON.stringify(property, null, 2))
   return { property }
 }
 
@@ -22,7 +21,6 @@ export async function loader({ params }: Route.LoaderArgs) {
       `property does not exist for id ${params.id}`,
     )
   }
-  console.log("property", JSON.stringify(property, null, 2))
   return { property }
 }
 

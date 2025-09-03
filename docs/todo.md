@@ -1,0 +1,1 @@
+- [] Add [Nominatim image](https://hub.docker.com/r/mediagis/nominatim/) configuration to the docker-compose
