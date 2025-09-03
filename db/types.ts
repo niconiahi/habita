@@ -69,16 +69,14 @@ export interface GeometryColumns {
 
 export interface Location {
   address: string;
-  city: string;
-  city_district: string;
-  country: string;
+  city: string | null;
   created_at: Timestamp;
   house_number: Numeric;
   id: Generated<number>;
   point: string;
-  postcode: string;
   road: string;
-  suburb: string;
+  suburb: string | null;
+  town: string | null;
   updated_at: Timestamp;
 }
 

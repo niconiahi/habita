@@ -1,9 +1,10 @@
 import { useState } from "react"
-import { Form } from "react-router"
+import { Form, redirect } from "react-router"
 import * as v from "valibot"
 import type { Route } from "./+types/new"
 import { error } from "~/lib/server/error"
 import { query_builder } from "~/lib/server/query_builder"
+import { create_point } from "~/lib/server/point"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",
@@ -19,30 +20,50 @@ export async function action({
   }
   switch (intent) {
     case INTENT.CREATE_PROPERTY: {
-      const length = v.parse(
-        v.pipe(v.string(), v.transform(Number)),
-        form_data.get("length"),
+      const location_ = v.parse(
+        LocationSchema,
+        JSON.parse(form_data.get("location") as string),
       )
-      const width = v.parse(
-        v.pipe(v.string(), v.transform(Number)),
-        form_data.get("width"),
-      )
-      const id = v.parse(v.string(), form_data.get("id"))
       const now = new Date()
-      await query_builder
-        .insertInto("property")
-        .values({
-          created_at: now,
-          updated_at: now,
-          location_id: id,
+      const property = await query_builder
+        .transaction()
+        .execute(async (trx) => {
+          const location = await trx
+            .insertInto("location")
+            .values({
+              road: location_.address.road,
+              house_number: location_.address.house_number,
+              suburb: location_.address.suburb,
+              town: location_.address.town,
+              city: location_.address.city,
+              point: create_point(
+                location_.lat,
+                location_.lon,
+              ),
+              address: location_.display_name,
+              created_at: now,
+              updated_at: now,
+            })
+            .returning("id")
+            .executeTakeFirstOrThrow()
+          const property = await trx
+            .insertInto("property")
+            .values({
+              created_at: now,
+              updated_at: now,
+              location_id: location.id,
+            })
+            .returning("property.id")
+            .executeTakeFirstOrThrow()
+          return property
         })
-        .execute()
-      return null
+      return redirect(`/properties/${property.id}/edit`)
     }
   }
 }
 
 export default function () {
+  const [disabled, set_disabled] = useState(true)
   const id = "location"
   return (
     <main>
@@ -50,15 +71,26 @@ export default function () {
       <section>
         <h2>ubicacion</h2>
         <Form method="POST">
+          <input
+            type="hidden"
+            value={INTENT.CREATE_PROPERTY}
+            name="intent"
+          />
           <div>
             <label htmlFor={id}>direccion</label>
-            <LocationInput id={id} />
-            <input
-              type="hidden"
-              value={INTENT.CREATE_PROPERTY}
-              name="intent"
+            <LocationInput
+              id={id}
+              on_selection={() => {
+                set_disabled(false)
+              }}
+              on_clear={() => {
+                set_disabled(true)
+              }}
             />
           </div>
+          <button disabled={disabled} type="submit">
+            crear propiedad
+          </button>
         </Form>
       </section>
     </main>
@@ -67,23 +99,35 @@ export default function () {
 
 const LocationSchema = v.object({
   place_id: v.number(),
-  lat: v.string(),
-  lon: v.string(),
+  lat: v.union([
+    v.pipe(v.string(), v.transform(Number)),
+    v.number(),
+  ]),
+  lon: v.union([
+    v.pipe(v.string(), v.transform(Number)),
+    v.number(),
+  ]),
   display_name: v.string(),
   address: v.object({
-    road: v.optional(v.string()),
-    neighbourhood: v.optional(v.string()),
+    road: v.string(),
+    house_number: v.string(),
     suburb: v.optional(v.string()),
     town: v.optional(v.string()),
-    state_district: v.optional(v.string()),
+    city: v.optional(v.string()),
     state: v.optional(v.string()),
-    postcode: v.optional(v.string()),
-    country: v.string(),
   }),
 })
 type Location = v.InferOutput<typeof LocationSchema>
 
-function LocationInput({ id }: { id: string }) {
+function LocationInput({
+  id,
+  on_selection,
+  on_clear,
+}: {
+  id: string
+  on_selection: () => void
+  on_clear: () => void
+}) {
   const [query, set_query] = useState("")
   const [locations, set_locations] = useState<Location[]>(
     [],
@@ -103,8 +147,9 @@ function LocationInput({ id }: { id: string }) {
         value={query}
         onChange={async (event) => {
           const query = event.currentTarget.value
-          if (!query.length) {
+          if (query.length >= 1) {
             set_selected(null)
+            on_clear()
           }
           const url = new URL(
             "/nominatim/search",
@@ -124,10 +169,16 @@ function LocationInput({ id }: { id: string }) {
             )
           }
           const data = await response.json()
-          const locations = v.parse(
-            v.array(LocationSchema),
-            data,
-          )
+          const locations: Location[] = []
+          for (const location_ of data) {
+            const result = v.safeParse(
+              LocationSchema,
+              location_,
+            )
+            if (result.success) {
+              locations.push(result.output)
+            }
+          }
           set_locations(locations)
         }}
       />
@@ -137,6 +188,7 @@ function LocationInput({ id }: { id: string }) {
             const id = `location_${location.place_id}`
             function handle() {
               set_selected(location)
+              on_selection()
               set_query(location.display_name)
               set_locations([])
             }

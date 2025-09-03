@@ -14,8 +14,8 @@
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "db:types": "docker compose --file run/development/docker-compose.yml exec app bun run db/generate_types.mjs",
-    "db:seed": "docker compose --file run/development/docker-compose.yml exec app kysely seed:run",
-    "db:migrate": "docker compose --file run/development/docker-compose.yml exec app kysely migrate:latest",
+    "db:seed": "docker compose --file run/development/docker-compose.yml exec app bun kysely seed:run",
+    "db:migrate": "docker compose --file run/development/docker-compose.yml exec app bun kysely migrate:latest",
     "logs:db": "docker compose --file run/development/docker-compose.yml logs -f db",
     "logs:app": "docker compose --file run/development/docker-compose.yml logs -f app",
     "logs:nominatim": "docker compose --file run/development/docker-compose.yml logs -f nominatim"

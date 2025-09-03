@@ -28,7 +28,10 @@ export async function action({
         v.pipe(v.string(), v.transform(Number)),
         form_data.get("width"),
       )
-      const id = v.parse(v.string(), form_data.get("id"))
+      const id = v.parse(
+        v.pipe(v.string(), v.transform(Number)),
+        form_data.get("id"),
+      )
       await query_builder
         .updateTable("room")
         .set({ width, length, updated_at: new Date() })
@@ -37,7 +40,10 @@ export async function action({
       return null
     }
     case INTENT.DESTROY_ROOM: {
-      const id = v.parse(v.string(), form_data.get("id"))
+      const id = v.parse(
+        v.pipe(v.string(), v.transform(Number)),
+        form_data.get("id"),
+      )
       await query_builder
         .deleteFrom("room")
         .where("room.id", "=", id)
