@@ -1,6 +1,6 @@
 import { hash } from "@node-rs/argon2"
-import { sql } from "kysely"
 import { query_builder } from "../query_builder"
+import { create_point } from "../../app/lib/server/point.ts"
 
 async function hash_password(
   password: string,
@@ -86,15 +86,11 @@ async function run() {
     .values({
       address:
         "1180, Padilla, Villa Crespo, Buenos Aires, Distrito Audiovisual, Comuna 15, Autonomous City of Buenos Aires, C1414CXE, Argentina",
-      // point: { x: -58.4498605, y: -34.5959112 },
-      point: sql`ST_GeomFromText('POINT(-58.4498605 -34.5959112)', 4326)`,
+      point: create_point(-58.4498605, -34.5959112),
       road: "Padilla",
       house_number: "1180",
       suburb: "Recoleta",
       city: "Buenos Aires",
-      city_district: "Buenos Aires",
-      postcode: "C1429",
-      country: "Argentina",
       created_at: now,
       updated_at: now,
     })

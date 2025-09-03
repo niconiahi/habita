@@ -86,13 +86,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("house_number", "numeric", (col) =>
       col.notNull(),
     )
-    .addColumn("suburb", "text", (col) => col.notNull())
-    .addColumn("city", "text", (col) => col.notNull())
-    .addColumn("city_district", "text", (col) =>
-      col.notNull(),
-    )
-    .addColumn("postcode", "text", (col) => col.notNull())
-    .addColumn("country", "text", (col) => col.notNull())
+    .addColumn("suburb", "text")
+    .addColumn("city", "text")
+    .addColumn("town", "text")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
