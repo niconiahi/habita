@@ -73,8 +73,11 @@ export interface Location {
   created_at: Timestamp;
   house_number: Numeric;
   id: Generated<number>;
+  latitude: Numeric;
+  longitude: Numeric;
   point: string;
   road: string;
+  state: string | null;
   suburb: string | null;
   town: string | null;
   updated_at: Timestamp;
