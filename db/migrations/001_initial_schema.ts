@@ -79,6 +79,12 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.primaryKey().notNull(),
     )
     .addColumn("address", "text", (col) => col.notNull())
+    .addColumn("latitude", "decimal", (col) =>
+      col.notNull(),
+    )
+    .addColumn("longitude", "decimal", (col) =>
+      col.notNull(),
+    )
     .addColumn("point", sql`geometry(point)`, (col) =>
       col.notNull(),
     )
@@ -89,6 +95,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("suburb", "text")
     .addColumn("city", "text")
     .addColumn("town", "text")
+    .addColumn("state", "text")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

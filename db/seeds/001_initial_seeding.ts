@@ -1,6 +1,9 @@
 import { hash } from "@node-rs/argon2"
 import { query_builder } from "../query_builder"
-import { create_point } from "../../app/lib/server/point.ts"
+import { compose_point } from "../../app/lib/server/point.ts"
+import { RoomType } from "../../app/lib/server/room_type.ts"
+import { AccessRole } from "../../app/lib/server/access_role.ts"
+import { ContractType } from "../../app/lib/server/contract_type.ts"
 
 async function hash_password(
   password: string,
@@ -11,25 +14,6 @@ async function hash_password(
     outputLen: 32,
     parallelism: 1,
   })
-}
-
-enum RoomType {
-  BEDROOM = 0,
-  BATHROOM = 1,
-  KITCHEN = 2,
-  LIVING_ROOM = 3,
-  DINING_ROOM = 4,
-}
-
-enum ContractType {
-  SHORT_TERM = 0,
-  LONG_TERM = 1,
-}
-
-enum AccessRole {
-  OWNER = 0,
-  ADMINISTRATOR = 1,
-  TENANT = 2,
 }
 
 async function upsert_user(
@@ -81,16 +65,20 @@ async function run() {
     now,
   )
 
+  const latitude = -58.4498605
+  const longitude = -34.5959112
   const location = await query_builder
     .insertInto("location")
     .values({
       address:
         "1180, Padilla, Villa Crespo, Buenos Aires, Distrito Audiovisual, Comuna 15, Autonomous City of Buenos Aires, C1414CXE, Argentina",
-      point: create_point(-58.4498605, -34.5959112),
+      latitude,
+      longitude,
+      point: compose_point(latitude, longitude),
       road: "Padilla",
       house_number: "1180",
-      suburb: "Recoleta",
-      city: "Buenos Aires",
+      suburb: "Villa Crespo",
+      state: "Buenos Aires",
       created_at: now,
       updated_at: now,
     })

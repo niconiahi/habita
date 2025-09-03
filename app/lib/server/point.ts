@@ -1,6 +1,6 @@
 import { sql } from "kysely"
 
-export function create_point(
+export function compose_point(
   latitude: number,
   longitude: number,
 ) {

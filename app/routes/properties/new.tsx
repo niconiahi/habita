@@ -4,7 +4,11 @@ import * as v from "valibot"
 import type { Route } from "./+types/new"
 import { error } from "~/lib/server/error"
 import { query_builder } from "~/lib/server/query_builder"
-import { create_point } from "~/lib/server/point"
+import { compose_point } from "~/lib/server/point"
+import {
+  LocationInput,
+  LocationSchema,
+} from "~/components/location_input"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",
@@ -36,7 +40,8 @@ export async function action({
               suburb: location_.address.suburb,
               town: location_.address.town,
               city: location_.address.city,
-              point: create_point(
+              state: location_.address.state,
+              point: compose_point(
                 location_.lat,
                 location_.lon,
               ),
@@ -64,7 +69,6 @@ export async function action({
 
 export default function () {
   const [disabled, set_disabled] = useState(true)
-  const id = "location"
   return (
     <main>
       <h1>create property</h1>
@@ -76,140 +80,19 @@ export default function () {
             value={INTENT.CREATE_PROPERTY}
             name="intent"
           />
-          <div>
-            <label htmlFor={id}>direccion</label>
-            <LocationInput
-              id={id}
-              on_selection={() => {
-                set_disabled(false)
-              }}
-              on_clear={() => {
-                set_disabled(true)
-              }}
-            />
-          </div>
+          <LocationInput
+            on_selection={() => {
+              set_disabled(false)
+            }}
+            on_clear={() => {
+              set_disabled(true)
+            }}
+          />
           <button disabled={disabled} type="submit">
             crear propiedad
           </button>
         </Form>
       </section>
     </main>
-  )
-}
-
-const LocationSchema = v.object({
-  place_id: v.number(),
-  lat: v.union([
-    v.pipe(v.string(), v.transform(Number)),
-    v.number(),
-  ]),
-  lon: v.union([
-    v.pipe(v.string(), v.transform(Number)),
-    v.number(),
-  ]),
-  display_name: v.string(),
-  address: v.object({
-    road: v.string(),
-    house_number: v.string(),
-    suburb: v.optional(v.string()),
-    town: v.optional(v.string()),
-    city: v.optional(v.string()),
-    state: v.optional(v.string()),
-  }),
-})
-type Location = v.InferOutput<typeof LocationSchema>
-
-function LocationInput({
-  id,
-  on_selection,
-  on_clear,
-}: {
-  id: string
-  on_selection: () => void
-  on_clear: () => void
-}) {
-  const [query, set_query] = useState("")
-  const [locations, set_locations] = useState<Location[]>(
-    [],
-  )
-  const [selected, set_selected] =
-    useState<Location | null>(null)
-  const list_id = `${id}_listbox`
-  return (
-    <>
-      <input
-        id={id}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-haspopup="listbox"
-        aria-controls={list_id}
-        aria-expanded={Boolean(locations.length)}
-        value={query}
-        onChange={async (event) => {
-          const query = event.currentTarget.value
-          if (query.length >= 1) {
-            set_selected(null)
-            on_clear()
-          }
-          const url = new URL(
-            "/nominatim/search",
-            window.location.origin,
-          )
-          set_query(query)
-          url.searchParams.set("q", query)
-          url.searchParams.set("addressdetails", String(1))
-          const response = await fetch(url).catch(() => {
-            throw new Error(
-              "unknown error while searching for an address",
-            )
-          })
-          if (!response.ok) {
-            throw new Error(
-              "there was an error while searching for an address",
-            )
-          }
-          const data = await response.json()
-          const locations: Location[] = []
-          for (const location_ of data) {
-            const result = v.safeParse(
-              LocationSchema,
-              location_,
-            )
-            if (result.success) {
-              locations.push(result.output)
-            }
-          }
-          set_locations(locations)
-        }}
-      />
-      {locations.length ? (
-        <ul role="listbox" id={list_id}>
-          {locations.map((location) => {
-            const id = `location_${location.place_id}`
-            function handle() {
-              set_selected(location)
-              on_selection()
-              set_query(location.display_name)
-              set_locations([])
-            }
-            return (
-              <li
-                role="option"
-                key={id}
-                onClick={handle}
-                onKeyPress={handle}
-              >
-                {location.display_name}
-              </li>
-            )
-          })}
-        </ul>
-      ) : null}
-      <input
-        type="hidden"
-        name="location"
-        value={JSON.stringify(selected)}
-      />
-    </>
   )
 }
