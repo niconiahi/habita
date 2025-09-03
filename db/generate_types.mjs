@@ -2,12 +2,7 @@
 
 import { spawn } from "bun"
 
-const databaseUrl = `postgres://${encodeURIComponent(process.env.POSTGRES_USER)}:${encodeURIComponent(process.env.POSTGRES_PASSWORD)}@${process.env.POSTGRES_HOST}:5432/${process.env.POSTGRES_DB}`
-
-console.log(
-  "• Using constructed DATABASE_URL from individual environment variables",
-  databaseUrl,
-)
+const database_url = `postgres://${encodeURIComponent(process.env.POSTGRES_USER)}:${encodeURIComponent(process.env.POSTGRES_PASSWORD)}@${process.env.POSTGRES_HOST}:5432/${process.env.POSTGRES_DB}`
 
 const proc = spawn(
   [
@@ -17,12 +12,12 @@ const proc = spawn(
     "--dialect",
     "postgres",
     "--url",
-    databaseUrl,
+    database_url,
   ],
   {
     stdio: ["inherit", "inherit", "inherit"],
   },
 )
 
-const exitCode = await proc.exited
-process.exit(exitCode)
+const exit_code = await proc.exited
+process.exit(exit_code)

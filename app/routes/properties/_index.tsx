@@ -4,10 +4,6 @@ import { fetch_properties } from "./fetchers/server/properties"
 
 export async function loader() {
   const properties = await fetch_properties()
-  console.log(
-    "properties",
-    JSON.stringify(properties, null, 2),
-  )
   return { properties }
 }
 

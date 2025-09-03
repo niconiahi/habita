@@ -81,6 +81,27 @@ services:
         limits:
           memory: 128M
 
+  nominatim:
+    image: mediagis/nominatim:4.4
+    container_name: nominatim
+    ports:
+      - "8080:8080"
+    environment:
+      - PBF_URL=https://download.geofabrik.de/south-america/argentina-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/south-america/argentina-updates/
+      - IMPORT_WIKIPEDIA=false
+      - IMPORT_US_POSTCODES=false
+      - IMPORT_GB_POSTCODES=false
+    volumes:
+      - memudo_nominatim_data:/var/lib/postgresql/14/main
+    shm_size: 1gb
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
 
 volumes:
   memudo_app_data:
+  memudo_nominatim_data:

@@ -1,12 +1,6 @@
 import { hash } from "@node-rs/argon2"
-import { encodeBase32LowerCase } from "@oslojs/encoding"
 import { sql } from "kysely"
 import { query_builder } from "../query_builder"
-
-function generate_id(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(15))
-  return encodeBase32LowerCase(bytes)
-}
 
 async function hash_password(
   password: string,
@@ -38,35 +32,32 @@ enum AccessRole {
   TENANT = 2,
 }
 
-async function upsertUser(
+async function upsert_user(
   username: string,
   password: string,
   now: Date,
 ) {
-  const existingUser = await query_builder
+  const existing_user = await query_builder
     .selectFrom("user")
     .select("id")
     .where("username", "=", username)
     .executeTakeFirst()
-
-  if (existingUser) {
-    console.log(`User ${username} already exists, skipping`)
-    return existingUser.id
+  if (existing_user) {
+    console.log(`user ${username} already exists, skipping`)
+    return existing_user.id
   }
-
-  const user_id = generate_id()
-  await query_builder
+  const user = await query_builder
     .insertInto("user")
     .values({
-      id: user_id,
       username,
       password_hash: await hash_password(password),
       created_at: now,
       updated_at: now,
     })
-    .execute()
-  console.log(`Created user ${username}`)
-  return user_id
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log(`created user with id ${user.id}`)
+  return user.id
 }
 
 async function run() {
@@ -74,27 +65,25 @@ async function run() {
   const now = new Date()
 
   console.log("creating users")
-  const owner_id = await upsertUser(
+  const owner_id = await upsert_user(
     "niconiahi",
     "owner",
     now,
   )
-  const admin_id = await upsertUser(
+  const admin_id = await upsert_user(
     "admin@inmobi.rent",
     "admin",
     now,
   )
-  const tenant_id = await upsertUser(
+  const tenant_id = await upsert_user(
     "tenant@inmobi.rent",
     "tenant",
     now,
   )
 
-  const location_id = generate_id()
-  const [location] = await query_builder
+  const location = await query_builder
     .insertInto("location")
     .values({
-      id: location_id,
       address:
         "1180, Padilla, Villa Crespo, Buenos Aires, Distrito Audiovisual, Comuna 15, Autonomous City of Buenos Aires, C1414CXE, Argentina",
       // point: { x: -58.4498605, y: -34.5959112 },
@@ -109,20 +98,20 @@ async function run() {
       created_at: now,
       updated_at: now,
     })
-    .execute()
-  console.log("created location", location.insertId)
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created location", location.id)
 
-  const property_id = generate_id()
-  const [property] = await query_builder
+  const property = await query_builder
     .insertInto("property")
     .values({
-      id: property_id,
-      location_id: location_id,
+      location_id: location.id,
       created_at: now,
       updated_at: now,
     })
-    .execute()
-  console.log("created property:", property.insertId)
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created property", property.id)
 
   const rooms = [
     { type: RoomType.BEDROOM, width: "4.5", length: "3.2" },
@@ -135,20 +124,19 @@ async function run() {
   ]
 
   for (const room_ of rooms) {
-    const roomId = generate_id()
-    const [room] = await query_builder
+    const room = await query_builder
       .insertInto("room")
       .values({
-        id: roomId,
-        property_id: property_id,
-        type: room_.type.toString(),
+        property_id: property.id,
+        type: room_.type,
         width: room_.width,
         length: room_.length,
         created_at: now,
         updated_at: now,
       })
-      .execute()
-    console.log("created room", room.insertId)
+      .returning("id")
+      .executeTakeFirstOrThrow()
+    console.log("created room", room.id)
   }
 
   const contract_start_date = new Date(
@@ -160,13 +148,11 @@ async function run() {
     contract_start_date.getMonth(),
     contract_start_date.getDate(),
   )
-  const contract_id = generate_id()
-  const [contract] = await query_builder
+  const contract = await query_builder
     .insertInto("contract")
     .values({
-      id: contract_id,
-      property_id: property_id,
-      type: ContractType.LONG_TERM.toString(),
+      property_id: property.id,
+      type: ContractType.LONG_TERM,
       frequency: "3_months",
       formula:
         "price * (ipc_current_month / ipc_four_months_ago)",
@@ -175,8 +161,9 @@ async function run() {
       created_at: now,
       updated_at: now,
     })
-    .execute()
-  console.log("created contract:", contract.insertId)
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created contract", contract.id)
 
   const price = 600000
   const period_end_date = new Date(
@@ -184,20 +171,19 @@ async function run() {
     contract_start_date.getMonth() + 3,
     contract_start_date.getDate(),
   )
-  const period_id = generate_id()
-  const [period] = await query_builder
+  const period = await query_builder
     .insertInto("period")
     .values({
-      id: period_id,
-      contract_id: contract_id,
+      contract_id: contract.id,
       price: price.toString(),
       start_date: contract_start_date,
       end_date: period_end_date,
       created_at: now,
       updated_at: now,
     })
-    .execute()
-  console.log("created period:", period.insertId)
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created period", period.id)
 
   const accesses = [
     { user_id: owner_id, role: AccessRole.OWNER },
@@ -205,30 +191,27 @@ async function run() {
     { user_id: tenant_id, role: AccessRole.TENANT },
   ]
   for (const access_ of accesses) {
-    const accessId = generate_id()
-    const [access] = await query_builder
+    const access = await query_builder
       .insertInto("access")
       .values({
-        id: accessId,
         user_id: access_.user_id,
-        property_id: property_id,
+        property_id: property.id,
         role: access_.role.toString(),
         created_at: now,
         updated_at: now,
       })
-      .execute()
-    console.log("created access", access.insertId)
+      .returning("id")
+      .executeTakeFirstOrThrow()
+    console.log("created access", access.id)
   }
-
-  console.log("seed completed")
 }
 
 run()
   .then(() => {
-    console.log("Seed completed successfully")
+    console.log("seed completed")
     process.exit(0)
   })
   .catch((error) => {
-    console.error("Seed failed:", error)
+    console.error("error", error)
     process.exit(1)
   })

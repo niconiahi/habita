@@ -8,11 +8,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("access")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("user_id", "text", (col) => col.notNull())
-    .addColumn("property_id", "text", (col) =>
+    .addColumn("user_id", "integer", (col) => col.notNull())
+    .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("role", "numeric", (col) => col.notNull())
@@ -26,13 +26,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("contract")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("property_id", "text", (col) =>
+    .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
-    .addColumn("type", "numeric", (col) => col.notNull())
+    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("formula", "text", (col) => col.notNull())
     .addColumn("frequency", "text", (col) => col.notNull())
     .addColumn("start_date", "timestamptz", (col) =>
@@ -51,10 +51,12 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("formula_parameter")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("period_id", "text", (col) => col.notNull())
+    .addColumn("period_id", "integer", (col) =>
+      col.notNull(),
+    )
     .addColumn("key", "text", (col) => col.notNull())
     .addColumn("value", "numeric", (col) => col.notNull())
     .addColumn("start_date", "timestamptz", (col) =>
@@ -73,7 +75,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("location")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
     .addColumn("address", "text", (col) => col.notNull())
@@ -101,10 +103,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("period")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("contract_id", "text", (col) =>
+    .addColumn("contract_id", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("price", "numeric", (col) => col.notNull())
@@ -124,10 +126,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("property")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("location_id", "text", (col) =>
+    .addColumn("location_id", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("created_at", "timestamptz", (col) =>
@@ -140,13 +142,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("room")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("property_id", "text", (col) =>
+    .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
-    .addColumn("type", "numeric", (col) => col.notNull())
+    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("width", "numeric", (col) => col.notNull())
     .addColumn("length", "numeric", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
@@ -159,10 +161,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("session")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("user_id", "text", (col) => col.notNull())
+    .addColumn("user_id", "integer", (col) => col.notNull())
     .addColumn("expires_at", "timestamptz", (col) =>
       col.notNull(),
     )
@@ -176,7 +178,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable("user")
-    .addColumn("id", "text", (col) =>
+    .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
     .addColumn("username", "text", (col) =>
