@@ -28,13 +28,15 @@ export async function action({
         LocationSchema,
         JSON.parse(form_data.get("location") as string),
       )
-      const now = new Date()
+      const now = new Date().toISOString()
       const property = await query_builder
         .transaction()
         .execute(async (trx) => {
           const location = await trx
             .insertInto("location")
             .values({
+              latitude: location_.lat,
+              longitude: location_.lon,
               road: location_.address.road,
               house_number: location_.address.house_number,
               suburb: location_.address.suburb,

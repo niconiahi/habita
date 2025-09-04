@@ -45,6 +45,7 @@ export function LocationInput({
       <label htmlFor={id}>direccion</label>
       <input
         id={id}
+        style={{ minWidth: "400px" }}
         role="combobox"
         aria-autocomplete="list"
         aria-haspopup="listbox"

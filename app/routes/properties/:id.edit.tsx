@@ -12,12 +12,55 @@ import {
 } from "~/components/location_input"
 import { useState } from "react"
 import { compose_point } from "~/lib/server/point"
+import { ContractState } from "~/lib/server/contract_state"
+
+const ISO_8601_DURATION_REGEX =
+  /^P(?=\d|T\d)(?:\d+W|(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?)$/
+export const FrenquencySchema = v.pipe(
+  v.string(),
+  v.regex(
+    ISO_8601_DURATION_REGEX,
+    `use a valid ISO 8601 duration e.g. "P2W" or "P3M"`,
+  ),
+)
+type Duration = v.InferOutput<typeof FrenquencySchema>
+const DURATIONS: Duration[] = ["P3M", "P6M", "P1Y"]
+
+function label_duration(duration: Duration) {
+  switch (duration) {
+    case "P3M": {
+      return "3 meses"
+    }
+    case "P6M": {
+      return "6 meses"
+    }
+    case "P1Y": {
+      return "1 año"
+    }
+  }
+}
+
+export const FormulaSchema = v.object({
+  label: v.string(),
+  pattern: v.string(),
+})
+type Formula = v.InferOutput<typeof FormulaSchema>
+const FORMULAS: Formula[] = [
+  {
+    pattern:
+      "price * (ipc_current_month / ipc_four_months_ago)",
+    label: "IPC",
+  },
+]
 
 const INTENT = {
+  UPDATE_LOCATION: "update_location",
+  CREATE_ROOM: "create_room",
   UPDATE_ROOM: "update_room",
   DESTROY_ROOM: "destroy_room",
-  CREATE_ROOM: "create_room",
-  UPDATE_LOCATION: "update_location",
+  CREATE_CONTRACT: "create_contract",
+  UPDATE_CONTRACT: "update_contract",
+  DESTROY_CONTRACT: "destroy_contract",
 } as const
 
 export async function action({
@@ -29,10 +72,14 @@ export async function action({
   if (!intent) {
     throw error(400, "intent is required")
   }
-  const now = new Date()
-  const id = v.parse(ForceNumberSchema, params.id, {
-    message: "property id should be a number",
-  })
+  const now = new Date().toISOString()
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.id,
+    {
+      message: "property id should be a number",
+    },
+  )
   switch (intent) {
     case INTENT.UPDATE_ROOM: {
       const length = v.parse(
@@ -74,7 +121,7 @@ export async function action({
           type: RoomType.BEDROOM,
           updated_at: now,
           created_at: now,
-          property_id: id,
+          property_id,
         })
         .execute()
       return null
@@ -88,7 +135,7 @@ export async function action({
         LocationSchema,
         JSON.parse(form_data.get("location") as string),
       )
-      const now = new Date()
+      const now = new Date().toISOString()
       await query_builder
         .updateTable("location")
         .set({
@@ -109,6 +156,55 @@ export async function action({
         .execute()
       return null
     }
+    case INTENT.CREATE_CONTRACT: {
+      const now = new Date().toISOString()
+      await query_builder
+        .insertInto("contract")
+        .values({
+          state: ContractState.INACTIVE,
+          created_at: now,
+          property_id,
+          updated_at: now,
+        })
+        .execute()
+      return null
+    }
+    case INTENT.UPDATE_CONTRACT: {
+      const now = new Date().toISOString()
+      const id = v.parse(
+        ForceNumberSchema,
+        form_data.get("id"),
+      )
+      const formula = v.parse(
+        v.string(),
+        form_data.get("formula"),
+      )
+      const duration = v.parse(
+        v.string(),
+        form_data.get("duration"),
+      )
+      const start_date = v.parse(
+        v.string(),
+        form_data.get("start_date"),
+      )
+      const end_date = v.parse(
+        v.string(),
+        form_data.get("end_date"),
+      )
+      await query_builder
+        .updateTable("contract")
+        .set({
+          property_id,
+          updated_at: now,
+          formula,
+          duration,
+          start_date,
+          end_date,
+        })
+        .where("contract.id", "=", id)
+        .execute()
+      return null
+    }
   }
   return null
 }
@@ -123,6 +219,17 @@ export async function loader({ params }: Route.LoaderArgs) {
   }
   return { property }
 }
+
+function format_date_for_input(date: string) {
+  return new Date(date).toISOString().slice(0, -8)
+}
+
+// function pluralize(word: string, count: number) {
+//   if (count > 1) {
+//     return `${word}s`
+//   }
+//   return word
+// }
 
 export default function ({
   loaderData,
@@ -223,7 +330,150 @@ export default function ({
             name="intent"
             value={INTENT.CREATE_ROOM}
           >
-            add room
+            agregar habitacion
+          </button>
+        </Form>
+      </section>
+      <section>
+        <h2>contratos</h2>
+        <ul>
+          {property.contracts.map((contract) => {
+            const id = `contract-${contract.id}`
+            return (
+              <li key={id}>
+                <Form method="POST">
+                  <input
+                    type="hidden"
+                    value={contract.id}
+                    name="id"
+                  />
+                  <p>
+                    <label htmlFor="start_date">
+                      fecha de inicio
+                    </label>
+                    <input
+                      id="start_date"
+                      name="start_date"
+                      type="datetime-local"
+                      readOnly={
+                        contract.state !==
+                        ContractState.INACTIVE
+                      }
+                      defaultValue={
+                        contract.start_date
+                          ? format_date_for_input(
+                              contract.start_date,
+                            )
+                          : undefined
+                      }
+                    />
+                  </p>
+                  <p>
+                    <label htmlFor="end_date">
+                      fecha de finalizacion
+                    </label>
+                    <input
+                      id="end_date"
+                      type="datetime-local"
+                      name="end_date"
+                      readOnly={
+                        contract.state !==
+                        ContractState.INACTIVE
+                      }
+                      defaultValue={
+                        contract.end_date
+                          ? format_date_for_input(
+                              contract.end_date,
+                            )
+                          : undefined
+                      }
+                    />
+                  </p>
+                  <p>
+                    <label htmlFor="duration">
+                      frecuencia
+                    </label>
+                    <select
+                      name="duration"
+                      id="duration"
+                      defaultValue={
+                        contract.duration ?? undefined
+                      }
+                    >
+                      {DURATIONS.map((duration) => {
+                        const id = `duration_${duration}`
+                        return (
+                          <option key={id} value={duration}>
+                            {label_duration(duration)}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </p>
+                  <p>
+                    <label htmlFor="formula">formula</label>
+                    <select
+                      name="formula"
+                      id="formula"
+                      defaultValue={
+                        contract.formula ?? undefined
+                      }
+                    >
+                      {FORMULAS.map((formula) => {
+                        const id = `formula_${formula.label}`
+                        return (
+                          <option
+                            key={id}
+                            value={formula.pattern}
+                          >
+                            {formula.label}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </p>
+                  <button
+                    type="submit"
+                    name="intent"
+                    disabled={
+                      contract.state !==
+                      ContractState.INACTIVE
+                    }
+                    value={INTENT.UPDATE_CONTRACT}
+                  >
+                    actualizar contrato
+                  </button>
+                  <input type="hidden" />
+                  <button
+                    type="submit"
+                    name="intent"
+                    disabled={
+                      contract.state !==
+                      ContractState.INACTIVE
+                    }
+                    value={INTENT.DESTROY_CONTRACT}
+                  >
+                    eliminar contrato
+                  </button>
+                </Form>
+              </li>
+            )
+          })}
+        </ul>
+        <Form method="POST">
+          <button
+            type="submit"
+            name="intent"
+            value={INTENT.CREATE_CONTRACT}
+            disabled={
+              !property.contracts.every((contract) => {
+                return (
+                  contract.state === ContractState.FINISHED
+                )
+              })
+            }
+          >
+            agregar contrato
           </button>
         </Form>
       </section>
