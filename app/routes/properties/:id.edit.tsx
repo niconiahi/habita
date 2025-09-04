@@ -63,6 +63,13 @@ const INTENT = {
   DESTROY_CONTRACT: "destroy_contract",
 } as const
 
+const DateSchema = v.pipe(
+  v.string(),
+  v.transform((string) => {
+    return string.length ? string : undefined
+  }),
+)
+
 export async function action({
   request,
   params,
@@ -184,11 +191,11 @@ export async function action({
         form_data.get("duration"),
       )
       const start_date = v.parse(
-        v.string(),
+        DateSchema,
         form_data.get("start_date"),
       )
       const end_date = v.parse(
-        v.string(),
+        DateSchema,
         form_data.get("end_date"),
       )
       await query_builder
@@ -201,6 +208,17 @@ export async function action({
           start_date,
           end_date,
         })
+        .where("contract.id", "=", id)
+        .execute()
+      return null
+    }
+    case INTENT.DESTROY_CONTRACT: {
+      const id = v.parse(
+        ForceNumberSchema,
+        form_data.get("id"),
+      )
+      await query_builder
+        .deleteFrom("contract")
         .where("contract.id", "=", id)
         .execute()
       return null
