@@ -33,6 +33,12 @@ export async function fetch_property(id: number) {
             "location.id",
             "location.latitude",
             "location.longitude",
+            "location.road",
+            "location.house_number",
+            "location.state",
+            "location.suburb",
+            "location.city",
+            "location.town",
           ])
           .whereRef(
             "location.id",
@@ -42,6 +48,23 @@ export async function fetch_property(id: number) {
       )
         .$notNull()
         .as("location"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("contract")
+          .select([
+            "contract.id",
+            "contract.start_date",
+            "contract.end_date",
+            "contract.state",
+            "contract.duration",
+            "contract.formula",
+          ])
+          .whereRef(
+            "contract.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("contracts"),
     ])
     .where("property.id", "=", id)
     .executeTakeFirst()

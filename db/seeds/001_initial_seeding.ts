@@ -4,6 +4,7 @@ import { compose_point } from "../../app/lib/server/point.ts"
 import { RoomType } from "../../app/lib/server/room_type.ts"
 import { AccessRole } from "../../app/lib/server/access_role.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
+import { ContractState } from "../../app/lib/server/contract_state.ts"
 
 async function hash_password(
   password: string,
@@ -19,7 +20,7 @@ async function hash_password(
 async function upsert_user(
   username: string,
   password: string,
-  now: Date,
+  now: string,
 ) {
   const existing_user = await query_builder
     .selectFrom("user")
@@ -46,8 +47,7 @@ async function upsert_user(
 
 async function run() {
   console.log("seeding")
-  const now = new Date()
-
+  const now = new Date().toISOString()
   console.log("creating users")
   const owner_id = await upsert_user(
     "niconiahi",
@@ -123,21 +123,18 @@ async function run() {
     console.log("created room", room.id)
   }
 
-  const contract_start_date = new Date(
-    now.getFullYear() - 1,
-    now.getDate(),
-  )
-  const contract_end_date = new Date(
-    contract_start_date.getFullYear() + 1,
-    contract_start_date.getMonth(),
-    contract_start_date.getDate(),
-  )
+  const date = new Date()
+  const contract_start_date = new Date(date)
+  contract_start_date.setFullYear(date.getFullYear() - 1)
+  const contract_end_date = new Date(date)
+  contract_end_date.setFullYear(date.getFullYear())
   const contract = await query_builder
     .insertInto("contract")
     .values({
       property_id: property.id,
       type: ContractType.LONG_TERM,
-      frequency: "3_months",
+      state: ContractState.FINISHED,
+      duration: "P3M",
       formula:
         "price * (ipc_current_month / ipc_four_months_ago)",
       start_date: contract_start_date,
