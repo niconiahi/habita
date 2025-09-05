@@ -1,1 +1,3 @@
-- [] Add [Nominatim image](https://hub.docker.com/r/mediagis/nominatim/) configuration to the docker-compose
+- [x] Add [Nominatim image](https://hub.docker.com/r/mediagis/nominatim/) configuration to the docker-compose
+- [x] Add contract to UI and allow CRUD operations for it
+- [] Allow file uploading without any library. All natively

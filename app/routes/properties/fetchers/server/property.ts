@@ -51,13 +51,28 @@ export async function fetch_property(id: number) {
       jsonArrayFrom(
         eb
           .selectFrom("contract")
-          .select([
+          .select((eb) => [
             "contract.id",
             "contract.start_date",
             "contract.end_date",
             "contract.state",
             "contract.duration",
             "contract.formula",
+            jsonArrayFrom(
+              eb
+                .selectFrom("contract_file")
+                .innerJoin(
+                  "file",
+                  "file.id",
+                  "contract_file.file_id",
+                )
+                .select(["file.basename", "file.id"])
+                .whereRef(
+                  "contract_file.contract_id",
+                  "=",
+                  "contract.id",
+                ),
+            ).as("files"),
           ])
           .whereRef(
             "contract.property_id",
