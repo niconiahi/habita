@@ -61,6 +61,8 @@ const INTENT = {
   CREATE_CONTRACT: "create_contract",
   UPDATE_CONTRACT: "update_contract",
   DESTROY_CONTRACT: "destroy_contract",
+  CREATE_FILE: "create_file",
+  DESTROY_FILE: "destroy_file",
 } as const
 
 const DateSchema = v.pipe(
@@ -142,7 +144,6 @@ export async function action({
         LocationSchema,
         JSON.parse(form_data.get("location") as string),
       )
-      const now = new Date().toISOString()
       await query_builder
         .updateTable("location")
         .set({
@@ -164,7 +165,6 @@ export async function action({
       return null
     }
     case INTENT.CREATE_CONTRACT: {
-      const now = new Date().toISOString()
       await query_builder
         .insertInto("contract")
         .values({
@@ -177,7 +177,6 @@ export async function action({
       return null
     }
     case INTENT.UPDATE_CONTRACT: {
-      const now = new Date().toISOString()
       const id = v.parse(
         ForceNumberSchema,
         form_data.get("id"),
@@ -221,6 +220,82 @@ export async function action({
         .deleteFrom("contract")
         .where("contract.id", "=", id)
         .execute()
+      return null
+    }
+    case INTENT.CREATE_FILE: {
+      const contract_id = v.parse(
+        ForceNumberSchema,
+        form_data.get("contract_id"),
+      )
+      const file_ = v.parse(
+        v.instance(File),
+        form_data.get("file"),
+      )
+      await query_builder
+        .transaction()
+        .execute(async (tx) => {
+          const content = Buffer.from(await file_.bytes())
+          const hash = Bun.CryptoHasher.hash(
+            "sha256",
+            content,
+            "hex",
+          )
+          const file = await tx
+            .insertInto("file")
+            .values({
+              basename: file_.name,
+              content,
+              created_at: now,
+              updated_at: now,
+              hash,
+              size: file_.size,
+            })
+            .returning("id")
+            .executeTakeFirstOrThrow()
+          await tx
+            .insertInto("contract_file")
+            .values({
+              user_id: 1,
+              file_id: file.id,
+              contract_id,
+              created_at: now,
+              updated_at: now,
+            })
+            .returning("id")
+            .executeTakeFirstOrThrow()
+        })
+      return null
+    }
+    case INTENT.DESTROY_FILE: {
+      const id = v.parse(
+        ForceNumberSchema,
+        form_data.get("id"),
+      )
+      const contract_id = v.parse(
+        ForceNumberSchema,
+        form_data.get("contract_id"),
+      )
+      await query_builder
+        .transaction()
+        .execute(async (tx) => {
+          await tx
+            .deleteFrom("contract_file")
+            .where((eb) =>
+              eb.and([
+                eb("contract_file.file_id", "=", id),
+                eb(
+                  "contract_file.contract_id",
+                  "=",
+                  contract_id,
+                ),
+              ]),
+            )
+            .execute()
+          await tx
+            .deleteFrom("file")
+            .where("file.id", "=", id)
+            .execute()
+        })
       return null
     }
   }
@@ -354,11 +429,24 @@ export default function ({
       </section>
       <section>
         <h2>contratos</h2>
-        <ul>
+        <ul
+          style={{
+            gap: "1rem",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           {property.contracts.map((contract) => {
             const id = `contract-${contract.id}`
             return (
-              <li key={id}>
+              <li
+                style={{
+                  display: "flex",
+                  padding: "0.5rem",
+                  border: "2px solid black",
+                }}
+                key={id}
+              >
                 <Form method="POST">
                   <input
                     type="hidden"
@@ -474,6 +562,74 @@ export default function ({
                     eliminar contrato
                   </button>
                 </Form>
+                <section>
+                  <h3>documentos</h3>
+                  <Form
+                    method="POST"
+                    encType="multipart/form-data"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <input
+                      type="hidden"
+                      value={contract.id}
+                      name="contract_id"
+                    />
+                    <p>
+                      <label htmlFor="file">
+                        documento
+                      </label>
+                      <input
+                        type="file"
+                        id="file"
+                        name="file"
+                        disabled={
+                          contract.state !==
+                          ContractState.INACTIVE
+                        }
+                      />
+                    </p>
+                    <button
+                      type="submit"
+                      name="intent"
+                      disabled={
+                        contract.state !==
+                        ContractState.INACTIVE
+                      }
+                      value={INTENT.CREATE_FILE}
+                    >
+                      agregar documento
+                    </button>
+                    <ul>
+                      {contract.files.map((file) => {
+                        const id = `file_${file.basename}`
+                        return (
+                          <li key={id}>
+                            <span>{file.basename}</span>
+                            <input
+                              type="hidden"
+                              value={file.id}
+                              name="id"
+                            />
+                            <button
+                              type="submit"
+                              name="intent"
+                              disabled={
+                                contract.state !==
+                                ContractState.INACTIVE
+                              }
+                              value={INTENT.DESTROY_FILE}
+                            >
+                              eliminar
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </Form>
+                </section>
               </li>
             )
           })}

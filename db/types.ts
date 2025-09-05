@@ -37,6 +37,26 @@ export interface Contract {
   updated_at: Timestamp;
 }
 
+export interface ContractFile {
+  contract_id: number;
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  type: number | null;
+  updated_at: Timestamp;
+  user_id: number;
+}
+
+export interface File {
+  basename: string;
+  content: Buffer;
+  created_at: Timestamp;
+  hash: string;
+  id: Generated<number>;
+  size: Int8;
+  updated_at: Timestamp;
+}
+
 export interface FormulaParameter {
   created_at: Timestamp;
   end_date: Timestamp;
@@ -702,6 +722,8 @@ export interface User {
 export interface DB {
   access: Access;
   contract: Contract;
+  contract_file: ContractFile;
+  file: File;
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;

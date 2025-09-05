@@ -31,8 +31,8 @@ export async function action({
       const now = new Date().toISOString()
       const property = await query_builder
         .transaction()
-        .execute(async (trx) => {
-          const location = await trx
+        .execute(async (tx) => {
+          const location = await tx
             .insertInto("location")
             .values({
               latitude: location_.lat,
@@ -53,7 +53,7 @@ export async function action({
             })
             .returning("id")
             .executeTakeFirstOrThrow()
-          const property = await trx
+          const property = await tx
             .insertInto("property")
             .values({
               created_at: now,

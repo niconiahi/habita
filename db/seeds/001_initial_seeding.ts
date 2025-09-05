@@ -5,6 +5,8 @@ import { RoomType } from "../../app/lib/server/room_type.ts"
 import { AccessRole } from "../../app/lib/server/access_role.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { ContractState } from "../../app/lib/server/contract_state.ts"
+import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
+import * as v from "valibot"
 
 async function hash_password(
   password: string,
@@ -15,6 +17,49 @@ async function hash_password(
     outputLen: 32,
     parallelism: 1,
   })
+}
+
+async function upsert_file(path: string) {
+  const file = Bun.file(path)
+  const content = Buffer.from(await file.arrayBuffer())
+  const now = new Date()
+  const hash = Bun.CryptoHasher.hash(
+    "sha256",
+    content,
+    "hex",
+  )
+  const basename = v.parse(
+    v.string("basename is required"),
+    path.split("/").pop(),
+  )
+  const existing_file = await query_builder
+    .selectFrom("file")
+    .select("id")
+    .where("hash", "=", hash)
+    .executeTakeFirst()
+  let file_id: number
+  if (existing_file) {
+    console.log(
+      `file with hash ${hash} already exists, reusing`,
+    )
+    file_id = existing_file.id
+  } else {
+    const file = await query_builder
+      .insertInto("file")
+      .values({
+        basename,
+        content,
+        size: content.length,
+        hash: hash,
+        created_at: now,
+        updated_at: now,
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+    file_id = file.id
+    console.log(`created file with id ${file_id}`)
+  }
+  return file_id
 }
 
 async function upsert_user(
@@ -165,6 +210,21 @@ async function run() {
     .returning("id")
     .executeTakeFirstOrThrow()
   console.log("created period", period.id)
+
+  const file_id = await upsert_file(
+    `${import.meta.dir}/../files/invoice-march.pdf`,
+  )
+  await query_builder
+    .insertInto("contract_file")
+    .values({
+      file_id,
+      user_id: admin_id,
+      contract_id: contract.id,
+      created_at: now,
+      updated_at: now,
+      type: ContractFileType.Contract,
+    })
+    .execute()
 
   const accesses = [
     { user_id: owner_id, role: AccessRole.OWNER },
