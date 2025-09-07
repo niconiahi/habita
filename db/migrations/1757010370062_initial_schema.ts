@@ -32,12 +32,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
-    .addColumn("type", "integer")
+    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("state", "integer", (col) => col.notNull())
-    .addColumn("formula", "text")
-    .addColumn("duration", "text") // ISO-8601 duration format
-    .addColumn("start_date", "timestamptz")
-    .addColumn("end_date", "timestamptz")
+    .addColumn("formula", "text", (col) => col.notNull())
+    .addColumn("duration", "text", (col) => col.notNull()) // ISO-8601 duration format
+    .addColumn("start_date", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("end_date", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
@@ -132,6 +136,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("location_id", "integer", (col) =>
       col.notNull(),
     )
+    .addColumn("user_id", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

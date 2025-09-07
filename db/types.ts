@@ -26,14 +26,14 @@ export interface Access {
 
 export interface Contract {
   created_at: Timestamp;
-  duration: string | null;
-  end_date: Timestamp | null;
-  formula: string | null;
+  duration: string;
+  end_date: Timestamp;
+  formula: string;
   id: Generated<number>;
   property_id: number;
-  start_date: Timestamp | null;
+  start_date: Timestamp;
   state: number;
-  type: number | null;
+  type: number;
   updated_at: Timestamp;
 }
 
@@ -119,6 +119,7 @@ export interface Property {
   id: Generated<number>;
   location_id: number;
   updated_at: Timestamp;
+  user_id: number;
 }
 
 export interface Room {

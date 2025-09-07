@@ -1,10 +1,12 @@
 import type { Route } from "./+types/:id"
 import { Link } from "react-router"
 import { fetch_property } from "./fetchers/server/property"
+import { ForceNumberSchema } from "~/lib/server/force_number"
+import * as v from "valibot"
 
 export async function action({ params }: Route.LoaderArgs) {
-  params.id
-  const property = await fetch_property(params.id)
+  const id = v.parse(ForceNumberSchema, params.id)
+  const property = await fetch_property(id)
   if (!property) {
     throw new Error(
       `property does not exist for id ${params.id}`,
@@ -14,8 +16,8 @@ export async function action({ params }: Route.LoaderArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  params.id
-  const property = await fetch_property(params.id)
+  const id = v.parse(ForceNumberSchema, params.id)
+  const property = await fetch_property(id)
   if (!property) {
     throw new Error(
       `property does not exist for id ${params.id}`,

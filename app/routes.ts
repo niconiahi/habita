@@ -17,7 +17,9 @@ export default [
   route("properties", "routes/properties/layout.tsx", [
     index("routes/properties/_index.tsx"),
     route("new", "routes/properties/new.tsx"),
+    route(":id/contract/new", "routes/contract/new.tsx"),
     route(":id", "routes/properties/:id.tsx"),
     route(":id/edit", "routes/properties/:id.edit.tsx"),
   ]),
+  route("pdf", "routes/pdf.tsx"),
 ] satisfies RouteConfig
