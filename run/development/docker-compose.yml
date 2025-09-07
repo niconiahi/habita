@@ -33,13 +33,33 @@ services:
     environment:
       PORT: 5173
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://valkey:6379
     depends_on:
       db:
+        condition: service_healthy
+      valkey:
         condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 1G
+
+  valkey:
+    image: valkey/valkey:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - memudo_valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   go:
     build:
@@ -107,3 +127,4 @@ services:
 volumes:
   memudo_app_data:
   memudo_nominatim_data:
+  memudo_valkey_data:

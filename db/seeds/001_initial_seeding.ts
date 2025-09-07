@@ -134,6 +134,7 @@ async function run() {
   const property = await query_builder
     .insertInto("property")
     .values({
+      user_id: owner_id,
       location_id: location.id,
       created_at: now,
       updated_at: now,

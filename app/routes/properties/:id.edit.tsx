@@ -1,5 +1,5 @@
 import type { Route } from "./+types/:id"
-import { Form } from "react-router"
+import { Form, Link } from "react-router"
 import { fetch_property } from "./fetchers/server/property"
 import { error } from "~/lib/server/error"
 import * as v from "valibot"
@@ -13,45 +13,11 @@ import {
 import { useState } from "react"
 import { compose_point } from "~/lib/server/point"
 import { ContractState } from "~/lib/server/contract_state"
-
-const ISO_8601_DURATION_REGEX =
-  /^P(?=\d|T\d)(?:\d+W|(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?)$/
-export const FrenquencySchema = v.pipe(
-  v.string(),
-  v.regex(
-    ISO_8601_DURATION_REGEX,
-    `use a valid ISO 8601 duration e.g. "P2W" or "P3M"`,
-  ),
-)
-type Duration = v.InferOutput<typeof FrenquencySchema>
-const DURATIONS: Duration[] = ["P3M", "P6M", "P1Y"]
-
-function label_duration(duration: Duration) {
-  switch (duration) {
-    case "P3M": {
-      return "3 meses"
-    }
-    case "P6M": {
-      return "6 meses"
-    }
-    case "P1Y": {
-      return "1 año"
-    }
-  }
-}
-
-export const FormulaSchema = v.object({
-  label: v.string(),
-  pattern: v.string(),
-})
-type Formula = v.InferOutput<typeof FormulaSchema>
-const FORMULAS: Formula[] = [
-  {
-    pattern:
-      "price * (ipc_current_month / ipc_four_months_ago)",
-    label: "IPC",
-  },
-]
+import {
+  DURATIONS,
+  label_duration,
+} from "~/lib/server/duration"
+import { FORMULAS } from "~/lib/server/formula"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -161,18 +127,6 @@ export async function action({
           updated_at: now,
         })
         .where("location.id", "=", id)
-        .execute()
-      return null
-    }
-    case INTENT.CREATE_CONTRACT: {
-      await query_builder
-        .insertInto("contract")
-        .values({
-          state: ContractState.INACTIVE,
-          created_at: now,
-          property_id,
-          updated_at: now,
-        })
         .execute()
       return null
     }
@@ -428,7 +382,20 @@ export default function ({
         </Form>
       </section>
       <section>
-        <h2>contratos</h2>
+        <header
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h2>contratos</h2>
+          <Link
+            to={`/properties/${property.id}/contract/new`}
+          >
+            crear contrato
+          </Link>
+        </header>
         <ul
           style={{
             gap: "1rem",
@@ -549,7 +516,6 @@ export default function ({
                   >
                     actualizar contrato
                   </button>
-                  <input type="hidden" />
                   <button
                     type="submit"
                     name="intent"
@@ -634,22 +600,6 @@ export default function ({
             )
           })}
         </ul>
-        <Form method="POST">
-          <button
-            type="submit"
-            name="intent"
-            value={INTENT.CREATE_CONTRACT}
-            disabled={
-              !property.contracts.every((contract) => {
-                return (
-                  contract.state === ContractState.FINISHED
-                )
-              })
-            }
-          >
-            agregar contrato
-          </button>
-        </Form>
       </section>
     </main>
   )
