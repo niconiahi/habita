@@ -53,6 +53,7 @@ export interface File {
   created_at: Timestamp;
   hash: string;
   id: Generated<number>;
+  mime: string;
   size: Int8;
   updated_at: Timestamp;
 }

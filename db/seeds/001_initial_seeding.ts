@@ -32,6 +32,10 @@ async function upsert_file(path: string) {
     v.string("basename is required"),
     path.split("/").pop(),
   )
+  const mime = v.parse(
+    v.string("mime is required"),
+    file.type,
+  )
   const existing_file = await query_builder
     .selectFrom("file")
     .select("id")
@@ -47,6 +51,7 @@ async function upsert_file(path: string) {
     const file = await query_builder
       .insertInto("file")
       .values({
+        mime,
         basename,
         content,
         size: content.length,

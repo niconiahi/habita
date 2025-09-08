@@ -2,17 +2,57 @@ import { query_builder } from "~/lib/server/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "~/lib/server/force_number"
 import type { Route } from "./+types/:id"
+import { kv } from "~/lib/server/kv"
+
+const FileSchema = v.object({
+  content: v.pipe(
+    v.string(),
+    v.transform((string) => {
+      return Buffer.from(string, "base64")
+    }),
+  ),
+  mime: v.string(),
+  basename: v.string(),
+})
 
 export async function loader({ params }: Route.LoaderArgs) {
   const id = v.parse(ForceNumberSchema, params.id)
+  const key = `file:${id}`
+  const fields_count = await kv.hlen(key)
+  if (fields_count > 0) {
+    const fields = await kv.hgetall(key).then((fields) => {
+      if (fields === null) {
+        throw new Error("fields can't be null")
+      }
+      return fields
+    })
+    const cached_file = v.parse(FileSchema, fields)
+    return new Response(
+      Uint8Array.from(cached_file.content),
+      {
+        headers: {
+          "Content-Type": cached_file.mime,
+          "Content-Disposition": `attachment; filename="${cached_file.basename}"`,
+        },
+      },
+    )
+  }
   const file = await query_builder
     .selectFrom("file")
-    .select(["content", "basename"])
+    .select(["content", "basename", "mime"])
     .where("id", "=", id)
     .executeTakeFirstOrThrow()
+  await kv.hmset(key, [
+    "basename",
+    file.basename,
+    "content",
+    file.content.toString("base64"),
+    "mime",
+    file.mime,
+  ])
   return new Response(Uint8Array.from(file.content), {
     headers: {
-      "Content-Type": "application/pdf",
+      "Content-Type": file.mime,
       "Content-Disposition": `attachment; filename="${file.basename}"`,
     },
   })
