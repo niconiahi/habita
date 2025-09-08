@@ -41,7 +41,10 @@ export async function loader({ params }: Route.LoaderArgs) {
     .selectFrom("file")
     .select(["content", "basename", "mime"])
     .where("id", "=", id)
-    .executeTakeFirstOrThrow()
+    .executeTakeFirst()
+  if (!file) {
+    throw new Error("no file exist for this id")
+  }
   await kv.hmset(key, [
     "basename",
     file.basename,
