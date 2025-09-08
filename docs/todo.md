@@ -1,3 +1,6 @@
 - [x] Add [Nominatim image](https://hub.docker.com/r/mediagis/nominatim/) configuration to the docker-compose
 - [x] Add contract to UI and allow CRUD operations for it
-- [] Allow file uploading without any library. All natively
+- [x] Allow file uploading without any library. All natively
+- [x] Generate PDF
+- [x] Store PDF in database
+- [] Store PDF in KV store and early return from cache if file is available

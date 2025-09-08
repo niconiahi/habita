@@ -20,7 +20,7 @@ function HtmlShell({
 }
 
 export async function action() {
-  console.log("running")
+  console.log("executing")
   const html = renderToString(
     <HtmlShell title="Invoice">
       <h1>ejemplo de PDF</h1>

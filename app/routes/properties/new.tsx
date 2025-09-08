@@ -56,6 +56,7 @@ export async function action({
           const property = await tx
             .insertInto("property")
             .values({
+              user_id: 1,
               created_at: now,
               updated_at: now,
               location_id: location.id,
