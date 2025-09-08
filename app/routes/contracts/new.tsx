@@ -26,6 +26,26 @@ function fetch_owner(property_id: number) {
     .executeTakeFirstOrThrow()
 }
 
+async function make_pdf() {
+  return fetch("http://localhost:5173/contracts/pdf", {
+    method: "POST",
+    headers: {
+      Accept: "*/*",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          "there was an error while generating the pdf",
+        )
+      }
+      return response.blob()
+    })
+    .then((blob) => {
+      return blob
+    })
+}
+
 export async function action({
   request,
   params,
@@ -78,7 +98,8 @@ export async function action({
       // NOTE: the tenant will already exist, picked
       // from a pool of valid candidates
       // const tenant = await fetch_tenant(property_id)
-      await query_builder
+      const pdf = await make_pdf()
+      const contract_file = await query_builder
         .transaction()
         .execute(async (tx) => {
           const contract = await tx
@@ -94,9 +115,40 @@ export async function action({
               start_date,
               type: ContractType.LONG_TERM,
             })
+            .returning("id")
             .executeTakeFirstOrThrow()
-          return contract
+          const content = Buffer.from(
+            await pdf.arrayBuffer(),
+          )
+          const file = await tx
+            .insertInto("file")
+            .values({
+              content,
+              basename: "contract.pdf",
+              created_at: now,
+              updated_at: now,
+              hash: "sdfsaff",
+              size: 234234,
+            })
+            .returning("id")
+            .executeTakeFirstOrThrow()
+          const contract_file = await tx
+            .insertInto("contract_file")
+            .values({
+              file_id: file.id,
+              user_id: 1,
+              contract_id: contract.id,
+              created_at: now,
+              updated_at: now,
+            })
+            .returning("id")
+            .executeTakeFirstOrThrow()
+          return contract_file
         })
+      console.log(
+        "created contract file with id",
+        contract_file.id,
+      )
       return redirect(`/properties/${property_id}/edit`)
     }
   }
@@ -138,32 +190,35 @@ export default function () {
             required
           />
         </p>
-        <p>
-          <label htmlFor="duration">frecuencia</label>
-          <select name="duration" id="duration">
-            {DURATIONS.map((duration) => {
-              const id = `duration_${duration}`
-              return (
-                <option key={id} value={duration}>
-                  {label_duration(duration)}
-                </option>
-              )
-            })}
-          </select>
-        </p>
-        <p>
-          <label htmlFor="formula">formula</label>
-          <select name="formula" id="formula">
-            {FORMULAS.map((formula) => {
-              const id = `formula_${formula.label}`
-              return (
-                <option key={id} value={formula.pattern}>
-                  {formula.label}
-                </option>
-              )
-            })}
-          </select>
-        </p>
+        <fieldset>
+          <legend>aumento</legend>
+          <p>
+            <label htmlFor="duration">frecuencia</label>
+            <select name="duration" id="duration">
+              {DURATIONS.map((duration) => {
+                const id = `duration_${duration}`
+                return (
+                  <option key={id} value={duration}>
+                    {label_duration(duration)}
+                  </option>
+                )
+              })}
+            </select>
+          </p>
+          <p>
+            <label htmlFor="formula">formula</label>
+            <select name="formula" id="formula">
+              {FORMULAS.map((formula) => {
+                const id = `formula_${formula.label}`
+                return (
+                  <option key={id} value={formula.pattern}>
+                    {formula.label}
+                  </option>
+                )
+              })}
+            </select>
+          </p>
+        </fieldset>
         <p>
           <label htmlFor="default">mora</label>
           <input

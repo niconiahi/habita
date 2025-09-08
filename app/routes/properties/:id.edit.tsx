@@ -391,7 +391,7 @@ export default function ({
         >
           <h2>contratos</h2>
           <Link
-            to={`/properties/${property.id}/contract/new`}
+            to={`/properties/${property.id}/contracts/new`}
           >
             crear contrato
           </Link>
@@ -590,6 +590,9 @@ export default function ({
                             >
                               eliminar
                             </button>
+                            <a href={`/files/${file.id}`}>
+                              Download {file.basename}
+                            </a>
                           </li>
                         )
                       })}
