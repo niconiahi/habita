@@ -124,6 +124,7 @@ export async function action({
             .insertInto("file")
             .values({
               content,
+              mime: "application/pdf",
               basename: "contract.pdf",
               created_at: now,
               updated_at: now,
