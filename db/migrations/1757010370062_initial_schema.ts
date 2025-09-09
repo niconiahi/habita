@@ -7,6 +7,39 @@ export async function up(db: Kysely<any>): Promise<void> {
   )
 
   await db.schema
+    .createTable("user")
+    .addColumn("id", "serial", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("email", "text", (col) =>
+      col.notNull().unique(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
+
+  await db.schema
+    .createTable("session")
+    .addColumn("id", "text", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("user_id", "integer", (col) => col.notNull())
+    .addColumn("expires_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
+
+  await db.schema
     .createTable("access")
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
@@ -156,42 +189,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("width", "numeric", (col) => col.notNull())
     .addColumn("length", "numeric", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .execute()
-
-  await db.schema
-    .createTable("session")
-    .addColumn("id", "serial", (col) =>
-      col.primaryKey().notNull(),
-    )
-    .addColumn("user_id", "integer", (col) => col.notNull())
-    .addColumn("expires_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .execute()
-
-  await db.schema
-    .createTable("user")
-    .addColumn("id", "serial", (col) =>
-      col.primaryKey().notNull(),
-    )
-    .addColumn("username", "text", (col) =>
-      col.notNull().unique(),
-    )
-    .addColumn("password_hash", "text", (col) =>
-      col.notNull(),
-    )
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

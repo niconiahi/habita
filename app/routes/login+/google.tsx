@@ -1,0 +1,31 @@
+import { generateCodeVerifier, generateState } from "arctic"
+import { redirect } from "react-router"
+import {
+  google_code_verifier_cookie,
+  google_state_cookie,
+} from "~/lib/server/cookies"
+import { google } from "~/lib/server/google"
+
+export async function action() {
+  const state = generateState()
+  const code_verifier = generateCodeVerifier()
+  const url = google.createAuthorizationURL(
+    state,
+    code_verifier,
+    ["openid", "profile", "email"],
+  )
+
+  const headers = new Headers()
+  headers.append(
+    "Set-Cookie",
+    await google_state_cookie.serialize(state),
+  )
+  headers.append(
+    "Set-Cookie",
+    await google_code_verifier_cookie.serialize(
+      code_verifier,
+    ),
+  )
+
+  return redirect(url.toString(), { headers })
+}

@@ -22,13 +22,13 @@
     "logs:nominatim": "docker compose --file run/development/docker-compose.yml logs -f nominatim"
   },
   "dependencies": {
-    "@iuioiua/redis": "npm:@jsr/iuioiua__redis",
     "@node-rs/argon2": "^2.0.2",
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
     "@types/pg": "^8.15.5",
+    "arctic": "^3.7.0",
     "isbot": "^5.1.27",
     "pg": "^8.16.3",
     "playwright": "^1.55.0",

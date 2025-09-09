@@ -1,6 +1,6 @@
-import { Kysely, ParseJSONResultsPlugin } from "kysely"
-import type { DB } from "db/types"
 import { DIALECT } from "db/dialect"
+import type { DB } from "db/types"
+import { Kysely, ParseJSONResultsPlugin } from "kysely"
 
 export const query_builder = new Kysely<DB>({
   dialect: DIALECT,

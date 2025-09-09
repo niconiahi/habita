@@ -1,7 +1,6 @@
-import type { Route } from "./+types/_index"
-import { Link } from "react-router"
-import { fetch_properties } from "./fetchers/server/properties"
 import { display_address } from "~/lib/display_address"
+import type { Route } from "./+types/_index"
+import { fetch_properties } from "./fetchers/server/properties"
 
 export async function loader() {
   const properties = await fetch_properties()
@@ -21,8 +20,7 @@ export default function ({
           return (
             <li key={key}>
               propiedad localizada en{" "}
-              {display_address(property.location)}{" "}
-              <Link to={`${property.id}/edit`}>Edit</Link>
+              {display_address(property.location)}
             </li>
           )
         })}

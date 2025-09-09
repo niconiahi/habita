@@ -6,4 +6,4 @@
 - [x] Store PDF in KV store and early return from cache if file is available
 - [x] Add support for MDX
 - [x] Add mime type to file
-- [] Add authentication system
+- [x] Add authentication system + Google OAuth

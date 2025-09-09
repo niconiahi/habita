@@ -136,7 +136,7 @@ export interface Room {
 export interface Session {
   created_at: Timestamp;
   expires_at: Timestamp;
-  id: Generated<number>;
+  id: string;
   updated_at: Timestamp;
   user_id: number;
 }
@@ -715,10 +715,9 @@ export interface TopologyTopology {
 
 export interface User {
   created_at: Timestamp;
+  email: string;
   id: Generated<number>;
-  password_hash: string;
   updated_at: Timestamp;
-  username: string;
 }
 
 export interface DB {
