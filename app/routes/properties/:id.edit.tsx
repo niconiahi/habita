@@ -197,6 +197,7 @@ export async function action({
           const file = await tx
             .insertInto("file")
             .values({
+              mime: file_.type,
               basename: file_.name,
               content,
               created_at: now,
