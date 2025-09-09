@@ -116,23 +116,19 @@ export async function require_auth(request: Request) {
   const session_token = await session_cookie.parse(
     request.headers.get("Cookie"),
   )
-
   if (!session_token) {
-    throw new Response("Unauthorized", { status: 401 })
+    throw new Response("unauthorized", { status: 401 })
   }
-
   const { session, user } =
     await validate_session_token(session_token)
   if (!session || !user) {
-    throw new Response("Unauthorized", { status: 401 })
+    throw new Response("unauthorized", { status: 401 })
   }
-
   const accesses = await query_builder
     .selectFrom("access")
     .selectAll()
     .where("user_id", "=", user.id)
     .execute()
-
   return {
     session,
     user: {

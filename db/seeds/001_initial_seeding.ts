@@ -87,7 +87,7 @@ async function run() {
     now,
   )
   const admin_id = await upsert_user(
-    "admin@inmobi.rent",
+    "nicolas.accetta@gmail.com",
     now,
   )
   const tenant_id = await upsert_user(
