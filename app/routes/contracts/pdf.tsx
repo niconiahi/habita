@@ -1,31 +1,29 @@
 import { chromium } from "playwright"
 import { renderToString } from "react-dom/server"
+import Contract from "./contract.mdx"
 
-function HtmlShell({
-  children,
-  title,
-}: {
-  children: React.ReactNode
-  title: string
-}) {
+export type Props = {
+  user: string
+}
+const props: Props = {
+  user: "loco",
+}
+
+function Pdf() {
   return (
     <html lang="es">
       <head>
         <meta charSet="utf-8" />
-        <title>{title}</title>
       </head>
-      <body>{children}</body>
+      <body>
+        <Contract {...props} />
+      </body>
     </html>
   )
 }
 
 export async function action() {
-  console.log("executing")
-  const html = renderToString(
-    <HtmlShell title="Invoice">
-      <h1>ejemplo de PDF</h1>
-    </HtmlShell>,
-  )
+  const html = renderToString(<Pdf />)
 
   const browser = await chromium.launch()
   const page = await browser.newPage()
