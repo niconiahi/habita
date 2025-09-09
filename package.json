@@ -27,7 +27,6 @@
     "@oslojs/encoding": "^1.1.0",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
-    "@types/pg": "^8.15.5",
     "arctic": "^3.7.0",
     "isbot": "^5.1.27",
     "pg": "^8.16.3",
@@ -41,6 +40,7 @@
     "@biomejs/biome": "2.1.1",
     "@mdx-js/rollup": "^3.1.1",
     "@react-router/dev": "^7.7.1",
+    "@types/pg": "^8.15.5",
     "@react-router/remix-routes-option-adapter": "^7.8.2",
     "@tailwindcss/vite": "^4.1.4",
     "@types/bun": "^1.2.21",
@@ -56,5 +56,8 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide"
+  ]
 }

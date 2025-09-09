@@ -51,7 +51,10 @@ async function make_pdf() {
 export async function loader({
   request,
 }: Route.LoaderArgs) {
-  await require_auth(request)
+  const { user } = await require_auth(request)
+  if (!has_edit_access(user.accesses)) {
+    throw error(400, "not found")
+  }
   return {}
 }
 

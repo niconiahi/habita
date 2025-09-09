@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     volumes:
       - ../../:/app
-      - /app/node_modules
+      - memudo_app_deps:/app/node_modules
     env_file:
       - ../../.env
     ports:
@@ -126,5 +126,6 @@ services:
 
 volumes:
   memudo_app_data:
+  memudo_app_deps:
   memudo_nominatim_data:
   memudo_valkey_data:
