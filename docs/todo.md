@@ -3,4 +3,7 @@
 - [x] Allow file uploading without any library. All natively
 - [x] Generate PDF
 - [x] Store PDF in database
-- [] Store PDF in KV store and early return from cache if file is available
+- [x] Store PDF in KV store and early return from cache if file is available
+- [x] Add support for MDX
+- [x] Add mime type to file
+- [] Add authentication system
