@@ -1,8 +1,8 @@
-import type { Route } from "./+types/:id"
 import { Link } from "react-router"
-import { fetch_property } from "../fetchers/server/property"
-import { ForceNumberSchema } from "~/lib/server/force_number"
 import * as v from "valibot"
+import { ForceNumberSchema } from "~/lib/server/force_number"
+import { fetch_property } from "../fetchers/server/property"
+import type { Route } from "./+types/:id"
 
 export async function action({ params }: Route.LoaderArgs) {
   const id = v.parse(ForceNumberSchema, params.id)

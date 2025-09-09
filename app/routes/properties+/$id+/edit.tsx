@@ -1,23 +1,25 @@
-import type { Route } from "./+types/:id"
+import { useState } from "react"
 import { Form, Link } from "react-router"
-import { fetch_property } from "../fetchers/server/property"
-import { error } from "~/lib/server/error"
 import * as v from "valibot"
-import { query_builder } from "~/lib/server/query_builder"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { RoomType } from "~/lib/server/room_type"
 import {
   LocationInput,
   LocationSchema,
 } from "~/components/location_input"
-import { useState } from "react"
-import { compose_point } from "~/lib/server/point"
 import { ContractState } from "~/lib/server/contract_state"
 import {
   DURATIONS,
   label_duration,
 } from "~/lib/server/duration"
+import { error } from "~/lib/server/error"
+import { ForceNumberSchema } from "~/lib/server/force_number"
 import { FORMULAS } from "~/lib/server/formula"
+import { compose_point } from "~/lib/server/point"
+import { has_edit_access } from "~/lib/server/property_access"
+import { query_builder } from "~/lib/server/query_builder"
+import { RoomType } from "~/lib/server/room_type"
+import { require_auth } from "~/lib/server/auth"
+import { fetch_property } from "../fetchers/server/property"
+import type { Route } from "./+types/edit"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -42,6 +44,10 @@ export async function action({
   request,
   params,
 }: Route.ActionArgs) {
+  const { user } = await require_auth(request)
+  if (!has_edit_access(user.accesses)) {
+    throw error(400, "not found")
+  }
   const form_data = await request.formData()
   const intent = form_data.get("intent")
   if (!intent) {
@@ -257,7 +263,11 @@ export async function action({
   return null
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({
+  request,
+  params,
+}: Route.LoaderArgs) {
+  await require_auth(request)
   const id = v.parse(ForceNumberSchema, params.id, {
     message: "property id should be a number",
   })

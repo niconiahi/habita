@@ -1,0 +1,2 @@
+- Use Bun for installing new repository dependencies
+- Use Bun for running `node` related APIs. i.e. `node:fs`

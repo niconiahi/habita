@@ -1,9 +1,5 @@
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
-import type { Route } from "./+types/new"
-import { error } from "~/lib/server/error"
-import { query_builder } from "~/lib/server/query_builder"
-import { ForceNumberSchema } from "~/lib/server/force_number"
 import { ContractState } from "~/lib/server/contract_state"
 import { ContractType } from "~/lib/server/contract_type"
 import {
@@ -11,7 +7,13 @@ import {
   DurationSchema,
   label_duration,
 } from "~/lib/server/duration"
+import { error } from "~/lib/server/error"
+import { ForceNumberSchema } from "~/lib/server/force_number"
 import { FORMULAS } from "~/lib/server/formula"
+import { has_edit_access } from "~/lib/server/property_access"
+import { query_builder } from "~/lib/server/query_builder"
+import { require_auth } from "~/lib/server/auth"
+import type { Route } from "./+types/new"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
@@ -46,10 +48,21 @@ async function make_pdf() {
     })
 }
 
+export async function loader({
+  request,
+}: Route.LoaderArgs) {
+  await require_auth(request)
+  return {}
+}
+
 export async function action({
   request,
   params,
 }: Route.ActionArgs) {
+  const { user } = await require_auth(request)
+  if (!has_edit_access(user.accesses)) {
+    throw error(400, "not found")
+  }
   const form_data = await request.formData()
   const intent = form_data.get("intent")
   if (!intent) {
@@ -79,15 +92,15 @@ export async function action({
         ForceNumberSchema,
         form_data.get("price"),
       )
-      const fine = v.parse(
+      const _fine = v.parse(
         ForceNumberSchema,
         form_data.get("fine"),
       )
-      const default_ = v.parse(
+      const _default_ = v.parse(
         ForceNumberSchema,
         form_data.get("default"),
       )
-      const early_leave = v.parse(
+      const _early_leave = v.parse(
         ForceNumberSchema,
         form_data.get("early_leave"),
       )

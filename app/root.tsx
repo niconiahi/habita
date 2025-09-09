@@ -1,4 +1,5 @@
 import {
+  Form,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -6,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router"
-
+import { get_auth, type Auth } from "~/lib/server/auth"
 import type { Route } from "./+types/root"
 
 export function Layout({
@@ -34,8 +35,43 @@ export function Layout({
   )
 }
 
-export default function App() {
-  return <Outlet />
+export async function loader({
+  request,
+}: Route.LoaderArgs) {
+  const user = await get_auth(request)
+  return { user }
+}
+
+export default function App({
+  loaderData,
+}: Route.ComponentProps) {
+  return (
+    <div>
+      <Header auth={loaderData.user} />
+      <Outlet />
+    </div>
+  )
+}
+
+function Header({ auth }: { auth: Auth }) {
+  return (
+    <header>
+      <nav>
+        {auth.user ? (
+          <div>
+            <span>{auth.user.email}</span>
+            <Form method="post" action="/logout">
+              <button type="submit">Logout</button>
+            </Form>
+          </div>
+        ) : (
+          <Form method="post" action="/login/google">
+            <button type="submit">Login</button>
+          </Form>
+        )}
+      </nav>
+    </header>
+  )
 }
 
 export function ErrorBoundary({

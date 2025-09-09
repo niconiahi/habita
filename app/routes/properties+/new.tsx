@@ -1,22 +1,35 @@
 import { useState } from "react"
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
-import type { Route } from "./+types/new"
-import { error } from "~/lib/server/error"
-import { query_builder } from "~/lib/server/query_builder"
-import { compose_point } from "~/lib/server/point"
 import {
   LocationInput,
   LocationSchema,
 } from "~/components/location_input"
+import { error } from "~/lib/server/error"
+import { compose_point } from "~/lib/server/point"
+import { has_edit_access } from "~/lib/server/property_access"
+import { query_builder } from "~/lib/server/query_builder"
+import type { Route } from "./+types/new"
+import { require_auth } from "~/lib/server/auth"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",
 } as const
 
+export async function loader({
+  request,
+}: Route.LoaderArgs) {
+  await require_auth(request)
+  return {}
+}
+
 export async function action({
   request,
 }: Route.ActionArgs) {
+  const { user } = await require_auth(request)
+  if (!has_edit_access(user.accesses)) {
+    throw error(400, "not found")
+  }
   const form_data = await request.formData()
   const intent = form_data.get("intent")
   if (!intent) {
@@ -56,7 +69,7 @@ export async function action({
           const property = await tx
             .insertInto("property")
             .values({
-              user_id: 1,
+              user_id: user.id,
               created_at: now,
               updated_at: now,
               location_id: location.id,

@@ -1,23 +1,11 @@
-import { hash } from "@node-rs/argon2"
-import { query_builder } from "../query_builder"
+import * as v from "valibot"
+import { AccessRole } from "../../app/lib/server/access_role.ts"
+import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
+import { ContractState } from "../../app/lib/server/contract_state.ts"
+import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
 import { RoomType } from "../../app/lib/server/room_type.ts"
-import { AccessRole } from "../../app/lib/server/access_role.ts"
-import { ContractType } from "../../app/lib/server/contract_type.ts"
-import { ContractState } from "../../app/lib/server/contract_state.ts"
-import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
-import * as v from "valibot"
-
-async function hash_password(
-  password: string,
-): Promise<string> {
-  return hash(password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  })
-}
+import { query_builder } from "../query_builder"
 
 async function upsert_file(path: string) {
   const file = Bun.file(path)
@@ -67,25 +55,20 @@ async function upsert_file(path: string) {
   return file_id
 }
 
-async function upsert_user(
-  username: string,
-  password: string,
-  now: string,
-) {
+async function upsert_user(email: string, now: string) {
   const existing_user = await query_builder
     .selectFrom("user")
     .select("id")
-    .where("username", "=", username)
+    .where("email", "=", email)
     .executeTakeFirst()
   if (existing_user) {
-    console.log(`user ${username} already exists, skipping`)
+    console.log(`user ${email} already exists, skipping`)
     return existing_user.id
   }
   const user = await query_builder
     .insertInto("user")
     .values({
-      username,
-      password_hash: await hash_password(password),
+      email,
       created_at: now,
       updated_at: now,
     })
@@ -100,18 +83,15 @@ async function run() {
   const now = new Date().toISOString()
   console.log("creating users")
   const owner_id = await upsert_user(
-    "niconiahi",
-    "owner",
+    "owner@inmobi.rent",
     now,
   )
   const admin_id = await upsert_user(
     "admin@inmobi.rent",
-    "admin",
     now,
   )
   const tenant_id = await upsert_user(
     "tenant@inmobi.rent",
-    "tenant",
     now,
   )
 
