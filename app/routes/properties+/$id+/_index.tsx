@@ -1,6 +1,6 @@
 import type { Route } from "./+types/:id"
 import { Link } from "react-router"
-import { fetch_property } from "./fetchers/server/property"
+import { fetch_property } from "../fetchers/server/property"
 import { ForceNumberSchema } from "~/lib/server/force_number"
 import * as v from "valibot"
 

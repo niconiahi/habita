@@ -1,6 +1,6 @@
 import type { Route } from "./+types/:id"
 import { Form, Link } from "react-router"
-import { fetch_property } from "./fetchers/server/property"
+import { fetch_property } from "../fetchers/server/property"
 import { error } from "~/lib/server/error"
 import * as v from "valibot"
 import { query_builder } from "~/lib/server/query_builder"
