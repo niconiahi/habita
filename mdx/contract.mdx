@@ -1,0 +1,39 @@
+export function day_as_word(day_number) {
+  switch (day_number) {
+    case 4: {
+      return "Cuatro"
+    }
+  }
+}
+
+export function get_day(date) {
+  const _date =
+    typeof date === "string" ? new Date(date) : date
+  return _date.getDay()
+}
+
+export function get_month(date) {
+  const _date =
+    typeof date === "string" ? new Date(date) : date
+  return _date.toLocaleString("es-AR", { month: "long" }).toLocaleUpperCase()
+}
+
+export function get_year(date) {
+  const _date =
+    typeof date === "string" ? new Date(date) : date
+  return _date.getFullYear()
+}
+
+# Contrato de locación
+
+## Preámbulo
+
+En **{props.property.location.state}**, a los {day_as_word(get_day(props.start_date))} **({get_day(props.start_date)}) días** del **MES** de **{get_month(props.start_date)}** de **{get_year(props.start_date)}**, entre el **Sr/a. {props.property.owner.surname.toLocaleUpperCase()}, {props.property.owner.name}** con **DNI {props.property.owner.document_number}**, en adelante denominado **“EL LOCADOR”** y por la otra parte el **Sr/a. {props.property.tenant.surname.toLocaleUpperCase()}, {props.property.tenant.name}** con **DNI {props.property.tenant.document_number}**, en adelante denominado **“EL LOCATARIO”**. Las partes convienen en celebrar el siguiente contrato de locación, en adelante denominado **“EL CONTRATO”**:
+
+## Primera
+
+**EL LOCADOR** cede la locación a **EL LOCADOR** el inmueble sito en la calle **{props.property.location.road}** Nº **{props.property.location.house_number}**, la unidad **{props.property.unit}** del piso **{props.property.floor}**, en adelante denominado **“EL INMUEBLE”**
+
+## Segunda
+
+El término de la presente locación se fija por el plazo de {props.duration}, contados a partir del día **{get_day(props.start_date)} de {get_month(props.start_date)} de {get_year(props.start_date)}** al **{get_day(props.end_date)} de {get_month(props.end_date)} de {get_year(props.end_date)}**, en forma automática y por el solo vencimiento del plazo, sin necesidad de interpelación previa alguna, debiendo **EL LOCATARIO** en dicha fecha reintegrar el inmueble totalmente  desocupado y en las condiciones convenidas, y ponerlo a disposición de **EL LOCADOR** mediante la devolución de las llaves
