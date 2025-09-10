@@ -1,4 +1,4 @@
-import type { Property } from "~/routes/properties/fetchers/server/property"
+import type { Property } from "~/routes/properties+/fetchers/server/property"
 
 export function display_address(
   location: Property["location"],

@@ -5,12 +5,12 @@ import {
   LocationInput,
   LocationSchema,
 } from "~/components/location_input"
+import { require_auth } from "~/lib/server/auth"
 import { error } from "~/lib/server/error"
 import { compose_point } from "~/lib/server/point"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
 import type { Route } from "./+types/new"
-import { require_auth } from "~/lib/server/auth"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",

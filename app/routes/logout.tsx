@@ -1,7 +1,7 @@
-import type { ActionFunctionArgs } from "react-router"
-import { redirect } from "react-router"
 import { sha256 } from "@oslojs/crypto/sha2"
 import { encodeHexLowerCase } from "@oslojs/encoding"
+import type { ActionFunctionArgs } from "react-router"
+import { redirect } from "react-router"
 import { invalidate_session } from "~/lib/server/auth"
 import { session_cookie } from "~/lib/server/session"
 
@@ -25,4 +25,3 @@ export async function action({
     },
   })
 }
-

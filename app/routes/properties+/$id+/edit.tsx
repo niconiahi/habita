@@ -5,6 +5,7 @@ import {
   LocationInput,
   LocationSchema,
 } from "~/components/location_input"
+import { require_auth } from "~/lib/server/auth"
 import { ContractState } from "~/lib/server/contract_state"
 import {
   DURATIONS,
@@ -17,7 +18,6 @@ import { compose_point } from "~/lib/server/point"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
 import { RoomType } from "~/lib/server/room_type"
-import { require_auth } from "~/lib/server/auth"
 import { fetch_property } from "../fetchers/server/property"
 import type { Route } from "./+types/edit"
 

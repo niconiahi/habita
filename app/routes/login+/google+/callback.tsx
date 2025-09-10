@@ -1,18 +1,18 @@
 import { OAuth2RequestError } from "arctic"
 import type { LoaderFunctionArgs } from "react-router"
 import { redirect } from "react-router"
+import * as v from "valibot"
 import { query_builder } from "~/../../db/query_builder"
 import {
-  generate_session_token,
   create_session,
+  generate_session_token,
 } from "~/lib/server/auth"
 import {
   google_code_verifier_cookie,
   google_state_cookie,
 } from "~/lib/server/cookies"
-import { session_cookie } from "~/lib/server/session"
 import { google } from "~/lib/server/google"
-import * as v from "valibot"
+import { session_cookie } from "~/lib/server/session"
 
 const GoogleUserSchema = v.object({
   sub: v.string(),
@@ -66,14 +66,12 @@ export async function loader({
       GoogleUserSchema,
       await response.json(),
     )
-    console.log("google_user", google_user)
 
     const existing_user = await query_builder
       .selectFrom("user")
       .selectAll()
       .where("email", "=", google_user.email)
       .executeTakeFirst()
-    console.log("existing_user", existing_user)
 
     if (existing_user) {
       return await create_session_and_redirect(
@@ -81,7 +79,7 @@ export async function loader({
       )
     }
 
-    const insert_result = await query_builder
+    const user = await query_builder
       .insertInto("user")
       .values({
         email: google_user.email,
@@ -90,11 +88,8 @@ export async function loader({
       })
       .returning("id")
       .executeTakeFirstOrThrow()
-    console.log("insert_result", insert_result)
 
-    return await create_session_and_redirect(
-      insert_result.id,
-    )
+    return await create_session_and_redirect(user.id)
   } catch (error) {
     if (error instanceof OAuth2RequestError) {
       throw new Response("Invalid OAuth request", {
@@ -111,11 +106,7 @@ async function create_session_and_redirect(
   user_id: number,
 ) {
   const session_token = generate_session_token()
-  const session = await create_session(
-    session_token,
-    user_id,
-  )
-  console.log("session", session)
+  await create_session(session_token, user_id)
 
   const headers = new Headers()
   headers.append(

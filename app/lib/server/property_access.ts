@@ -1,5 +1,5 @@
-import type { Auth } from "./auth"
 import { AccessRole } from "./access_role"
+import type { Auth } from "./auth"
 
 export function get_property_accesses(
   user: NonNullable<Auth["user"]>,
