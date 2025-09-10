@@ -29,12 +29,15 @@ function fetch_owner(property_id: number) {
 }
 
 async function make_pdf() {
-  return fetch("http://localhost:5173/contracts/pdf", {
-    method: "POST",
-    headers: {
-      Accept: "*/*",
+  return fetch(
+    "http://localhost:5173/properties/2/contracts/pdf",
+    {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+      },
     },
-  })
+  )
     .then((response) => {
       if (!response.ok) {
         throw new Error(
@@ -136,16 +139,21 @@ export async function action({
           const content = Buffer.from(
             await pdf.arrayBuffer(),
           )
+          const hash = Bun.CryptoHasher.hash(
+            "sha256",
+            content,
+            "hex",
+          )
           const file = await tx
             .insertInto("file")
             .values({
               content,
-              mime: "application/pdf",
+              mime: pdf.type,
               basename: "contract.pdf",
               created_at: now,
               updated_at: now,
-              hash: "sdfsaff",
-              size: 234234,
+              hash: hash,
+              size: pdf.size,
             })
             .returning("id")
             .executeTakeFirstOrThrow()

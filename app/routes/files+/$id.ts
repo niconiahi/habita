@@ -15,9 +15,13 @@ const FileSchema = v.object({
   basename: v.string(),
 })
 
+export function compose_file_cache_key(id: number) {
+  return `file:${id}`
+}
+
 export async function loader({ params }: Route.LoaderArgs) {
   const id = v.parse(ForceNumberSchema, params.id)
-  const key = `file:${id}`
+  const key = compose_file_cache_key(id)
   const fields_count = await kv.hlen(key)
   if (fields_count > 0) {
     const fields = await kv.hgetall(key).then((fields) => {

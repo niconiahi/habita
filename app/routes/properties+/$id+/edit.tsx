@@ -24,6 +24,8 @@ import {
 } from "~/lib/room_type"
 import { fetch_property } from "../fetchers/server/property"
 import type { Route } from "./+types/edit"
+import { kv } from "~/lib/server/kv"
+import { compose_file_cache_key } from "~/routes/files+/$id"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -274,6 +276,8 @@ export async function action({
             .where("file.id", "=", id)
             .execute()
         })
+      const cache_key = compose_file_cache_key(id)
+      await kv.del(cache_key)
       return null
     }
   }
