@@ -1,5 +1,6 @@
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
+import { require_auth } from "~/lib/server/auth"
 import { ContractState } from "~/lib/server/contract_state"
 import { ContractType } from "~/lib/server/contract_type"
 import {
@@ -12,7 +13,6 @@ import { ForceNumberSchema } from "~/lib/server/force_number"
 import { FORMULAS } from "~/lib/server/formula"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
-import { require_auth } from "~/lib/server/auth"
 import type { Route } from "./+types/new"
 
 const INTENT = {

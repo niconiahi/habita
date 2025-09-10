@@ -34,11 +34,8 @@
     "enabled": true,
     "includes": [
       "**",
-      "!**/.wrangler/**",
-      "!**/.react-router/**",
-      "!**/worker-configuration.d.ts",
-      "!**/src/chain/eip155",
-      "!**/dist/**"
+      "!**/types/**",
+      "!**/db/migrations/**"
     ],
     "rules": {
       "recommended": true,
