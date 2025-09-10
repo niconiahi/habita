@@ -17,7 +17,11 @@ import { FORMULAS } from "~/lib/server/formula"
 import { compose_point } from "~/lib/server/point"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
-import { RoomType } from "~/lib/server/room_type"
+import {
+  display_room_type,
+  ROOM_TYPE,
+  RoomTypeSchema,
+} from "~/lib/room_type"
 import { fetch_property } from "../fetchers/server/property"
 import type { Route } from "./+types/edit"
 
@@ -75,9 +79,22 @@ export async function action({
         ForceNumberSchema,
         form_data.get("id"),
       )
+      const room_type = v.parse(
+        v.pipe(
+          v.string(),
+          v.transform(Number),
+          RoomTypeSchema,
+        ),
+        form_data.get("type"),
+      )
       await query_builder
         .updateTable("room")
-        .set({ width, length, updated_at: new Date() })
+        .set({
+          width,
+          length,
+          updated_at: new Date(),
+          type: room_type,
+        })
         .where("room.id", "=", id)
         .execute()
       return null
@@ -99,7 +116,7 @@ export async function action({
         .values({
           width: 0,
           length: 0,
-          type: RoomType.BEDROOM,
+          type: ROOM_TYPE.BEDROOM,
           updated_at: now,
           created_at: now,
           property_id,
@@ -346,6 +363,28 @@ export default function ({
                     value={room.id}
                     name="id"
                   />
+                  <p>
+                    <label htmlFor="type">tipo</label>
+                    <select
+                      name="type"
+                      id="type"
+                      defaultValue={room.type}
+                    >
+                      {Object.values(ROOM_TYPE).map(
+                        (room_type) => {
+                          const id = `room_type_${room_type}`
+                          return (
+                            <option
+                              key={id}
+                              value={room_type}
+                            >
+                              {display_room_type(room_type)}
+                            </option>
+                          )
+                        },
+                      )}
+                    </select>
+                  </p>
                   <p>
                     <label htmlFor="length">length</label>
                     <input

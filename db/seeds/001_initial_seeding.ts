@@ -4,7 +4,7 @@ import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
 import { ContractState } from "../../app/lib/server/contract_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
-import { RoomType } from "../../app/lib/server/room_type.ts"
+import { ROOM_TYPE } from "../../app/lib/room_type.ts"
 import { query_builder } from "../query_builder"
 
 async function upsert_file(path: string) {
@@ -129,13 +129,21 @@ async function run() {
   console.log("created property", property.id)
 
   const rooms = [
-    { type: RoomType.BEDROOM, width: "4.5", length: "3.2" },
     {
-      type: RoomType.BATHROOM,
+      type: ROOM_TYPE.BEDROOM,
+      width: "4.5",
+      length: "3.2",
+    },
+    {
+      type: ROOM_TYPE.BATHROOM,
       width: "2.1",
       length: "1.8",
     },
-    { type: RoomType.KITCHEN, width: "3.5", length: "2.8" },
+    {
+      type: ROOM_TYPE.KITCHEN,
+      width: "3.5",
+      length: "2.8",
+    },
   ]
 
   for (const room_ of rooms) {
