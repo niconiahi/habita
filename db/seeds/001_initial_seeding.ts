@@ -95,8 +95,8 @@ async function run() {
     now,
   )
 
-  const latitude = -58.4498605
-  const longitude = -34.5959112
+  const latitude = -34.595834
+  const longitude = -58.447219
   const location = await query_builder
     .insertInto("location")
     .values({
