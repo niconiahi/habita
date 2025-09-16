@@ -133,6 +133,15 @@ export interface Room {
   width: Numeric;
 }
 
+export interface Service {
+  code: string;
+  created_at: Timestamp;
+  id: Generated<number>;
+  property_id: number;
+  type: number;
+  updated_at: Timestamp;
+}
+
 export interface Session {
   created_at: Timestamp;
   expires_at: Timestamp;
@@ -732,6 +741,7 @@ export interface DB {
   period: Period;
   property: Property;
   room: Room;
+  service: Service;
   session: Session;
   spatial_ref_sys: SpatialRefSys;
   "tiger.addr": TigerAddr;

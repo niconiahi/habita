@@ -81,6 +81,20 @@ export async function fetch_property(id: number) {
             "property.id",
           ),
       ).as("contracts"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("service")
+          .select([
+            "service.id",
+            "service.code",
+            "service.type",
+          ])
+          .whereRef(
+            "service.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("services"),
     ])
     .where("property.id", "=", id)
     .executeTakeFirst()

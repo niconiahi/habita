@@ -11,3 +11,7 @@
 - [] Add owner's address, needed in contract
 - [] Add tenant's phone, needed in contract
 - [] Add slots
+- [] Add services for property
+- [] Porcentual default should be fixed
+- [] Add file type to each listed file
+- [] Room width and length should be decimal numbers

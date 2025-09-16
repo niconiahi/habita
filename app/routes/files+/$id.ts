@@ -22,6 +22,8 @@ export function compose_file_cache_key(id: number) {
 export async function loader({ params }: Route.LoaderArgs) {
   const id = v.parse(ForceNumberSchema, params.id)
   const key = compose_file_cache_key(id)
+  // NOTE: comment on production
+  kv.del(key)
   const fields_count = await kv.hlen(key)
   if (fields_count > 0) {
     const fields = await kv.hgetall(key).then((fields) => {
