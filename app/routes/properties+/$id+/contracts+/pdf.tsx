@@ -2,28 +2,50 @@ import { chromium } from "playwright"
 import * as dateFns from "date-fns"
 import { renderToString } from "react-dom/server"
 import Contract from "../../../../../mdx/contract.mdx"
+import type { Duration } from "~/lib/server/duration"
+import {
+  FINE_TYPE,
+  type FineType,
+} from "~/lib/server/fine_type"
+import { DEFAULT_TYPE } from "~/lib/server/default_type"
 
 export type Props = {
   end_date: string
   start_date: string
   duration: string
-  property: {
-    unit: string
-    floor: number
-    owner: {
-      name: string
-      surname: string
-      document_number: number
-    }
+  owner: {
+    name: string
+    surname: string
+    phone_number: number
+    document_number: number
     location: {
       state: string
       road: string
       house_number: number
     }
-    tenant: {
-      name: string
-      surname: string
-      document_number: number
+  }
+  fine: {
+    type: FineType
+    amount: number
+    duration: Duration
+  }
+  default: {
+    type: FineType
+    amount: number
+  }
+  tenant: {
+    name: string
+    surname: string
+    phone_number: number
+    document_number: number
+  }
+  property: {
+    unit: string
+    floor: number
+    location: {
+      state: string
+      road: string
+      house_number: number
     }
   }
 }
@@ -36,6 +58,32 @@ const props: Props = {
     new Date(end_date),
     new Date(start_date),
   )} meses`,
+  fine: {
+    duration: "P1D",
+    amount: 10000,
+    type: FINE_TYPE.FIXED,
+  },
+  default: {
+    type: DEFAULT_TYPE.FIXED,
+    amount: 100000,
+  },
+  owner: {
+    name: "Mariano German",
+    surname: "Fernandez",
+    phone_number: 1122536622,
+    document_number: 31675798,
+    location: {
+      state: "Buenos Aires",
+      road: "Padilla",
+      house_number: 1180,
+    },
+  },
+  tenant: {
+    name: "Raul Arnaldo",
+    surname: "Espinoza",
+    phone_number: 1122536622,
+    document_number: 14742853,
+  },
   property: {
     unit: "D",
     floor: 3,
@@ -43,16 +91,6 @@ const props: Props = {
       state: "Buenos Aires",
       road: "Padilla",
       house_number: 1180,
-    },
-    owner: {
-      name: "Mariano German",
-      surname: "Fernandez",
-      document_number: 31675798,
-    },
-    tenant: {
-      name: "Raul Arnaldo",
-      surname: "Espinoza",
-      document_number: 14742853,
     },
   },
 }

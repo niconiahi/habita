@@ -10,10 +10,22 @@ export const DurationSchema = v.pipe(
   ),
 )
 export type Duration = v.InferOutput<typeof DurationSchema>
-export const DURATIONS: Duration[] = ["P3M", "P6M", "P1Y"]
+export const DURATIONS: Duration[] = [
+  "P1D",
+  "P1W",
+  "P3M",
+  "P6M",
+  "P1Y",
+]
 
-export function label_duration(duration: Duration) {
+export function get_duration_label(duration: Duration) {
   switch (duration) {
+    case "P1D": {
+      return "1 día"
+    }
+    case "P1W": {
+      return "1 semana"
+    }
     case "P3M": {
       return "3 meses"
     }

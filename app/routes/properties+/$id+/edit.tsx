@@ -9,11 +9,14 @@ import { require_auth } from "~/lib/server/auth"
 import { ContractState } from "~/lib/server/contract_state"
 import {
   DURATIONS,
-  label_duration,
+  get_duration_label,
 } from "~/lib/server/duration"
 import { error } from "~/lib/server/error"
 import { ForceNumberSchema } from "~/lib/server/force_number"
-import { FORMULAS } from "~/lib/server/formula"
+import {
+  ESCALATION_TYPE,
+  get_escalation_label,
+} from "~/lib/server/escalation_type"
 import { compose_point } from "~/lib/server/point"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
@@ -534,7 +537,7 @@ export default function ({
                         const id = `duration_${duration}`
                         return (
                           <option key={id} value={duration}>
-                            {label_duration(duration)}
+                            {get_duration_label(duration)}
                           </option>
                         )
                       })}
@@ -549,17 +552,16 @@ export default function ({
                         contract.formula ?? undefined
                       }
                     >
-                      {FORMULAS.map((formula) => {
-                        const id = `formula_${formula.label}`
-                        return (
-                          <option
-                            key={id}
-                            value={formula.pattern}
-                          >
-                            {formula.label}
-                          </option>
-                        )
-                      })}
+                      {Object.values(ESCALATION_TYPE).map(
+                        (type) => {
+                          const id = `formula_${type}`
+                          return (
+                            <option key={id} value={type}>
+                              {get_escalation_label(type)}
+                            </option>
+                          )
+                        },
+                      )}
                     </select>
                   </p>
                   <button
