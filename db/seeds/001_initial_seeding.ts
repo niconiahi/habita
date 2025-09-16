@@ -4,7 +4,14 @@ import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
 import { ContractState } from "../../app/lib/server/contract_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
-import { ROOM_TYPE } from "../../app/lib/room_type.ts"
+import {
+  ROOM_TYPE,
+  RoomType,
+} from "../../app/lib/room_type.ts"
+import {
+  SERVICE_TYPE,
+  ServiceType,
+} from "../../app/lib/service.ts"
 import { query_builder } from "../query_builder"
 
 async function upsert_file(path: string) {
@@ -128,7 +135,11 @@ async function run() {
     .executeTakeFirstOrThrow()
   console.log("created property", property.id)
 
-  const rooms = [
+  const rooms: {
+    type: RoomType
+    width: string
+    length: string
+  }[] = [
     {
       type: ROOM_TYPE.BEDROOM,
       width: "4.5",
@@ -205,20 +216,72 @@ async function run() {
     .executeTakeFirstOrThrow()
   console.log("created period", period.id)
 
-  const file_id = await upsert_file(
-    `${import.meta.dir}/../files/invoice-march.pdf`,
-  )
-  await query_builder
-    .insertInto("contract_file")
-    .values({
-      file_id,
-      user_id: admin_id,
-      contract_id: contract.id,
-      created_at: now,
-      updated_at: now,
+  const services: {
+    type: ServiceType
+    code: string
+  }[] = [
+    {
+      type: SERVICE_TYPE.MUNICIPAL_FEE,
+      code: "0070039841684",
+    },
+    {
+      type: SERVICE_TYPE.LIGHT,
+      code: "004660340",
+    },
+    {
+      type: SERVICE_TYPE.GAS,
+      code: "030010294440",
+    },
+  ]
+  for (const service of services) {
+    await query_builder
+      .insertInto("service")
+      .values({
+        code: service.code,
+        property_id: property.id,
+        created_at: now,
+        updated_at: now,
+        type: service.type,
+      })
+      .execute()
+    console.log("created service")
+  }
+
+  function compose_file_path(basename: string) {
+    return `${import.meta.dir}/../files/${basename}`
+  }
+  const CONTRACT_FILES: {
+    type: ContractFileType
+    path: string
+  }[] = [
+    {
       type: ContractFileType.Contract,
-    })
-    .execute()
+      path: compose_file_path("contract.pdf"),
+    },
+    {
+      type: ContractFileType.CreditReport,
+      path: compose_file_path("credit_report.pdf"),
+    },
+    {
+      type: ContractFileType.Insurance,
+      path: compose_file_path("insurance.pdf"),
+    },
+  ]
+  for (const contract_file of CONTRACT_FILES) {
+    const file_id = await upsert_file(contract_file.path)
+    await query_builder
+      .insertInto("contract_file")
+      .values({
+        file_id,
+        user_id: admin_id,
+        contract_id: contract.id,
+        created_at: now,
+        updated_at: now,
+        type: contract_file.type,
+      })
+      .execute()
+    console.log("created contract file")
+  }
 
   const accesses = [
     { user_id: owner_id, role: AccessRole.OWNER },

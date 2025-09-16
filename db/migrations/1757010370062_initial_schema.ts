@@ -179,6 +179,24 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
+    .createTable("service")
+    .addColumn("id", "serial", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("property_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("type", "integer", (col) => col.notNull())
+    .addColumn("code", "varchar", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
+
+  await db.schema
     .createTable("room")
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
@@ -268,6 +286,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
+    .alterTable("service")
+    .addForeignKeyConstraint(
+      "service_property_id_property_id_fk",
+      ["property_id"],
+      "property",
+      ["id"],
+    )
+    .execute()
+
+  await db.schema
     .alterTable("session")
     .addForeignKeyConstraint(
       "session_user_id_user_id_fk",
@@ -285,6 +313,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     .execute()
   await db.schema.dropTable("access").ifExists().execute()
   await db.schema.dropTable("session").ifExists().execute()
+  await db.schema.dropTable("service").ifExists().execute()
   await db.schema.dropTable("room").ifExists().execute()
   await db.schema.dropTable("period").ifExists().execute()
   await db.schema.dropTable("contract").ifExists().execute()
