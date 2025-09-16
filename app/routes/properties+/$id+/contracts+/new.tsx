@@ -6,14 +6,32 @@ import { ContractType } from "~/lib/server/contract_type"
 import {
   DURATIONS,
   DurationSchema,
-  label_duration,
+  get_duration_label,
 } from "~/lib/server/duration"
 import { error } from "~/lib/server/error"
 import { ForceNumberSchema } from "~/lib/server/force_number"
-import { FORMULAS } from "~/lib/server/formula"
+import {
+  ESCALATION_TYPE,
+  EscalationTypeSchema,
+  get_escalation_formula,
+  get_escalation_label,
+} from "~/lib/server/escalation_type"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
 import type { Route } from "./+types/new"
+import {
+  FINE_TYPE,
+  FineTypeSchema,
+  get_fine_label,
+  type FineType,
+} from "~/lib/server/fine_type"
+import { useState } from "react"
+import {
+  DEFAULT_TYPE,
+  DefaultTypeSchema,
+  get_default_label,
+  type DefaultType,
+} from "~/lib/server/default_type"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
@@ -86,30 +104,30 @@ export async function action({
         v.string(),
         form_data.get("end_date"),
       )
-      const duration = v.parse(
+      const escalation_duration = v.parse(
         DurationSchema,
-        form_data.get("duration"),
+        form_data.get("escalation_duration"),
       )
-      const formula = v.parse(
-        v.string(),
-        form_data.get("formula"),
+      const escalation_type = v.parse(
+        EscalationTypeSchema,
+        Number(form_data.get("escalation_type")),
       )
       const price = v.parse(
         ForceNumberSchema,
         form_data.get("price"),
       )
-      const _fine = v.parse(
-        ForceNumberSchema,
-        form_data.get("fine"),
-      )
-      const _default_ = v.parse(
-        ForceNumberSchema,
-        form_data.get("default"),
-      )
-      const _early_leave = v.parse(
-        ForceNumberSchema,
-        form_data.get("early_leave"),
-      )
+      // const _fine = v.parse(
+      //   ForceNumberSchema,
+      //   form_data.get("fine"),
+      // )
+      // const _default_ = v.parse(
+      //   ForceNumberSchema,
+      //   form_data.get("default"),
+      // )
+      // const _early_termination = v.parse(
+      //   ForceNumberSchema,
+      //   form_data.get("early_termination"),
+      // )
       const deposit = price * 1.3
       console.log("deposit", deposit)
       const owner = await fetch_owner(property_id)
@@ -129,8 +147,9 @@ export async function action({
               updated_at: now,
               state: ContractState.INACTIVE,
               end_date,
-              duration,
-              formula,
+              duration: escalation_duration,
+              formula:
+                get_escalation_formula(escalation_type),
               start_date,
               type: ContractType.LONG_TERM,
             })
@@ -180,6 +199,11 @@ export async function action({
 }
 
 export default function () {
+  const [fine_type, set_fine_type] = useState<FineType>(
+    FINE_TYPE.FIXED,
+  )
+  const [default_type, set_default_type] =
+    useState<DefaultType>(DEFAULT_TYPE.FIXED)
   return (
     <main>
       <h1>nuevo contrato</h1>
@@ -218,26 +242,146 @@ export default function () {
         <fieldset>
           <legend>aumento</legend>
           <p>
-            <label htmlFor="duration">frecuencia</label>
-            <select name="duration" id="duration">
+            <label htmlFor="escalation_type">tipo</label>
+            <select
+              name="escalation_type"
+              id="escalation_type"
+            >
+              {Object.values(ESCALATION_TYPE).map(
+                (type) => {
+                  const id = `fine_${type}`
+                  return (
+                    <option key={id} value={type}>
+                      {get_escalation_label(type)}
+                    </option>
+                  )
+                },
+              )}
+            </select>
+          </p>
+          <p>
+            <label htmlFor="escalation_duration">
+              frecuencia
+            </label>
+            <select
+              name="escalation_duration"
+              id="escalation_duration"
+              defaultValue="P3M"
+            >
               {DURATIONS.map((duration) => {
-                const id = `duration_${duration}`
+                const id = `escalation_duration_${duration}`
                 return (
                   <option key={id} value={duration}>
-                    {label_duration(duration)}
+                    {get_duration_label(duration)}
                   </option>
                 )
               })}
             </select>
           </p>
+        </fieldset>
+        <fieldset>
+          <legend>mora</legend>
           <p>
-            <label htmlFor="formula">formula</label>
-            <select name="formula" id="formula">
-              {FORMULAS.map((formula) => {
-                const id = `formula_${formula.label}`
+            <label htmlFor="fine_type">tipo</label>
+            <select
+              name="fine_type"
+              id="fine_type"
+              onClick={(event) => {
+                const fine_type = v.parse(
+                  FineTypeSchema,
+                  Number(event.currentTarget.value),
+                )
+                set_fine_type(fine_type)
+              }}
+            >
+              {Object.values(FINE_TYPE).map((type) => {
+                const id = `fine_${type}`
                 return (
-                  <option key={id} value={formula.pattern}>
-                    {formula.label}
+                  <option key={id} value={type}>
+                    {get_fine_label(type)}
+                  </option>
+                )
+              })}
+            </select>
+          </p>
+          {fine_type === FINE_TYPE.FIXED ? (
+            <p>
+              <label htmlFor="fine_type">monto</label>
+              <input
+                id="default"
+                name="default"
+                type="number"
+                required
+              />
+            </p>
+          ) : (
+            <p>
+              <label htmlFor="fine_type">porcentaje</label>
+              <input
+                id="default"
+                name="default"
+                type="number"
+                required
+              />
+            </p>
+          )}
+        </fieldset>
+        <fieldset>
+          <legend>multa</legend>
+          <p>
+            <label htmlFor="default_type">tipo</label>
+            <select
+              name="default_type"
+              id="default_type"
+              onClick={(event) => {
+                const default_type = v.parse(
+                  DefaultTypeSchema,
+                  Number(event.currentTarget.value),
+                )
+                set_default_type(default_type)
+              }}
+            >
+              {Object.values(DEFAULT_TYPE).map((type) => {
+                const id = `default_${type}`
+                return (
+                  <option key={id} value={type}>
+                    {get_default_label(type)}
+                  </option>
+                )
+              })}
+            </select>
+          </p>
+          {default_type === DEFAULT_TYPE.FIXED ? (
+            <p>
+              <label htmlFor="fine_type">monto</label>
+              <input
+                id="default"
+                name="default"
+                type="number"
+                required
+              />
+            </p>
+          ) : (
+            <p>
+              <label htmlFor="fine_type">porcentaje</label>
+              <input
+                id="default"
+                name="default"
+                type="number"
+                required
+              />
+            </p>
+          )}
+          <p>
+            <label htmlFor="fine_duration">
+              frecuencia
+            </label>
+            <select name="fine_duration" id="fine_duration">
+              {DURATIONS.map((duration) => {
+                const id = `fine_duration_${duration}`
+                return (
+                  <option key={id} value={duration}>
+                    {get_duration_label(duration)}
                   </option>
                 )
               })}
@@ -245,32 +389,12 @@ export default function () {
           </p>
         </fieldset>
         <p>
-          <label htmlFor="default">mora</label>
-          <input
-            id="default"
-            name="default"
-            type="number"
-            required
-          />
-          <span>en cantidad de meses</span>
-        </p>
-        <p>
-          <label htmlFor="fine">multa</label>
-          <input
-            id="fine"
-            name="fine"
-            type="number"
-            required
-          />
-          <span>en cantidad de meses</span>
-        </p>
-        <p>
-          <label htmlFor="early_leave">
+          <label htmlFor="early_termination">
             resolucion anticipada
           </label>
           <input
-            id="early_leave"
-            name="early_leave"
+            id="early_termination"
+            name="early_termination"
             type="number"
             required
           />

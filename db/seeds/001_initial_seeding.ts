@@ -83,11 +83,11 @@ async function run() {
   const now = new Date().toISOString()
   console.log("creating users")
   const owner_id = await upsert_user(
-    "owner@inmobi.rent",
+    "nicolas.accetta@gmail.com",
     now,
   )
   const admin_id = await upsert_user(
-    "nicolas.accetta@gmail.com",
+    "admin@inmobi.rent",
     now,
   )
   const tenant_id = await upsert_user(
