@@ -304,6 +304,14 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+
+  await db.schema
+    .alterTable("service")
+    .addUniqueConstraint("service_property_id_type_unique", [
+      "property_id",
+      "type",
+    ])
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

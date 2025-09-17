@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Form, Link } from "react-router"
+import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
 import { require_auth } from "~/lib/server/auth"
@@ -99,12 +99,22 @@ export async function action({
       return null
     }
     case INTENT.CREATE_SERVICE: {
+      actions.create_service(property_id)
       return null
     }
     case INTENT.UPDATE_SERVICE: {
-      return null
+      try {
+        await actions.update_service(form_data, property_id)
+        return null
+      } catch {
+        return {
+          error:
+            "Sólo puede haber un servicio de cada tipo",
+        }
+      }
     }
     case INTENT.DESTROY_SERVICE: {
+      actions.destroy_service(form_data)
       return null
     }
   }
@@ -145,6 +155,7 @@ export default function ({
 }
 
 function Services({ property }: { property: Property }) {
+  const action_data = useActionData<{ error?: string }>()
   return (
     <section>
       <h2>servicios</h2>
@@ -173,16 +184,11 @@ function Services({ property }: { property: Property }) {
                     defaultValue={service.type}
                   >
                     {Object.values(SERVICE_TYPE).map(
-                      (service_type) => {
-                        const id = `service_type_${service_type}`
+                      (type) => {
+                        const id = `service_type_${type}`
                         return (
-                          <option
-                            key={id}
-                            value={service_type}
-                          >
-                            {get_service_label(
-                              service_type,
-                            )}
+                          <option key={id} value={type}>
+                            {get_service_label(type)}
                           </option>
                         )
                       },
@@ -203,7 +209,7 @@ function Services({ property }: { property: Property }) {
                   name="intent"
                   value={INTENT.UPDATE_SERVICE}
                 >
-                  guardar cambios
+                  guardar servicio
                 </button>
                 <input type="hidden" />
                 <button
@@ -211,13 +217,16 @@ function Services({ property }: { property: Property }) {
                   name="intent"
                   value={INTENT.DESTROY_SERVICE}
                 >
-                  eliminar habitacion
+                  eliminar servicio
                 </button>
               </Form>
             </li>
           )
         })}
       </ul>
+      {action_data?.error && (
+        <p style={{ color: "red" }}>{action_data.error}</p>
+      )}
       <Form method="POST">
         <button
           type="submit"
@@ -293,14 +302,11 @@ function Rooms({ property }: { property: Property }) {
                     defaultValue={room.type}
                   >
                     {Object.values(ROOM_TYPE).map(
-                      (room_type) => {
-                        const id = `room_type_${room_type}`
+                      (type) => {
+                        const id = `room_type_${type}`
                         return (
-                          <option
-                            key={id}
-                            value={room_type}
-                          >
-                            {display_room_type(room_type)}
+                          <option key={id} value={type}>
+                            {display_room_type(type)}
                           </option>
                         )
                       },
@@ -331,7 +337,7 @@ function Rooms({ property }: { property: Property }) {
                   name="intent"
                   value={INTENT.UPDATE_ROOM}
                 >
-                  guardar cambios
+                  guardar habitacion
                 </button>
                 <input type="hidden" />
                 <button
