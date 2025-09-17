@@ -1,7 +1,7 @@
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
 import { require_auth } from "~/lib/server/auth"
-import { ContractState } from "~/lib/server/contract_state"
+import { CONTRACT_STATE } from "~/lib/server/contract_state"
 import { ContractType } from "~/lib/server/contract_type"
 import {
   DURATIONS,
@@ -145,7 +145,7 @@ export async function action({
               property_id,
               created_at: now,
               updated_at: now,
-              state: ContractState.INACTIVE,
+              state: CONTRACT_STATE.INACTIVE,
               end_date,
               duration: escalation_duration,
               formula:

@@ -5,22 +5,28 @@ import { fetch_property } from "../fetchers/server/property"
 import type { Route } from "./+types/_index"
 
 export async function action({ params }: Route.LoaderArgs) {
-  const id = v.parse(ForceNumberSchema, params.id)
-  const property = await fetch_property(id)
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
+  const property = await fetch_property(property_id)
   if (!property) {
     throw new Error(
-      `property does not exist for id ${params.id}`,
+      `property does not exist for id ${property_id}`,
     )
   }
   return { property }
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const id = v.parse(ForceNumberSchema, params.id)
-  const property = await fetch_property(id)
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
+  const property = await fetch_property(property_id)
   if (!property) {
     throw new Error(
-      `property does not exist for id ${params.id}`,
+      `property does not exist for id ${property_id}`,
     )
   }
   return { property }

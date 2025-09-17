@@ -61,6 +61,37 @@ export async function fetch_property(id: number) {
             "contract.formula",
             jsonArrayFrom(
               eb
+                .selectFrom("period")
+                .innerJoin(
+                  "contract",
+                  "contract.id",
+                  "period.contract_id",
+                )
+                .select([
+                  "period.id",
+                  "period.price",
+                  "period.start_date",
+                  "period.end_date",
+                ])
+                .whereRef(
+                  "period.contract_id",
+                  "=",
+                  "contract.id",
+                ),
+            ).as("periods"),
+            eb
+              .selectFrom("period")
+              .select("period.price")
+              .whereRef(
+                "period.contract_id",
+                "=",
+                "contract.id",
+              )
+              .orderBy("period.created_at", "asc")
+              .limit(1)
+              .as("initial_price"),
+            jsonArrayFrom(
+              eb
                 .selectFrom("contract_file")
                 .innerJoin(
                   "file",

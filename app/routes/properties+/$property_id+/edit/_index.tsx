@@ -3,17 +3,8 @@ import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
 import { require_auth } from "~/lib/server/auth"
-import { ContractState } from "~/lib/server/contract_state"
-import {
-  DURATIONS,
-  get_duration_label,
-} from "~/lib/server/duration"
 import { error } from "~/lib/server/error"
 import { ForceNumberSchema } from "~/lib/server/force_number"
-import {
-  ESCALATION_TYPE,
-  get_escalation_label,
-} from "~/lib/server/escalation_type"
 import { has_edit_access } from "~/lib/server/property_access"
 import {
   display_room_type,
@@ -30,20 +21,17 @@ import {
 } from "~/lib/service"
 import * as actions from "./actions/server"
 import {
-  ContractFileTypeSchema,
-  get_contract_file_type_label,
-} from "~/lib/server/contract_file_type"
+  CONTRACT_STATE,
+  ContractStateSchema,
+  get_contract_state_label,
+} from "~/lib/server/contract_state"
+import { format_date_for_input } from "~/lib/date"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
   CREATE_ROOM: "create_room",
   UPDATE_ROOM: "update_room",
   DESTROY_ROOM: "destroy_room",
-  CREATE_CONTRACT: "create_contract",
-  UPDATE_CONTRACT: "update_contract",
-  DESTROY_CONTRACT: "destroy_contract",
-  CREATE_FILE: "create_file",
-  DESTROY_FILE: "destroy_file",
   CREATE_SERVICE: "create_service",
   UPDATE_SERVICE: "update_service",
   DESTROY_SERVICE: "destroy_service",
@@ -64,7 +52,7 @@ export async function action({
   }
   const property_id = v.parse(
     ForceNumberSchema,
-    params.id,
+    params.property_id,
     {
       message: "property id should be a number",
     },
@@ -84,22 +72,6 @@ export async function action({
     }
     case INTENT.UPDATE_LOCATION: {
       actions.update_location(form_data)
-      return null
-    }
-    case INTENT.UPDATE_CONTRACT: {
-      actions.update_contract(form_data, property_id)
-      return null
-    }
-    case INTENT.DESTROY_CONTRACT: {
-      actions.destroy_contract(form_data)
-      return null
-    }
-    case INTENT.CREATE_FILE: {
-      actions.create_file(form_data)
-      return null
-    }
-    case INTENT.DESTROY_FILE: {
-      actions.destroy_file(form_data)
       return null
     }
     case INTENT.CREATE_SERVICE: {
@@ -133,12 +105,18 @@ export async function loader({
   if (!has_edit_access(user.accesses)) {
     throw error(400, "not found")
   }
-  const id = v.parse(ForceNumberSchema, params.id, {
-    message: "property id should be a number",
-  })
-  const property = await fetch_property(id)
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+    {
+      message: "property id should be a number",
+    },
+  )
+  const property = await fetch_property(property_id)
   if (!property) {
-    throw new Error(`property does not exist for id ${id}`)
+    throw new Error(
+      `property does not exist for id ${property_id}`,
+    )
   }
   return { property }
 }
@@ -395,227 +373,67 @@ function Contracts({ property }: { property: Property }) {
       >
         {property.contracts.map((contract) => {
           const id = `contract-${contract.id}`
+          const contract_state = v.parse(
+            ContractStateSchema,
+            contract.state,
+          )
           return (
             <li
               style={{
                 display: "flex",
-                padding: "0.5rem",
-                border: "2px solid black",
+                gap: "1rem",
               }}
               key={id}
             >
-              <Form method="POST">
-                <input
-                  type="hidden"
-                  value={contract.id}
-                  name="id"
-                />
-                <p>
-                  <label htmlFor="start_date">
-                    fecha de inicio
-                  </label>
-                  <input
-                    id="start_date"
-                    name="start_date"
-                    type="datetime-local"
-                    readOnly={
-                      contract.state !==
-                      ContractState.INACTIVE
-                    }
-                    defaultValue={
-                      contract.start_date
-                        ? format_date_for_input(
-                            contract.start_date,
-                          )
-                        : undefined
-                    }
-                  />
-                </p>
-                <p>
-                  <label htmlFor="end_date">
-                    fecha de finalizacion
-                  </label>
-                  <input
-                    id="end_date"
-                    type="datetime-local"
-                    name="end_date"
-                    readOnly={
-                      contract.state !==
-                      ContractState.INACTIVE
-                    }
-                    defaultValue={
-                      contract.end_date
-                        ? format_date_for_input(
-                            contract.end_date,
-                          )
-                        : undefined
-                    }
-                  />
-                </p>
-                <p>
-                  <label htmlFor="duration">
-                    frecuencia
-                  </label>
-                  <select
-                    name="duration"
-                    id="duration"
-                    defaultValue={
-                      contract.duration ?? undefined
-                    }
+              <span style={{ fontWeight: "bold" }}>
+                estado
+              </span>
+              <span>
+                {get_contract_state_label(contract_state)}
+              </span>
+              {contract.start_date ? (
+                <>
+                  <span style={{ fontWeight: "bold" }}>
+                    inicio
+                  </span>
+                  <span>
+                    {format_date_for_input(
+                      contract.start_date,
+                    ).slice(0, 10)}
+                  </span>
+                </>
+              ) : null}
+              {contract.end_date ? (
+                <>
+                  <span style={{ fontWeight: "bold" }}>
+                    finalizacion
+                  </span>
+                  <span>
+                    {format_date_for_input(
+                      contract.end_date,
+                    ).slice(0, 10)}
+                  </span>
+                </>
+              ) : null}
+              {contract.state ===
+              CONTRACT_STATE.INACTIVE ? (
+                <>
+                  <span style={{ fontWeight: "bold" }}>
+                    precio inicial
+                  </span>
+                  <span>${contract.initial_price}</span>
+                  <Link
+                    to={`/properties/${property.id}/contracts/${contract.id}/edit`}
+                    reloadDocument
                   >
-                    {DURATIONS.map((duration) => {
-                      const id = `duration_${duration}`
-                      return (
-                        <option key={id} value={duration}>
-                          {get_duration_label(duration)}
-                        </option>
-                      )
-                    })}
-                  </select>
-                </p>
-                <p>
-                  <label htmlFor="formula">formula</label>
-                  <select
-                    name="formula"
-                    id="formula"
-                    defaultValue={
-                      contract.formula ?? undefined
-                    }
-                  >
-                    {Object.values(ESCALATION_TYPE).map(
-                      (type) => {
-                        const id = `formula_${type}`
-                        return (
-                          <option key={id} value={type}>
-                            {get_escalation_label(type)}
-                          </option>
-                        )
-                      },
-                    )}
-                  </select>
-                </p>
-                <button
-                  type="submit"
-                  name="intent"
-                  disabled={
-                    contract.state !==
-                    ContractState.INACTIVE
-                  }
-                  value={INTENT.UPDATE_CONTRACT}
-                >
-                  actualizar contrato
-                </button>
-                <button
-                  type="submit"
-                  name="intent"
-                  disabled={
-                    contract.state !==
-                    ContractState.INACTIVE
-                  }
-                  value={INTENT.DESTROY_CONTRACT}
-                >
-                  eliminar contrato
-                </button>
-              </Form>
-              <section>
-                <h3>documentos</h3>
-                <Form
-                  method="POST"
-                  encType="multipart/form-data"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <input
-                    type="hidden"
-                    value={contract.id}
-                    name="contract_id"
-                  />
-                  <p>
-                    <label htmlFor="file">documento</label>
-                    <input
-                      type="file"
-                      id="file"
-                      name="file"
-                      disabled={
-                        contract.state !==
-                        ContractState.INACTIVE
-                      }
-                    />
-                  </p>
-                  <button
-                    type="submit"
-                    name="intent"
-                    disabled={
-                      contract.state !==
-                      ContractState.INACTIVE
-                    }
-                    value={INTENT.CREATE_FILE}
-                  >
-                    agregar documento
-                  </button>
-                  <ul
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                    }}
-                  >
-                    {contract.files.map((file) => {
-                      const id = `file_${file.basename}`
-                      const contract_type = v.parse(
-                        ContractFileTypeSchema,
-                        file.type,
-                      )
-                      return (
-                        <li
-                          key={id}
-                          style={{
-                            display: "flex",
-                            gap: "8px",
-                          }}
-                        >
-                          <span
-                            style={{ fontWeight: "bold" }}
-                          >
-                            {get_contract_file_type_label(
-                              contract_type,
-                            )}
-                          </span>
-                          <input
-                            type="hidden"
-                            value={file.id}
-                            name="id"
-                          />
-                          <button
-                            type="submit"
-                            name="intent"
-                            disabled={
-                              contract.state !==
-                              ContractState.INACTIVE
-                            }
-                            value={INTENT.DESTROY_FILE}
-                          >
-                            eliminar
-                          </button>
-                          <a href={`/files/${file.id}`}>
-                            Download {file.basename}
-                          </a>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </Form>
-              </section>
+                    Edit
+                  </Link>
+                </>
+              ) : null}
             </li>
           )
         })}
       </ul>
     </section>
   )
-}
-
-function format_date_for_input(date: string) {
-  return new Date(date).toISOString().slice(0, -8)
 }

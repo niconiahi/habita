@@ -1,7 +1,7 @@
 import { ForceNumberSchema } from "~/lib/server/force_number"
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
-import { DateSchema } from "~/lib/server/date"
+import { DateSchema } from "~/lib/date"
 import { now } from "~/lib/now"
 
 export async function update_contract(
