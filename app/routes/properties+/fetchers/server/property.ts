@@ -67,7 +67,11 @@ export async function fetch_property(id: number) {
                   "file.id",
                   "contract_file.file_id",
                 )
-                .select(["file.basename", "file.id"])
+                .select([
+                  "file.basename",
+                  "file.id",
+                  "contract_file.type",
+                ])
                 .whereRef(
                   "contract_file.contract_id",
                   "=",
