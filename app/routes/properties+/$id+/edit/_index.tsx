@@ -29,6 +29,10 @@ import {
   SERVICE_TYPE,
 } from "~/lib/service"
 import * as actions from "./actions/server"
+import {
+  ContractTypeSchema,
+  get_contract_type_label,
+} from "~/lib/server/contract_file_type"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -551,12 +555,34 @@ function Contracts({ property }: { property: Property }) {
                   >
                     agregar documento
                   </button>
-                  <ul>
+                  <ul
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
                     {contract.files.map((file) => {
                       const id = `file_${file.basename}`
+                      const contract_type = v.parse(
+                        ContractTypeSchema,
+                        file.type,
+                      )
                       return (
-                        <li key={id}>
-                          <span>{file.basename}</span>
+                        <li
+                          key={id}
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                          }}
+                        >
+                          <span
+                            style={{ fontWeight: "bold" }}
+                          >
+                            {get_contract_type_label(
+                              contract_type,
+                            )}
+                          </span>
                           <input
                             type="hidden"
                             value={file.id}
