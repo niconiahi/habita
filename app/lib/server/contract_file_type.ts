@@ -6,15 +6,15 @@ export const CONTRACT_FILE_TYPE = {
   INSURANCE: 1,
   CREDIT_REPORT: 2,
 } as const
-export const ContractTypeSchema = v.picklist(
+export const ContractFileTypeSchema = v.picklist(
   Object.values(CONTRACT_FILE_TYPE),
 )
-export type ContractType = ObjectValues<
+export type ContractFileType = ObjectValues<
   typeof CONTRACT_FILE_TYPE
 >
 
-export function get_contract_type_label(
-  type: ContractType,
+export function get_contract_file_type_label(
+  type: ContractFileType,
 ) {
   switch (type) {
     case CONTRACT_FILE_TYPE.CONTRACT: {

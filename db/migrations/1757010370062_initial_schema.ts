@@ -65,16 +65,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
-    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("state", "integer", (col) => col.notNull())
-    .addColumn("formula", "text", (col) => col.notNull())
-    .addColumn("duration", "text", (col) => col.notNull()) // ISO-8601 duration format
-    .addColumn("start_date", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("end_date", "timestamptz", (col) =>
-      col.notNull(),
-    )
+    .addColumn("type", "integer")
+    .addColumn("formula", "text")
+    .addColumn("duration", "text") // ISO-8601 duration format
+    .addColumn("start_date", "timestamptz")
+    .addColumn("end_date", "timestamptz")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
@@ -307,10 +303,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable("service")
-    .addUniqueConstraint("service_property_id_type_unique", [
-      "property_id",
-      "type",
-    ])
+    .addUniqueConstraint(
+      "service_property_id_type_unique",
+      ["property_id", "type"],
+    )
     .execute()
 }
 

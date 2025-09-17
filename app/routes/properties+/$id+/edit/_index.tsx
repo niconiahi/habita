@@ -30,8 +30,8 @@ import {
 } from "~/lib/service"
 import * as actions from "./actions/server"
 import {
-  ContractTypeSchema,
-  get_contract_type_label,
+  ContractFileTypeSchema,
+  get_contract_file_type_label,
 } from "~/lib/server/contract_file_type"
 
 const INTENT = {
@@ -565,7 +565,7 @@ function Contracts({ property }: { property: Property }) {
                     {contract.files.map((file) => {
                       const id = `file_${file.basename}`
                       const contract_type = v.parse(
-                        ContractTypeSchema,
+                        ContractFileTypeSchema,
                         file.type,
                       )
                       return (
@@ -579,7 +579,7 @@ function Contracts({ property }: { property: Property }) {
                           <span
                             style={{ fontWeight: "bold" }}
                           >
-                            {get_contract_type_label(
+                            {get_contract_file_type_label(
                               contract_type,
                             )}
                           </span>
