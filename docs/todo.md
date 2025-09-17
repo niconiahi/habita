@@ -7,7 +7,7 @@
 - [x] Add support for MDX
 - [x] Add mime type to file
 - [x] Add authentication system + Google OAuth
-- [] Add file type to each listed file
+- [x] Add file type to each listed file
 - [] Adding a contract should only ask for initial price
 - [] Add owner's address, needed in contract
 - [] Add tenant's phone, needed in contract
