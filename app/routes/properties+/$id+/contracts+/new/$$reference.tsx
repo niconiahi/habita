@@ -405,7 +405,7 @@ export default function () {
           name="intent"
           value={INTENT.CREATE_CONTRACT}
         >
-          crear contrato
+          crear contratasdfsadfo
         </button>
       </Form>
     </main>

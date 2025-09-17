@@ -1,6 +1,9 @@
 import * as v from "valibot"
 import { AccessRole } from "../../app/lib/server/access_role.ts"
-import { ContractFileType } from "../../app/lib/server/contract_file_type.ts"
+import {
+  CONTRACT_FILE_TYPE,
+  ContractFileType,
+} from "../../app/lib/server/contract_file_type.ts"
 import { ContractState } from "../../app/lib/server/contract_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
@@ -255,15 +258,15 @@ async function run() {
     path: string
   }[] = [
     {
-      type: ContractFileType.Contract,
+      type: CONTRACT_FILE_TYPE.CONTRACT,
       path: compose_file_path("contract.pdf"),
     },
     {
-      type: ContractFileType.CreditReport,
+      type: CONTRACT_FILE_TYPE.CREDIT_REPORT,
       path: compose_file_path("credit_report.pdf"),
     },
     {
-      type: ContractFileType.Insurance,
+      type: CONTRACT_FILE_TYPE.INSURANCE,
       path: compose_file_path("insurance.pdf"),
     },
   ]

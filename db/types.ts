@@ -26,14 +26,14 @@ export interface Access {
 
 export interface Contract {
   created_at: Timestamp;
-  duration: string;
-  end_date: Timestamp;
-  formula: string;
+  duration: string | null;
+  end_date: Timestamp | null;
+  formula: string | null;
   id: Generated<number>;
   property_id: number;
-  start_date: Timestamp;
+  start_date: Timestamp | null;
   state: number;
-  type: number;
+  type: number | null;
   updated_at: Timestamp;
 }
 
