@@ -4,7 +4,7 @@ import {
   CONTRACT_FILE_TYPE,
   ContractFileType,
 } from "../../app/lib/server/contract_file_type.ts"
-import { ContractState } from "../../app/lib/server/contract_state.ts"
+import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
 import {
@@ -186,7 +186,7 @@ async function run() {
     .values({
       property_id: property.id,
       type: ContractType.LONG_TERM,
-      state: ContractState.FINISHED,
+      state: CONTRACT_STATE.FINISHED,
       duration: "P3M",
       formula:
         "price * (ipc_current_month / ipc_four_months_ago)",

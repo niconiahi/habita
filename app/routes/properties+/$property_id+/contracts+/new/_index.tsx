@@ -34,10 +34,13 @@ export async function action({
   if (!intent) {
     throw error(400, "intent is required")
   }
-  const property_id = v.parse(ForceNumberSchema, params.id)
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
   switch (intent) {
     case INTENT.CREATE_CONTRACT: {
-      actions.create_contract(property_id)
+      actions.create_contract(form_data, property_id)
       return redirect(`/properties/${property_id}/edit`)
     }
   }

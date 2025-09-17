@@ -6,3 +6,7 @@ export const DateSchema = v.pipe(
     return string.length ? string : undefined
   }),
 )
+
+export function format_date_for_input(date: string | Date) {
+  return new Date(date).toISOString().slice(0, -8)
+}
