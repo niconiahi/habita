@@ -348,6 +348,11 @@ function Rooms({ property }: { property: Property }) {
 }
 
 function Contracts({ property }: { property: Property }) {
+  const has_inactive_contract = property.contracts.some(
+    (contract) => {
+      return contract.state === CONTRACT_STATE.INACTIVE
+    },
+  )
   return (
     <section>
       <header
@@ -358,11 +363,13 @@ function Contracts({ property }: { property: Property }) {
         }}
       >
         <h2>contratos</h2>
-        <Link
-          to={`/properties/${property.id}/contracts/new`}
-        >
-          crear contrato
-        </Link>
+        {has_inactive_contract ? null : (
+          <Link
+            to={`/properties/${property.id}/contracts/new`}
+          >
+            crear contrato
+          </Link>
+        )}
       </header>
       <ul
         style={{

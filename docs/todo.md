@@ -8,10 +8,10 @@
 - [x] Add mime type to file
 - [x] Add authentication system + Google OAuth
 - [x] Add file type to each listed file
-- [] Adding a contract should only ask for initial price
-- [] Add owner's address, needed in contract
-- [] Add tenant's phone, needed in contract
+- [x] Adding a contract should only ask for initial price
 - [] Add slots
 - [] Add services for property
 - [] Porcentual default should be fixed
 - [] Room width and length should be decimal numbers
+- [] Add owner's address, needed in contract
+- [] Add tenant's phone, needed in contract
