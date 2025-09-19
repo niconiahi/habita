@@ -1,4 +1,4 @@
-import { AccessRole } from "./access_role"
+import { ACCESS_TYPE } from "./access_type"
 import type { Auth } from "./auth"
 
 export function get_property_accesses(
@@ -21,8 +21,8 @@ export function has_edit_access(
 ): boolean {
   return property_accesses.some(
     (access) =>
-      Number(access.role) === AccessRole.OWNER ||
-      Number(access.role) === AccessRole.ADMINISTRATOR,
+      Number(access.role) === ACCESS_TYPE.OWNER ||
+      Number(access.role) === ACCESS_TYPE.ADMINISTRATOR,
   )
 }
 

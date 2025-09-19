@@ -21,21 +21,21 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
-  // await db.schema
-  //   .createTable("user_file")
-  //   .addColumn("id", "serial", (col) =>
-  //     col.primaryKey().notNull(),
-  //   )
-  //   .addColumn("user_id", "integer", (col) => col.notNull())
-  //   .addColumn("file_id", "integer", (col) => col.notNull())
-  //   .addColumn("type", "integer", (col) => col.notNull())
-  //   .addColumn("created_at", "timestamptz", (col) =>
-  //     col.notNull(),
-  //   )
-  //   .addColumn("updated_at", "timestamptz", (col) =>
-  //     col.notNull(),
-  //   )
-  //   .execute()
+  await db.schema
+    .createTable("user_file")
+    .addColumn("id", "serial", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("user_id", "integer", (col) => col.notNull())
+    .addColumn("file_id", "integer", (col) => col.notNull())
+    .addColumn("type", "integer", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
 
   await db.schema
     .createTable("contract_file")

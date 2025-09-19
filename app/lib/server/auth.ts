@@ -136,7 +136,7 @@ export async function require_auth(request: Request) {
       accesses: accesses.map((access) => ({
         id: access.id,
         property_id: access.property_id,
-        role: access.role.toString(),
+        type: access.type,
       })),
     },
   }
@@ -170,7 +170,7 @@ export async function get_auth(request: Request) {
       accesses: accesses.map((access) => ({
         id: access.id,
         property_id: access.property_id,
-        role: access.role.toString(),
+        type: access.type,
       })),
     },
   }

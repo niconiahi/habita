@@ -1,5 +1,8 @@
 import * as v from "valibot"
-import { AccessRole } from "../../app/lib/server/access_role.ts"
+import {
+  ACCESS_TYPE,
+  AccessType,
+} from "../../app/lib/server/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   ContractFileType,
@@ -262,10 +265,6 @@ async function run() {
       path: compose_file_path("contract.pdf"),
     },
     {
-      type: CONTRACT_FILE_TYPE.CREDIT_REPORT,
-      path: compose_file_path("credit_report.pdf"),
-    },
-    {
       type: CONTRACT_FILE_TYPE.INSURANCE,
       path: compose_file_path("insurance.pdf"),
     },
@@ -286,10 +285,16 @@ async function run() {
     console.log("created contract file")
   }
 
-  const accesses = [
-    { user_id: owner_id, role: AccessRole.OWNER },
-    { user_id: admin_id, role: AccessRole.ADMINISTRATOR },
-    { user_id: tenant_id, role: AccessRole.TENANT },
+  const accesses: {
+    user_id: number
+    type: AccessType
+  }[] = [
+    { user_id: owner_id, type: ACCESS_TYPE.OWNER },
+    {
+      user_id: admin_id,
+      type: ACCESS_TYPE.ADMINISTRATOR,
+    },
+    { user_id: tenant_id, type: ACCESS_TYPE.TENANT },
   ]
   for (const access_ of accesses) {
     const access = await query_builder
@@ -297,7 +302,7 @@ async function run() {
       .values({
         user_id: access_.user_id,
         property_id: property.id,
-        role: access_.role.toString(),
+        type: access_.type,
         created_at: now,
         updated_at: now,
       })
