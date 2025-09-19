@@ -19,7 +19,7 @@ export interface Access {
   created_at: Timestamp;
   id: Generated<number>;
   property_id: number;
-  role: Numeric;
+  type: number;
   updated_at: Timestamp;
   user_id: number;
 }
@@ -729,6 +729,15 @@ export interface User {
   updated_at: Timestamp;
 }
 
+export interface UserFile {
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  type: number;
+  updated_at: Timestamp;
+  user_id: number;
+}
+
 export interface DB {
   access: Access;
   contract: Contract;
@@ -781,4 +790,5 @@ export interface DB {
   "topology.layer": TopologyLayer;
   "topology.topology": TopologyTopology;
   user: User;
+  user_file: UserFile;
 }

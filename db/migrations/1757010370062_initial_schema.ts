@@ -48,7 +48,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
-    .addColumn("role", "numeric", (col) => col.notNull())
+    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
