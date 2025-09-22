@@ -350,7 +350,7 @@ function Rooms({ property }: { property: Property }) {
 function Contracts({ property }: { property: Property }) {
   const has_inactive_contract = property.contracts.some(
     (contract) => {
-      return contract.state === CONTRACT_STATE.INACTIVE
+      return contract.state === CONTRACT_STATE.EDITING
     },
   )
   return (
@@ -422,8 +422,7 @@ function Contracts({ property }: { property: Property }) {
                   </span>
                 </>
               ) : null}
-              {contract.state ===
-              CONTRACT_STATE.INACTIVE ? (
+              {contract.state === CONTRACT_STATE.EDITING ? (
                 <>
                   <span style={{ fontWeight: "bold" }}>
                     precio inicial

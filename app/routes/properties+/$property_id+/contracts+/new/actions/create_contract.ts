@@ -19,7 +19,7 @@ export async function create_contract(
         property_id,
         created_at: now,
         updated_at: now,
-        state: CONTRACT_STATE.INACTIVE,
+        state: CONTRACT_STATE.EDITING,
       })
       .returning("id")
       .executeTakeFirstOrThrow()

@@ -145,7 +145,7 @@ export async function action({
               property_id,
               created_at: now,
               updated_at: now,
-              state: CONTRACT_STATE.INACTIVE,
+              state: CONTRACT_STATE.EDITING,
               end_date,
               duration: escalation_duration,
               formula:
