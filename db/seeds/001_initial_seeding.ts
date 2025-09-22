@@ -1,22 +1,22 @@
 import * as v from "valibot"
 import {
+  ROOM_TYPE,
+  type RoomType,
+} from "../../app/lib/room_type.ts"
+import {
   ACCESS_TYPE,
-  AccessType,
+  type AccessType,
 } from "../../app/lib/server/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
-  ContractFileType,
+  type ContractFileType,
 } from "../../app/lib/server/contract_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
 import {
-  ROOM_TYPE,
-  RoomType,
-} from "../../app/lib/room_type.ts"
-import {
   SERVICE_TYPE,
-  ServiceType,
+  type ServiceType,
 } from "../../app/lib/service.ts"
 import { query_builder } from "../query_builder"
 

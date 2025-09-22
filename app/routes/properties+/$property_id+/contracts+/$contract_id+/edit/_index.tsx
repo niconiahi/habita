@@ -1,26 +1,26 @@
 import { Form, Link } from "react-router"
 import * as v from "valibot"
+import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/server/auth"
+import {
+  ContractFileTypeSchema,
+  get_contract_file_type_label,
+} from "~/lib/server/contract_file_type"
 import { CONTRACT_STATE } from "~/lib/server/contract_state"
 import {
   DURATIONS,
   get_duration_label,
 } from "~/lib/server/duration"
 import { error } from "~/lib/server/error"
-import { ForceNumberSchema } from "~/lib/server/force_number"
 import {
   ESCALATION_TYPE,
   get_escalation_label,
 } from "~/lib/server/escalation_type"
+import { ForceNumberSchema } from "~/lib/server/force_number"
 import { has_edit_access } from "~/lib/server/property_access"
-import { fetch_contract } from "./fetchers/server/contract"
 import type { Route } from "./+types/_index"
-import {
-  ContractFileTypeSchema,
-  get_contract_file_type_label,
-} from "~/lib/server/contract_file_type"
-import { format_date_for_input } from "~/lib/date"
 import * as actions from "./actions/server"
+import { fetch_contract } from "./fetchers/server/contract"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",

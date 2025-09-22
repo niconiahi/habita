@@ -1,13 +1,13 @@
-import { chromium } from "playwright"
 import * as dateFns from "date-fns"
+import { chromium } from "playwright"
 import { renderToString } from "react-dom/server"
-import Contract from "../../../../../mdx/contract.mdx"
+import { DEFAULT_TYPE } from "~/lib/server/default_type"
 import type { Duration } from "~/lib/server/duration"
 import {
   FINE_TYPE,
   type FineType,
 } from "~/lib/server/fine_type"
-import { DEFAULT_TYPE } from "~/lib/server/default_type"
+import Contract from "../../../../../mdx/contract.mdx"
 
 export type Props = {
   end_date: string
