@@ -10,6 +10,7 @@
 - [x] Add file type to each listed file
 - [x] Adding a contract should only ask for initial price
 - [x] List user accesses in its profile
+- [x] Allow user uploading the credit report
 - [] Add slots
 - [] Add services for property
 - [] Porcentual default should be fixed
