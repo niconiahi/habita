@@ -1,37 +1,37 @@
+import { useState } from "react"
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
 import { require_auth } from "~/lib/server/auth"
 import { CONTRACT_STATE } from "~/lib/server/contract_state"
 import { ContractType } from "~/lib/server/contract_type"
 import {
+  DEFAULT_TYPE,
+  type DefaultType,
+  DefaultTypeSchema,
+  get_default_label,
+} from "~/lib/server/default_type"
+import {
   DURATIONS,
   DurationSchema,
   get_duration_label,
 } from "~/lib/server/duration"
 import { error } from "~/lib/server/error"
-import { ForceNumberSchema } from "~/lib/server/force_number"
 import {
   ESCALATION_TYPE,
   EscalationTypeSchema,
   get_escalation_formula,
   get_escalation_label,
 } from "~/lib/server/escalation_type"
+import {
+  FINE_TYPE,
+  type FineType,
+  FineTypeSchema,
+  get_fine_label,
+} from "~/lib/server/fine_type"
+import { ForceNumberSchema } from "~/lib/server/force_number"
 import { has_edit_access } from "~/lib/server/property_access"
 import { query_builder } from "~/lib/server/query_builder"
 import type { Route } from "./+types/new"
-import {
-  FINE_TYPE,
-  FineTypeSchema,
-  get_fine_label,
-  type FineType,
-} from "~/lib/server/fine_type"
-import { useState } from "react"
-import {
-  DEFAULT_TYPE,
-  DefaultTypeSchema,
-  get_default_label,
-  type DefaultType,
-} from "~/lib/server/default_type"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",

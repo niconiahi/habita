@@ -1,10 +1,10 @@
+import * as v from "valibot"
 import {
   ACCESS_TYPE,
-  AccessTypeSchema,
   type AccessType,
+  AccessTypeSchema,
 } from "./access_type"
 import type { Auth } from "./auth"
-import * as v from "valibot"
 
 export function get_property_accesses(
   user: NonNullable<Auth["user"]>,

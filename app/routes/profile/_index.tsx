@@ -1,16 +1,16 @@
-import { require_auth } from "~/lib/server/auth"
-import type { Route } from "./+types/_index"
-import { get_access_type_label } from "~/lib/server/access_type"
 import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { Form, Link } from "react-router"
-import { has_edit_access } from "~/lib/server/property_access"
+import { get_access_type_label } from "~/lib/server/access_type"
+import { require_auth } from "~/lib/server/auth"
 import { error } from "~/lib/server/error"
-import * as actions from "./actions/server"
+import { has_edit_access } from "~/lib/server/property_access"
 import {
   get_user_file_type_label,
   USER_FILE_TYPE,
 } from "~/lib/server/user_file_type"
+import type { Route } from "./+types/_index"
+import * as actions from "./actions/server"
 
 const INTENT = {
   CREATE_FILE: "create_file",
@@ -136,9 +136,6 @@ async function fetch_user_files(user_id: number) {
     .select(["file.basename"])
     .execute()
 }
-type UserFile = Awaited<
-  ReturnType<typeof fetch_user_files>
->[0]
 
 async function fetch_properties(property_ids: number[]) {
   return query_builder
