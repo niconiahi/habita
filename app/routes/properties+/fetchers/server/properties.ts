@@ -2,6 +2,7 @@ import {
   jsonArrayFrom,
   jsonObjectFrom,
 } from "kysely/helpers/postgres"
+import { PROPERTY_STATE } from "~/lib/server/property_state"
 import { query_builder } from "~/lib/server/query_builder"
 
 export async function fetch_properties() {
@@ -14,6 +15,7 @@ export async function fetch_properties() {
     )
     .select((eb) => [
       "property.id",
+      "property.state",
       jsonArrayFrom(
         eb
           .selectFrom("room")
@@ -66,6 +68,7 @@ export async function fetch_properties() {
           ),
       ).as("contracts"),
     ])
+    .where("property.state", "=", PROPERTY_STATE.PUBLISHED)
     .execute()
 }
 export type Property = NonNullable<

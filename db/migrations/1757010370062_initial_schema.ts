@@ -158,6 +158,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
+    .addColumn("state", "integer", (col) => col.notNull())
     .addColumn("location_id", "integer", (col) =>
       col.notNull(),
     )

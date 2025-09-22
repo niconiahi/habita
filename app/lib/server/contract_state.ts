@@ -2,7 +2,7 @@ import * as v from "valibot"
 
 export type ObjectValues<T> = T[keyof T]
 export const CONTRACT_STATE = {
-  INACTIVE: 0,
+  EDITING: 0,
   ACTIVE: 1,
   FINISHED: 2,
 } as const
@@ -17,14 +17,14 @@ export function get_contract_state_label(
   type: ContractState,
 ) {
   switch (type) {
+    case CONTRACT_STATE.EDITING: {
+      return "En edición"
+    }
     case CONTRACT_STATE.ACTIVE: {
       return "Activo"
     }
     case CONTRACT_STATE.FINISHED: {
-      return "Terminado"
-    }
-    case CONTRACT_STATE.INACTIVE: {
-      return "Inactivo"
+      return "Finalizado"
     }
     default: {
       const _exhaustive: never = type

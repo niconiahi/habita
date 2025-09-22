@@ -131,7 +131,7 @@ export default function ({
             name="start_date"
             type="datetime-local"
             readOnly={
-              contract.state !== CONTRACT_STATE.INACTIVE
+              contract.state !== CONTRACT_STATE.EDITING
             }
             defaultValue={
               contract.start_date
@@ -149,7 +149,7 @@ export default function ({
             type="datetime-local"
             name="end_date"
             readOnly={
-              contract.state !== CONTRACT_STATE.INACTIVE
+              contract.state !== CONTRACT_STATE.EDITING
             }
             defaultValue={
               contract.end_date
@@ -196,7 +196,7 @@ export default function ({
           type="submit"
           name="intent"
           disabled={
-            contract.state !== CONTRACT_STATE.INACTIVE
+            contract.state !== CONTRACT_STATE.EDITING
           }
           value={INTENT.UPDATE_CONTRACT}
         >
@@ -206,7 +206,7 @@ export default function ({
           type="submit"
           name="intent"
           disabled={
-            contract.state !== CONTRACT_STATE.INACTIVE
+            contract.state !== CONTRACT_STATE.EDITING
           }
           value={INTENT.DESTROY_CONTRACT}
         >
@@ -235,7 +235,7 @@ export default function ({
               id="file"
               name="file"
               disabled={
-                contract.state !== CONTRACT_STATE.INACTIVE
+                contract.state !== CONTRACT_STATE.EDITING
               }
             />
           </p>
@@ -243,7 +243,7 @@ export default function ({
             type="submit"
             name="intent"
             disabled={
-              contract.state !== CONTRACT_STATE.INACTIVE
+              contract.state !== CONTRACT_STATE.EDITING
             }
             value={INTENT.CREATE_FILE}
           >
@@ -285,7 +285,7 @@ export default function ({
                     name="intent"
                     disabled={
                       contract.state !==
-                      CONTRACT_STATE.INACTIVE
+                      CONTRACT_STATE.EDITING
                     }
                     value={INTENT.DESTROY_FILE}
                   >

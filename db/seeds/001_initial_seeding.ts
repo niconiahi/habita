@@ -12,6 +12,7 @@ import {
   type ContractFileType,
 } from "../../app/lib/server/contract_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
+import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
 import {
@@ -19,6 +20,10 @@ import {
   type ServiceType,
 } from "../../app/lib/service.ts"
 import { query_builder } from "../query_builder"
+
+function compose_file_path(basename: string) {
+  return `${import.meta.dir}/../files/${basename}`
+}
 
 async function upsert_file(path: string) {
   const file = Bun.file(path)
@@ -91,6 +96,108 @@ async function upsert_user(email: string, now: string) {
   return user.id
 }
 
+async function make_finished_contract(
+  property_id: number,
+  now: string,
+) {
+  const date = new Date()
+  const contract_start_date = new Date(date)
+  contract_start_date.setFullYear(date.getFullYear() - 1)
+  const contract_end_date = new Date(date)
+  contract_end_date.setFullYear(date.getFullYear())
+  const contract = await query_builder
+    .insertInto("contract")
+    .values({
+      property_id,
+      type: ContractType.LONG_TERM,
+      state: CONTRACT_STATE.FINISHED,
+      duration: "P3M",
+      formula:
+        "price * (ipc_current_month / ipc_four_months_ago)",
+      start_date: contract_start_date,
+      end_date: contract_end_date,
+      created_at: now,
+      updated_at: now,
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created contract", contract.id)
+
+  const price = 600000
+  const period_end_date = new Date(
+    contract_start_date.getFullYear(),
+    contract_start_date.getMonth() + 3,
+    contract_start_date.getDate(),
+  )
+  const period = await query_builder
+    .insertInto("period")
+    .values({
+      contract_id: contract.id,
+      price: price.toString(),
+      start_date: contract_start_date,
+      end_date: period_end_date,
+      created_at: now,
+      updated_at: now,
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created period", period.id)
+  return contract
+}
+
+async function make_editing_contract(
+  property_id: number,
+  now: string,
+) {
+  const date = new Date()
+  const contract_start_date = new Date(date)
+  contract_start_date.setMonth(
+    contract_start_date.getMonth() + 3,
+  )
+  const contract_end_date = new Date(contract_start_date)
+  contract_end_date.setFullYear(
+    contract_end_date.getFullYear() + 1,
+  )
+  const contract = await query_builder
+    .insertInto("contract")
+    .values({
+      property_id,
+      type: ContractType.LONG_TERM,
+      state: CONTRACT_STATE.EDITING,
+      duration: "P3M",
+      formula:
+        "price * (ipc_current_month / ipc_four_months_ago)",
+      start_date: contract_start_date,
+      end_date: contract_end_date,
+      created_at: now,
+      updated_at: now,
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created contract", contract.id)
+
+  const price = 800000
+  const period_end_date = new Date(
+    contract_start_date.getFullYear(),
+    contract_start_date.getMonth() + 3,
+    contract_start_date.getDate(),
+  )
+  const period = await query_builder
+    .insertInto("period")
+    .values({
+      contract_id: contract.id,
+      price: price.toString(),
+      start_date: contract_start_date,
+      end_date: period_end_date,
+      created_at: now,
+      updated_at: now,
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created period", period.id)
+  return contract
+}
+
 async function run() {
   console.log("seeding")
   const now = new Date().toISOString()
@@ -132,6 +239,7 @@ async function run() {
   const property = await query_builder
     .insertInto("property")
     .values({
+      state: PROPERTY_STATE.PUBLISHED,
       user_id: owner_id,
       location_id: location.id,
       created_at: now,
@@ -179,49 +287,6 @@ async function run() {
     console.log("created room", room.id)
   }
 
-  const date = new Date()
-  const contract_start_date = new Date(date)
-  contract_start_date.setFullYear(date.getFullYear() - 1)
-  const contract_end_date = new Date(date)
-  contract_end_date.setFullYear(date.getFullYear())
-  const contract = await query_builder
-    .insertInto("contract")
-    .values({
-      property_id: property.id,
-      type: ContractType.LONG_TERM,
-      state: CONTRACT_STATE.FINISHED,
-      duration: "P3M",
-      formula:
-        "price * (ipc_current_month / ipc_four_months_ago)",
-      start_date: contract_start_date,
-      end_date: contract_end_date,
-      created_at: now,
-      updated_at: now,
-    })
-    .returning("id")
-    .executeTakeFirstOrThrow()
-  console.log("created contract", contract.id)
-
-  const price = 600000
-  const period_end_date = new Date(
-    contract_start_date.getFullYear(),
-    contract_start_date.getMonth() + 3,
-    contract_start_date.getDate(),
-  )
-  const period = await query_builder
-    .insertInto("period")
-    .values({
-      contract_id: contract.id,
-      price: price.toString(),
-      start_date: contract_start_date,
-      end_date: period_end_date,
-      created_at: now,
-      updated_at: now,
-    })
-    .returning("id")
-    .executeTakeFirstOrThrow()
-  console.log("created period", period.id)
-
   const services: {
     type: ServiceType
     code: string
@@ -253,38 +318,6 @@ async function run() {
     console.log("created service")
   }
 
-  function compose_file_path(basename: string) {
-    return `${import.meta.dir}/../files/${basename}`
-  }
-  const CONTRACT_FILES: {
-    type: ContractFileType
-    path: string
-  }[] = [
-    {
-      type: CONTRACT_FILE_TYPE.CONTRACT,
-      path: compose_file_path("contract.pdf"),
-    },
-    {
-      type: CONTRACT_FILE_TYPE.INSURANCE,
-      path: compose_file_path("insurance.pdf"),
-    },
-  ]
-  for (const contract_file of CONTRACT_FILES) {
-    const file_id = await upsert_file(contract_file.path)
-    await query_builder
-      .insertInto("contract_file")
-      .values({
-        file_id,
-        user_id: admin_id,
-        contract_id: contract.id,
-        created_at: now,
-        updated_at: now,
-        type: contract_file.type,
-      })
-      .execute()
-    console.log("created contract file")
-  }
-
   const accesses: {
     user_id: number
     type: AccessType
@@ -309,6 +342,54 @@ async function run() {
       .returning("id")
       .executeTakeFirstOrThrow()
     console.log("created access", access.id)
+  }
+
+  const finished_contract = await make_finished_contract(
+    property.id,
+    now,
+  )
+  const editing_contract = await make_editing_contract(
+    property.id,
+    now,
+  )
+  const CONTRACT_FILES: {
+    type: ContractFileType
+    path: string
+  }[] = [
+    {
+      type: CONTRACT_FILE_TYPE.CONTRACT,
+      path: compose_file_path("contract.pdf"),
+    },
+    {
+      type: CONTRACT_FILE_TYPE.INSURANCE,
+      path: compose_file_path("insurance.pdf"),
+    },
+  ]
+  for (const contract_file of CONTRACT_FILES) {
+    const file_id = await upsert_file(contract_file.path)
+    await query_builder
+      .insertInto("contract_file")
+      .values({
+        file_id,
+        user_id: admin_id,
+        contract_id: finished_contract.id,
+        created_at: now,
+        updated_at: now,
+        type: contract_file.type,
+      })
+      .execute()
+    await query_builder
+      .insertInto("contract_file")
+      .values({
+        file_id,
+        user_id: admin_id,
+        contract_id: editing_contract.id,
+        created_at: now,
+        updated_at: now,
+        type: contract_file.type,
+      })
+      .execute()
+    console.log("created contract file")
   }
 }
 
