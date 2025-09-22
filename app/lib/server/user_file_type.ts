@@ -1,21 +1,21 @@
 import * as v from "valibot"
 
 export type ObjectValues<T> = T[keyof T]
-export const CONTRACT_FILE_TYPE = {
-  CREDIT_REPORT: 2,
+export const USER_FILE_TYPE = {
+  CREDIT_REPORT: 0,
 } as const
-export const ContractFileTypeSchema = v.picklist(
-  Object.values(CONTRACT_FILE_TYPE),
+export const UserFileTypeSchema = v.picklist(
+  Object.values(USER_FILE_TYPE),
 )
-export type ContractFileType = ObjectValues<
-  typeof CONTRACT_FILE_TYPE
+export type UserFileType = ObjectValues<
+  typeof USER_FILE_TYPE
 >
 
-export function get_contract_file_type_label(
-  type: ContractFileType,
+export function get_user_file_type_label(
+  type: UserFileType,
 ) {
   switch (type) {
-    case CONTRACT_FILE_TYPE.CREDIT_REPORT: {
+    case USER_FILE_TYPE.CREDIT_REPORT: {
       return "Informe crediticio"
     }
     default: {
