@@ -13,6 +13,7 @@ import {
 } from "../../app/lib/server/contract_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
+import { SLOT_STATE } from "../../app/lib/server/slot_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
 import {
@@ -148,6 +149,7 @@ async function make_finished_contract(
 async function make_editing_contract(
   property_id: number,
   now: string,
+  admin_id: number,
 ) {
   const date = new Date()
   const contract_start_date = new Date(date)
@@ -194,6 +196,41 @@ async function make_editing_contract(
     })
     .returning("id")
     .executeTakeFirstOrThrow()
+  const SLOTS: {
+    start_date: Date
+    end_date: Date
+  }[] = [
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
+  ]
+  for (const slot_ of SLOTS) {
+    const slot = await query_builder
+      .insertInto("slot")
+      .values({
+        property_id,
+        event_id:
+          "NHN2NmxmN3Y1dmt0cjFzNWF2NmprbWw0OTAgbmljb2xhcy5hY2NldHRhQG0",
+        host_id: admin_id,
+        state: SLOT_STATE.FREE,
+        start_date: slot_.start_date,
+        end_date: slot_.end_date,
+        created_at: now,
+        updated_at: now,
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+    console.log("slot created", slot.id)
+  }
   console.log("created period", period.id)
   return contract
 }
@@ -351,6 +388,7 @@ async function run() {
   const editing_contract = await make_editing_contract(
     property.id,
     now,
+    admin_id,
   )
   const CONTRACT_FILES: {
     type: ContractFileType

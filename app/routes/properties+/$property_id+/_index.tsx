@@ -40,9 +40,9 @@ export default function ({
     <main>
       <h1>property</h1>
       <section>
-        la propiedad con identificador {property.id} la cual
-        fue agregada el {property.created_at.toISOString()}
-        <Link to="edit">Edit</Link>
+        la propiedad ubicada en {property.location.road}{" "}
+        {property.location.house_number}{" "}
+        <Link to="book">Book</Link>
       </section>
     </main>
   )

@@ -157,6 +157,7 @@ export interface Slot {
   event_id: string;
   host_id: number;
   id: Generated<number>;
+  property_id: number;
   start_date: Timestamp;
   state: number;
   updated_at: Timestamp;
