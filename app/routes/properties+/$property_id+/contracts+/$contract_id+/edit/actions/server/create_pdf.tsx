@@ -36,77 +36,58 @@ export async function create_pdf(
         "property should exist when creating pdf",
       )
     }
-    console.log("property", property)
     const id = v.parse(
       ForceNumberSchema,
       form_data.get("id"),
     )
-    console.log("id", id)
     const start_date = v.parse(
       ForceDateSchema,
       form_data.get("start_date"),
     )
-    console.log("start_date", start_date)
     const end_date = v.parse(
       ForceDateSchema,
       form_data.get("end_date"),
     )
-    console.log("end_date", end_date)
     const duration = v.parse(
       v.string(),
       form_data.get("duration"),
     )
-    console.log("duration", duration)
     const formula = v.parse(
       v.string(),
       form_data.get("formula"),
     )
-    console.log("formula", formula)
     const escalation_type = v.parse(
       EscalationTypeSchema,
       Number(form_data.get("escalation_type")),
     )
-    console.log("escalation_type", escalation_type)
     const escalation_duration = v.parse(
       DurationSchema,
       form_data.get("escalation_duration"),
     )
-    console.log("escalation_duration", escalation_duration)
     const fine_type = v.parse(
       FineTypeSchema,
       Number(form_data.get("fine_type")),
     )
-    console.log("fine_type", fine_type)
     const fine_amount = v.parse(
       ForceNumberSchema,
       form_data.get("fine_amount"),
     )
-    console.log("fine_amount", fine_amount)
     const default_type = v.parse(
       DefaultTypeSchema,
       Number(form_data.get("default_type")),
     )
-    console.log("default_type", default_type)
     const default_amount = v.parse(
       ForceNumberSchema,
       form_data.get("default_amount"),
     )
-    console.log("default_amount", default_amount)
     const default_duration = v.parse(
       DurationSchema,
       form_data.get("default_duration"),
     )
-    console.log("default_duration", default_duration)
     const _owner = await fetch_owner(property_id)
-    console.log("_owner", _owner)
     const owner = v.parse(SignatorySchema, _owner)
-    console.log("owner", owner)
     const _tenant = await fetch_tenant(property_id)
-    console.log("_tenant", _tenant)
     const tenant = v.parse(SignatorySchema, _tenant)
-    console.log("tenant", tenant)
-    console.log("unit", property.unit)
-    console.log("floor", property.floor)
     const _default: Default = {
       type: default_type,
       amount: default_amount,
@@ -150,7 +131,6 @@ export async function create_pdf(
         floor: 3,
       },
     }
-    console.log("props", props)
     const html = renderToString(<Pdf {...props} />)
     const browser = await chromium.launch()
     const page = await browser.newPage()
@@ -161,7 +141,6 @@ export async function create_pdf(
       format: "A4",
       printBackground: true,
     })
-    console.log("pdf_buffer", pdf_buffer)
     await browser.close()
     const pdf = new Blob([Uint8Array.from(pdf_buffer)], {
       type: "application/pdf",
@@ -204,7 +183,6 @@ export async function create_pdf(
       })
     return new Response("success")
   } catch (error) {
-    console.error("Error in create_pdf:", error)
     return new Response(
       JSON.stringify({
         error:
