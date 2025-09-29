@@ -13,6 +13,7 @@ import {
 } from "../../app/lib/server/contract_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
+import { PROPERTY_TYPE } from "../../app/lib/server/property_type.ts"
 import { SLOT_STATE } from "../../app/lib/server/slot_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
@@ -74,7 +75,21 @@ async function upsert_file(path: string) {
   return file_id
 }
 
-async function upsert_user(email: string, now: string) {
+async function upsert_user({
+  name,
+  surname,
+  email,
+  now,
+  document_number,
+  phone_number,
+}: {
+  name: string
+  surname: string
+  email: string
+  now: string
+  document_number: number
+  phone_number: string
+}) {
   const existing_user = await query_builder
     .selectFrom("user")
     .select("id")
@@ -88,6 +103,10 @@ async function upsert_user(email: string, now: string) {
     .insertInto("user")
     .values({
       email,
+      name,
+      surname,
+      phone_number,
+      document_number,
       created_at: now,
       updated_at: now,
     })
@@ -239,19 +258,30 @@ async function run() {
   console.log("seeding")
   const now = new Date().toISOString()
   console.log("creating users")
-  const owner_id = await upsert_user(
-    "nicolas.accetta@gmail.com",
+  const owner_id = await upsert_user({
+    surname: "Accetta",
+    name: "Nicolas",
+    phone_number: "+5491122537752",
+    document_number: 37782650,
     now,
-  )
-  const admin_id = await upsert_user(
-    "admin@inmobi.rent",
+    email: "nicolas.accetta@gmail.com",
+  })
+  const admin_id = await upsert_user({
+    surname: "Andrea",
+    name: "Medina",
+    phone_number: "+5491125597648",
+    document_number: 36829114,
     now,
-  )
-  const tenant_id = await upsert_user(
-    "tenant@inmobi.rent",
+    email: "medina93andrea@gmail.com",
+  })
+  const tenant_id = await upsert_user({
+    surname: "Mario",
+    name: "Luis",
+    phone_number: "+5491188310588",
+    document_number: 30019119,
     now,
-  )
-
+    email: "mario.luis@gmail.com",
+  })
   const latitude = -34.595834
   const longitude = -58.447219
   const location = await query_builder
@@ -277,12 +307,22 @@ async function run() {
     .insertInto("property")
     .values({
       state: PROPERTY_STATE.PUBLISHED,
-      user_id: owner_id,
+      type: PROPERTY_TYPE.DEPARTMENT,
       location_id: location.id,
       created_at: now,
       updated_at: now,
     })
     .returning("id")
+    .executeTakeFirstOrThrow()
+  await query_builder
+    .insertInto("property_type_department")
+    .values({
+      unit: "C",
+      floor: 10,
+      created_at: now,
+      updated_at: now,
+      property_id: property.id,
+    })
     .executeTakeFirstOrThrow()
   console.log("created property", property.id)
 

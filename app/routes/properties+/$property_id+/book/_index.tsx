@@ -27,8 +27,11 @@ export async function action({
   console.log("intent")
   switch (intent) {
     case INTENT.SET_DATE: {
-      const url = await actions.set_date(request, form_data)
-      return redirect(url)
+      const { redirect_to } = await actions.set_date(
+        request,
+        form_data,
+      )
+      return redirect(redirect_to)
     }
     case INTENT.UPDATE_SLOT: {
       await actions.update_slot(form_data)

@@ -208,37 +208,6 @@ export default function () {
     <main>
       <h1>nuevo contrato</h1>
       <Form method="POST">
-        <p>
-          <label htmlFor="start_date">
-            fecha de inicio
-          </label>
-          <input
-            id="start_date"
-            name="start_date"
-            required
-            type="datetime-local"
-          />
-        </p>
-        <p>
-          <label htmlFor="end_date">
-            fecha de finalizacion
-          </label>
-          <input
-            id="end_date"
-            type="datetime-local"
-            required
-            name="end_date"
-          />
-        </p>
-        <p>
-          <label htmlFor="price">precio inicial</label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            required
-          />
-        </p>
         <fieldset>
           <legend>aumento</legend>
           <p>
@@ -304,27 +273,15 @@ export default function () {
               })}
             </select>
           </p>
-          {fine_type === FINE_TYPE.FIXED ? (
-            <p>
-              <label htmlFor="fine_type">monto</label>
-              <input
-                id="default"
-                name="default"
-                type="number"
-                required
-              />
-            </p>
-          ) : (
-            <p>
-              <label htmlFor="fine_type">porcentaje</label>
-              <input
-                id="default"
-                name="default"
-                type="number"
-                required
-              />
-            </p>
-          )}
+          <p>
+            <label htmlFor="fine_amount">monto</label>
+            <input
+              id="fine_amount"
+              name="fine_amount"
+              type="number"
+              required
+            />
+          </p>
         </fieldset>
         <fieldset>
           <legend>multa</legend>
@@ -351,34 +308,25 @@ export default function () {
               })}
             </select>
           </p>
-          {default_type === DEFAULT_TYPE.FIXED ? (
-            <p>
-              <label htmlFor="fine_type">monto</label>
-              <input
-                id="default"
-                name="default"
-                type="number"
-                required
-              />
-            </p>
-          ) : (
-            <p>
-              <label htmlFor="fine_type">porcentaje</label>
-              <input
-                id="default"
-                name="default"
-                type="number"
-                required
-              />
-            </p>
-          )}
           <p>
-            <label htmlFor="fine_duration">
+            <label htmlFor="default_amount">monto</label>
+            <input
+              id="default_amount"
+              name="default_amount"
+              type="number"
+              required
+            />
+          </p>
+          <p>
+            <label htmlFor="default_duration">
               frecuencia
             </label>
-            <select name="fine_duration" id="fine_duration">
+            <select
+              name="default_duration"
+              id="default_duration"
+            >
               {DURATIONS.map((duration) => {
-                const id = `fine_duration_${duration}`
+                const id = `default_duration_${duration}`
                 return (
                   <option key={id} value={duration}>
                     {get_duration_label(duration)}

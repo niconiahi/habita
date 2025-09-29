@@ -120,8 +120,17 @@ export interface Property {
   id: Generated<number>;
   location_id: number;
   state: number;
+  type: number;
   updated_at: Timestamp;
-  user_id: number;
+}
+
+export interface PropertyTypeDepartment {
+  created_at: Timestamp;
+  floor: number;
+  id: Generated<number>;
+  property_id: number;
+  unit: string;
+  updated_at: Timestamp;
 }
 
 export interface Room {
@@ -738,8 +747,12 @@ export interface TopologyTopology {
 
 export interface User {
   created_at: Timestamp;
+  document_number: number | null;
   email: string;
   id: Generated<number>;
+  name: string | null;
+  phone_number: string | null;
+  surname: string | null;
   updated_at: Timestamp;
 }
 
@@ -763,6 +776,7 @@ export interface DB {
   location: Location;
   period: Period;
   property: Property;
+  property_type_department: PropertyTypeDepartment;
   room: Room;
   service: Service;
   session: Session;
