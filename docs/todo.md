@@ -11,9 +11,9 @@
 - [x] Adding a contract should only ask for initial price
 - [x] List user accesses in its profile
 - [x] Allow user uploading the credit report
-- [] Add slots
-- [] Add services for property
-- [] Porcentual default should be fixed
-- [] Room width and length should be decimal numbers
+- [x] Add slots
+- [x] Add services for property
+- [] Recieve contract data from FormData
+- [] Send Google Calendar invitation to host and visitant
 - [] Add owner's address, needed in contract
 - [] Add tenant's phone, needed in contract

@@ -12,5 +12,5 @@ export async function set_date(
   )
   const url = new URL(request.url)
   url.searchParams.set("date", get_date(date))
-  return url.toString()
+  return { redirect_to: url.toString() }
 }

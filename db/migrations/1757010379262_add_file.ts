@@ -56,35 +56,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
 
-  // {table}_{column}_{referenced_table}_{referenced_column}_fk
-  //
-  // type Contract = {
-  //   files: [
-  // { type: "user_file_financial_type", user_id },
-  //      { type: "contract_file_written_contract", user_id, contract_id },
-  //   ]
-  // }
-
-  // await db.schema
-  //   .alterTable("user_file")
-  //   .addForeignKeyConstraint(
-  //     "user_file_user_id_user_id_fk",
-  //     ["user_id"],
-  //     "user",
-  //     ["id"],
-  //   )
-  //   .execute()
-  //
-  // await db.schema
-  //   .alterTable("user_file")
-  //   .addForeignKeyConstraint(
-  //     "user_file_file_id_file_id_fk",
-  //     ["file_id"],
-  //     "file",
-  //     ["id"],
-  //   )
-  //   .execute()
-
   await db.schema
     .alterTable("contract_file")
     .addForeignKeyConstraint(
@@ -114,16 +85,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
-
-  // await db.schema
-  //   .alterTable("contract_file")
-  //   .addForeignKeyConstraint(
-  //     "contract_file_source_user_file_id_user_file_id_fk",
-  //     ["source_user_file_id"],
-  //     "user_file",
-  //     ["id"],
-  //   )
-  //   .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

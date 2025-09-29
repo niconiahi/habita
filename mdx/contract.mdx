@@ -27,11 +27,11 @@ export function get_year(date) {
 
 ## Preámbulo
 
-En **{props.property.location.state}**, a los {day_as_word(get_day(props.start_date))} **({get_day(props.start_date)}) días** del **MES** de **{get_month(props.start_date)}** de **{get_year(props.start_date)}**, entre el **Sr/a. {props.owner.surname.toLocaleUpperCase()}, {props.owner.name}** con **DNI {props.owner.document_number}**, en adelante denominado **“EL LOCADOR”** y por la otra parte el **Sr/a. {props.tenant.surname.toLocaleUpperCase()}, {props.tenant.name}** con **DNI {props.tenant.document_number}**, en adelante denominado **“EL LOCATARIO”**. Las partes convienen en celebrar el siguiente contrato de locación, en adelante denominado **“EL CONTRATO”**:
+En **{props.location.state}**, a los {day_as_word(get_day(props.start_date))} **({get_day(props.start_date)}) días** del **MES** de **{get_month(props.start_date)}** de **{get_year(props.start_date)}**, entre el **Sr/a. {props.owner.surname.toLocaleUpperCase()}, {props.owner.name}** con **DNI {props.owner.document_number}**, en adelante denominado **“EL LOCADOR”** y por la otra parte el **Sr/a. {props.tenant.surname.toLocaleUpperCase()}, {props.tenant.name}** con **DNI {props.tenant.document_number}**, en adelante denominado **“EL LOCATARIO”**. Las partes convienen en celebrar el siguiente contrato de locación, en adelante denominado **“EL CONTRATO”**:
 
 ## Primera
 
-**EL LOCADOR** cede la locación a **EL LOCATARIO** el inmueble sito en la calle **{props.property.location.road}** Nº **{props.property.location.house_number}**, la unidad **{props.property.unit}** del piso **{props.property.floor}**, en adelante denominado **“EL INMUEBLE”**
+**EL LOCADOR** cede la locación a **EL LOCATARIO** el inmueble sito en la calle **{props.location.road}** Nº **{props.location.house_number}**, la unidad **{props.property.unit}** del piso **{props.property.floor}**, en adelante denominado **“EL INMUEBLE”**
 
 ## Segunda
 
@@ -79,7 +79,7 @@ La entrega de las llaves de la propiedad deberá justificarla **EL LOCATARIO** c
 
 ## Décima tercera
 
-**EL LOCADOR** constituye domicilio especial para todos los efectos legales, en **{props.owner.location.road}** Nº **{props.owner.location.house_number}** de **{props.owner.location.state}**. CEL.: {props.owner.phone_number}. **EL LOCATARIO** constituye domicilio en **{props.property.location.road}** Nº **{props.property.location.house_number}** de **{props.property.location.state}**, la unidad la unidad **{props.property.unit}** del piso **{props.property.floor}**. CEL.: {props.tenant.phone_number}
+**EL LOCADOR** constituye domicilio especial para todos los efectos legales, en **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**. CEL.: {props.owner.phone_number}. **EL LOCATARIO** constituye domicilio en **{props.location.road}** Nº **{props.location.house_number}** de **{props.location.state}**, la unidad la unidad **{props.property.unit}** del piso **{props.property.floor}**. CEL.: {props.tenant.phone_number}
 
 ## Décima quinta
 
@@ -95,5 +95,4 @@ En caso de producirse la rescisión anticipada del presente contrato, **EL LOCAT
 
 ## Décima novena
 
-Las partes convienen como lugar de pago de los alquileres en la calle **{props.owner.location.road}** Nº **{props.owner.location.house_number}** de **{props.owner.location.state}**, de lunes a viernes de 9 a 19hs, o donde **EL LOCADOR** indique en el futuro, de forma fehaciente, a **EL LOCATARIO**
-
+Las partes convienen como lugar de pago de los alquileres en la calle **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**, de lunes a viernes de 9 a 19hs, o donde **EL LOCADOR** indique en el futuro, de forma fehaciente, a **EL LOCATARIO**

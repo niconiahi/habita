@@ -12,7 +12,10 @@ export default defineConfig({
   },
   plugins: [
     tailwindcss(),
-    mdx(),
+    mdx({
+      jsxImportSource: "react",
+      development: process.env.NODE_ENV === "development",
+    }),
     reactRouter(),
     tsconfigPaths(),
     {

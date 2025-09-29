@@ -1,13 +1,20 @@
 import * as dateFns from "date-fns"
 import { chromium } from "playwright"
 import { renderToString } from "react-dom/server"
-import { DEFAULT_TYPE } from "~/lib/server/default_type"
-import type { Duration } from "~/lib/server/duration"
 import {
-  FINE_TYPE,
+  DurationSchema,
+  type Duration,
+} from "~/lib/server/duration"
+import {
+  FineTypeSchema,
   type FineType,
 } from "~/lib/server/fine_type"
 import Contract from "../../../../../mdx/contract.mdx"
+import type { Route } from "./+types/pdf"
+import { ForceDateSchema } from "~/lib/server/force_date"
+import * as v from "valibot"
+import { ForceNumberSchema } from "~/lib/server/force_number"
+import { query_builder } from "db/query_builder"
 
 export type Props = {
   end_date: string
@@ -18,11 +25,6 @@ export type Props = {
     surname: string
     phone_number: number
     document_number: number
-    location: {
-      state: string
-      road: string
-      house_number: number
-    }
   }
   fine: {
     type: FineType
@@ -39,63 +41,33 @@ export type Props = {
     phone_number: number
     document_number: number
   }
+  owner_location: {
+    state: string
+    road: string
+    house_number: number
+  }
+  location: {
+    state: string
+    road: string
+    house_number: number
+  }
   property: {
     unit: string
     floor: number
-    location: {
-      state: string
-      road: string
-      house_number: number
-    }
   }
 }
-const end_date = "2026-09-10T15:52:14.752Z"
-const start_date = "2025-09-10T15:52:14.752Z"
-const props: Props = {
-  end_date,
-  start_date,
-  duration: `${dateFns.differenceInMonths(
-    new Date(end_date),
-    new Date(start_date),
-  )} meses`,
-  fine: {
-    duration: "P1D",
-    amount: 10000,
-    type: FINE_TYPE.FIXED,
-  },
-  default: {
-    type: DEFAULT_TYPE.FIXED,
-    amount: 100000,
-  },
-  owner: {
-    name: "Mariano German",
-    surname: "Fernandez",
-    phone_number: 1122536622,
-    document_number: 31675798,
-    location: {
-      state: "Buenos Aires",
-      road: "Padilla",
-      house_number: 1180,
-    },
-  },
-  tenant: {
-    name: "Raul Arnaldo",
-    surname: "Espinoza",
-    phone_number: 1122536622,
-    document_number: 14742853,
-  },
-  property: {
-    unit: "D",
-    floor: 3,
-    location: {
-      state: "Buenos Aires",
-      road: "Padilla",
-      house_number: 1180,
-    },
-  },
-}
 
-function Pdf() {
+const FineSchema = v.object({
+  duration: DurationSchema,
+  amount: v.number(),
+  type: FineTypeSchema,
+})
+const DefaultSchema = v.object({
+  amount: v.number(),
+  type: FineTypeSchema,
+})
+
+function Pdf(props: Props) {
   return (
     <html lang="es">
       <head>
@@ -108,8 +80,52 @@ function Pdf() {
   )
 }
 
-export async function action() {
-  const html = renderToString(<Pdf />)
+export async function action({
+  request,
+}: Route.ActionArgs) {
+  const form_data = await request.formData()
+  const end_date = v.parse(
+    ForceDateSchema,
+    form_data.get("end_date"),
+  )
+  const start_date = v.parse(
+    ForceDateSchema,
+    form_data.get("start_date"),
+  )
+  const fine = v.parse(FineSchema, form_data.get("fine"))
+  const default_ = v.parse(
+    DefaultSchema,
+    form_data.get("default"),
+  )
+  const owner_id = v.parse(
+    ForceNumberSchema,
+    form_data.get("owner_id"),
+  )
+  const tenant_id = v.parse(
+    ForceNumberSchema,
+    form_data.get("tenant_id"),
+  )
+  const owner = fetch_owner(owner_id)
+  const tenant = fetch_tenant(tenant_id)
+  const props: Props = {
+    end_date: end_date.toISOString(),
+    start_date: start_date.toISOString(),
+    duration: `${dateFns.differenceInMonths(
+      end_date,
+      start_date,
+    )} meses`,
+    fine,
+    default: default_,
+    owner,
+    tenant,
+    location,
+    owner_location,
+    property: {
+      unit: "D",
+      floor: 3,
+    },
+  }
+  const html = renderToString(<Pdf {...props} />)
   const browser = await chromium.launch()
   const page = await browser.newPage()
   await page.setContent(html, { waitUntil: "networkidle" })
@@ -125,4 +141,17 @@ export async function action() {
         'attachment; filename="invoice.pdf"',
     },
   })
+}
+
+async function fetch_tenant(id: number) {
+  return query_builder
+    .selectFrom("user")
+    .where("user.id", "=", id)
+    .select([
+      "user.name",
+      "user.surname",
+      "user.phone_number",
+      "user.document_number",
+    ])
+    .executeTakeFirstOrThrow()
 }
