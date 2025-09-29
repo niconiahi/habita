@@ -20,6 +20,8 @@ export async function fetch_property(id: number) {
     .select((eb) => [
       "property.id",
       "property.created_at",
+      "property_type_department.unit",
+      "property_type_department.floor",
       jsonArrayFrom(
         eb
           .selectFrom("room")
