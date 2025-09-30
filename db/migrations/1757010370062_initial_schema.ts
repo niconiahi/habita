@@ -164,25 +164,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("state", "integer", (col) => col.notNull())
     .addColumn("type", "integer", (col) => col.notNull())
+    .addColumn("unit", "text")
     .addColumn("location_id", "integer", (col) =>
-      col.notNull(),
-    )
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .execute()
-
-  await db.schema
-    .createTable("property_type_department")
-    .addColumn("id", "serial", (col) =>
-      col.primaryKey().notNull(),
-    )
-    .addColumn("unit", "text", (col) => col.notNull())
-    .addColumn("floor", "integer", (col) => col.notNull())
-    .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("created_at", "timestamptz", (col) =>

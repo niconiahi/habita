@@ -121,15 +121,7 @@ export interface Property {
   location_id: number;
   state: number;
   type: number;
-  updated_at: Timestamp;
-}
-
-export interface PropertyTypeDepartment {
-  created_at: Timestamp;
-  floor: number;
-  id: Generated<number>;
-  property_id: number;
-  unit: string;
+  unit: string | null;
   updated_at: Timestamp;
 }
 
@@ -776,7 +768,6 @@ export interface DB {
   location: Location;
   period: Period;
   property: Property;
-  property_type_department: PropertyTypeDepartment;
   room: Room;
   service: Service;
   session: Session;

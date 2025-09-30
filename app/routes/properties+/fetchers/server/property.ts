@@ -12,16 +12,10 @@ export async function fetch_property(id: number) {
       "location.id",
       "property.location_id",
     )
-    .innerJoin(
-      "property_type_department",
-      "property_type_department.property_id",
-      "property.id",
-    )
     .select((eb) => [
       "property.id",
       "property.created_at",
-      "property_type_department.unit",
-      "property_type_department.floor",
+      "property.unit",
       jsonArrayFrom(
         eb
           .selectFrom("room")
