@@ -44,7 +44,6 @@ export interface ContractFile {
   id: Generated<number>;
   type: number;
   updated_at: Timestamp;
-  user_id: number;
 }
 
 export interface File {

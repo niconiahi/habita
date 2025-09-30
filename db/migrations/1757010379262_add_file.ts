@@ -46,7 +46,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("file_id", "integer", (col) => col.notNull())
-    .addColumn("user_id", "integer", (col) => col.notNull())
+    // .addColumn("user_id", "integer", (col) => col.notNull())
     .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
@@ -73,18 +73,19 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["file_id"],
       "file",
       ["id"],
+      (cb) => cb.onDelete("cascade"),
     )
     .execute()
 
-  await db.schema
-    .alterTable("contract_file")
-    .addForeignKeyConstraint(
-      "contract_file_user_id_user_id_fk",
-      ["user_id"],
-      "user",
-      ["id"],
-    )
-    .execute()
+  // await db.schema
+  //   .alterTable("contract_file")
+  //   .addForeignKeyConstraint(
+  //     "contract_file_user_id_user_id_fk",
+  //     ["user_id"],
+  //     "user",
+  //     ["id"],
+  //   )
+  //   .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
