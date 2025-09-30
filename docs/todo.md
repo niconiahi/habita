@@ -13,7 +13,8 @@
 - [x] Allow user uploading the credit report
 - [x] Add slots
 - [x] Add services for property
-- [] Recieve contract data from FormData
+- [x] Recieve contract data from FormData
+- [x] Render services in contract
 - [] Send Google Calendar invitation to host and visitant
 - [] Add owner's address, needed in contract
 - [] Add tenant's phone, needed in contract

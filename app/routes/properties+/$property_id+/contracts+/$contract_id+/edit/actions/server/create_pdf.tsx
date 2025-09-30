@@ -85,6 +85,7 @@ export async function create_pdf(
       form_data.get("default_duration"),
     )
     const _owner = await fetch_owner(property_id)
+    console.log("_owner", _owner)
     const owner = v.parse(SignatorySchema, _owner)
     const _tenant = await fetch_tenant(property_id)
     const tenant = v.parse(SignatorySchema, _tenant)
@@ -126,11 +127,12 @@ export async function create_pdf(
         state: property.location.state ?? "hola",
       },
       owner_location,
+      services: property.services,
       property: {
-        unit: "D",
-        floor: 3,
+        unit: "3D",
       },
     }
+    console.log("props", props)
     const html = renderToString(<Pdf {...props} />)
     const browser = await chromium.launch()
     const page = await browser.newPage()
@@ -181,6 +183,7 @@ export async function create_pdf(
           .executeTakeFirstOrThrow()
         return contract_file
       })
+    console.log("created")
     return new Response("success")
   } catch (error) {
     return new Response(
@@ -223,7 +226,9 @@ type Location = {
   road: string
   house_number: number
 }
-
+type Service = {
+  type: number
+}
 export type Props = {
   end_date: string
   start_date: string
@@ -236,8 +241,8 @@ export type Props = {
   location: Location
   property: {
     unit: string
-    floor: number
   }
+  services: Service[]
 }
 
 function Pdf(props: Props) {
