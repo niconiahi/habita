@@ -308,23 +308,13 @@ async function run() {
     .values({
       state: PROPERTY_STATE.PUBLISHED,
       type: PROPERTY_TYPE.DEPARTMENT,
+      unit: "10C",
       location_id: location.id,
       created_at: now,
       updated_at: now,
     })
     .returning("id")
     .executeTakeFirstOrThrow()
-  await query_builder
-    .insertInto("property_type_department")
-    .values({
-      unit: "C",
-      floor: 10,
-      created_at: now,
-      updated_at: now,
-      property_id: property.id,
-    })
-    .executeTakeFirstOrThrow()
-  console.log("created property", property.id)
 
   const rooms: {
     type: RoomType

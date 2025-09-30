@@ -1,16 +1,18 @@
 import { useState } from "react"
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
-import {
-  LocationInput,
-  LocationSchema,
-} from "~/components/location_input"
+import { LocationInput } from "~/components/location_input"
 import { require_auth } from "~/lib/server/auth"
 import { error } from "~/lib/server/error"
-import { compose_point } from "~/lib/server/point"
 import { has_edit_access } from "~/lib/server/property_access"
-import { query_builder } from "~/lib/server/query_builder"
 import type { Route } from "./+types/new"
+import {
+  get_property_type_label,
+  PROPERTY_TYPE,
+  PropertyTypeSchema,
+  type PropertyType,
+} from "~/lib/server/property_type"
+import * as actions from "./actions"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",
@@ -40,54 +42,18 @@ export async function action({
   }
   switch (intent) {
     case INTENT.CREATE_PROPERTY: {
-      const location_ = v.parse(
-        LocationSchema,
-        JSON.parse(form_data.get("location") as string),
-      )
-      const now = new Date().toISOString()
-      const property = await query_builder
-        .transaction()
-        .execute(async (tx) => {
-          const location = await tx
-            .insertInto("location")
-            .values({
-              latitude: location_.lat,
-              longitude: location_.lon,
-              road: location_.address.road,
-              house_number: location_.address.house_number,
-              suburb: location_.address.suburb,
-              town: location_.address.town,
-              city: location_.address.city,
-              state: location_.address.state,
-              point: compose_point(
-                location_.lat,
-                location_.lon,
-              ),
-              address: location_.display_name,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
-          const property = await tx
-            .insertInto("property")
-            .values({
-              user_id: user.id,
-              created_at: now,
-              updated_at: now,
-              location_id: location.id,
-            })
-            .returning("property.id")
-            .executeTakeFirstOrThrow()
-          return property
-        })
-      return redirect(`/properties/${property.id}/edit`)
+      const { redirect_to } =
+        await actions.create_property(form_data)
+      return redirect(redirect_to)
     }
   }
 }
 
 export default function () {
   const [disabled, set_disabled] = useState(true)
+  const [property_type, set_property_type] =
+    useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
+  console.log("property_type", property_type)
   return (
     <main>
       <h1>create property</h1>
@@ -107,6 +73,41 @@ export default function () {
               set_disabled(true)
             }}
           />
+          <p>
+            <label htmlFor="type">tipo</label>
+            <select
+              name="type"
+              id="type"
+              required
+              onChange={(event) => {
+                const property_type = v.parse(
+                  PropertyTypeSchema,
+                  Number(event.target.value),
+                )
+                set_property_type(property_type)
+              }}
+            >
+              {Object.values(PROPERTY_TYPE).map((type) => {
+                const id = `property_type_${type}`
+                return (
+                  <option key={id} value={type}>
+                    {get_property_type_label(type)}
+                  </option>
+                )
+              })}
+            </select>
+          </p>
+          {property_type === PROPERTY_TYPE.DEPARTMENT ? (
+            <p>
+              <label htmlFor="unit">unidad</label>
+              <input
+                required
+                name="unit"
+                id="unit"
+                type="text"
+              />
+            </p>
+          ) : null}
           <button disabled={disabled} type="submit">
             crear propiedad
           </button>
