@@ -68,23 +68,24 @@ export async function action({
   )
   switch (intent) {
     case INTENT.UPDATE_CONTRACT: {
-      actions.update_contract(form_data, property_id)
+      await actions.update_contract(form_data, property_id)
       return null
     }
     case INTENT.DESTROY_CONTRACT: {
-      actions.destroy_contract(form_data)
+      await actions.destroy_contract(form_data)
       return null
     }
     case INTENT.CREATE_FILE: {
-      actions.create_file(form_data)
+      await actions.create_file(form_data)
       return null
     }
     case INTENT.DESTROY_FILE: {
-      actions.destroy_file(form_data)
+      await actions.destroy_file(form_data)
       return null
     }
     case INTENT.CREATE_PDF: {
-      actions.create_pdf(form_data, property_id)
+      console.log("creating pdf")
+      await actions.create_pdf(form_data, property_id)
       return null
     }
   }

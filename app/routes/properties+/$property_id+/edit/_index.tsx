@@ -17,7 +17,7 @@ import { error } from "~/lib/server/error"
 import { ForceNumberSchema } from "~/lib/server/force_number"
 import { has_edit_access } from "~/lib/server/property_access"
 import {
-  get_service_label,
+  get_service_type_label,
   SERVICE_TYPE,
 } from "~/lib/service"
 import {
@@ -170,7 +170,7 @@ function Services({ property }: { property: Property }) {
                         const id = `service_type_${type}`
                         return (
                           <option key={id} value={type}>
-                            {get_service_label(type)}
+                            {get_service_type_label(type)}
                           </option>
                         )
                       },

@@ -12,7 +12,7 @@ export const ServiceTypeSchema = v.picklist(
 )
 export type ServiceType = ObjectValues<typeof SERVICE_TYPE>
 
-export function get_service_label(type: ServiceType) {
+export function get_service_type_label(type: ServiceType) {
   switch (type) {
     case SERVICE_TYPE.MUNICIPAL_FEE: {
       return "ABL"

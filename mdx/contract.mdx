@@ -1,3 +1,5 @@
+import { get_service_type_label } from '../app/lib/service'
+
 export function day_as_word(day_number) {
   switch (day_number) {
     case 4: {
@@ -23,6 +25,14 @@ export function get_year(date) {
   return _date.getFullYear()
 }
 
+export function concatenate_services(services) {
+  return services
+    .map((service) => {
+      return get_service_type_label(service.type)
+    })
+    .join(", ")
+}
+
 # Contrato de locación
 
 ## Preámbulo
@@ -31,7 +41,7 @@ En **{props.location.state}**, a los {day_as_word(get_day(props.start_date))} **
 
 ## Primera
 
-**EL LOCADOR** cede la locación a **EL LOCATARIO** el inmueble sito en la calle **{props.location.road}** Nº **{props.location.house_number}**, la unidad **{props.property.unit}** del piso **{props.property.floor}**, en adelante denominado **“EL INMUEBLE”**
+**EL LOCADOR** cede la locación a **EL LOCATARIO** el inmueble sito en la calle **{props.location.road}** Nº **{props.location.house_number}**, la unidad **{props.property.unit}**, en adelante denominado **“EL INMUEBLE”**
 
 ## Segunda
 
@@ -39,7 +49,7 @@ El término de la presente locación se fija por el plazo de {props.duration}, c
 
 ## Tercera
 
-El precio del alquiler se conviene en cuotas mensual de **QUINIENTOS CINCUENTA MIL ($ 550.000)** durante la vigencia del contrato, y se actualizará utilizando un índice que tenga en cuenta la inflación mensual y los valores de mercado vigente. Todos los alquileres mensuales serán abonadas dentro de los  primeros **OCHO DIAS (8)** de cada mes por adelantado, sin necesidad de requerimiento alguno, en el domicilio de **EL LOCADOR** o donde este lo indique; bastando que no se abone el alquiler dentro del plazo fijado para que **EL LOCATARIO** quede constituido en **MORA**, sin necesidad de requerimiento judicial o extrajudicial alguno. El precio **NO** incluye: expensas ordinarias, luz, gas, agua o internet
+El precio del alquiler se conviene en cuotas mensual de **QUINIENTOS CINCUENTA MIL ($ 550.000)** durante la vigencia del contrato, y se actualizará utilizando un índice que tenga en cuenta la inflación mensual y los valores de mercado vigente. Todos los alquileres mensuales serán abonadas dentro de los  primeros **OCHO DIAS (8)** de cada mes por adelantado, sin necesidad de requerimiento alguno, en el domicilio de **EL LOCADOR** o donde este lo indique; bastando que no se abone el alquiler dentro del plazo fijado para que **EL LOCATARIO** quede constituido en **MORA**, sin necesidad de requerimiento judicial o extrajudicial alguno. El precio **NO** incluye: {concatenate_services(props.services)}
 
 ## Cuarta
 
@@ -79,7 +89,7 @@ La entrega de las llaves de la propiedad deberá justificarla **EL LOCATARIO** c
 
 ## Décima tercera
 
-**EL LOCADOR** constituye domicilio especial para todos los efectos legales, en **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**. CEL.: {props.owner.phone_number}. **EL LOCATARIO** constituye domicilio en **{props.location.road}** Nº **{props.location.house_number}** de **{props.location.state}**, la unidad la unidad **{props.property.unit}** del piso **{props.property.floor}**. CEL.: {props.tenant.phone_number}
+**EL LOCADOR** constituye domicilio especial para todos los efectos legales, en **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**. CEL.: {props.owner.phone_number}. **EL LOCATARIO** constituye domicilio en **{props.location.road}** Nº **{props.location.house_number}** de **{props.location.state}**, la unidad la unidad **{props.property.unit}**. CEL.: {props.tenant.phone_number}
 
 ## Décima quinta
 
