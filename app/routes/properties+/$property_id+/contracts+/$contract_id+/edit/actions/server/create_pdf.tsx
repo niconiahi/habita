@@ -151,6 +151,20 @@ export async function create_pdf(
     await query_builder
       .transaction()
       .execute(async (tx) => {
+        const { file_id } = await tx
+          .selectFrom("contract_file")
+          .select("file_id")
+          .where((eb) =>
+            eb.and([
+              eb("type", "=", CONTRACT_FILE_TYPE.CONTRACT),
+              eb("contract_id", "=", id),
+            ]),
+          )
+          .executeTakeFirstOrThrow()
+        await tx
+          .deleteFrom("file")
+          .where("id", "=", file_id)
+          .executeTakeFirstOrThrow()
         const hash = Bun.CryptoHasher.hash(
           "sha256",
           content,
@@ -173,7 +187,6 @@ export async function create_pdf(
           .insertInto("contract_file")
           .values({
             file_id: file.id,
-            user_id: 1,
             type: CONTRACT_FILE_TYPE.CONTRACT,
             contract_id: id,
             created_at: now,

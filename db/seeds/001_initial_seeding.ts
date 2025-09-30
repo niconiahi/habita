@@ -439,7 +439,6 @@ async function run() {
       .insertInto("contract_file")
       .values({
         file_id,
-        user_id: admin_id,
         contract_id: finished_contract.id,
         created_at: now,
         updated_at: now,
@@ -450,7 +449,6 @@ async function run() {
       .insertInto("contract_file")
       .values({
         file_id,
-        user_id: admin_id,
         contract_id: editing_contract.id,
         created_at: now,
         updated_at: now,
