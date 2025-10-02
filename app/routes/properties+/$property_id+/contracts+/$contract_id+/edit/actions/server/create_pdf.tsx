@@ -8,9 +8,13 @@ import {
 } from "~/lib/server/default_type"
 import {
   DurationSchema,
+  get_duration_label,
   type Duration,
 } from "~/lib/server/duration"
-import { EscalationTypeSchema } from "~/lib/server/escalation_type"
+import {
+  EscalationTypeSchema,
+  get_escalation_label,
+} from "~/lib/server/escalation_type"
 import {
   FineTypeSchema,
   type FineType,
@@ -24,6 +28,7 @@ import { fetch_property } from "~/routes/properties+/fetchers/server/property"
 import { query_builder } from "db/query_builder"
 import { now } from "~/lib/now"
 import { CONTRACT_FILE_TYPE } from "~/lib/server/contract_file_type"
+import { fetch_contract } from "../../fetchers/server/contract"
 
 export async function create_pdf(
   form_data: FormData,
@@ -36,10 +41,17 @@ export async function create_pdf(
         "property should exist when creating pdf",
       )
     }
-    const id = v.parse(
+    const contract_id = v.parse(
       ForceNumberSchema,
       form_data.get("id"),
     )
+    const contract = await fetch_contract(contract_id)
+    console.log("contract", contract)
+    const initial_price = v.parse(
+      v.number(),
+      contract.periods[0].price,
+    )
+    console.log("initial_price", initial_price)
     const start_date = v.parse(
       ForceDateSchema,
       form_data.get("start_date"),
@@ -47,14 +59,6 @@ export async function create_pdf(
     const end_date = v.parse(
       ForceDateSchema,
       form_data.get("end_date"),
-    )
-    const duration = v.parse(
-      v.string(),
-      form_data.get("duration"),
-    )
-    const formula = v.parse(
-      v.string(),
-      form_data.get("formula"),
     )
     const escalation_type = v.parse(
       EscalationTypeSchema,
@@ -107,6 +111,7 @@ export async function create_pdf(
       amount: fine_amount,
       duration: "D1D",
     }
+
     const props: Props = {
       end_date: end_date.toISOString(),
       start_date: start_date.toISOString(),
@@ -118,6 +123,7 @@ export async function create_pdf(
       default: _default,
       owner,
       tenant,
+      price: initial_price,
       location: {
         // TODO: house_number should be a number
         house_number: Number(
@@ -128,6 +134,10 @@ export async function create_pdf(
       },
       owner_location,
       services: property.services,
+      escalation: {
+        type: get_escalation_label(escalation_type),
+        duration: get_duration_label(escalation_duration),
+      },
       property: {
         unit: "3D",
       },
@@ -157,7 +167,7 @@ export async function create_pdf(
           .where((eb) =>
             eb.and([
               eb("type", "=", CONTRACT_FILE_TYPE.CONTRACT),
-              eb("contract_id", "=", id),
+              eb("contract_id", "=", contract_id),
             ]),
           )
           .executeTakeFirstOrThrow()
@@ -188,7 +198,7 @@ export async function create_pdf(
           .values({
             file_id: file.id,
             type: CONTRACT_FILE_TYPE.CONTRACT,
-            contract_id: id,
+            contract_id: contract_id,
             created_at: now,
             updated_at: now,
           })
@@ -242,16 +252,22 @@ type Location = {
 type Service = {
   type: number
 }
+type Escalation = {
+  type: string
+  duration: string
+}
 export type Props = {
+  duration: string
   end_date: string
   start_date: string
-  duration: string
   owner: Signatory
   fine: Fine
   default: Default
   tenant: Signatory
   owner_location: Location
   location: Location
+  escalation: Escalation
+  price: number
   property: {
     unit: string
   }

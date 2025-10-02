@@ -35,5 +35,8 @@ export function get_duration_label(duration: Duration) {
     case "P1Y": {
       return "1 año"
     }
+    default: {
+      throw new Error("unsupported duration type")
+    }
   }
 }

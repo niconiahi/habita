@@ -486,10 +486,6 @@ function Periods({ contract }: { contract: Contract }) {
           }}
         >
           {contract.periods.map((period) => {
-            console.log(
-              "contract.periods.length",
-              contract.periods.length,
-            )
             const id = `file_${period.start_date}`
             const is_first =
               contract.periods[0].start_date ===
