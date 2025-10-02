@@ -1,7 +1,7 @@
 import * as dateFns from "date-fns"
 import { renderToString } from "react-dom/server"
-import { chromium } from "playwright"
 import * as v from "valibot"
+import { generate_pdf_with_playwright } from "~/lib/server/pdf_generator"
 import {
   DefaultTypeSchema,
   type DefaultType,
@@ -46,12 +46,10 @@ export async function create_pdf(
       form_data.get("id"),
     )
     const contract = await fetch_contract(contract_id)
-    console.log("contract", contract)
     const initial_price = v.parse(
       v.number(),
       contract.periods[0].price,
     )
-    console.log("initial_price", initial_price)
     const start_date = v.parse(
       ForceDateSchema,
       form_data.get("start_date"),
@@ -89,7 +87,6 @@ export async function create_pdf(
       form_data.get("default_duration"),
     )
     const _owner = await fetch_owner(property_id)
-    console.log("_owner", _owner)
     const owner = v.parse(SignatorySchema, _owner)
     const _tenant = await fetch_tenant(property_id)
     const tenant = v.parse(SignatorySchema, _tenant)
@@ -142,26 +139,12 @@ export async function create_pdf(
         unit: "3D",
       },
     }
-    console.log("props", props)
     const html = renderToString(<Pdf {...props} />)
-    const browser = await chromium.launch()
-    const page = await browser.newPage()
-    await page.setContent(html, {
-      waitUntil: "networkidle",
-    })
-    const pdf_buffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-    })
-    await browser.close()
-    const pdf = new Blob([Uint8Array.from(pdf_buffer)], {
-      type: "application/pdf",
-    })
-    const content = Buffer.from(await pdf.arrayBuffer())
+    const content = await generate_pdf_with_playwright(html)
     await query_builder
       .transaction()
       .execute(async (tx) => {
-        const { file_id } = await tx
+        const contract_file_ = await tx
           .selectFrom("contract_file")
           .select("file_id")
           .where((eb) =>
@@ -170,11 +153,13 @@ export async function create_pdf(
               eb("contract_id", "=", contract_id),
             ]),
           )
-          .executeTakeFirstOrThrow()
-        await tx
-          .deleteFrom("file")
-          .where("id", "=", file_id)
-          .executeTakeFirstOrThrow()
+          .executeTakeFirst()
+        if (contract_file_ !== undefined) {
+          await tx
+            .deleteFrom("file")
+            .where("id", "=", contract_file_.file_id)
+            .executeTakeFirstOrThrow()
+        }
         const hash = Bun.CryptoHasher.hash(
           "sha256",
           content,
@@ -184,12 +169,12 @@ export async function create_pdf(
           .insertInto("file")
           .values({
             content,
-            mime: pdf.type,
+            mime: "application/pdf",
             basename: "contract.pdf",
             created_at: now,
             updated_at: now,
             hash: hash,
-            size: pdf.size,
+            size: content.byteLength,
           })
           .returning("id")
           .executeTakeFirstOrThrow()
