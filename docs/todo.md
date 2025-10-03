@@ -16,7 +16,6 @@
 - [x] Recieve contract data from FormData
 - [x] Render services in contract
 - [x] Delete previous contract when generating one
-- [] Wire up all the missing data points when creating the contract
+- [x] Wire up all the missing data points when creating the contract
+- [x] Allow uploading photos for property
 - [] Send Google Calendar invitation to host and visitant
-- [] Add owner's address, needed in contract
-- [] Add tenant's phone, needed in contract

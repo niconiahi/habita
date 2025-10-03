@@ -108,7 +108,6 @@ export async function create_pdf(
       amount: fine_amount,
       duration: "D1D",
     }
-
     const props: Props = {
       end_date: end_date.toISOString(),
       start_date: start_date.toISOString(),

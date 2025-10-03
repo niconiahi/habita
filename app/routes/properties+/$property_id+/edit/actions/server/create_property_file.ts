@@ -1,17 +1,19 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { now } from "~/lib/now"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { UserFileTypeSchema } from "~/lib/server/user_file_type"
+import { PROPERTY_FILE_TYPE } from "~/lib/server/property_file_type"
 
-export async function create_file(form_data: FormData) {
+export async function create_property_file(
+  form_data: FormData,
+  property_id: number,
+) {
+  console.log(
+    'form_data.get("file")',
+    form_data.get("file"),
+  )
   const file_ = v.parse(
     v.instance(File),
     form_data.get("file"),
-  )
-  const type = v.parse(
-    v.pipe(ForceNumberSchema, UserFileTypeSchema),
-    form_data.get("type"),
   )
   await query_builder.transaction().execute(async (tx) => {
     const content = Buffer.from(await file_.bytes())
@@ -20,6 +22,7 @@ export async function create_file(form_data: FormData) {
       content,
       "hex",
     )
+    console.log("hash", hash)
     const file = await tx
       .insertInto("file")
       .values({
@@ -34,12 +37,11 @@ export async function create_file(form_data: FormData) {
       .returning("id")
       .executeTakeFirstOrThrow()
     await tx
-      .insertInto("user_file")
+      .insertInto("property_file")
       .values({
-        // TODO: use real user_id
-        user_id: 1,
+        type: PROPERTY_FILE_TYPE.PHOTO,
         file_id: file.id,
-        type,
+        property_id,
         created_at: now,
         updated_at: now,
       })

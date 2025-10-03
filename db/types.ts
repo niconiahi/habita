@@ -124,6 +124,15 @@ export interface Property {
   updated_at: Timestamp;
 }
 
+export interface PropertyFile {
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  property_id: number;
+  type: number;
+  updated_at: Timestamp;
+}
+
 export interface Room {
   created_at: Timestamp;
   id: Generated<number>;
@@ -767,6 +776,7 @@ export interface DB {
   location: Location;
   period: Period;
   property: Property;
+  property_file: PropertyFile;
   room: Room;
   service: Service;
   session: Session;

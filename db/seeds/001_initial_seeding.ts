@@ -11,6 +11,10 @@ import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
 } from "../../app/lib/server/contract_file_type.ts"
+import {
+  PROPERTY_FILE_TYPE,
+  type PropertyFileType,
+} from "../../app/lib/server/property_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
 import { PROPERTY_TYPE } from "../../app/lib/server/property_type.ts"
@@ -456,6 +460,33 @@ async function run() {
       })
       .execute()
     console.log("created contract file")
+  }
+  const PROPERTY_FILES: {
+    type: ContractFileType
+    path: string
+  }[] = [
+    {
+      type: PROPERTY_FILE_TYPE.PHOTO,
+      path: compose_file_path("property_image_1.webp"),
+    },
+    {
+      type: PROPERTY_FILE_TYPE.PHOTO,
+      path: compose_file_path("property_image_2.webp"),
+    },
+  ]
+  for (const property_file of PROPERTY_FILES) {
+    const file_id = await upsert_file(property_file.path)
+    await query_builder
+      .insertInto("property_file")
+      .values({
+        file_id,
+        property_id: property.id,
+        created_at: now,
+        updated_at: now,
+        type: property_file.type,
+      })
+      .execute()
+    console.log("created property file")
   }
 }
 

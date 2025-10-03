@@ -35,6 +35,7 @@ const INTENT = {
   CREATE_SERVICE: "create_service",
   UPDATE_SERVICE: "update_service",
   DESTROY_SERVICE: "destroy_service",
+  CREATE_PROPERTY_FILE: "create_property_file",
 } as const
 
 export async function action({
@@ -93,6 +94,11 @@ export async function action({
       actions.destroy_service(form_data)
       return null
     }
+    case INTENT.CREATE_PROPERTY_FILE: {
+      console.log("creating proeprty file")
+      actions.create_property_file(form_data, property_id)
+      return null
+    }
   }
   return null
 }
@@ -130,9 +136,53 @@ export default function ({
       <h1>propiedad</h1>
       <Location property={property} />
       <Rooms property={property} />
+      <Photos property={property} />
       <Services property={property} />
       <Contracts property={property} />
     </main>
+  )
+}
+
+function Photos({ property }: { property: Property }) {
+  const action_data = useActionData<{ error?: string }>()
+  return (
+    <section>
+      <h2>fotos</h2>
+      <ul
+        style={{
+          gap: "1rem",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {property.images.map((image) => {
+          const id = `image_${image.id}`
+          return (
+            <img
+              alt="someresr"
+              key={id}
+              src={`data:image/webp;base64,${image.content}`}
+            />
+          )
+        })}
+      </ul>
+      {action_data?.error && (
+        <p style={{ color: "red" }}>{action_data.error}</p>
+      )}
+      <Form method="POST" encType="multipart/form-data">
+        <p>
+          <label htmlFor="file">foto</label>
+          <input type="file" id="file" name="file" />
+        </p>
+        <button
+          type="submit"
+          name="intent"
+          value={INTENT.CREATE_PROPERTY_FILE}
+        >
+          agregar
+        </button>
+      </Form>
+    </section>
   )
 }
 
