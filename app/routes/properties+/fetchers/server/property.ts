@@ -1,3 +1,4 @@
+import { sql } from "kysely"
 import {
   jsonArrayFrom,
   jsonObjectFrom,
@@ -131,6 +132,27 @@ export async function fetch_property(id: number) {
             "property.id",
           ),
       ).as("services"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("property_file")
+          .innerJoin(
+            "file",
+            "file.id",
+            "property_file.file_id",
+          )
+          .select([
+            "file.basename",
+            "file.id",
+            sql<string>`encode(file.content,
+  'base64')`.as("content"),
+            "property_file.type",
+          ])
+          .whereRef(
+            "property_file.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("images"),
     ])
     .where("property.id", "=", id)
     .executeTakeFirst()
