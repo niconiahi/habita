@@ -70,9 +70,13 @@ services:
       - ../../.env
     environment:
       PORT: 8081
+      SMTP_HOST: smtp
+      SMTP_PORT: "25"
     depends_on:
       db:
         condition: service_healthy
+      smtp:
+        condition: service_started
     ports:
       - "8081:8081"
     healthcheck:
@@ -123,6 +127,18 @@ services:
           memory: 8G
         reservations:
           memory: 4G
+
+  smtp:
+    image: namshi/smtp
+    restart: unless-stopped
+    environment:
+      - RELAY_NETWORKS=:172.0.0.0/8
+    ports:
+      - "25:25"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
 
 volumes:
   memudo_app_data:
