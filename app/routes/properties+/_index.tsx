@@ -1,4 +1,4 @@
-import { display_address } from "~/lib/display_address"
+import { display_location } from "~/lib/display_address"
 import type { Route } from "./+types/_index"
 import { fetch_properties } from "./fetchers/server/properties"
 import { Link } from "react-router"
@@ -22,7 +22,7 @@ export default function ({
             <li key={key}>
               <Link to={`${property.id}`}>
                 propiedad localizada en{" "}
-                {display_address(property.location)}
+                {display_location(property.location)}
               </Link>
             </li>
           )

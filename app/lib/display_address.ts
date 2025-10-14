@@ -1,6 +1,6 @@
 import type { Property } from "~/routes/properties+/fetchers/server/property"
 
-export function display_address(
+export function display_location(
   location: Property["location"],
 ) {
   const road_and_number = `${location.road} ${location.house_number}`

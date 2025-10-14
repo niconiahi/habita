@@ -18,4 +18,4 @@
 - [x] Delete previous contract when generating one
 - [x] Wire up all the missing data points when creating the contract
 - [x] Allow uploading photos for property
-- [] Send Google Calendar invitation to host and visitant
+- [x] Send Google Calendar invitation to host and visitant

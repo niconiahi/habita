@@ -18,13 +18,17 @@ const INTENT = {
 
 export async function action({
   request,
+  params,
 }: Route.ActionArgs) {
   const form_data = await request.formData()
   const intent = form_data.get("intent")
   if (!intent) {
     throw error(400, "intent is required")
   }
-  console.log("intent")
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
   switch (intent) {
     case INTENT.SET_DATE: {
       const { redirect_to } = await actions.set_date(
@@ -34,7 +38,7 @@ export async function action({
       return redirect(redirect_to)
     }
     case INTENT.UPDATE_SLOT: {
-      await actions.update_slot(form_data)
+      await actions.update_slot(form_data, property_id)
       return redirect("..")
     }
   }

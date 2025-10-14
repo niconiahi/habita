@@ -1,7 +1,8 @@
 FROM golang:1.22-alpine AS runtime
 WORKDIR /src
-COPY run/main.go .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/middleware main.go
+COPY go.mod .
+COPY run/ ./run/
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/middleware run/main.go
 
 FROM alpine:3.20 AS system
 RUN apk add --no-cache curl
