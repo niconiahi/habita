@@ -19,3 +19,7 @@
 - [x] Wire up all the missing data points when creating the contract
 - [x] Allow uploading photos for property
 - [x] Send Google Calendar invitation to host and visitant
+- [] Create fresh administrator and create property from scratch, includind at least one of each of the required fields
+- [] Upon contract creation, redirect to contract edit page
+- [] Rename "habitaciones" for "ambientes"
+- [] Upon property creation, it should be able to assign an owner and tenant

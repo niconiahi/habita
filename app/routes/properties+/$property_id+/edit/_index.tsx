@@ -26,6 +26,7 @@ import {
 } from "../../fetchers/server/property"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/server"
+import { get_access_type_label } from "~/lib/server/access_type"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -136,6 +137,7 @@ export default function ({
       <h1>propiedad</h1>
       <Location property={property} />
       <Rooms property={property} />
+      <Members property={property} />
       <Photos property={property} />
       <Services property={property} />
       <Contracts property={property} />
@@ -180,6 +182,48 @@ function Photos({ property }: { property: Property }) {
           value={INTENT.CREATE_PROPERTY_FILE}
         >
           agregar
+        </button>
+      </Form>
+    </section>
+  )
+}
+
+function Members({ property }: { property: Property }) {
+  console.log("property.members", property.members)
+  return (
+    <section>
+      <h2>miembros</h2>
+      <ul
+        style={{
+          gap: "1rem",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {property.members.map((member) => {
+          const id = `member-${member.id}`
+          return (
+            <li key={id}>
+              <input
+                type="hidden"
+                value={member.id}
+                name="id"
+              />
+              <p>
+                {member.name} {member.surname}
+              </p>
+              <p>{get_access_type_label(member.type)}</p>
+            </li>
+          )
+        })}
+      </ul>
+      <Form method="POST">
+        <button
+          type="submit"
+          name="intent"
+          value={INTENT.CREATE_SERVICE}
+        >
+          agregar servicio
         </button>
       </Form>
     </section>
@@ -314,7 +358,7 @@ function Location({ property }: { property: Property }) {
 function Rooms({ property }: { property: Property }) {
   return (
     <section>
-      <h2>habitaciones</h2>
+      <h2>ambientes</h2>
       <ul>
         {property.rooms.map((room) => {
           const id = `room-${room.id}`

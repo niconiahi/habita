@@ -11,10 +11,7 @@ import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
 } from "../../app/lib/server/contract_file_type.ts"
-import {
-  PROPERTY_FILE_TYPE,
-  type PropertyFileType,
-} from "../../app/lib/server/property_file_type.ts"
+import { PROPERTY_FILE_TYPE } from "../../app/lib/server/property_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
 import { PROPERTY_TYPE } from "../../app/lib/server/property_type.ts"
@@ -268,7 +265,7 @@ async function run() {
     phone_number: "+5491122537752",
     document_number: 37782650,
     now,
-    email: "nicolas.accetta@gmail.com",
+    email: "medina93andrea@gmail.com",
   })
   const admin_id = await upsert_user({
     surname: "Andrea",
@@ -276,7 +273,7 @@ async function run() {
     phone_number: "+5491125597648",
     document_number: 36829114,
     now,
-    email: "medina93andrea@gmail.com",
+    email: "nicolas.accetta@gmail.com",
   })
   const tenant_id = await upsert_user({
     surname: "Mario",

@@ -11,11 +11,11 @@ export async function update_contract(
   const id = v.parse(ForceNumberSchema, form_data.get("id"))
   const formula = v.parse(
     v.string(),
-    form_data.get("formula"),
+    form_data.get("escalation_type"),
   )
   const duration = v.parse(
     v.string(),
-    form_data.get("duration"),
+    form_data.get("escalation_duration"),
   )
   const start_date = v.parse(
     DateSchema,
