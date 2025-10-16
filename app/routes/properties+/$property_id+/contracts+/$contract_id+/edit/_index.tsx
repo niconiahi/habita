@@ -36,6 +36,11 @@ import {
   get_default_label,
   type DefaultType,
 } from "~/lib/server/default_type"
+import { fetch_owner, type Owner } from "~/lib/server/owner"
+import {
+  fetch_tenant,
+  type Tenant,
+} from "~/lib/server/tenant"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
@@ -104,6 +109,13 @@ export async function loader({
     ForceNumberSchema,
     params.contract_id,
     {
+      message: "contract id should be a number",
+    },
+  )
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+    {
       message: "property id should be a number",
     },
   )
@@ -113,23 +125,37 @@ export async function loader({
       `property does not exist for id ${contract_id}`,
     )
   }
-  return { contract }
+  const owner = await fetch_owner(property_id)
+  const tenant = await fetch_tenant(property_id)
+  return { contract, owner, tenant }
 }
 
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { contract } = loaderData
+  const { contract, tenant, owner } = loaderData
   return (
     <>
-      <Fields contract={contract} />
+      <Fields
+        contract={contract}
+        tenant={tenant}
+        owner={owner}
+      />
       <Documents contract={contract} />
       <Periods contract={contract} />
     </>
   )
 }
 
-function Fields({ contract }: { contract: Contract }) {
+function Fields({
+  contract,
+  tenant,
+  owner,
+}: {
+  tenant: Tenant
+  owner: Owner
+  contract: Contract
+}) {
   const [fine_type, set_fine_type] = useState<FineType>(
     FINE_TYPE.FIXED,
   )
@@ -172,40 +198,6 @@ function Fields({ contract }: { contract: Contract }) {
                 : undefined
             }
           />
-        </p>
-        <p>
-          <label htmlFor="duration">frecuencia</label>
-          <select
-            name="duration"
-            id="duration"
-            defaultValue={contract.duration ?? undefined}
-          >
-            {DURATIONS.map((duration) => {
-              const id = `duration_${duration}`
-              return (
-                <option key={id} value={duration}>
-                  {get_duration_label(duration)}
-                </option>
-              )
-            })}
-          </select>
-        </p>
-        <p>
-          <label htmlFor="formula">formula</label>
-          <select
-            name="formula"
-            id="formula"
-            defaultValue={contract.formula ?? undefined}
-          >
-            {Object.values(ESCALATION_TYPE).map((type) => {
-              const id = `formula_${type}`
-              return (
-                <option key={id} value={type}>
-                  {get_escalation_label(type)}
-                </option>
-              )
-            })}
-          </select>
         </p>
         <fieldset>
           <legend>aumento</legend>
@@ -375,6 +367,7 @@ function Fields({ contract }: { contract: Contract }) {
         <button
           type="submit"
           name="intent"
+          disabled={!owner || !tenant}
           value={INTENT.CREATE_PDF}
         >
           generar pdf

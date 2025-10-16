@@ -134,6 +134,24 @@ export async function fetch_property(id: number) {
       ).as("services"),
       jsonArrayFrom(
         eb
+          .selectFrom("user")
+          .innerJoin("access", "access.user_id", "user.id")
+          .whereRef(
+            "access.property_id",
+            "=",
+            "property.id",
+          )
+          .select([
+            "user.id",
+            "user.name",
+            "user.surname",
+            "user.phone_number",
+            "user.document_number",
+            "access.type",
+          ]),
+      ).as("members"),
+      jsonArrayFrom(
+        eb
           .selectFrom("property_file")
           .innerJoin(
             "file",

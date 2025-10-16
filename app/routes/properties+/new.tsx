@@ -36,6 +36,7 @@ export async function action({
     throw error(400, "not found")
   }
   const form_data = await request.formData()
+  form_data.set("user_id", String(user.id))
   const intent = form_data.get("intent")
   if (!intent) {
     throw error(400, "intent is required")

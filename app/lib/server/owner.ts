@@ -17,10 +17,12 @@ export async function fetch_owner(property_id: number) {
       ]),
     )
     .select([
+      "user.id",
       "user.name",
       "user.surname",
       "user.phone_number",
       "user.document_number",
     ])
-    .executeTakeFirstOrThrow()
+    .executeTakeFirst()
 }
+export type Owner = Awaited<ReturnType<typeof fetch_owner>>

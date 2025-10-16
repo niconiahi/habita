@@ -7,6 +7,8 @@ import {
   PropertyTypeSchema,
 } from "~/lib/server/property_type"
 import { PROPERTY_STATE } from "~/lib/server/property_state"
+import { ACCESS_TYPE } from "~/lib/server/access_type"
+import { ForceNumberSchema } from "~/lib/server/force_number"
 
 export async function create_property(form_data: FormData) {
   const location_ = v.parse(
@@ -61,6 +63,20 @@ export async function create_property(form_data: FormData) {
           location_id: location.id,
         })
         .returning("property.id")
+        .executeTakeFirstOrThrow()
+      const user_id = v.parse(
+        ForceNumberSchema,
+        form_data.get("user_id"),
+      )
+      await tx
+        .insertInto("access")
+        .values({
+          type: ACCESS_TYPE.ADMINISTRATOR,
+          created_at: now,
+          updated_at: now,
+          property_id: property.id,
+          user_id,
+        })
         .executeTakeFirstOrThrow()
       return property
     })

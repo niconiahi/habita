@@ -82,18 +82,18 @@ export async function create_pdf(
       ForceNumberSchema,
       form_data.get("default_amount"),
     )
-    const default_duration = v.parse(
-      DurationSchema,
-      form_data.get("default_duration"),
-    )
+    console.log("default_amount", default_amount)
     const _owner = await fetch_owner(property_id)
     const owner = v.parse(SignatorySchema, _owner)
+    console.log("owner", owner)
     const _tenant = await fetch_tenant(property_id)
     const tenant = v.parse(SignatorySchema, _tenant)
+    console.log("tenant", tenant)
     const _default: Default = {
       type: default_type,
       amount: default_amount,
     }
+    console.log("_default", _default)
     const owner_location: {
       state: string
       road: string
@@ -140,6 +140,7 @@ export async function create_pdf(
     }
     const html = renderToString(<Pdf {...props} />)
     const content = await generate_pdf_with_playwright(html)
+    console.log("content", content)
     await query_builder
       .transaction()
       .execute(async (tx) => {
@@ -193,6 +194,7 @@ export async function create_pdf(
     console.log("created")
     return new Response("success")
   } catch (error) {
+    console.log("error", error.message)
     return new Response(
       JSON.stringify({
         error:
@@ -241,7 +243,6 @@ type Escalation = {
   duration: string
 }
 export type Props = {
-  duration: string
   end_date: string
   start_date: string
   owner: Signatory
