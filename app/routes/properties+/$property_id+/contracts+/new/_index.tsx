@@ -40,8 +40,11 @@ export async function action({
   )
   switch (intent) {
     case INTENT.CREATE_CONTRACT: {
-      actions.create_contract(form_data, property_id)
-      return redirect(`/properties/${property_id}/edit`)
+      const { redirect_to } = await actions.create_contract(
+        form_data,
+        property_id,
+      )
+      return redirect(redirect_to)
     }
   }
 }
