@@ -12,26 +12,32 @@ export async function create_contract(
     ForceNumberSchema,
     form_data.get("price"),
   )
-  await query_builder.transaction().execute(async (tx) => {
-    const contract = await tx
-      .insertInto("contract")
-      .values({
-        property_id,
-        created_at: now,
-        updated_at: now,
-        state: CONTRACT_STATE.EDITING,
-      })
-      .returning("id")
-      .executeTakeFirstOrThrow()
-    await tx
-      .insertInto("period")
-      .values({
-        contract_id: contract.id,
-        price: price.toString(),
-        created_at: now,
-        updated_at: now,
-      })
-      .returning("id")
-      .executeTakeFirstOrThrow()
-  })
+  const contract = await query_builder
+    .transaction()
+    .execute(async (tx) => {
+      const contract = await tx
+        .insertInto("contract")
+        .values({
+          property_id,
+          created_at: now,
+          updated_at: now,
+          state: CONTRACT_STATE.EDITING,
+        })
+        .returning("id")
+        .executeTakeFirstOrThrow()
+      await tx
+        .insertInto("period")
+        .values({
+          contract_id: contract.id,
+          price: price.toString(),
+          created_at: now,
+          updated_at: now,
+        })
+        .returning("id")
+        .executeTakeFirstOrThrow()
+      return contract
+    })
+  return {
+    redirect_to: `/properties/${property_id}/contracts/${contract.id}/edit`,
+  }
 }
