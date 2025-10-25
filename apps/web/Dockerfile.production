@@ -1,0 +1,36 @@
+# Production Dockerfile - Multi-stage build for optimized image size
+FROM oven/bun AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN bun install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN bun run build
+
+# Production runtime stage
+FROM oven/bun AS runtime
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+
+# Install ONLY production dependencies
+RUN bun install --frozen-lockfile --production
+
+# Copy built app from builder stage
+COPY --from=builder /app/build ./build
+
+# Set production environment
+ENV NODE_ENV=production
+
+# Run the built server
+CMD ["bun", "run", "start"]

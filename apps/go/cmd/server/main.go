@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"memudo/run/smtp"
+	"habita/apps/go/internal/smtp"
 )
 
 func main() {
