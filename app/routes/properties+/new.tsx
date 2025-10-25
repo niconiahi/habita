@@ -54,7 +54,6 @@ export default function () {
   const [disabled, set_disabled] = useState(true)
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
-  console.log("property_type", property_type)
   return (
     <main>
       <h1>create property</h1>

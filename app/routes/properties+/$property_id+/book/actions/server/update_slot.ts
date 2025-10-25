@@ -4,7 +4,7 @@ import { ForceNumberSchema } from "~/lib/server/force_number"
 import { SLOT_STATE } from "~/lib/server/slot_state"
 import { create_ics, InviteeSchema } from "~/lib/server/ics"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property"
-import { send_calendar_invite } from "~/lib/server/email"
+import { send_calendar_invite } from "~/lib/server/send_calendar_invite"
 import { display_location } from "~/lib/display_address"
 
 export async function update_slot(
@@ -34,7 +34,6 @@ export async function update_slot(
       "slot.visitant_id",
     ])
     .executeTakeFirstOrThrow()
-
   const host = v.parse(
     InviteeSchema,
     await query_builder
@@ -43,7 +42,6 @@ export async function update_slot(
       .where("id", "=", slot.host_id)
       .executeTakeFirstOrThrow(),
   )
-
   const visitant = v.parse(
     InviteeSchema,
     await query_builder
@@ -52,7 +50,6 @@ export async function update_slot(
       .where("id", "=", slot.visitant_id)
       .executeTakeFirstOrThrow(),
   )
-
   const property = await fetch_property(property_id)
   if (!property) {
     throw new Response("property should exist", {
@@ -68,7 +65,6 @@ export async function update_slot(
     host,
     visitant,
   })
-  console.log("content", content)
 
   const text = `Hello ${visitant.name},
 

@@ -15,7 +15,6 @@ import {
 } from "~/lib/server/contract_state"
 import { error } from "~/lib/server/error"
 import { ForceNumberSchema } from "~/lib/server/force_number"
-import { has_edit_access } from "~/lib/server/property_access"
 import {
   get_service_type_label,
   SERVICE_TYPE,
@@ -26,7 +25,11 @@ import {
 } from "../../fetchers/server/property"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/server"
-import { get_access_type_label } from "~/lib/server/access_type"
+import {
+  ACCESS_TYPE,
+  get_access_type_label,
+} from "~/lib/server/access_type"
+import { has_edit_access } from "~/lib/server/property_access"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -37,6 +40,7 @@ const INTENT = {
   UPDATE_SERVICE: "update_service",
   DESTROY_SERVICE: "destroy_service",
   CREATE_PROPERTY_FILE: "create_property_file",
+  INVITE_OWNER: "invite_owner",
 } as const
 
 export async function action({
@@ -59,6 +63,7 @@ export async function action({
       message: "property id should be a number",
     },
   )
+  form_data.set("property_id", String(property_id))
   switch (intent) {
     case INTENT.UPDATE_ROOM: {
       actions.update_room(form_data)
@@ -96,8 +101,11 @@ export async function action({
       return null
     }
     case INTENT.CREATE_PROPERTY_FILE: {
-      console.log("creating proeprty file")
       actions.create_property_file(form_data, property_id)
+      return null
+    }
+    case INTENT.INVITE_OWNER: {
+      actions.invite_owner(form_data)
       return null
     }
   }
@@ -190,6 +198,9 @@ function Photos({ property }: { property: Property }) {
 
 function Members({ property }: { property: Property }) {
   console.log("property.members", property.members)
+  const has_owner = property.members.some((member) => {
+    return member.type === ACCESS_TYPE.OWNER
+  })
   return (
     <section>
       <h2>miembros</h2>
@@ -217,15 +228,18 @@ function Members({ property }: { property: Property }) {
           )
         })}
       </ul>
-      <Form method="POST">
-        <button
-          type="submit"
-          name="intent"
-          value={INTENT.CREATE_SERVICE}
-        >
-          agregar servicio
-        </button>
-      </Form>
+      {!has_owner ? (
+        <Form method="POST">
+          <input name="email" />
+          <button
+            type="submit"
+            name="intent"
+            value={INTENT.INVITE_OWNER}
+          >
+            invitar dueño
+          </button>
+        </Form>
+      ) : null}
     </section>
   )
 }

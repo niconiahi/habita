@@ -17,6 +17,7 @@ func main() {
 	})
 
 	http.HandleFunc("/send-email", smtp.Handler)
+	http.HandleFunc("/send-owner-invite", smtp.OwnerInviteHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {

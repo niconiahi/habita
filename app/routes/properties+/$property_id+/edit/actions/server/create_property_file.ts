@@ -7,10 +7,6 @@ export async function create_property_file(
   form_data: FormData,
   property_id: number,
 ) {
-  console.log(
-    'form_data.get("file")',
-    form_data.get("file"),
-  )
   const file_ = v.parse(
     v.instance(File),
     form_data.get("file"),
@@ -22,7 +18,6 @@ export async function create_property_file(
       content,
       "hex",
     )
-    console.log("hash", hash)
     const file = await tx
       .insertInto("file")
       .values({
