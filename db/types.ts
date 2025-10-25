@@ -88,6 +88,16 @@ export interface GeometryColumns {
   type: string | null;
 }
 
+export interface InvitationToken {
+  created_at: Timestamp;
+  email: string;
+  expires_at: Timestamp;
+  id: Generated<number>;
+  property_id: number;
+  token: string | null;
+  used_at: Timestamp | null;
+}
+
 export interface Location {
   address: string;
   city: string | null;
@@ -773,6 +783,7 @@ export interface DB {
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;
+  invitation_token: InvitationToken;
   location: Location;
   period: Period;
   property: Property;

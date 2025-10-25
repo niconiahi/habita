@@ -260,18 +260,18 @@ async function run() {
   const now = new Date().toISOString()
   console.log("creating users")
   const owner_id = await upsert_user({
-    surname: "Accetta",
-    name: "Nicolas",
-    phone_number: "+5491122537752",
-    document_number: 37782650,
-    now,
-    email: "medina93andrea@gmail.com",
-  })
-  const admin_id = await upsert_user({
     surname: "Andrea",
     name: "Medina",
     phone_number: "+5491125597648",
     document_number: 36829114,
+    now,
+    email: "medina93andrea@gmail.com",
+  })
+  const admin_id = await upsert_user({
+    surname: "Accetta",
+    name: "Nicolas",
+    phone_number: "+5491122537752",
+    document_number: 37782650,
     now,
     email: "nicolas.accetta@gmail.com",
   })
