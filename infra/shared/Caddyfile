@@ -1,0 +1,10 @@
+dev.memudo.rent {
+  tls /etc/ssl/certs/dev.memudo.rent+1.pem /etc/ssl/private/dev.memudo.rent+1-key.pem
+  
+  handle /nominatim/* {
+    uri strip_prefix /nominatim
+    reverse_proxy nominatim:8080
+  }
+  
+  reverse_proxy app:5173
+}
