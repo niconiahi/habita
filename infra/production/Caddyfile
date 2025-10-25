@@ -1,0 +1,36 @@
+habita.rent {
+  # Caddy automatically gets Let's Encrypt certificates
+  # No TLS configuration needed - it just works!
+
+  # Security headers
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+    X-XSS-Protection "1; mode=block"
+    Referrer-Policy "strict-origin-when-cross-origin"
+  }
+
+  # Nominatim geocoding API
+  handle /nominatim/* {
+    uri strip_prefix /nominatim
+    reverse_proxy nominatim:8080
+  }
+
+  # Main application
+  reverse_proxy app:3000
+
+  # Enable compression
+  encode gzip
+
+  # Access logs
+  log {
+    output file /var/log/caddy/access.log
+    format json
+  }
+}
+
+www.habita.rent {
+  # Redirect www to non-www
+  redir https://habita.rent{uri} permanent
+}

@@ -5,21 +5,14 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "up": "docker compose --file run/development/docker-compose.yml up",
-    "down": "docker compose --file run/development/docker-compose.yml down --remove-orphans",
-    "down:nuclear": "docker compose --file run/development/docker-compose.yml down --volumes --remove-orphans",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
-    "db:types": "docker compose --file run/development/docker-compose.yml exec app bun run db/generate_types.mjs",
-    "db:seed": "docker compose --file run/development/docker-compose.yml exec app bun kysely seed:run",
-    "db:drop": "docker volume rm development_memudo_app_data",
-    "db:migrate": "docker compose --file run/development/docker-compose.yml exec app bun kysely migrate:latest",
-    "logs:db": "docker compose --file run/development/docker-compose.yml logs -f db",
-    "logs:app": "docker compose --file run/development/docker-compose.yml logs -f app",
-    "logs:nominatim": "docker compose --file run/development/docker-compose.yml logs -f nominatim"
+    "db:types": "bun run db/generate_types.mjs",
+    "db:seed": "bun kysely seed:run",
+    "db:migrate": "bun kysely migrate:latest"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",
