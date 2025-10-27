@@ -19,6 +19,7 @@ help:
 	@echo "  dev-logs-app              View logs from app service"
 	@echo "  dev-logs-db               View logs from database"
 	@echo "  dev-logs-go               View logs from Go service"
+	@echo "  dev-logs-go               View logs from image service"
 	@echo ""
 	@echo "Database:"
 	@echo "  dev-db-migrate            Run database migrations"
@@ -48,6 +49,9 @@ dev-logs-db:
 
 dev-logs-go:
 	docker compose -f infra/development/docker-compose.yml logs -f go
+
+dev-logs-image:
+	docker compose -f infra/development/docker-compose.yml logs -f image
 
 dev-build:
 	docker compose -f infra/development/docker-compose.yml build

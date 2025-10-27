@@ -4,7 +4,9 @@ export default function () {
   return (
     <div>
       <nav>
-        <Link to=".">All Properties</Link>
+        <Link to="/properties" reloadDocument>
+          All Properties
+        </Link>
         <Link to="new">New Property</Link>
       </nav>
       <main>

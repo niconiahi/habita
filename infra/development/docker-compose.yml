@@ -85,11 +85,37 @@ services:
         limits:
           memory: 256M
 
+  image:
+    image: darthsim/imgproxy:latest
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    environment:
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_AUTO_WEBP: "true"
+      IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "true"
+    depends_on:
+      app:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - default
+
   caddy:
     image: caddy:2
     restart: unless-stopped
     depends_on:
       go:
+        condition: service_healthy
+      image:
         condition: service_healthy
     ports:
       - "80:80"

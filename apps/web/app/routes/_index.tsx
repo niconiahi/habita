@@ -11,5 +11,9 @@ export function meta() {
 }
 
 export default function Home() {
-  return <Link to="properties">propiedades</Link>
+  return (
+    <Link to="/properties" reloadDocument>
+      propiedades
+    </Link>
+  )
 }
