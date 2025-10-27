@@ -24,4 +24,5 @@
 - [x] Rename "habitaciones" for "ambientes"
 - [x] Upon property creation, it should assign the administrator
 - [x] On a created property, it should be possible to invite the owner
-- [] Assigned administrator is not the correct one when creating a new property
+- [x] Assigned administrator is not the correct one when creating a new property
+- [] Add image transformation service
