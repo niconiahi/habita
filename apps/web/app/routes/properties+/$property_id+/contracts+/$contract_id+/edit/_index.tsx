@@ -89,7 +89,6 @@ export async function action({
       return null
     }
     case INTENT.CREATE_PDF: {
-      console.log("creating pdf")
       await actions.create_pdf(form_data, property_id)
       return null
     }
@@ -206,6 +205,9 @@ function Fields({
             <select
               name="escalation_type"
               id="escalation_type"
+              defaultValue={
+                contract.escalation_type ?? undefined
+              }
             >
               {Object.values(ESCALATION_TYPE).map(
                 (type) => {
@@ -226,7 +228,9 @@ function Fields({
             <select
               name="escalation_duration"
               id="escalation_duration"
-              defaultValue="P3M"
+              defaultValue={
+                contract.escalation_duration ?? undefined
+              }
             >
               {DURATIONS.map((duration) => {
                 const id = `escalation_duration_${duration}`
@@ -246,6 +250,7 @@ function Fields({
             <select
               name="fine_type"
               id="fine_type"
+              defaultValue={contract.fine_type ?? undefined}
               onClick={(event) => {
                 const fine_type = v.parse(
                   FineTypeSchema,
@@ -273,7 +278,9 @@ function Fields({
             <input
               id="fine_amount"
               name="fine_amount"
-              defaultValue={100000}
+              defaultValue={
+                contract.fine_amount ?? undefined
+              }
               type="number"
               required
             />
@@ -286,6 +293,9 @@ function Fields({
             <select
               name="default_type"
               id="default_type"
+              defaultValue={
+                contract.default_type ?? undefined
+              }
               onClick={(event) => {
                 const default_type = v.parse(
                   DefaultTypeSchema,
@@ -312,8 +322,10 @@ function Fields({
             </label>
             <input
               id="default_amount"
+              defaultValue={
+                contract.default_amount ?? undefined
+              }
               name="default_amount"
-              defaultValue={100000}
               type="number"
               required
             />
@@ -324,6 +336,9 @@ function Fields({
             </label>
             <select
               name="default_duration"
+              defaultValue={
+                contract.default_duration ?? undefined
+              }
               id="default_duration"
             >
               {DURATIONS.map((duration) => {
@@ -344,7 +359,9 @@ function Fields({
           <input
             id="early_termination"
             name="early_termination"
-            defaultValue={2}
+            defaultValue={
+              contract.early_termination ?? undefined
+            }
             type="number"
             required
           />

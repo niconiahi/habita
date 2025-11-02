@@ -37,7 +37,7 @@ describe("image transformation utilities", () => {
         "(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px",
       )
       const source_url_base64 = Buffer.from(
-        `https://dev.memudo.rent/files/${file_id}?v=${hash}`,
+        `https://dev.habita.rent/files/${file_id}?v=${hash}`,
       ).toString("base64url")
       expect(img_props.src).toContain(source_url_base64)
       expect(img_props.srcSet).toContain(source_url_base64)

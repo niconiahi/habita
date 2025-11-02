@@ -132,9 +132,6 @@ async function make_finished_contract(
       property_id,
       type: ContractType.LONG_TERM,
       state: CONTRACT_STATE.FINISHED,
-      duration: "P3M",
-      formula:
-        "price * (ipc_current_month / ipc_four_months_ago)",
       start_date: contract_start_date,
       end_date: contract_end_date,
       created_at: now,
@@ -186,9 +183,6 @@ async function make_editing_contract(
       property_id,
       type: ContractType.LONG_TERM,
       state: CONTRACT_STATE.EDITING,
-      duration: "P3M",
-      formula:
-        "price * (ipc_current_month / ipc_four_months_ago)",
       start_date: contract_start_date,
       end_date: contract_end_date,
       created_at: now,
@@ -294,7 +288,7 @@ async function run() {
       longitude,
       point: compose_point(latitude, longitude),
       road: "Padilla",
-      house_number: "1180",
+      house_number: 1180,
       suburb: "Villa Crespo",
       state: "Buenos Aires",
       created_at: now,

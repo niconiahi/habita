@@ -70,9 +70,15 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("state", "integer", (col) => col.notNull())
-    .addColumn("type", "integer")
-    .addColumn("formula", "text")
-    .addColumn("duration", "text") // ISO-8601 duration format
+    .addColumn("type", "integer", (col) => col.notNull())
+    .addColumn("escalation_type", "integer")
+    .addColumn("escalation_duration", "text")
+    .addColumn("fine_type", "integer")
+    .addColumn("fine_amount", "numeric")
+    .addColumn("default_type", "integer")
+    .addColumn("default_amount", "numeric")
+    .addColumn("default_duration", "text")
+    .addColumn("early_termination", "integer")
     .addColumn("start_date", "timestamptz")
     .addColumn("end_date", "timestamptz")
     .addColumn("created_at", "timestamptz", (col) =>
@@ -123,7 +129,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("road", "text", (col) => col.notNull())
-    .addColumn("house_number", "numeric", (col) =>
+    .addColumn("house_number", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("suburb", "text")

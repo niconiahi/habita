@@ -8,5 +8,5 @@ if (!process.env.GOOGLE_CLIENT_SECRET)
 export const google = new Google(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "https://dev.memudo.rent/login/google/callback",
+  "https://dev.habita.rent/login/google/callback",
 )

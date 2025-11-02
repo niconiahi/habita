@@ -96,8 +96,8 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./dev.memudo.rent+1.pem:/etc/ssl/certs/dev.memudo.rent+1.pem:ro
-      - ./dev.memudo.rent+1-key.pem:/etc/ssl/private/dev.memudo.rent+1-key.pem:ro
+      - ./dev.habita.rent+1.pem:/etc/ssl/certs/dev.habita.rent+1.pem:ro
+      - ./dev.habita.rent+1-key.pem:/etc/ssl/private/dev.habita.rent+1-key.pem:ro
     deploy:
       resources:
         limits:

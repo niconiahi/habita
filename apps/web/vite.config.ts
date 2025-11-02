@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5173,
-    allowedHosts: ["dev.memudo.rent", "app"],
+    allowedHosts: ["dev.habita.rent", "app"],
   },
   plugins: [
     tailwindcss(),
