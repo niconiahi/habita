@@ -181,6 +181,16 @@ export interface PropertyFile {
   updated_at: Timestamp;
 }
 
+export interface Rate {
+  created_at: Timestamp;
+  id: Generated<number>;
+  month: number;
+  type: number;
+  updated_at: Timestamp;
+  value: Numeric;
+  year: number;
+}
+
 export interface Room {
   created_at: Timestamp;
   id: Generated<number>;
@@ -828,6 +838,7 @@ export interface DB {
   period: Period;
   property: Property;
   property_file: PropertyFile;
+  rate: Rate;
   room: Room;
   service: Service;
   session: Session;
