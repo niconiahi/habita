@@ -61,14 +61,11 @@ function generate_image_url(
   const base_url =
     process.env.NODE_ENV === "production"
       ? "https://habita.rent"
-      : "https://dev.memudo.rent"
-
-  // Use internal Docker network URL for source so imgproxy can fetch it
+      : "https://dev.habita.rent"
   const source_base_url =
     process.env.NODE_ENV === "production"
       ? "https://habita.rent"
       : "http://app:5173"
-
   const source_url = `${source_base_url}/files/${file_id}?v=${hash}`
   const encoded_source_url =
     Buffer.from(source_url).toString("base64url")

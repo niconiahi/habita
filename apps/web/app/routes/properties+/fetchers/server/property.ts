@@ -59,8 +59,6 @@ export async function fetch_property(id: number) {
             "contract.start_date",
             "contract.end_date",
             "contract.state",
-            "contract.duration",
-            "contract.formula",
             jsonArrayFrom(
               eb
                 .selectFrom("period")

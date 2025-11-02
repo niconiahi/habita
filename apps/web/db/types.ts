@@ -26,14 +26,20 @@ export interface Access {
 
 export interface Contract {
   created_at: Timestamp;
-  duration: string | null;
+  default_amount: Numeric | null;
+  default_duration: string | null;
+  default_type: number | null;
+  early_termination: number | null;
   end_date: Timestamp | null;
-  formula: string | null;
+  escalation_duration: string | null;
+  escalation_type: number | null;
+  fine_amount: Numeric | null;
+  fine_type: number | null;
   id: Generated<number>;
   property_id: number;
   start_date: Timestamp | null;
   state: number;
-  type: number | null;
+  type: number;
   updated_at: Timestamp;
 }
 
@@ -102,7 +108,7 @@ export interface Location {
   address: string;
   city: string | null;
   created_at: Timestamp;
-  house_number: Numeric;
+  house_number: number;
   id: Generated<number>;
   latitude: Numeric;
   longitude: Numeric;

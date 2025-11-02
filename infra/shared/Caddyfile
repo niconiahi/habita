@@ -1,5 +1,5 @@
-dev.memudo.rent {
-  tls /etc/ssl/certs/dev.memudo.rent+1.pem /etc/ssl/private/dev.memudo.rent+1-key.pem
+dev.habita.rent {
+  tls /etc/ssl/certs/dev.habita.rent+1.pem /etc/ssl/private/dev.habita.rent+1-key.pem
   
   handle /nominatim/* {
     uri strip_prefix /nominatim

@@ -47,7 +47,7 @@ export async function invite_owner(form_data: FormData) {
   const subject =
     "Estas siendo invitado como dueño de una propiedad"
   const url = new URL(
-    `https://dev.memudo.rent/properties/${property_id}/accept-invite`,
+    `https://dev.habita.rent/properties/${property_id}/accept-invite`,
   )
   url.searchParams.set("token", token)
   const text = `

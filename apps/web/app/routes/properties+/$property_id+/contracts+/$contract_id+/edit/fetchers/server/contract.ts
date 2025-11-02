@@ -9,8 +9,14 @@ export async function fetch_contract(id: number) {
       "contract.start_date",
       "contract.end_date",
       "contract.state",
-      "contract.duration",
-      "contract.formula",
+      "contract.default_type",
+      "contract.default_amount",
+      "contract.default_duration",
+      "contract.escalation_type",
+      "contract.escalation_duration",
+      "contract.early_termination",
+      "contract.fine_type",
+      "contract.fine_amount",
       jsonArrayFrom(
         eb
           .selectFrom("period")

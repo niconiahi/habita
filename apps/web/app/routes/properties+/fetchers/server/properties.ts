@@ -58,8 +58,6 @@ export async function fetch_properties() {
             "contract.start_date",
             "contract.end_date",
             "contract.state",
-            "contract.duration",
-            "contract.formula",
           ])
           .whereRef(
             "contract.property_id",

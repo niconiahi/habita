@@ -10,6 +10,5 @@ export async function generate_pdf_with_playwright(
     printBackground: true,
   })
   await browser.close()
-  console.log("pdf_buffer", pdf_buffer)
   return Buffer.from(pdf_buffer)
 }
