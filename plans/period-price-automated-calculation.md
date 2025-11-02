@@ -27,16 +27,16 @@ Database tables for job management and failure tracking.
 
 ### Tasks
 
-- [ ] Create migration `add_job_tables.ts`
-  - [ ] `job` table schema
+- [x] Create migration `add_job_tables.ts`
+  - [x] `job` table schema
     - `id` (serial primary key)
-    - `job_type` (varchar, e.g., 'calculate_escalation')
+    - `type` (varchar, e.g., 'calculate_escalation')
     - `payload` (jsonb, stores job-specific data)
-    - `status` (varchar: 'pending', 'fulfilled', 'failed')
+    - `status` (varchar: 'pending', 'in_progress', 'completed', 'failed')
     - `scheduled_at` (timestamp, when to run)
     - `created_at` (timestamp)
     - `updated_at` (timestamp)
-  - [ ] `failed_job` table schema
+  - [x] `failed_job` table schema
     - `id` (serial primary key)
     - `job_id` (integer, references job.id)
     - `error_message` (text)
@@ -45,10 +45,10 @@ Database tables for job management and failure tracking.
     - `failed_at` (timestamp)
     - `created_at` (timestamp)
 
-- [ ] Update `apps/web/db/types.ts` with new table types
-  - [ ] Add `Job` interface
-  - [ ] Add `FailedJob` interface
-  - [ ] Export job status enum constants
+- [x] Update `apps/web/db/types.ts` with new table types
+  - [x] Add `Job` interface
+  - [x] Add `FailedJob` interface
+  - [x] Types auto-generated via kysely-codegen
 
 ---
 

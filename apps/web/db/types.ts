@@ -11,6 +11,18 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [x: string]: JsonValue | undefined;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
+
 export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
@@ -50,6 +62,16 @@ export interface ContractFile {
   id: Generated<number>;
   type: number;
   updated_at: Timestamp;
+}
+
+export interface FailedJob {
+  attempt_count: Generated<number>;
+  created_at: Timestamp;
+  error_message: string;
+  error_stack: string | null;
+  failed_at: Timestamp;
+  id: Generated<number>;
+  job_id: number;
 }
 
 export interface File {
@@ -102,6 +124,16 @@ export interface InvitationToken {
   property_id: number;
   token: string | null;
   used_at: Timestamp | null;
+}
+
+export interface Job {
+  created_at: Timestamp;
+  id: Generated<number>;
+  payload: Json;
+  scheduled_at: Timestamp;
+  status: string;
+  type: string;
+  updated_at: Timestamp;
 }
 
 export interface Location {
@@ -785,11 +817,13 @@ export interface DB {
   access: Access;
   contract: Contract;
   contract_file: ContractFile;
+  failed_job: FailedJob;
   file: File;
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;
   invitation_token: InvitationToken;
+  job: Job;
   location: Location;
   period: Period;
   property: Property;
