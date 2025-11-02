@@ -58,37 +58,42 @@ Store monthly index values and provide admin interface for data entry.
 
 ### Tasks
 
-- [ ] Create migration `add_rate.ts`
-  - [ ] `rate` table schema
+- [x] Create migration `add_rate.ts`
+  - [x] `rate` table schema
     - `id` (serial primary key)
-    - `type` (integer, references ESCALATION_TYPE: 0=IPC, 1=ICL but rename to RATE_TYPE)
+    - `type` (integer, RATE_TYPE: 0=IPC, 1=ICL, 2=CasaPropia, 3=CAC, 4=CER, 5=IS, 6=IPIM, 7=UVA)
     - `month` (integer, 1-12)
     - `year` (integer)
     - `value` (numeric)
     - `created_at` (timestamp)
     - `updated_at` (timestamp)
-  - [ ] Unique constraint: `(type, month, year)`
+  - [x] Unique constraint: `rate_type_month_year_unique` on `(type, month, year)`
 
-- [ ] Update `apps/web/db/types.ts` using `make dev-db-types`
+- [x] Update `apps/web/db/types.ts` via kysely-codegen
 
-- [ ] Create `apps/web/app/lib/server/auth.ts` helpers
-  - [ ] Implement `is_webmaster(user)` function
+- [x] Create `apps/web/app/lib/server/rate_type.ts`
+  - [x] RATE_TYPE constants (IPC, ICL, CasaPropia, CAC, CER, IS, IPIM, UVA)
+  - [x] get_rate_label() function
+
+- [x] Create `apps/web/app/lib/server/auth.ts` helpers
+  - [x] Implement `is_webmaster(user)` function
     - Check if `user.email === "nicolas.accetta@gmail.com"`
     - Return boolean
 
-- [ ] Create route `/admin/rates`
-  - [ ] File: `apps/web/app/routes/admin+/rates+/_index.tsx`
-  - [ ] Loader: fetch current month/year rate values (or empty)
-  - [ ] Auth: `require_auth()` + `is_webmaster()` check
-  - [ ] UI: List all rate types (IPC, ICL, CasaPropia, CAC, CER, IS, IPIM, UVA)
+- [x] Create route `/admin/rates`
+  - [x] File: `apps/web/app/routes/admin+/rates+/_index.tsx`
+  - [x] Loader: fetch current month/year rate values
+  - [x] Auth: `require_auth()` + `is_webmaster()` check (403 if not webmaster)
+  - [x] UI: List all 8 rate types with input + save button per rate
     - Display input field for each rate
     - Save button per rate
     - Pre-fill if value exists for current month
-  - [ ] Action: `set_rate`
+    - Use `navigate={false}` to prevent URL change
+  - [x] Action: upsert rate
     - Parse `type`, `month`, `year`, `value` from FormData
-    - Validate required fields using Valibot
-    - Upsert into `rate` table
-    - Return success/error
+    - Validate using Valibot with v.pipe(ForceNumberSchema, RateTypeSchema)
+    - Upsert into `rate` table using onConflict
+    - Return null
 
 ---
 
