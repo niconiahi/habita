@@ -114,8 +114,8 @@ export interface Job {
   created_at: Timestamp;
   id: Generated<number>;
   scheduled_at: Timestamp;
-  status: string;
-  type: string;
+  status: number;
+  type: number;
   updated_at: Timestamp;
 }
 

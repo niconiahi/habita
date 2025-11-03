@@ -1,7 +1,8 @@
 import { query_builder } from "~/../../db/query_builder"
 import { calculate_all_due_escalations } from "../calculate_all_due_escalations"
 import { now } from "~/lib/now"
-import { JOB_STATUS } from "../utils/job_status"
+import { JOB_STATUS } from "~/lib/server/job_status"
+import { JOB_TYPE } from "../job_type"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder
@@ -16,7 +17,7 @@ export async function process_jobs() {
   for (const job of pending_jobs) {
     try {
       switch (job.type) {
-        case "calculate_escalation": {
+        case JOB_TYPE.CALCULATE_PRICES: {
           const result =
             await calculate_all_due_escalations()
           console.log(
