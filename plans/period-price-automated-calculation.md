@@ -27,16 +27,16 @@ Database tables for job management and failure tracking.
 
 ### Tasks
 
-- [ ] Create migration `add_job_tables.ts`
-  - [ ] `job` table schema
+- [x] Create migration `add_job_tables.ts`
+  - [x] `job` table schema
     - `id` (serial primary key)
-    - `job_type` (varchar, e.g., 'calculate_escalation')
+    - `type` (varchar, e.g., 'calculate_escalation')
     - `payload` (jsonb, stores job-specific data)
-    - `status` (varchar: 'pending', 'fulfilled', 'failed')
+    - `status` (varchar: 'pending', 'in_progress', 'completed', 'failed')
     - `scheduled_at` (timestamp, when to run)
     - `created_at` (timestamp)
     - `updated_at` (timestamp)
-  - [ ] `failed_job` table schema
+  - [x] `failed_job` table schema
     - `id` (serial primary key)
     - `job_id` (integer, references job.id)
     - `error_message` (text)
@@ -45,10 +45,10 @@ Database tables for job management and failure tracking.
     - `failed_at` (timestamp)
     - `created_at` (timestamp)
 
-- [ ] Update `apps/web/db/types.ts` with new table types
-  - [ ] Add `Job` interface
-  - [ ] Add `FailedJob` interface
-  - [ ] Export job status enum constants
+- [x] Update `apps/web/db/types.ts` with new table types
+  - [x] Add `Job` interface
+  - [x] Add `FailedJob` interface
+  - [x] Types auto-generated via kysely-codegen
 
 ---
 
@@ -58,79 +58,74 @@ Store monthly index values and provide admin interface for data entry.
 
 ### Tasks
 
-- [ ] Create migration `add_rate.ts`
-  - [ ] `rate` table schema
+- [x] Create migration `add_rate.ts`
+  - [x] `rate` table schema
     - `id` (serial primary key)
-    - `type` (integer, references ESCALATION_TYPE: 0=IPC, 1=ICL but rename to RATE_TYPE)
+    - `type` (integer, RATE_TYPE: 0=IPC, 1=ICL, 2=CasaPropia, 3=CAC, 4=CER, 5=IS, 6=IPIM, 7=UVA)
     - `month` (integer, 1-12)
     - `year` (integer)
     - `value` (numeric)
     - `created_at` (timestamp)
     - `updated_at` (timestamp)
-  - [ ] Unique constraint: `(type, month, year)`
+  - [x] Unique constraint: `rate_type_month_year_unique` on `(type, month, year)`
 
-- [ ] Update `apps/web/db/types.ts` using `make dev-db-types`
+- [x] Update `apps/web/db/types.ts` via kysely-codegen
 
-- [ ] Create `apps/web/app/lib/server/auth.ts` helpers
-  - [ ] Implement `is_webmaster(user)` function
+- [x] Create `apps/web/app/lib/server/rate_type.ts`
+  - [x] RATE_TYPE constants (IPC, ICL, CasaPropia, CAC, CER, IS, IPIM, UVA)
+  - [x] get_rate_label() function
+
+- [x] Create `apps/web/app/lib/server/auth.ts` helpers
+  - [x] Implement `is_webmaster(user)` function
     - Check if `user.email === "nicolas.accetta@gmail.com"`
     - Return boolean
 
-- [ ] Create route `/admin/rates`
-  - [ ] File: `apps/web/app/routes/admin+/rates+/_index.tsx`
-  - [ ] Loader: fetch current month/year rate values (or empty)
-  - [ ] Auth: `require_auth()` + `is_webmaster()` check
-  - [ ] UI: List all rate types (IPC, ICL, CasaPropia, CAC, CER, IS, IPIM, UVA)
+- [x] Create route `/admin/rates`
+  - [x] File: `apps/web/app/routes/admin+/rates+/_index.tsx`
+  - [x] Loader: fetch current month/year rate values
+  - [x] Auth: `require_auth()` + `is_webmaster()` check (403 if not webmaster)
+  - [x] UI: List all 8 rate types with input + save button per rate
     - Display input field for each rate
     - Save button per rate
     - Pre-fill if value exists for current month
-  - [ ] Action: `set_rate`
+    - Use `navigate={false}` to prevent URL change
+  - [x] Action: upsert rate
     - Parse `type`, `month`, `year`, `value` from FormData
-    - Validate required fields using Valibot
-    - Upsert into `rate` table
-    - Return success/error
+    - Validate using Valibot with v.pipe(ForceNumberSchema, RateTypeSchema)
+    - Upsert into `rate` table using onConflict
+    - Return null
 
 ---
 
 ## Phase 3: Escalation Calculation Logic
 
-Core business logic for calculating new period prices.
+Core business logic for calculating new period prices. Uses batch processing for efficiency.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/get_next_price.ts`
-  - [ ] Function: `get_next_price(contract_id: number)`
-    - [ ] Query contract with last period
-    - [ ] Validate contract is ACTIVE
-    - [ ] Check if escalation is due (last_period.end_date <= today)
-    - [ ] Get escalation_type and escalation_duration
-    - [ ] Calculate months offset from duration (e.g., P4M = 4 months)
-    - [ ] Lookup current and past index values
-      - Current: index for current month/year
-      - Past: index for (start_date month + offset ago)
-      - **Block execution if indices missing** (throw error)
-    - [ ] Calculate new price using formula:
-      - `next_price = prev_price × (rate_current / rate_past)`
-    - [ ] Start transaction
-      - [ ] Create new `period` record
-        - `start_date = last_period.end_date + 1 day`
-        - `end_date = start_date + escalation_duration`
-        - `price = next_price`
-      - [ ] Create `formula_parameter` records (audit trail)
-        - Record for current rate value
-        - Record for past rate value
-      - [ ] Commit transaction
-    - [ ] Return success
+- [x] Create `apps/web/app/lib/server/get_next_period_price.ts` (single contract version)
+  - [x] Query ACTIVE contract with escalation config
+  - [x] Get last period where end_date <= today (SQL-level validation)
+  - [x] Calculate months offset from duration
+  - [x] Lookup current and past rate values
+  - [x] Calculate new price: `prev_price × (rate_current / rate_past)`
+  - [x] Create new period + formula_parameter records in transaction
 
-- [ ] Create tests `apps/web/app/lib/server/get_next_price.test.ts`
-  - [ ] Test: contract not found throws error
-  - [ ] Test: contract not ACTIVE throws error
-  - [ ] Test: escalation not due (last_period.end_date > today) returns early
-  - [ ] Test: missing current rate index throws error
-  - [ ] Test: missing past rate index throws error
-  - [ ] Test: successful calculation creates period with correct price
-  - [ ] Test: formula_parameter records created for audit trail
-  - [ ] Test: transaction rollback on error
+- [x] Refactor to `calculate_all_due_escalations()` (batch version)
+  - [x] Single query: get ALL ACTIVE contracts with due periods
+    - Join contract + period
+    - Filter: state=ACTIVE, end_date<=today, escalation config present
+    - Use distinctOn to get latest period per contract
+  - [x] Batch fetch all needed rates
+    - Collect all unique (type, month, year) combinations
+    - Single query to fetch all rates at once
+  - [x] Calculate prices for all contracts
+    - Loop through contracts, calculate new prices
+    - Build array of new periods + formula_parameters
+  - [x] Batch insert in single transaction
+    - Insert all new periods at once
+    - Insert all formula_parameters at once
+  - [x] Return summary: { processed: number, failed: number }
 
 ---
 
@@ -140,26 +135,26 @@ Job orchestration that executes pending jobs using the calculation logic.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/cron/process_jobs.ts`
-  - [ ] Function: `process_jobs()`
-    - [ ] Query pending jobs ordered by scheduled_at
-    - [ ] For each job:
-      - [ ] Try:
-        - [ ] Switch on job_type
-          - [ ] Case 'calculate_escalation':
-            - Call `get_next_price(job.payload.contract_id)`
-        - [ ] Update job status to 'fulfilled'
-      - [ ] Catch error:
-        - [ ] Insert into `failed_job` table
+- [x] Create `apps/web/app/lib/server/cron/process_jobs.ts`
+  - [x] Function: `process_jobs()`
+    - [x] Query pending jobs ordered by scheduled_at
+    - [x] For each job:
+      - [x] Try:
+        - [x] Switch on job_type
+          - [x] Case 'calculate_escalation':
+            - Call `calculate_all_due_escalations()`
+        - [x] Update job status to 'fulfilled'
+      - [x] Catch error:
+        - [x] Insert into `failed_job` table
           - Store job_id, error_message, error_stack
           - Set attempt_count = 1
-        - [ ] Update job status to 'failed'
-        - [ ] Log error to stdout
+        - [x] Update job status to 'failed'
+        - [x] Log error to stdout
 
-- [ ] Create executable script `apps/web/app/lib/server/cron/process_jobs.script.ts`
-  - [ ] Import and call `process_jobs()`
-  - [ ] Handle top-level errors
-  - [ ] Exit with proper code (0 = success, 1 = error)
+- [x] Create executable script `apps/web/app/lib/server/cron/process_jobs.script.ts`
+  - [x] Import and call `process_jobs()`
+  - [x] Handle top-level errors
+  - [x] Exit with proper code (0 = success, 1 = error)
 
 ---
 
@@ -169,33 +164,27 @@ Daily job that identifies contracts needing escalation and creates job records.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/cron/create_escalation_jobs.ts`
-  - [ ] Function: `create_escalation_jobs()`
-    - [ ] Query active contracts
-      - [ ] Join with latest period
-      - [ ] Where: `contract.state = ACTIVE`
-      - [ ] Where: `last_period.end_date <= TODAY`
-    - [ ] For each contract:
-      - [ ] Check if job already exists (pending) for this contract
-      - [ ] If not, insert into `job` table
+- [x] Create `apps/web/app/lib/server/cron/create_escalation_jobs.ts`
+  - [x] Function: `create_escalation_jobs()`
+    - [x] Query active contracts
+      - [x] Join with latest period
+      - [x] Where: `contract.state = ACTIVE`
+      - [x] Where: `last_period.end_date <= TODAY`
+    - [x] For each contract:
+      - [x] Check if job already exists (pending) for this contract
+      - [x] If not, insert into `job` table
         - `job_type = 'calculate_escalation'`
         - `payload = { contract_id: contract.id }`
         - `status = 'pending'`
         - `scheduled_at = NOW()`
-    - [ ] Log count of jobs created
+    - [x] Log count of jobs created
 
-- [ ] Create executable script `apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
-  - [ ] Import and call `create_escalation_jobs()`
-  - [ ] Handle errors
-  - [ ] Exit with proper code
+- [x] Create executable script `apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
+  - [x] Import and call `create_escalation_jobs()`
+  - [x] Handle errors
+  - [x] Exit with proper code
 
-- [ ] Create manual test helper `apps/web/app/lib/server/cron/preview_escalation_jobs.ts`
-  - [ ] Function: `preview_escalation_jobs()`
-    - [ ] Query active contracts (same logic as create_escalation_jobs)
-    - [ ] Return array of contracts that would get jobs created
-    - [ ] Include contract details: id, escalation_type, last_period.end_date
-    - [ ] DO NOT insert into database
-  - [ ] Purpose: Manually verify which contracts will be affected before running job creation
+- ~~Create manual test helper `preview_escalation_jobs.ts`~~ (eliminated - not needed)
 
 ---
 
@@ -205,20 +194,20 @@ Configure Ofelia to run cron jobs in Docker environment.
 
 ### Tasks
 
-- [ ] Create `infra/development/ofelia.ini` configuration file
-  - [ ] Job 1: Create escalation jobs
+- [x] Create `infra/development/ofelia.ini` configuration file
+  - [x] Job 1: Create escalation jobs
     - Schedule: `0 0 * * * *` (midnight UTC daily)
-    - Command: `bun run /app/apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
-    - Container: app
+    - Command: `bun run /app/app/lib/server/cron/create_escalation_jobs.script.ts`
+    - Container: development-app-1
     - No-overlap: true
-  - [ ] Job 2: Process jobs
+  - [x] Job 2: Process jobs
     - Schedule: `0 * * * * *` (every hour)
-    - Command: `bun run /app/apps/web/app/lib/server/cron/process_jobs.script.ts`
-    - Container: app
+    - Command: `bun run /app/app/lib/server/cron/process_jobs.script.ts`
+    - Container: development-app-1
     - No-overlap: true
 
-- [ ] Update `infra/development/docker-compose.yml`
-  - [ ] Add `ofelia` service
+- [x] Update `infra/development/docker-compose.yml`
+  - [x] Add `ofelia` service
     - Image: `mcuadros/ofelia:latest`
     - Depends on: `app`
     - Volumes:
@@ -226,19 +215,13 @@ Configure Ofelia to run cron jobs in Docker environment.
       - `./ofelia.ini:/etc/ofelia/config.ini:ro`
     - Command: `daemon --config /etc/ofelia/config.ini`
 
-- [ ] Create `infra/shared/ofelia.ini` configuration file
-  - [ ] Copy job configurations from development
-  - [ ] Adjust schedules if needed for production
-
-- [ ] Update `infra/shared/docker-compose.yml`
-  - [ ] Add ofelia service with production config
-  - [ ] Mount production ofelia.ini
-
-- [ ] Test locally
+- [ ] Test locally (when ready)
   - [ ] `docker-compose up -d`
   - [ ] Verify ofelia container running
   - [ ] Check ofelia logs: `docker-compose logs -f ofelia`
   - [ ] Verify jobs execute on schedule
+
+Note: Production ofelia configuration will be added later, then common pieces extracted to shared
 
 ---
 

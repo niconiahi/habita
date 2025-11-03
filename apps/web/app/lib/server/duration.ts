@@ -40,3 +40,26 @@ export function get_duration_label(duration: Duration) {
     }
   }
 }
+
+export function get_duration_time(duration: Duration) {
+  switch (duration) {
+    case "P1D": {
+      return "1 día"
+    }
+    case "P1W": {
+      return "1 semana"
+    }
+    case "P3M": {
+      return "3 meses"
+    }
+    case "P6M": {
+      return "6 meses"
+    }
+    case "P1Y": {
+      return "1 año"
+    }
+    default: {
+      throw new Error("unsupported duration type")
+    }
+  }
+}

@@ -52,6 +52,14 @@ export interface ContractFile {
   updated_at: Timestamp;
 }
 
+export interface FailedJob {
+  attempt_count: Generated<number>;
+  created_at: Timestamp;
+  failed_at: Timestamp;
+  id: Generated<number>;
+  job_id: number;
+}
+
 export interface File {
   basename: string;
   content: Buffer;
@@ -65,11 +73,9 @@ export interface File {
 
 export interface FormulaParameter {
   created_at: Timestamp;
-  end_date: Timestamp;
   id: Generated<number>;
   key: string;
   period_id: number;
-  start_date: Timestamp;
   updated_at: Timestamp;
   value: Numeric;
 }
@@ -104,6 +110,15 @@ export interface InvitationToken {
   used_at: Timestamp | null;
 }
 
+export interface Job {
+  created_at: Timestamp;
+  id: Generated<number>;
+  scheduled_at: Timestamp;
+  status: string;
+  type: string;
+  updated_at: Timestamp;
+}
+
 export interface Location {
   address: string;
   city: string | null;
@@ -125,7 +140,7 @@ export interface Period {
   created_at: Timestamp;
   end_date: Timestamp | null;
   id: Generated<number>;
-  price: Numeric;
+  price: number;
   start_date: Timestamp | null;
   updated_at: Timestamp;
 }
@@ -147,6 +162,16 @@ export interface PropertyFile {
   property_id: number;
   type: number;
   updated_at: Timestamp;
+}
+
+export interface Rate {
+  created_at: Timestamp;
+  id: Generated<number>;
+  month: number;
+  type: number;
+  updated_at: Timestamp;
+  value: Numeric;
+  year: number;
 }
 
 export interface Room {
@@ -785,15 +810,18 @@ export interface DB {
   access: Access;
   contract: Contract;
   contract_file: ContractFile;
+  failed_job: FailedJob;
   file: File;
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;
   invitation_token: InvitationToken;
+  job: Job;
   location: Location;
   period: Period;
   property: Property;
   property_file: PropertyFile;
+  rate: Rate;
   room: Room;
   service: Service;
   session: Session;
