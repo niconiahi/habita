@@ -11,6 +11,8 @@ async function fetch_contracts() {
     .selectFrom("contract")
     .select([
       "contract.id",
+      "contract.escalation_type",
+      "contract.escalation_duration",
       (eb) =>
         jsonArrayFrom(
           eb
@@ -27,28 +29,34 @@ async function fetch_contracts() {
     .where("contract.state", "=", CONTRACT_STATE.ACTIVE)
     .execute()
 }
+export type Contract = NonNullable<
+  Awaited<ReturnType<typeof fetch_contracts>>[0]
+>
+
+function get_due_contracts(contracts: Contract[]) {
+  const today = new Date()
+  return contracts.filter((contract) => {
+    const latest_period = contract.periods[0]
+    if (!latest_period) {
+      throw new Error(
+        "at least one period should exist for the contract",
+      )
+    }
+    const end_date = v.parse(
+      ForceDateSchema,
+      latest_period.end_date,
+    )
+    return end_date <= today
+  })
+}
 
 export async function create_escalation_jobs() {
-  const today = new Date()
-  const contracts = (await fetch_contracts()).filter(
-    (contract) => {
-      const latest_period = contract.periods[0]
-      if (!latest_period) {
-        throw new Error(
-          "at least one period should exist for the contract",
-        )
-      }
-      const end_date = v.parse(
-        ForceDateSchema,
-        latest_period.end_date,
-      )
-      return end_date <= today
-    },
-  )
+  const contracts = await fetch_contracts()
+  const due_contracts = get_due_contracts(contracts)
   console.log(
-    `found ${contracts.length} active contracts with due periods`,
+    `found ${due_contracts.length} active contracts with due periods`,
   )
-  if (contracts.length === 0) {
+  if (due_contracts.length === 0) {
     console.log("no contracts due, skipping job creation")
     return { created: 0 }
   }

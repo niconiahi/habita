@@ -46,29 +46,26 @@ export type Contract = NonNullable<
   Awaited<ReturnType<typeof fetch_contracts>>[0]
 >
 
-export async function calculate_all_due_escalations() {
+function get_due_contracts(contracts: Contract[]) {
   const today = new Date()
-  const contracts = (await fetch_contracts()).filter(
-    (contract) => {
-      const latest_period = contract.periods[0]
-      if (!latest_period) {
-        throw new Error(
-          "at least one period should exist for the contract",
-        )
-      }
-      console.log(
-        "latest_period.end_date",
-        latest_period.end_date,
+  return contracts.filter((contract) => {
+    const latest_period = contract.periods[0]
+    if (!latest_period) {
+      throw new Error(
+        "at least one period should exist for the contract",
       )
-      const end_date = v.parse(
-        ForceDateSchema,
-        latest_period.end_date,
-      )
-      console.log("end_date", end_date)
-      return end_date <= today
-    },
-  )
-  console.log("contracts", contracts)
+    }
+    const end_date = v.parse(
+      ForceDateSchema,
+      latest_period.end_date,
+    )
+    return end_date <= today
+  })
+}
+
+export async function calculate_all_due_escalations() {
+  const contracts = await fetch_contracts()
+  const due_contracts = get_due_contracts(contracts)
   if (contracts.length === 0) {
     return { processed: 0 }
   }
@@ -76,7 +73,7 @@ export async function calculate_all_due_escalations() {
   const next_periods: Insertable<Period>[] = []
   const next_formula_parameters: Insertable<FormulaParameter>[] =
     []
-  for (const contract of contracts) {
+  for (const contract of due_contracts) {
     const latest_period = contract.periods[0]
     const current_rate = get_current_rate(contract, rates)
     const old_rate = get_old_rate(contract, rates)
