@@ -1,7 +1,8 @@
 import { query_builder } from "~/../../db/query_builder"
 import { CONTRACT_STATE } from "../contract_state"
 import { now } from "~/lib/now"
-import { JOB_STATUS } from "../utils/job_status"
+import { JOB_STATUS } from "~/lib/server/job_status"
+import { JOB_TYPE } from "~/lib/server/job_type"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { ForceDateSchema } from "../force_date"
 import * as v from "valibot"
@@ -63,7 +64,7 @@ export async function create_escalation_jobs() {
   const job = await query_builder
     .selectFrom("job")
     .select("id")
-    .where("type", "=", "calculate_escalation")
+    .where("type", "=", JOB_TYPE.CALCULATE_PRICES)
     .where("status", "=", JOB_STATUS.PENDING)
     .executeTakeFirst()
   if (job) {
@@ -75,7 +76,7 @@ export async function create_escalation_jobs() {
   await query_builder
     .insertInto("job")
     .values({
-      type: "calculate_escalation",
+      type: JOB_TYPE.CALCULATE_PRICES,
       status: JOB_STATUS.PENDING,
       scheduled_at: now,
       created_at: now,
