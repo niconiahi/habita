@@ -25,7 +25,7 @@ help:
 	@echo "  dev-db-migrate            Run database migrations"
 	@echo "  dev-db-seed               Seed database with initial data"
 	@echo "  dev-db-types              Generate TypeScript types from database schema"
-	@echo "  dev-db-create-migration   Create new migration (usage: make dev-db-create-migration name=migration_name)"
+	@echo "  dev-db-create-migration   Create new migration (usage: make dev-db-create-migration add_route)"
 	@echo "  dev-db-shell              Open PostgreSQL shell"
 	@echo "  dev-db-drop               Drop database volume (WARNING: destroys all data)"
 
@@ -73,8 +73,14 @@ dev-db-types:
 	docker compose -f infra/development/docker-compose.yml exec app bun run db:types
 
 dev-db-create-migration:
-	@test -n "$(name)" || (echo "Error: name required. Usage: make dev-db-create-migration name=migration_name" && exit 1)
-	docker compose -f infra/development/docker-compose.yml exec app bun kysely migrate:make $(name)
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Error: migration name required. Usage: make dev-db-create-migration add_route"; \
+		exit 1; \
+	fi
+	docker compose -f infra/development/docker-compose.yml exec app bun kysely migrate:make $(filter-out $@,$(MAKECMDGOALS))
+
+%:
+	@:
 
 dev-db-shell:
 	docker compose -f infra/development/docker-compose.yml exec db psql -U $(shell grep POSTGRES_USER .env | cut -d '=' -f2) -d $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
