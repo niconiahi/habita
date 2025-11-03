@@ -127,6 +127,23 @@ services:
     networks:
       - habita-network
 
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini:ro
+    command: daemon --config /etc/ofelia/config.ini
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - habita-network
+
 volumes:
   habita_prod_db_data:
   habita_prod_valkey_data:
