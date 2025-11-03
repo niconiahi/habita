@@ -99,43 +99,33 @@ Store monthly index values and provide admin interface for data entry.
 
 ## Phase 3: Escalation Calculation Logic
 
-Core business logic for calculating new period prices.
+Core business logic for calculating new period prices. Uses batch processing for efficiency.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/get_next_price.ts`
-  - [ ] Function: `get_next_price(contract_id: number)`
-    - [ ] Query contract with last period
-    - [ ] Validate contract is ACTIVE
-    - [ ] Check if escalation is due (last_period.end_date <= today)
-    - [ ] Get escalation_type and escalation_duration
-    - [ ] Calculate months offset from duration (e.g., P4M = 4 months)
-    - [ ] Lookup current and past index values
-      - Current: index for current month/year
-      - Past: index for (start_date month + offset ago)
-      - **Block execution if indices missing** (throw error)
-    - [ ] Calculate new price using formula:
-      - `next_price = prev_price × (rate_current / rate_past)`
-    - [ ] Start transaction
-      - [ ] Create new `period` record
-        - `start_date = last_period.end_date + 1 day`
-        - `end_date = start_date + escalation_duration`
-        - `price = next_price`
-      - [ ] Create `formula_parameter` records (audit trail)
-        - Record for current rate value
-        - Record for past rate value
-      - [ ] Commit transaction
-    - [ ] Return success
+- [x] Create `apps/web/app/lib/server/get_next_period_price.ts` (single contract version)
+  - [x] Query ACTIVE contract with escalation config
+  - [x] Get last period where end_date <= today (SQL-level validation)
+  - [x] Calculate months offset from duration
+  - [x] Lookup current and past rate values
+  - [x] Calculate new price: `prev_price × (rate_current / rate_past)`
+  - [x] Create new period + formula_parameter records in transaction
 
-- [ ] Create tests `apps/web/app/lib/server/get_next_price.test.ts`
-  - [ ] Test: contract not found throws error
-  - [ ] Test: contract not ACTIVE throws error
-  - [ ] Test: escalation not due (last_period.end_date > today) returns early
-  - [ ] Test: missing current rate index throws error
-  - [ ] Test: missing past rate index throws error
-  - [ ] Test: successful calculation creates period with correct price
-  - [ ] Test: formula_parameter records created for audit trail
-  - [ ] Test: transaction rollback on error
+- [x] Refactor to `calculate_all_due_escalations()` (batch version)
+  - [x] Single query: get ALL ACTIVE contracts with due periods
+    - Join contract + period
+    - Filter: state=ACTIVE, end_date<=today, escalation config present
+    - Use distinctOn to get latest period per contract
+  - [x] Batch fetch all needed rates
+    - Collect all unique (type, month, year) combinations
+    - Single query to fetch all rates at once
+  - [x] Calculate prices for all contracts
+    - Loop through contracts, calculate new prices
+    - Build array of new periods + formula_parameters
+  - [x] Batch insert in single transaction
+    - Insert all new periods at once
+    - Insert all formula_parameters at once
+  - [x] Return summary: { processed: number, failed: number }
 
 ---
 
