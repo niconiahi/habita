@@ -53,6 +53,9 @@ dev-logs-go:
 dev-logs-image:
 	docker compose -f infra/development/docker-compose.yml logs -f image
 
+dev-logs-ofelia:
+	docker compose -f infra/development/docker-compose.yml logs -f ofelia
+
 dev-build:
 	docker compose -f infra/development/docker-compose.yml build
 

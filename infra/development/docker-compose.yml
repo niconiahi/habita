@@ -150,6 +150,20 @@ services:
         reservations:
           memory: 4G
 
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini:ro
+    command: daemon --config /etc/ofelia/config.ini
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
 volumes:
   memudo_app_data:
   memudo_app_deps:

@@ -135,26 +135,26 @@ Job orchestration that executes pending jobs using the calculation logic.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/cron/process_jobs.ts`
-  - [ ] Function: `process_jobs()`
-    - [ ] Query pending jobs ordered by scheduled_at
-    - [ ] For each job:
-      - [ ] Try:
-        - [ ] Switch on job_type
-          - [ ] Case 'calculate_escalation':
-            - Call `get_next_price(job.payload.contract_id)`
-        - [ ] Update job status to 'fulfilled'
-      - [ ] Catch error:
-        - [ ] Insert into `failed_job` table
+- [x] Create `apps/web/app/lib/server/cron/process_jobs.ts`
+  - [x] Function: `process_jobs()`
+    - [x] Query pending jobs ordered by scheduled_at
+    - [x] For each job:
+      - [x] Try:
+        - [x] Switch on job_type
+          - [x] Case 'calculate_escalation':
+            - Call `calculate_all_due_escalations()`
+        - [x] Update job status to 'fulfilled'
+      - [x] Catch error:
+        - [x] Insert into `failed_job` table
           - Store job_id, error_message, error_stack
           - Set attempt_count = 1
-        - [ ] Update job status to 'failed'
-        - [ ] Log error to stdout
+        - [x] Update job status to 'failed'
+        - [x] Log error to stdout
 
-- [ ] Create executable script `apps/web/app/lib/server/cron/process_jobs.script.ts`
-  - [ ] Import and call `process_jobs()`
-  - [ ] Handle top-level errors
-  - [ ] Exit with proper code (0 = success, 1 = error)
+- [x] Create executable script `apps/web/app/lib/server/cron/process_jobs.script.ts`
+  - [x] Import and call `process_jobs()`
+  - [x] Handle top-level errors
+  - [x] Exit with proper code (0 = success, 1 = error)
 
 ---
 
@@ -164,33 +164,27 @@ Daily job that identifies contracts needing escalation and creates job records.
 
 ### Tasks
 
-- [ ] Create `apps/web/app/lib/server/cron/create_escalation_jobs.ts`
-  - [ ] Function: `create_escalation_jobs()`
-    - [ ] Query active contracts
-      - [ ] Join with latest period
-      - [ ] Where: `contract.state = ACTIVE`
-      - [ ] Where: `last_period.end_date <= TODAY`
-    - [ ] For each contract:
-      - [ ] Check if job already exists (pending) for this contract
-      - [ ] If not, insert into `job` table
+- [x] Create `apps/web/app/lib/server/cron/create_escalation_jobs.ts`
+  - [x] Function: `create_escalation_jobs()`
+    - [x] Query active contracts
+      - [x] Join with latest period
+      - [x] Where: `contract.state = ACTIVE`
+      - [x] Where: `last_period.end_date <= TODAY`
+    - [x] For each contract:
+      - [x] Check if job already exists (pending) for this contract
+      - [x] If not, insert into `job` table
         - `job_type = 'calculate_escalation'`
         - `payload = { contract_id: contract.id }`
         - `status = 'pending'`
         - `scheduled_at = NOW()`
-    - [ ] Log count of jobs created
+    - [x] Log count of jobs created
 
-- [ ] Create executable script `apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
-  - [ ] Import and call `create_escalation_jobs()`
-  - [ ] Handle errors
-  - [ ] Exit with proper code
+- [x] Create executable script `apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
+  - [x] Import and call `create_escalation_jobs()`
+  - [x] Handle errors
+  - [x] Exit with proper code
 
-- [ ] Create manual test helper `apps/web/app/lib/server/cron/preview_escalation_jobs.ts`
-  - [ ] Function: `preview_escalation_jobs()`
-    - [ ] Query active contracts (same logic as create_escalation_jobs)
-    - [ ] Return array of contracts that would get jobs created
-    - [ ] Include contract details: id, escalation_type, last_period.end_date
-    - [ ] DO NOT insert into database
-  - [ ] Purpose: Manually verify which contracts will be affected before running job creation
+- ~~Create manual test helper `preview_escalation_jobs.ts`~~ (eliminated - not needed)
 
 ---
 
@@ -200,20 +194,20 @@ Configure Ofelia to run cron jobs in Docker environment.
 
 ### Tasks
 
-- [ ] Create `infra/development/ofelia.ini` configuration file
-  - [ ] Job 1: Create escalation jobs
+- [x] Create `infra/development/ofelia.ini` configuration file
+  - [x] Job 1: Create escalation jobs
     - Schedule: `0 0 * * * *` (midnight UTC daily)
-    - Command: `bun run /app/apps/web/app/lib/server/cron/create_escalation_jobs.script.ts`
-    - Container: app
+    - Command: `bun run /app/app/lib/server/cron/create_escalation_jobs.script.ts`
+    - Container: development-app-1
     - No-overlap: true
-  - [ ] Job 2: Process jobs
+  - [x] Job 2: Process jobs
     - Schedule: `0 * * * * *` (every hour)
-    - Command: `bun run /app/apps/web/app/lib/server/cron/process_jobs.script.ts`
-    - Container: app
+    - Command: `bun run /app/app/lib/server/cron/process_jobs.script.ts`
+    - Container: development-app-1
     - No-overlap: true
 
-- [ ] Update `infra/development/docker-compose.yml`
-  - [ ] Add `ofelia` service
+- [x] Update `infra/development/docker-compose.yml`
+  - [x] Add `ofelia` service
     - Image: `mcuadros/ofelia:latest`
     - Depends on: `app`
     - Volumes:
@@ -221,19 +215,13 @@ Configure Ofelia to run cron jobs in Docker environment.
       - `./ofelia.ini:/etc/ofelia/config.ini:ro`
     - Command: `daemon --config /etc/ofelia/config.ini`
 
-- [ ] Create `infra/shared/ofelia.ini` configuration file
-  - [ ] Copy job configurations from development
-  - [ ] Adjust schedules if needed for production
-
-- [ ] Update `infra/shared/docker-compose.yml`
-  - [ ] Add ofelia service with production config
-  - [ ] Mount production ofelia.ini
-
-- [ ] Test locally
+- [ ] Test locally (when ready)
   - [ ] `docker-compose up -d`
   - [ ] Verify ofelia container running
   - [ ] Check ofelia logs: `docker-compose logs -f ofelia`
   - [ ] Verify jobs execute on schedule
+
+Note: Production ofelia configuration will be added later, then common pieces extracted to shared
 
 ---
 
