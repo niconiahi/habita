@@ -28,6 +28,10 @@ help:
 	@echo "  dev-db-create-migration   Create new migration (usage: make dev-db-create-migration add_route)"
 	@echo "  dev-db-shell              Open PostgreSQL shell"
 	@echo "  dev-db-drop               Drop database volume (WARNING: destroys all data)"
+	@echo ""
+	@echo "Cron jobs:"
+	@echo "  dev-add-escalation-job    Executes the script that gathers all due escalations and store the job"
+	@echo "  dev-db-migrate            Runs all jobs"
 
 dev-up:
 	docker compose -f infra/development/docker-compose.yml up -d
@@ -91,3 +95,11 @@ dev-db-drop:
 	@read confirm
 	docker compose -f infra/development/docker-compose.yml down
 	docker volume rm development_memudo_app_data
+
+# Cron jobs
+dev-add-escalation-job:
+	docker compose -f infra/development/docker-compose.yml exec app bun run /app/app/lib/server/cron/create_escalation_jobs.script.ts
+
+dev-run-jobs:
+	docker compose -f infra/development/docker-compose.yml exec app bun run /app/app/lib/server/cron/process_jobs.script.ts
+
