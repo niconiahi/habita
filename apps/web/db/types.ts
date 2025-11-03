@@ -87,11 +87,9 @@ export interface File {
 
 export interface FormulaParameter {
   created_at: Timestamp;
-  end_date: Timestamp;
   id: Generated<number>;
   key: string;
   period_id: number;
-  start_date: Timestamp;
   updated_at: Timestamp;
   value: Numeric;
 }
