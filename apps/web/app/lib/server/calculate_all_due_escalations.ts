@@ -6,6 +6,8 @@ import { addMonths, addDays } from "date-fns"
 import type { Insertable } from "kysely"
 import type { FormulaParameter, Period } from "db/types"
 import * as v from "valibot"
+import { jsonArrayFrom } from "kysely/helpers/postgres"
+import { ForceDateSchema } from "./force_date"
 
 async function fetch_rates() {
   return query_builder
@@ -20,24 +22,24 @@ export type Rate = NonNullable<
 async function fetch_contracts() {
   return query_builder
     .selectFrom("contract")
-    .innerJoin(
-      "period",
-      "period.contract_id",
-      "contract.id",
-    )
     .select([
-      "contract.id as contract_id",
+      "contract.id",
       "contract.escalation_type",
       "contract.escalation_duration",
-      "period.id as period_id",
-      "period.price",
-      "period.end_date",
+      (eb) =>
+        jsonArrayFrom(
+          eb
+            .selectFrom("period")
+            .selectAll()
+            .whereRef(
+              "period.contract_id",
+              "=",
+              "contract.id",
+            )
+            .orderBy("period.end_date", "desc"),
+        ).as("periods"),
     ])
     .where("contract.state", "=", CONTRACT_STATE.ACTIVE)
-    .where("period.end_date", "<=", new Date())
-    .distinctOn("contract.id")
-    .orderBy("contract.id")
-    .orderBy("period.end_date", "desc")
     .execute()
 }
 export type Contract = NonNullable<
@@ -45,41 +47,58 @@ export type Contract = NonNullable<
 >
 
 export async function calculate_all_due_escalations() {
-  const contracts = await fetch_contracts()
+  const today = new Date()
+  const contracts = (await fetch_contracts()).filter(
+    (contract) => {
+      const latest_period = contract.periods[0]
+      if (!latest_period) {
+        throw new Error(
+          "at least one period should exist for the contract",
+        )
+      }
+      console.log(
+        "latest_period.end_date",
+        latest_period.end_date,
+      )
+      const end_date = v.parse(
+        ForceDateSchema,
+        latest_period.end_date,
+      )
+      console.log("end_date", end_date)
+      return end_date <= today
+    },
+  )
+  console.log("contracts", contracts)
   if (contracts.length === 0) {
-    return { processed: 0, failed: 0 }
+    return { processed: 0 }
   }
   const rates = await fetch_rates()
   const next_periods: Insertable<Period>[] = []
   const next_formula_parameters: Insertable<FormulaParameter>[] =
     []
-  let failed_count = 0
   for (const contract of contracts) {
-    try {
-      const current_rate = get_current_rate(contract, rates)
-      const old_rate = get_old_rate(contract, rates)
-      const next_price = get_next_price(
-        contract.price,
-        current_rate.value,
-        old_rate.value,
-      )
-      const period = make_period(contract, next_price)
-      next_periods.push(period)
-      const formula_parameters = make_formula_parameters(
-        current_rate,
-        old_rate,
-      )
-      next_formula_parameters.push(...formula_parameters)
-    } catch (error) {
-      console.error(
-        `Failed for contract ${contract.contract_id}:`,
-        error,
-      )
-      failed_count++
-    }
+    const latest_period = contract.periods[0]
+    const current_rate = get_current_rate(contract, rates)
+    const old_rate = get_old_rate(contract, rates)
+    const next_price = get_next_price(
+      latest_period.price,
+      current_rate.value,
+      old_rate.value,
+    )
+    const period = make_period(
+      contract,
+      latest_period,
+      next_price,
+    )
+    next_periods.push(period)
+    const formula_parameters = make_formula_parameters(
+      current_rate,
+      old_rate,
+    )
+    next_formula_parameters.push(...formula_parameters)
   }
   if (next_periods.length === 0) {
-    return { processed: 0, failed: failed_count }
+    return { processed: 0 }
   }
   await query_builder.transaction().execute(async (trx) => {
     const inserted_periods = await trx
@@ -100,7 +119,6 @@ export async function calculate_all_due_escalations() {
   })
   return {
     processed: next_periods.length,
-    failed: failed_count,
   }
 }
 
@@ -146,24 +164,25 @@ function get_old_rate(contract: Contract, rates: Rate[]) {
 }
 
 function get_next_price(
-  current_price: string,
+  current_price: number,
   current_rate: string,
   old_rate: string,
 ): number {
-  return (
-    Number.parseFloat(current_price) *
+  const result =
+    current_price *
     (Number.parseFloat(current_rate) /
       Number.parseFloat(old_rate))
-  )
+  return Math.round(result)
 }
 
 function make_period(
   contract: Contract,
+  latest_period: Contract["periods"][0],
   next_price: number,
 ): Insertable<Period> {
   const prev_end_date = v.parse(
-    v.instance(Date),
-    contract.end_date,
+    ForceDateSchema,
+    latest_period.end_date,
   )
   const start_date = addDays(prev_end_date, 1)
   const end_date = add_duration(
@@ -171,8 +190,8 @@ function make_period(
     contract.escalation_duration as Duration,
   )
   return {
-    contract_id: contract.contract_id,
-    price: next_price.toString(),
+    contract_id: contract.id,
+    price: next_price,
     start_date,
     end_date,
     created_at: now,

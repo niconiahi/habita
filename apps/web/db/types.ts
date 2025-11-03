@@ -11,18 +11,6 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
-export type Json = JsonValue;
-
-export type JsonArray = JsonValue[];
-
-export type JsonObject = {
-  [x: string]: JsonValue | undefined;
-};
-
-export type JsonPrimitive = boolean | number | string | null;
-
-export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
-
 export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
@@ -67,8 +55,6 @@ export interface ContractFile {
 export interface FailedJob {
   attempt_count: Generated<number>;
   created_at: Timestamp;
-  error_message: string;
-  error_stack: string | null;
   failed_at: Timestamp;
   id: Generated<number>;
   job_id: number;
@@ -127,7 +113,6 @@ export interface InvitationToken {
 export interface Job {
   created_at: Timestamp;
   id: Generated<number>;
-  payload: Json;
   scheduled_at: Timestamp;
   status: string;
   type: string;
@@ -155,7 +140,7 @@ export interface Period {
   created_at: Timestamp;
   end_date: Timestamp | null;
   id: Generated<number>;
-  price: Numeric;
+  price: number;
   start_date: Timestamp | null;
   updated_at: Timestamp;
 }

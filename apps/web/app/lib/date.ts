@@ -18,3 +18,11 @@ export function get_date(date: Date) {
 export function get_time(date: Date) {
   return new Date(date).toISOString().split("T")[1]
 }
+
+export function get_month(date: Date) {
+  return date.getMonth() + 1
+}
+
+export function get_year(date: Date) {
+  return date.getFullYear()
+}

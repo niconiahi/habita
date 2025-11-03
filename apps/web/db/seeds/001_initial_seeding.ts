@@ -15,6 +15,7 @@ import { PROPERTY_FILE_TYPE } from "../../app/lib/server/property_file_type.ts"
 import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
 import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
 import { PROPERTY_TYPE } from "../../app/lib/server/property_type.ts"
+import { get_month, get_year } from "../../app/lib/date.ts"
 import { SLOT_STATE } from "../../app/lib/server/slot_state.ts"
 import { ContractType } from "../../app/lib/server/contract_type.ts"
 import { compose_point } from "../../app/lib/server/point.ts"
@@ -22,7 +23,17 @@ import {
   SERVICE_TYPE,
   type ServiceType,
 } from "../../app/lib/service.ts"
+import {
+  RATE_TYPE,
+  RateType,
+} from "../../app/lib/server/rate_type.ts"
 import { query_builder } from "../query_builder"
+import {
+  subMonths,
+  addMonths,
+  addDays,
+  subDays,
+} from "date-fns"
 
 function compose_file_path(basename: string) {
   return `${import.meta.dir}/../files/${basename}`
@@ -122,10 +133,8 @@ async function make_finished_contract(
   now: string,
 ) {
   const date = new Date()
-  const contract_start_date = new Date(date)
-  contract_start_date.setFullYear(date.getFullYear() - 1)
-  const contract_end_date = new Date(date)
-  contract_end_date.setFullYear(date.getFullYear())
+  const contract_start_date = subMonths(date, 12)
+  const contract_end_date = date
   const contract = await query_builder
     .insertInto("contract")
     .values({
@@ -142,16 +151,12 @@ async function make_finished_contract(
   console.log("created contract", contract.id)
 
   const price = 600000
-  const period_end_date = new Date(
-    contract_start_date.getFullYear(),
-    contract_start_date.getMonth() + 3,
-    contract_start_date.getDate(),
-  )
+  const period_end_date = addMonths(contract_start_date, 3)
   const period = await query_builder
     .insertInto("period")
     .values({
       contract_id: contract.id,
-      price: price.toString(),
+      price,
       start_date: contract_start_date,
       end_date: period_end_date,
       created_at: now,
@@ -169,13 +174,10 @@ async function make_editing_contract(
   admin_id: number,
 ) {
   const date = new Date()
-  const contract_start_date = new Date(date)
-  contract_start_date.setMonth(
-    contract_start_date.getMonth() + 3,
-  )
-  const contract_end_date = new Date(contract_start_date)
-  contract_end_date.setFullYear(
-    contract_end_date.getFullYear() + 1,
+  const contract_start_date = addMonths(date, 3)
+  const contract_end_date = addMonths(
+    contract_start_date,
+    12,
   )
   const contract = await query_builder
     .insertInto("contract")
@@ -193,16 +195,12 @@ async function make_editing_contract(
   console.log("created contract", contract.id)
 
   const price = 800000
-  const period_end_date = new Date(
-    contract_start_date.getFullYear(),
-    contract_start_date.getMonth() + 3,
-    contract_start_date.getDate(),
-  )
+  const period_end_date = addMonths(contract_start_date, 3)
   const period = await query_builder
     .insertInto("period")
     .values({
       contract_id: contract.id,
-      price: price.toString(),
+      price,
       start_date: contract_start_date,
       end_date: period_end_date,
       created_at: now,
@@ -478,6 +476,96 @@ async function run() {
       })
       .execute()
     console.log("created property file")
+  }
+
+  console.log("creating test rate data for escalation")
+  const date = new Date()
+
+  const RATES: {
+    type: RateType
+    month: number
+    year: number
+    value: string
+  }[] = [
+    {
+      type: RATE_TYPE.IPC,
+      month: get_month(date),
+      year: get_year(date),
+      value: "1.21",
+    },
+    {
+      type: RATE_TYPE.IPC,
+      month: get_month(subMonths(date, 3)),
+      year: get_year(subMonths(date, 3)),
+      value: "1.1",
+    },
+  ]
+  for (const rate of RATES) {
+    await query_builder
+      .insertInto("rate")
+      .values({
+        type: rate.type,
+        month: rate.month,
+        year: rate.year,
+        value: rate.value,
+        created_at: now,
+        updated_at: now,
+      })
+      .execute()
+    console.log("created rate")
+  }
+  console.log(
+    "creating active contract with due escalation",
+  )
+  const contract = await query_builder
+    .insertInto("contract")
+    .values({
+      property_id: property.id,
+      type: ContractType.LONG_TERM,
+      state: CONTRACT_STATE.ACTIVE,
+      escalation_type: RATE_TYPE.IPC,
+      escalation_duration: "P3M",
+      start_date: subMonths(date, 6),
+      end_date: addMonths(date, 6),
+      created_at: now,
+      updated_at: now,
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  console.log("created contract", contract.id)
+
+  const PERIODS: {
+    contract_id: number
+    price: number
+    start_date: Date
+    end_date: Date
+  }[] = [
+    {
+      contract_id: contract.id,
+      start_date: subMonths(date, 6),
+      end_date: subMonths(date, 3),
+      price: 600000,
+    },
+    {
+      contract_id: contract.id,
+      start_date: addDays(subMonths(date, 3), 1),
+      end_date: subDays(date, 1),
+      price: 600000,
+    },
+  ]
+  for (const period of PERIODS) {
+    await query_builder
+      .insertInto("period")
+      .values({
+        contract_id: period.contract_id,
+        price: period.price,
+        start_date: period.start_date,
+        end_date: period.end_date,
+        created_at: now,
+        updated_at: now,
+      })
+      .execute()
+    console.log("created period")
   }
 }
 
