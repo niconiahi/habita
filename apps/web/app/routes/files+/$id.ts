@@ -1,6 +1,6 @@
 import * as v from "valibot"
 import { ForceNumberSchema } from "~/lib/server/force_number"
-import { kv } from "~/lib/server/kv"
+import { kv } from "~/lib/server/kv.server"
 import { query_builder } from "~/lib/server/query_builder"
 import type { Route } from "./+types/$id"
 
