@@ -19,9 +19,7 @@ services:
       - habita-network
 
   app:
-    build:
-      context: ../../apps/web
-      dockerfile: Dockerfile.production
+    image: niconiahi/habita:web-latest
     restart: unless-stopped
     env_file:
       - ../../.env.production
@@ -60,9 +58,7 @@ services:
       - habita-network
 
   go:
-    build:
-      context: ../../apps/go
-      dockerfile: Dockerfile
+    image: niconiahi/habita:go-latest
     restart: unless-stopped
     env_file:
       - ../../.env.production
