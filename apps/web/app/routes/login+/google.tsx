@@ -3,8 +3,8 @@ import { redirect } from "react-router"
 import {
   google_code_verifier_cookie,
   google_state_cookie,
-} from "~/lib/server/cookies"
-import { google } from "~/lib/server/google"
+} from "~/lib/server/cookies.server"
+import { google } from "~/lib/server/google.server"
 
 export async function action() {
   const state = generateState()

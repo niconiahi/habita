@@ -1,16 +1,16 @@
 import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { Form, Link } from "react-router"
-import { get_access_type_label } from "~/lib/server/access_type"
-import { require_auth } from "~/lib/server/auth"
-import { error } from "~/lib/server/error"
-import { has_edit_access } from "~/lib/server/property_access"
+import { get_access_type_label } from "~/lib/access_type"
+import { require_auth } from "~/lib/server/auth.server"
+import { error } from "~/lib/server/error.server"
+import { has_edit_access } from "~/lib/server/property_access.server"
 import {
   get_user_file_type_label,
   USER_FILE_TYPE,
-} from "~/lib/server/user_file_type"
+} from "~/lib/user_file_type"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server"
+import * as actions from "./actions/server/index.server"
 
 const INTENT = {
   CREATE_FILE: "create_file",

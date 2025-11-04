@@ -8,6 +8,15 @@ export default defineConfig({
   optimizeDeps: {
     include: ["valibot"],
   },
+  ssr: {
+    external: ["bun"],
+    noExternal: [],
+  },
+  build: {
+    rollupOptions: {
+      external: ["bun"],
+    },
+  },
   server: {
     host: "0.0.0.0",
     port: 5173,
