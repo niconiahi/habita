@@ -1,11 +1,11 @@
 import type { Route } from "./+types/accept-invite"
 import * as v from "valibot"
-import { compose_token_hash } from "./edit/actions/server"
-import { query_builder } from "~/lib/server/query_builder"
+import { compose_token_hash } from "./edit/actions/server/index.server"
+import { query_builder } from "~/lib/server/query_builder.server"
 import { now } from "~/lib/now"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { ACCESS_TYPE } from "~/lib/server/access_type"
-import { require_auth } from "~/lib/server/auth"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { ACCESS_TYPE } from "~/lib/access_type"
+import { require_auth } from "~/lib/server/auth.server"
 
 const ERROR_MESSAGE = "not found"
 

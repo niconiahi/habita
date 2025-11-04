@@ -1,46 +1,46 @@
 import { Form } from "react-router"
 import * as v from "valibot"
 import { format_date_for_input } from "~/lib/date"
-import { require_auth } from "~/lib/server/auth"
+import { require_auth } from "~/lib/server/auth.server"
 import {
   ContractFileTypeSchema,
   get_contract_file_type_label,
-} from "~/lib/server/contract_file_type"
+} from "~/lib/contract_file_type"
 import {
   DURATIONS,
   get_duration_label,
-} from "~/lib/server/duration"
-import { error } from "~/lib/server/error"
+} from "~/lib/duration"
+import { error } from "~/lib/server/error.server"
 import {
   ESCALATION_TYPE,
   get_escalation_label,
-} from "~/lib/server/escalation_type"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { has_edit_access } from "~/lib/server/property_access"
+} from "~/lib/escalation_type"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { has_edit_access } from "~/lib/server/property_access.server"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server"
+import * as actions from "./actions/server/index.server"
 import {
   fetch_contract,
   type Contract,
-} from "./fetchers/server/contract"
+} from "./fetchers/server/contract.server"
 import {
   FINE_TYPE,
   FineTypeSchema,
   get_fine_label,
   type FineType,
-} from "~/lib/server/fine_type"
+} from "~/lib/fine_type"
 import { useState } from "react"
 import {
   DEFAULT_TYPE,
   DefaultTypeSchema,
   get_default_label,
   type DefaultType,
-} from "~/lib/server/default_type"
-import { fetch_owner, type Owner } from "~/lib/server/owner"
+} from "~/lib/default_type"
+import { fetch_owner, type Owner } from "~/lib/server/owner.server"
 import {
   fetch_tenant,
   type Tenant,
-} from "~/lib/server/tenant"
+} from "~/lib/server/tenant.server"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",

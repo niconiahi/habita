@@ -1,7 +1,7 @@
 import { Link } from "react-router"
 import * as v from "valibot"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { fetch_property } from "../fetchers/server/property"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { fetch_property } from "../fetchers/server/property.server"
 import type { Route } from "./+types/_index"
 
 export async function action({ params }: Route.LoaderArgs) {
