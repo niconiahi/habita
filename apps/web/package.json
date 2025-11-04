@@ -16,7 +16,6 @@
     "db:migrate": "bun kysely migrate:latest"
   },
   "dependencies": {
-    "@iuioiua/redis": "npm:@jsr/iuioiua__redis",
     "@node-rs/argon2": "^2.0.2",
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
@@ -24,6 +23,7 @@
     "@react-router/serve": "^7.7.1",
     "arctic": "^3.7.0",
     "date-fns": "^4.1.0",
+    "ioredis": "^5.8.2",
     "isbot": "^5.1.27",
     "kysely": "^0.28.5",
     "n2words": "^1.23.0",
@@ -41,6 +41,7 @@
     "@react-router/remix-routes-option-adapter": "^7.8.2",
     "@tailwindcss/vite": "^4.1.4",
     "@types/bun": "^1.2.21",
+    "@types/ioredis": "^5.0.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^20",
     "@types/pg": "^8.15.5",
