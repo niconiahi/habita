@@ -52,6 +52,10 @@ jobs:
             git pull origin main
 
             echo ""
+            echo "=== Logging into Docker Hub ==="
+            echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+            echo ""
             echo "=== Pulling latest images ==="
             docker compose -f infra/production/docker-compose.yml pull app go
 
