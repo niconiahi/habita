@@ -2,17 +2,17 @@ import { useState } from "react"
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
-import { require_auth } from "~/lib/server/auth"
-import { error } from "~/lib/server/error"
-import { has_edit_access } from "~/lib/server/property_access"
+import { require_auth } from "~/lib/server/auth.server"
+import { error } from "~/lib/server/error.server"
+import { has_edit_access } from "~/lib/server/property_access.server"
 import type { Route } from "./+types/new"
 import {
   get_property_type_label,
   PROPERTY_TYPE,
   PropertyTypeSchema,
   type PropertyType,
-} from "~/lib/server/property_type"
-import * as actions from "./actions"
+} from "~/lib/property_type"
+import * as actions from "./actions/index.server"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",

@@ -7,14 +7,14 @@ import {
   display_room_type,
   ROOM_TYPE,
 } from "~/lib/room_type"
-import { require_auth } from "~/lib/server/auth"
+import { require_auth } from "~/lib/server/auth.server"
 import {
   CONTRACT_STATE,
   ContractStateSchema,
   get_contract_state_label,
-} from "~/lib/server/contract_state"
-import { error } from "~/lib/server/error"
-import { ForceNumberSchema } from "~/lib/server/force_number"
+} from "~/lib/contract_state"
+import { error } from "~/lib/server/error.server"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
 import {
   get_service_type_label,
   SERVICE_TYPE,
@@ -22,14 +22,14 @@ import {
 import {
   fetch_property,
   type Property,
-} from "../../fetchers/server/property"
+} from "../../fetchers/server/property.server"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server"
+import * as actions from "./actions/server/index.server"
 import {
   ACCESS_TYPE,
   get_access_type_label,
-} from "~/lib/server/access_type"
-import { has_edit_access } from "~/lib/server/property_access"
+} from "~/lib/access_type"
+import { has_edit_access } from "~/lib/server/property_access.server"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",

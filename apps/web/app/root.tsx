@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router"
-import { type Auth, get_auth } from "~/lib/server/auth"
+import { type Auth, get_auth } from "~/lib/server/auth.server"
 import type { Route } from "./+types/root"
 
 export function Layout({

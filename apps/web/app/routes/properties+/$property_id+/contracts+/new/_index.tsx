@@ -1,11 +1,11 @@
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
-import { require_auth } from "~/lib/server/auth"
-import { error } from "~/lib/server/error"
-import { ForceNumberSchema } from "~/lib/server/force_number"
-import { has_edit_access } from "~/lib/server/property_access"
+import { require_auth } from "~/lib/server/auth.server"
+import { error } from "~/lib/server/error.server"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { has_edit_access } from "~/lib/server/property_access.server"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions"
+import * as actions from "./actions/index.server"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",

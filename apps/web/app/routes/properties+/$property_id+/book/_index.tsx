@@ -1,15 +1,15 @@
 import { Form, redirect } from "react-router"
 import type { Route } from "./+types/_index"
-import { ForceNumberSchema } from "~/lib/server/force_number"
+import { ForceNumberSchema } from "~/lib/server/force_number.server"
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
 import { sql } from "kysely"
-import { error } from "~/lib/server/error"
-import * as actions from "./actions/server"
-import { ForceDateSchema } from "~/lib/server/force_date"
+import { error } from "~/lib/server/error.server"
+import * as actions from "./actions/server/index.server"
+import { ForceDateSchema } from "~/lib/server/force_date.server"
 import { get_date } from "~/lib/date"
-import { SLOT_STATE } from "~/lib/server/slot_state"
-import { require_auth } from "~/lib/server/auth"
+import { SLOT_STATE } from "~/lib/slot_state"
+import { require_auth } from "~/lib/server/auth.server"
 
 const INTENT = {
   SET_DATE: "set_date",
