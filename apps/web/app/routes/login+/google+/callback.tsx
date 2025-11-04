@@ -2,17 +2,17 @@ import { OAuth2RequestError } from "arctic"
 import type { LoaderFunctionArgs } from "react-router"
 import { redirect } from "react-router"
 import * as v from "valibot"
-import { query_builder } from "~/../../db/query_builder"
+import { query_builder } from "db/query_builder"
 import {
   create_session,
   generate_session_token,
-} from "~/lib/server/auth"
+} from "~/lib/server/auth.server"
 import {
   google_code_verifier_cookie,
   google_state_cookie,
-} from "~/lib/server/cookies"
-import { google } from "~/lib/server/google"
-import { session_cookie } from "~/lib/server/session"
+} from "~/lib/server/cookies.server"
+import { google } from "~/lib/server/google.server"
+import { session_cookie } from "~/lib/server/session.server"
 
 const GoogleUserSchema = v.object({
   sub: v.string(),
