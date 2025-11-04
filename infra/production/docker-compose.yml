@@ -19,9 +19,7 @@ services:
       - habita-network
 
   app:
-    build:
-      context: ../../apps/web
-      dockerfile: Dockerfile.production
+    image: niconiahi/habita:web-latest
     restart: unless-stopped
     env_file:
       - ../../.env.production
@@ -60,9 +58,7 @@ services:
       - habita-network
 
   go:
-    build:
-      context: ../../apps/go
-      dockerfile: Dockerfile
+    image: niconiahi/habita:go-latest
     restart: unless-stopped
     env_file:
       - ../../.env.production
@@ -124,6 +120,23 @@ services:
           memory: 8G
         reservations:
           memory: 4G
+    networks:
+      - habita-network
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini:ro
+    command: daemon --config /etc/ofelia/config.ini
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     networks:
       - habita-network
 
