@@ -6,19 +6,19 @@ import {
 import {
   ACCESS_TYPE,
   type AccessType,
-} from "../../app/lib/server/access_type.ts"
+} from "../../app/lib/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
-} from "../../app/lib/server/contract_file_type.ts"
-import { PROPERTY_FILE_TYPE } from "../../app/lib/server/property_file_type.ts"
-import { CONTRACT_STATE } from "../../app/lib/server/contract_state.ts"
-import { PROPERTY_STATE } from "../../app/lib/server/property_state.ts"
-import { PROPERTY_TYPE } from "../../app/lib/server/property_type.ts"
+} from "../../app/lib/contract_file_type.ts"
+import { PROPERTY_FILE_TYPE } from "../../app/lib/server/property_file_type.server.ts"
+import { CONTRACT_STATE } from "../../app/lib/contract_state.ts"
+import { PROPERTY_STATE } from "../../app/lib/server/property_state.server.ts"
+import { PROPERTY_TYPE } from "../../app/lib/property_type.ts"
 import { get_month, get_year } from "../../app/lib/date.ts"
-import { SLOT_STATE } from "../../app/lib/server/slot_state.ts"
-import { ContractType } from "../../app/lib/server/contract_type.ts"
-import { compose_point } from "../../app/lib/server/point.ts"
+import { SLOT_STATE } from "../../app/lib/slot_state.ts"
+import { ContractType } from "../../app/lib/contract_type.ts"
+import { compose_point } from "../../app/lib/server/point.server.ts"
 import {
   SERVICE_TYPE,
   type ServiceType,
@@ -26,7 +26,7 @@ import {
 import {
   RATE_TYPE,
   RateType,
-} from "../../app/lib/server/rate_type.ts"
+} from "../../app/lib/rate_type.ts"
 import { query_builder } from "../query_builder"
 import {
   subMonths,
