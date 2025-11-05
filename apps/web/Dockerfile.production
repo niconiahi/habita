@@ -28,4 +28,4 @@ COPY --from=builder /app/kysely.config.ts ./
 
 ENV NODE_ENV=production
 
-CMD ["node", "./build/server/index.js"]
+CMD ["bun", "run", "start"]
