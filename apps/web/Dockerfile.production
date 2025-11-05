@@ -23,6 +23,8 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --production
 
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/db ./db
+COPY --from=builder /app/kysely.config.ts ./
 
 ENV NODE_ENV=production
 

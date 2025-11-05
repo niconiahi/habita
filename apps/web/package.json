@@ -13,7 +13,7 @@
     "format": "biome format --write .",
     "db:types": "bun run db/generate_types.mjs",
     "db:seed": "bun kysely seed:run",
-    "db:migrate": "bun run node_modules/.bin/kysely migrate:latest"
+    "db:migrate": "bun kysely migrate:latest"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",
