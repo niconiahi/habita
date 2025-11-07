@@ -25,4 +25,4 @@
 - [x] Upon property creation, it should assign the administrator
 - [x] On a created property, it should be possible to invite the owner
 - [x] Assigned administrator is not the correct one when creating a new property
-- [] Add image transformation service
+- [x] Add image transformation service
