@@ -3,4 +3,5 @@ node_modules
 .react-router
 build
 .env
+.env.production
 docs
