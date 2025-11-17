@@ -140,6 +140,29 @@ services:
     networks:
       - habita-network
 
+  image:
+    image: darthsim/imgproxy:latest
+    restart: unless-stopped
+    env_file:
+      - ../../.env.production
+    environment:
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_AUTO_WEBP: "true"
+    depends_on:
+      app:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - habita-network
+
 volumes:
   habita_prod_db_data:
   habita_prod_valkey_data:

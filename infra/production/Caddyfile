@@ -11,6 +11,12 @@ habita.rent {
     Referrer-Policy "strict-origin-when-cross-origin"
   }
 
+  # Image proxy
+  handle /image/* {
+    uri strip_prefix /image
+    reverse_proxy image:8080
+  }
+
   # Nominatim geocoding API
   handle /nominatim/* {
     uri strip_prefix /nominatim

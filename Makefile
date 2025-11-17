@@ -158,6 +158,9 @@ prod-logs-go:
 prod-logs-caddy:
 	docker compose -f infra/production/docker-compose.yml logs -f caddy
 
+dev-logs-image:
+	docker compose -f infra/production/docker-compose.yml logs -f image
+
 prod-logs-nominatim:
 	docker compose -f infra/production/docker-compose.yml logs -f nominatim
 

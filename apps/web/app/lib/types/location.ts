@@ -1,8 +1,8 @@
 export type Location = {
   address: string
   id: number
-  latitude: number
-  longitude: number
+  latitude: string
+  longitude: string
   road: string
   house_number: string
   state: string
