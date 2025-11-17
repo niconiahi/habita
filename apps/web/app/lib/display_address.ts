@@ -1,6 +1,8 @@
-import type { Location } from "~/lib/types/location"
+import type { Property } from "~/routes/properties+/fetchers/server/property.server"
 
-export function display_location(location: Location) {
+export function display_location(
+  location: Property["location"],
+) {
   const road_and_number = `${location.road} ${location.house_number}`
   if (location.suburb) {
     return `${road_and_number}, ${location.suburb}, ${location.state}`
