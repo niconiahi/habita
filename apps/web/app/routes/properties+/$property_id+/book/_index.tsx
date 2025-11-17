@@ -10,6 +10,7 @@ import { ForceDateSchema } from "~/lib/server/force_date.server"
 import { get_date } from "~/lib/date"
 import { SLOT_STATE } from "~/lib/slot_state"
 import { require_auth } from "~/lib/server/auth.server"
+import { formatInTimeZone } from "date-fns-tz"
 
 const INTENT = {
   SET_DATE: "set_date",
@@ -102,8 +103,12 @@ export default function ({
             <select name="id" id="id">
               {times.map((time) => {
                 const id = `time_${time.id}`
-                const start_time = get_time(time.start_date)
-                const end_time = get_time(time.end_date)
+                const start_time = format_in_timezone(
+                  time.start_date,
+                )
+                const end_time = format_in_timezone(
+                  time.end_date,
+                )
                 return (
                   <option key={id} value={time.id}>
                     {start_time}-{end_time}
@@ -178,9 +183,7 @@ async function fetch_times(
     .execute()
 }
 
-function get_time(date: Date) {
-  return new Date(date).toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+function format_in_timezone(date: Date) {
+  const TIMEZONE = "America/Argentina/Buenos_Aires"
+  return formatInTimeZone(date, TIMEZONE, "HH:mm")
 }
