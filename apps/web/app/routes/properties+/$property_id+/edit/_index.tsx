@@ -2,23 +2,23 @@ import { useState } from "react"
 import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
-import { format_date_for_input } from "~/lib/date"
+import { format_date_for_input } from "~/lib/date.server"
 import {
   display_room_type,
   ROOM_TYPE,
-} from "~/lib/room_type"
-import { require_auth } from "~/lib/server/auth.server"
+} from "~/lib/room_type.server"
+import { require_auth } from "~/lib/auth.server"
 import {
   CONTRACT_STATE,
   ContractStateSchema,
   get_contract_state_label,
-} from "~/lib/contract_state"
-import { error } from "~/lib/server/error.server"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+} from "~/lib/contract_state.server"
+import { error } from "~/lib/error.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
 import {
   get_service_type_label,
   SERVICE_TYPE,
-} from "~/lib/service"
+} from "~/lib/service.server"
 import {
   fetch_property,
   type Property,
@@ -28,8 +28,8 @@ import * as actions from "./actions/server/index.server"
 import {
   ACCESS_TYPE,
   get_access_type_label,
-} from "~/lib/access_type"
-import { has_edit_access } from "~/lib/server/property_access.server"
+} from "~/lib/access_type.server"
+import { has_edit_access } from "~/lib/property_access.server"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",

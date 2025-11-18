@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "~/lib/access_type"
+import { ACCESS_TYPE } from "~/lib/access_type.server"
 
-export async function fetch_tenant(property_id: number) {
+export async function fetch_owner(property_id: number) {
   return query_builder
     .selectFrom("user")
     .innerJoin("access", "access.user_id", "user.id")
@@ -12,7 +12,7 @@ export async function fetch_tenant(property_id: number) {
     )
     .where((eb) =>
       eb.and([
-        eb("access.type", "=", ACCESS_TYPE.TENANT),
+        eb("access.type", "=", ACCESS_TYPE.OWNER),
         eb("property.id", "=", property_id),
       ]),
     )
@@ -25,6 +25,4 @@ export async function fetch_tenant(property_id: number) {
     ])
     .executeTakeFirst()
 }
-export type Tenant = Awaited<
-  ReturnType<typeof fetch_tenant>
->
+export type Owner = Awaited<ReturnType<typeof fetch_owner>>

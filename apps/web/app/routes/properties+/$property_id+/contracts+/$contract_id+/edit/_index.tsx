@@ -1,22 +1,23 @@
 import { Form } from "react-router"
 import * as v from "valibot"
-import { format_date_for_input } from "~/lib/date"
-import { require_auth } from "~/lib/server/auth.server"
+import { format_date_for_input } from "~/lib/date.server"
+import { require_auth } from "~/lib/auth.server"
 import {
   ContractFileTypeSchema,
-  get_contract_file_type_label,
-} from "~/lib/contract_file_type"
+  get_contract_file_types,
+} from "~/lib/contract_file_type.server"
+import { get_contract_file_type_label } from "~/lib/contract_file_type"
 import {
   DURATIONS,
   get_duration_label,
-} from "~/lib/duration"
-import { error } from "~/lib/server/error.server"
+} from "~/lib/duration.server"
+import { error } from "~/lib/error.server"
 import {
   ESCALATION_TYPE,
   get_escalation_label,
-} from "~/lib/escalation_type"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
-import { has_edit_access } from "~/lib/server/property_access.server"
+} from "~/lib/escalation_type.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { has_edit_access } from "~/lib/property_access.server"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/server/index.server"
 import {
@@ -28,19 +29,19 @@ import {
   FineTypeSchema,
   get_fine_label,
   type FineType,
-} from "~/lib/fine_type"
+} from "~/lib/fine_type.server"
 import { useState } from "react"
 import {
   DEFAULT_TYPE,
   DefaultTypeSchema,
   get_default_label,
   type DefaultType,
-} from "~/lib/default_type"
-import { fetch_owner, type Owner } from "~/lib/server/owner.server"
+} from "~/lib/default_type.server"
+import { fetch_owner, type Owner } from "~/lib/owner.server"
 import {
   fetch_tenant,
   type Tenant,
-} from "~/lib/server/tenant.server"
+} from "~/lib/tenant.server"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
@@ -126,13 +127,14 @@ export async function loader({
   }
   const owner = await fetch_owner(property_id)
   const tenant = await fetch_tenant(property_id)
-  return { contract, owner, tenant }
+  const contract_file_types = get_contract_file_types()
+  return { contract, owner, tenant, contract_file_types }
 }
 
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { contract, tenant, owner } = loaderData
+  const { contract, tenant, owner, contract_file_types } = loaderData
   return (
     <>
       <Fields
@@ -140,7 +142,7 @@ export default function ({
         tenant={tenant}
         owner={owner}
       />
-      <Documents contract={contract} />
+      <Documents contract={contract} contract_file_types={contract_file_types} />
       <Periods contract={contract} />
     </>
   )
@@ -394,7 +396,7 @@ function Fields({
   )
 }
 
-function Documents({ contract }: { contract: Contract }) {
+function Documents({ contract, contract_file_types }: { contract: Contract, contract_file_types: number[] }) {
   return (
     <section>
       <h3>documentos</h3>
@@ -414,6 +416,23 @@ function Documents({ contract }: { contract: Contract }) {
         <p>
           <label htmlFor="file">documento</label>
           <input type="file" id="file" name="file" />
+        </p>
+        <p>
+          <label htmlFor="file_type">tipo</label>
+          <select
+            name="file_type"
+            id="file_type"
+            required
+          >
+            {contract_file_types.map((type) => {
+              const id = `file_type_${type}`
+              return (
+                <option key={id} value={type}>
+                  {get_contract_file_type_label(type)}
+                </option>
+              )
+            })}
+          </select>
         </p>
         <button
           type="submit"

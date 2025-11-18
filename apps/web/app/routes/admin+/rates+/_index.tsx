@@ -3,17 +3,17 @@ import * as v from "valibot"
 import {
   is_webmaster,
   require_auth,
-} from "~/lib/server/auth.server"
-import { error } from "~/lib/server/error.server"
+} from "~/lib/auth.server"
+import { error } from "~/lib/error.server"
 import {
   get_rate_label,
   RATE_TYPE,
   RateTypeSchema,
   type RateType,
-} from "~/lib/rate_type"
+} from "~/lib/rate_type.server"
 import { query_builder } from "db/query_builder"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
-import { now } from "~/lib/now"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { now } from "~/lib/now.server"
 import type { Route } from "./+types/_index"
 
 export async function loader({

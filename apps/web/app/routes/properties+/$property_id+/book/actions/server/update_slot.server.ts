@@ -1,11 +1,11 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
-import { SLOT_STATE } from "~/lib/slot_state"
-import { create_ics, InviteeSchema } from "~/lib/server/ics.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { SLOT_STATE } from "~/lib/slot_state.server"
+import { create_ics, InviteeSchema } from "~/lib/ics.server"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
-import { send_calendar_invite } from "~/lib/server/send_calendar_invite.server"
-import { display_location } from "~/lib/display_address"
+import { send_calendar_invite } from "~/lib/send_calendar_invite.server"
+import { display_location } from "~/lib/display_location"
 
 export async function update_slot(
   form_data: FormData,

@@ -14,7 +14,7 @@ export const LocationSchema = v.object({
   display_name: v.string(),
   address: v.object({
     road: v.string(),
-    house_number: v.string(),
+    house_number: v.number(),
     suburb: v.optional(v.string()),
     town: v.optional(v.string()),
     city: v.optional(v.string()),

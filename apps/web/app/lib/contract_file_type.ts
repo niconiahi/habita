@@ -1,20 +1,13 @@
-import * as v from "valibot"
-
 export type ObjectValues<T> = T[keyof T]
+
 export const CONTRACT_FILE_TYPE = {
   CONTRACT: 0,
   INSURANCE: 1,
 } as const
-export const ContractFileTypeSchema = v.picklist(
-  Object.values(CONTRACT_FILE_TYPE),
-)
-export type ContractFileType = ObjectValues<
-  typeof CONTRACT_FILE_TYPE
->
 
-export function get_contract_file_type_label(
-  type: ContractFileType,
-) {
+export type ContractFileType = ObjectValues<typeof CONTRACT_FILE_TYPE>
+
+export function get_contract_file_type_label(type: number | ContractFileType) {
   switch (type) {
     case CONTRACT_FILE_TYPE.CONTRACT: {
       return "Contrato"
@@ -23,8 +16,7 @@ export function get_contract_file_type_label(
       return "Seguro"
     }
     default: {
-      const _exhaustive: never = type
-      return _exhaustive
+      throw new Error(`Unknown contract file type: ${type}`)
     }
   }
 }
