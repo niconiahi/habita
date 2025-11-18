@@ -1,6 +1,6 @@
 import { query_builder } from "db/query_builder"
 import { CONTRACT_STATE } from "~/lib/contract_state"
-import { now } from "~/lib/now"
+import { now } from "~/lib/now.server"
 import { JOB_STATUS } from "~/lib/job_status"
 import { JOB_TYPE } from "~/lib/job_type"
 import { jsonArrayFrom } from "kysely/helpers/postgres"

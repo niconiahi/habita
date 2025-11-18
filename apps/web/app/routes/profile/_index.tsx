@@ -2,9 +2,9 @@ import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { Form, Link } from "react-router"
 import { get_access_type_label } from "~/lib/access_type"
-import { require_auth } from "~/lib/server/auth.server"
-import { error } from "~/lib/server/error.server"
-import { has_edit_access } from "~/lib/server/property_access.server"
+import { require_auth } from "~/lib/auth.server"
+import { error } from "~/lib/error.server"
+import { has_edit_access } from "~/lib/property_access.server"
 import {
   get_user_file_type_label,
   USER_FILE_TYPE,

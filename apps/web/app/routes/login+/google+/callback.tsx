@@ -6,13 +6,13 @@ import { query_builder } from "db/query_builder"
 import {
   create_session,
   generate_session_token,
-} from "~/lib/server/auth.server"
+} from "~/lib/auth.server"
 import {
   google_code_verifier_cookie,
   google_state_cookie,
-} from "~/lib/server/cookies.server"
-import { google } from "~/lib/server/google.server"
-import { session_cookie } from "~/lib/server/session.server"
+} from "~/lib/cookies.server"
+import { google } from "~/lib/google.server"
+import { session_cookie } from "~/lib/session.server"
 
 const GoogleUserSchema = v.object({
   sub: v.string(),

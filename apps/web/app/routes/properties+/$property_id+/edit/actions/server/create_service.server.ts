@@ -1,5 +1,5 @@
 import { query_builder } from "db/query_builder"
-import { now } from "~/lib/now"
+import { now } from "~/lib/now.server"
 
 export async function create_service(property_id: number) {
   const type = await query_builder

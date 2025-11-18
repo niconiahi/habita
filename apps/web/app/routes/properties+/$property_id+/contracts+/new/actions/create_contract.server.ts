@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { now } from "~/lib/now"
+import { now } from "~/lib/now.server"
 import { CONTRACT_STATE } from "~/lib/contract_state"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
 
 export async function create_contract(
   form_data: FormData,
@@ -11,6 +11,10 @@ export async function create_contract(
   const price = v.parse(
     ForceNumberSchema,
     form_data.get("price"),
+  )
+  const type = v.parse(
+    ForceNumberSchema,
+    form_data.get("type"),
   )
   const contract = await query_builder
     .transaction()
@@ -22,6 +26,7 @@ export async function create_contract(
           created_at: now,
           updated_at: now,
           state: CONTRACT_STATE.EDITING,
+          type,
         })
         .returning("id")
         .executeTakeFirstOrThrow()
@@ -29,7 +34,7 @@ export async function create_contract(
         .insertInto("period")
         .values({
           contract_id: contract.id,
-          price: price.toString(),
+          price: price,
           created_at: now,
           updated_at: now,
         })

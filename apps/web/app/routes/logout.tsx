@@ -2,8 +2,8 @@ import { sha256 } from "@oslojs/crypto/sha2"
 import { encodeHexLowerCase } from "@oslojs/encoding"
 import type { ActionFunctionArgs } from "react-router"
 import { redirect } from "react-router"
-import { invalidate_session } from "~/lib/server/auth.server"
-import { session_cookie } from "~/lib/server/session.server"
+import { invalidate_session } from "~/lib/auth.server"
+import { session_cookie } from "~/lib/session.server"
 
 export async function action({
   request,

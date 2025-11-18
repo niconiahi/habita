@@ -13,9 +13,13 @@ export type ContractFileType = ObjectValues<
 >
 
 export function get_contract_file_type_label(
-  type: ContractFileType,
+  type: number | ContractFileType,
 ) {
-  switch (type) {
+  const contract_file_type = v.parse(
+    ContractFileTypeSchema,
+    type,
+  )
+  switch (contract_file_type) {
     case CONTRACT_FILE_TYPE.CONTRACT: {
       return "Contrato"
     }
@@ -23,8 +27,12 @@ export function get_contract_file_type_label(
       return "Seguro"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = contract_file_type
       return _exhaustive
     }
   }
+}
+
+export function get_contract_file_types() {
+  return Object.values(CONTRACT_FILE_TYPE)
 }

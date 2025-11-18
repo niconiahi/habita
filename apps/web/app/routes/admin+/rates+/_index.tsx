@@ -3,17 +3,17 @@ import * as v from "valibot"
 import {
   is_webmaster,
   require_auth,
-} from "~/lib/server/auth.server"
-import { error } from "~/lib/server/error.server"
+} from "~/lib/auth.server"
+import { error } from "~/lib/error.server"
 import {
   get_rate_label,
-  RATE_TYPE,
-  RateTypeSchema,
   type RateType,
 } from "~/lib/rate_type"
+import { get_rate_types } from "~/lib/rate_type"
+import { RateTypeSchema } from "~/lib/rate_type"
 import { query_builder } from "db/query_builder"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
-import { now } from "~/lib/now"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { now } from "~/lib/now.server"
 import type { Route } from "./+types/_index"
 
 export async function loader({
@@ -32,10 +32,12 @@ export async function loader({
     .where("month", "=", current_month)
     .where("year", "=", current_year)
     .execute()
+  const rate_types = get_rate_types()
   return {
     current_month,
     current_year,
     rates,
+    rate_types,
   }
 }
 
@@ -83,9 +85,8 @@ export async function action({
 }
 
 export default function AdminRates() {
-  const { current_month, current_year, rates } =
+  const { current_month, current_year, rates, rate_types } =
     useLoaderData<typeof loader>()
-  const rate_types = Object.values(RATE_TYPE)
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">
@@ -125,11 +126,15 @@ export default function AdminRates() {
                 value={current_year}
               />
               <p>
-                <label className="w-32 font-medium">
+                <label
+                  htmlFor="value"
+                  className="w-32 font-medium"
+                >
                   {get_rate_label(type as RateType)}
                 </label>
                 <input
                   type="number"
+                  id="value"
                   name="value"
                   step="0.01"
                   defaultValue={existing_rate?.value || ""}

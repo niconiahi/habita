@@ -1,8 +1,6 @@
-export enum AccessRole {}
-
 import * as v from "valibot"
-
 export type ObjectValues<T> = T[keyof T]
+
 export const PROPERTY_TYPE = {
   DEPARTMENT: 0,
   HOUSE: 1,
@@ -17,8 +15,7 @@ export type PropertyType = ObjectValues<
 export function get_property_type_label(
   type: number | PropertyType,
 ) {
-  const property_type = v.parse(PropertyTypeSchema, type)
-  switch (property_type) {
+  switch (type) {
     case PROPERTY_TYPE.DEPARTMENT: {
       return "Departamento"
     }
@@ -26,8 +23,11 @@ export function get_property_type_label(
       return "Casa"
     }
     default: {
-      const _exhaustive: never = property_type
-      return _exhaustive
+      throw new Error(`Unknown property type: ${type}`)
     }
   }
+}
+
+export function get_property_types() {
+  return Object.values(PROPERTY_TYPE)
 }
