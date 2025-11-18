@@ -1,8 +1,8 @@
 import * as v from "valibot"
-import Contract from "../../../../mdx/contract.mdx"
-import type { DefaultType } from "~/lib/default_type"
-import type { Duration } from "~/lib/duration"
-import type { FineType } from "~/lib/fine_type"
+import Contract from "../../../mdx/contract.mdx"
+import type { DefaultType } from "~/lib/default_type.server"
+import type { Duration } from "~/lib/duration.server"
+import type { FineType } from "~/lib/fine_type.server"
 
 type Fine = {
   type: FineType

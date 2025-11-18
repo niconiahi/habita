@@ -1,4 +1,7 @@
-import { get_service_type_label } from "~/lib/service"
+import {
+  get_service_type_label,
+  type ServiceType,
+} from "~/lib/service.server"
 import type { Property } from "~/routes/properties+/fetchers/server/property.server"
 
 export function day_as_word(day_number: number) {
@@ -36,7 +39,9 @@ export function concatenate_services(
 ) {
   return services
     .map((service) => {
-      return get_service_type_label(service.type)
+      return get_service_type_label(
+        service.type as ServiceType,
+      )
     })
     .join(", ")
 }

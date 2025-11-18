@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { RoomTypeSchema } from "~/lib/room_type"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { RoomTypeSchema } from "~/lib/room_type.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
 
 export async function update_room(form_data: FormData) {
   const length = v.parse(

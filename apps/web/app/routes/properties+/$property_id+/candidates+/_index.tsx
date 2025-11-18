@@ -1,16 +1,16 @@
 import { useLoaderData } from "react-router"
 import * as v from "valibot"
-import { require_auth } from "~/lib/server/auth.server"
-import { error } from "~/lib/server/error.server"
+import { require_auth } from "~/lib/auth.server"
+import { error } from "~/lib/error.server"
 import { query_builder } from "db/query_builder"
-import { SLOT_STATE } from "~/lib/slot_state"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { SLOT_STATE } from "~/lib/slot_state.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
 import {
   get_property_accesses,
   require_edit_access,
-} from "~/lib/server/property_access.server"
+} from "~/lib/property_access.server"
 import { fetch_property } from "../../fetchers/server/property.server"
-import { display_location } from "~/lib/display_address"
+import { display_location } from "~/lib/display_location"
 import type { Route } from "./+types/_index"
 
 export async function loader({

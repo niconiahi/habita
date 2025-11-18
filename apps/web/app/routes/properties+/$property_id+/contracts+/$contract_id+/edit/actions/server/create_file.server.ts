@@ -1,12 +1,17 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { now } from "~/lib/now"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { now } from "~/lib/now.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ContractFileTypeSchema } from "~/lib/contract_file_type.server"
 
 export async function create_file(form_data: FormData) {
   const contract_id = v.parse(
     ForceNumberSchema,
     form_data.get("contract_id"),
+  )
+  const file_type = v.parse(
+    ContractFileTypeSchema,
+    Number(form_data.get("file_type")),
   )
   const file_ = v.parse(
     v.instance(File),
@@ -35,9 +40,9 @@ export async function create_file(form_data: FormData) {
     await tx
       .insertInto("contract_file")
       .values({
-        user_id: 1,
         file_id: file.id,
         contract_id,
+        type: file_type,
         created_at: now,
         updated_at: now,
       })

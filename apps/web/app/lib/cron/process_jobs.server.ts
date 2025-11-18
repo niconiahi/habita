@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import { calculate_all_due_escalations } from "../calculate_all_due_escalations.server"
-import { now } from "~/lib/now"
-import { JOB_STATUS } from "~/lib/job_status"
-import { JOB_TYPE } from "~/lib/job_type"
+import { now } from "~/lib/now.server"
+import { JOB_STATUS } from "~/lib/job_status.server"
+import { JOB_TYPE } from "~/lib/job_type.server"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder

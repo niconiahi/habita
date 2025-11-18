@@ -2,8 +2,8 @@ import {
   jsonArrayFrom,
   jsonObjectFrom,
 } from "kysely/helpers/postgres"
-import { PROPERTY_STATE } from "~/lib/server/property_state.server"
-import { query_builder } from "~/lib/server/query_builder.server"
+import { PROPERTY_STATE } from "~/lib/property_state.server"
+import { query_builder } from "~/lib/query_builder.server"
 
 export async function fetch_properties() {
   return query_builder
