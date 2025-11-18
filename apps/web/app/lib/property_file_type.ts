@@ -12,15 +12,23 @@ export type PropertyFileType = ObjectValues<
 >
 
 export function get_property_file_type_label(
-  type: PropertyFileType,
+  type: number | PropertyFileType,
 ) {
-  switch (type) {
+  const property_file_type = v.parse(
+    PropertyFileTypeSchema,
+    type,
+  )
+  switch (property_file_type) {
     case PROPERTY_FILE_TYPE.PHOTO: {
       return "Foto"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = property_file_type
       return _exhaustive
     }
   }
+}
+
+export function get_property_file_types() {
+  return Object.values(PROPERTY_FILE_TYPE)
 }

@@ -12,15 +12,20 @@ export type UserFileType = ObjectValues<
 >
 
 export function get_user_file_type_label(
-  type: UserFileType,
+  type: number | UserFileType,
 ) {
-  switch (type) {
+  const user_file_type = v.parse(UserFileTypeSchema, type)
+  switch (user_file_type) {
     case USER_FILE_TYPE.CREDIT_REPORT: {
       return "Informe crediticio"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = user_file_type
       return _exhaustive
     }
   }
+}
+
+export function get_user_file_types() {
+  return Object.values(USER_FILE_TYPE)
 }

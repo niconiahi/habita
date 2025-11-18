@@ -2,7 +2,7 @@ import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number.server"
-import { UserFileTypeSchema } from "~/lib/user_file_type.server"
+import { UserFileTypeSchema } from "~/lib/user_file_type"
 
 export async function create_file(form_data: FormData) {
   const file_ = v.parse(

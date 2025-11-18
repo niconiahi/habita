@@ -3,7 +3,7 @@ import {
   ACCESS_TYPE,
   type AccessType,
   AccessTypeSchema,
-} from "~/lib/access_type.server"
+} from "~/lib/access_type"
 import type { Auth } from "./auth.server"
 
 export function get_property_accesses(

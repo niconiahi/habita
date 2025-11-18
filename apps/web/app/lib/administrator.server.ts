@@ -1,5 +1,5 @@
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "~/lib/access_type.server"
+import { ACCESS_TYPE } from "~/lib/access_type"
 
 export async function fetch_administrator(
   property_id: number,

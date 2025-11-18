@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { now } from "~/lib/now.server"
-import { PROPERTY_FILE_TYPE } from "~/lib/property_file_type.server"
+import { PROPERTY_FILE_TYPE } from "~/lib/property_file_type"
 
 export async function create_property_file(
   form_data: FormData,

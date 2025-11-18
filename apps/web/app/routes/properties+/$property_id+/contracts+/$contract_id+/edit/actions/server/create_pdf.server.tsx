@@ -1,17 +1,16 @@
-import * as dateFns from "date-fns"
 import { renderToString } from "react-dom/server"
 import * as v from "valibot"
 import { generate_pdf_with_playwright } from "~/lib/pdf_generator.server"
-import { DefaultTypeSchema } from "~/lib/default_type.server"
+import { DefaultTypeSchema } from "~/lib/default_type"
 import {
   DurationSchema,
   get_duration_label,
-} from "~/lib/duration.server"
+} from "~/lib/duration"
 import {
   EscalationTypeSchema,
   get_escalation_label,
-} from "~/lib/escalation_type.server"
-import { FineTypeSchema } from "~/lib/fine_type.server"
+} from "~/lib/escalation_type"
+import { FineTypeSchema } from "~/lib/fine_type"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
@@ -19,7 +18,7 @@ import { ForceDateSchema } from "~/lib/force_date.server"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
 import { query_builder } from "db/query_builder"
 import { now } from "~/lib/now.server"
-import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type.server"
+import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type"
 import { fetch_contract } from "../../fetchers/server/contract.server"
 import {
   Pdf,

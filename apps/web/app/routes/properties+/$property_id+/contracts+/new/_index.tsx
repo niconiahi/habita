@@ -5,10 +5,10 @@ import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import { has_edit_access } from "~/lib/property_access.server"
 import {
-  ContractType,
-  get_contract_types,
+  CONTRACT_TYPE,
   get_contract_type_label,
-} from "~/lib/contract_type.server"
+} from "~/lib/contract_type"
+import { get_contract_types } from "~/lib/contract_type"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/index.server"
 
@@ -69,7 +69,7 @@ export default function ({
             id="type"
             name="type"
             required
-            defaultValue={ContractType.LONG_TERM}
+            defaultValue={CONTRACT_TYPE.LONG_TERM}
           >
             {contract_types.map((type) => (
               <option key={type} value={type}>
