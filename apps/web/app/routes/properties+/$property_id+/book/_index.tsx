@@ -10,7 +10,7 @@ import { ForceDateSchema } from "~/lib/server/force_date.server"
 import { get_date } from "~/lib/date"
 import { SLOT_STATE } from "~/lib/slot_state"
 import { require_auth } from "~/lib/server/auth.server"
-import { formatInTimeZone } from "date-fns-tz"
+import { format, parseISO } from "date-fns"
 
 const INTENT = {
   SET_DATE: "set_date",
@@ -73,64 +73,91 @@ export default function ({
   const { dates, times, user } = loaderData
   return (
     <>
-      <Form method="POST">
-        <p>
-          <label htmlFor="date">dia</label>
-          <select name="date" id="date">
-            {dates.map((date) => {
-              const id = `date_${date.date}`
-              const _date = get_date(date.date)
-              return (
-                <option key={id} value={_date}>
-                  {_date}
-                </option>
-              )
-            })}
-          </select>
-        </p>
-        <button
-          type="submit"
-          value={INTENT.SET_DATE}
-          name="intent"
-        >
-          seleccionar dia
-        </button>
-      </Form>
-      {times.length ? (
+      <details open>
+        <summary>Select Date & Time</summary>
         <Form method="POST">
-          <p>
-            <label htmlFor="id">hora</label>
-            <select name="id" id="id">
-              {times.map((time) => {
-                const id = `time_${time.id}`
-                const start_time = format_in_timezone(
-                  time.start_date,
-                )
-                const end_time = format_in_timezone(
-                  time.end_date,
+          <fieldset>
+            <legend>Available Dates</legend>
+            <div>
+              {dates.map((date) => {
+                const date_string = get_date(date.date)
+                const formatted_date = format(
+                  parseISO(date_string),
+                  "EEE, MMM d",
                 )
                 return (
-                  <option key={id} value={time.id}>
-                    {start_time}-{end_time}
-                  </option>
+                  <label key={date_string}>
+                    <input
+                      type="radio"
+                      name="date"
+                      value={date_string}
+                    />
+                    <time dateTime={date_string}>
+                      {formatted_date}
+                    </time>
+                  </label>
                 )
               })}
-            </select>
-          </p>
-          <input
-            type="hidden"
-            value={user.id}
-            name="visitant_id"
-          />
+            </div>
+          </fieldset>
           <button
             type="submit"
-            value={INTENT.UPDATE_SLOT}
+            value={INTENT.SET_DATE}
             name="intent"
           >
-            reservar este horario
+            Select Date
           </button>
         </Form>
-      ) : null}
+      </details>
+      {times.length > 0 && (
+        <details open>
+          <summary>Available Time Slots</summary>
+          <Form method="POST">
+            <fieldset>
+              <legend className="sr-only">
+                Select a time slot
+              </legend>
+
+              <div>
+                {times.map((time) => {
+                  const start_time = format_in_timezone(
+                    time.start_date,
+                  )
+                  const end_time = format_in_timezone(
+                    time.end_date,
+                  )
+                  return (
+                    <label key={time.id}>
+                      <input
+                        type="radio"
+                        name="id"
+                        value={time.id}
+                      />
+                      <time
+                        dateTime={time.start_date.toISOString()}
+                      >
+                        {start_time} - {end_time}
+                      </time>
+                    </label>
+                  )
+                })}
+              </div>
+            </fieldset>
+            <input
+              type="hidden"
+              value={user.id}
+              name="visitant_id"
+            />
+            <button
+              type="submit"
+              value={INTENT.UPDATE_SLOT}
+              name="intent"
+            >
+              Book This Time
+            </button>
+          </Form>
+        </details>
+      )}
     </>
   )
 }
@@ -182,8 +209,12 @@ async function fetch_times(
     .orderBy("slot.start_date")
     .execute()
 }
-
 function format_in_timezone(date: Date) {
   const TIMEZONE = "America/Argentina/Buenos_Aires"
-  return formatInTimeZone(date, TIMEZONE, "HH:mm")
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date)
 }
