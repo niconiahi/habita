@@ -5,9 +5,9 @@ import { query_builder } from "~/lib/query_builder.server"
 import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
-} from "~/lib/property_type.server"
-import { PROPERTY_STATE } from "~/lib/property_state.server"
-import { ACCESS_TYPE } from "~/lib/access_type.server"
+} from "~/lib/property_type"
+import { PROPERTY_STATE } from "~/lib/property_state"
+import { ACCESS_TYPE } from "~/lib/access_type"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 
 export async function create_property(form_data: FormData) {

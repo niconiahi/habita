@@ -14,9 +14,10 @@ export type PropertyState = ObjectValues<
 >
 
 export function get_property_state_label(
-  type: PropertyState,
+  type: number | PropertyState,
 ) {
-  switch (type) {
+  const property_state = v.parse(PropertyStateSchema, type)
+  switch (property_state) {
     case PROPERTY_STATE.EDITING: {
       return "En edición"
     }
@@ -27,8 +28,12 @@ export function get_property_state_label(
       return "Alquilada"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = property_state
       return _exhaustive
     }
   }
+}
+
+export function get_property_states() {
+  return Object.values(PROPERTY_STATE)
 }

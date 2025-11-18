@@ -13,9 +13,13 @@ export type EscalationType = ObjectValues<
 >
 
 export function get_escalation_formula(
-  type: EscalationType,
+  type: number | EscalationType,
 ) {
-  switch (type) {
+  const escalation_type = v.parse(
+    EscalationTypeSchema,
+    type,
+  )
+  switch (escalation_type) {
     case ESCALATION_TYPE.IPC: {
       return "price * (ipc_current_month / ipc_four_months_ago)"
     }
@@ -23,14 +27,20 @@ export function get_escalation_formula(
       return "price * (icl_current_month / icl_four_months_ago)"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = escalation_type
       return _exhaustive
     }
   }
 }
 
-export function get_escalation_label(type: EscalationType) {
-  switch (type) {
+export function get_escalation_label(
+  type: number | EscalationType,
+) {
+  const escalation_type = v.parse(
+    EscalationTypeSchema,
+    type,
+  )
+  switch (escalation_type) {
     case ESCALATION_TYPE.IPC: {
       return "IPC"
     }
@@ -38,8 +48,12 @@ export function get_escalation_label(type: EscalationType) {
       return "ICL"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = escalation_type
       return _exhaustive
     }
   }
+}
+
+export function get_escalation_types() {
+  return Object.values(ESCALATION_TYPE)
 }

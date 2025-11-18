@@ -1,7 +1,7 @@
 import {
   get_service_type_label,
   type ServiceType,
-} from "~/lib/service.server"
+} from "~/lib/service"
 import type { Property } from "~/routes/properties+/fetchers/server/property.server"
 
 export function day_as_word(day_number: number) {

@@ -4,7 +4,7 @@ import { compose_token_hash } from "./edit/actions/server/index.server"
 import { query_builder } from "~/lib/query_builder.server"
 import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number.server"
-import { ACCESS_TYPE } from "~/lib/access_type.server"
+import { ACCESS_TYPE } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
 
 const ERROR_MESSAGE = "not found"

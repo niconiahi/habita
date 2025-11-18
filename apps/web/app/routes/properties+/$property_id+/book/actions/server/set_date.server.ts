@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import { get_date } from "~/lib/date.server"
+import { get_date } from "~/lib/date"
 import { ForceDateSchema } from "~/lib/force_date.server"
 
 export async function set_date(

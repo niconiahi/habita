@@ -1,21 +1,21 @@
 import { Form } from "react-router"
 import * as v from "valibot"
-import { format_date_for_input } from "~/lib/date.server"
+import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/auth.server"
 import {
   ContractFileTypeSchema,
   get_contract_file_types,
-} from "~/lib/contract_file_type.server"
+} from "~/lib/contract_file_type"
 import { get_contract_file_type_label } from "~/lib/contract_file_type"
 import {
   DURATIONS,
   get_duration_label,
-} from "~/lib/duration.server"
+} from "~/lib/duration"
 import { error } from "~/lib/error.server"
 import {
   ESCALATION_TYPE,
   get_escalation_label,
-} from "~/lib/escalation_type.server"
+} from "~/lib/escalation_type"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import { has_edit_access } from "~/lib/property_access.server"
 import type { Route } from "./+types/_index"
@@ -29,14 +29,14 @@ import {
   FineTypeSchema,
   get_fine_label,
   type FineType,
-} from "~/lib/fine_type.server"
+} from "~/lib/fine_type"
 import { useState } from "react"
 import {
   DEFAULT_TYPE,
   DefaultTypeSchema,
   get_default_label,
   type DefaultType,
-} from "~/lib/default_type.server"
+} from "~/lib/default_type"
 import { fetch_owner, type Owner } from "~/lib/owner.server"
 import {
   fetch_tenant,
@@ -134,7 +134,8 @@ export async function loader({
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { contract, tenant, owner, contract_file_types } = loaderData
+  const { contract, tenant, owner, contract_file_types } =
+    loaderData
   return (
     <>
       <Fields
@@ -142,7 +143,10 @@ export default function ({
         tenant={tenant}
         owner={owner}
       />
-      <Documents contract={contract} contract_file_types={contract_file_types} />
+      <Documents
+        contract={contract}
+        contract_file_types={contract_file_types}
+      />
       <Periods contract={contract} />
     </>
   )
@@ -396,7 +400,13 @@ function Fields({
   )
 }
 
-function Documents({ contract, contract_file_types }: { contract: Contract, contract_file_types: number[] }) {
+function Documents({
+  contract,
+  contract_file_types,
+}: {
+  contract: Contract
+  contract_file_types: number[]
+}) {
   return (
     <section>
       <h3>documentos</h3>
@@ -419,11 +429,7 @@ function Documents({ contract, contract_file_types }: { contract: Contract, cont
         </p>
         <p>
           <label htmlFor="file_type">tipo</label>
-          <select
-            name="file_type"
-            id="file_type"
-            required
-          >
+          <select name="file_type" id="file_type" required>
             {contract_file_types.map((type) => {
               const id = `file_type_${type}`
               return (
