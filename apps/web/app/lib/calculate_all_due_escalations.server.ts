@@ -1,6 +1,6 @@
 import { query_builder } from "db/query_builder"
 import { CONTRACT_STATE } from "~/lib/contract_state"
-import { now } from "~/lib/now"
+import { now } from "~/lib/now.server"
 import type { Duration } from "~/lib/duration"
 import { addMonths, addDays } from "date-fns"
 import type { Insertable } from "kysely"

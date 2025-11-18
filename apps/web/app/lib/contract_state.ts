@@ -14,9 +14,10 @@ export type ContractState = ObjectValues<
 >
 
 export function get_contract_state_label(
-  type: ContractState,
+  type: number | ContractState,
 ) {
-  switch (type) {
+  const contract_state = v.parse(ContractStateSchema, type)
+  switch (contract_state) {
     case CONTRACT_STATE.EDITING: {
       return "En edición"
     }
@@ -27,8 +28,12 @@ export function get_contract_state_label(
       return "Finalizado"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = contract_state
       return _exhaustive
     }
   }
+}
+
+export function get_contract_states() {
+  return Object.values(CONTRACT_STATE)
 }

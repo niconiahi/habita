@@ -10,8 +10,11 @@ export const DefaultTypeSchema = v.picklist(
 )
 export type DefaultType = ObjectValues<typeof DEFAULT_TYPE>
 
-export function get_default_label(type: DefaultType) {
-  switch (type) {
+export function get_default_label(
+  type: number | DefaultType,
+) {
+  const default_type = v.parse(DefaultTypeSchema, type)
+  switch (default_type) {
     case DEFAULT_TYPE.FIXED: {
       return "Fijo"
     }
@@ -19,8 +22,12 @@ export function get_default_label(type: DefaultType) {
       return "Porcentual"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = default_type
       return _exhaustive
     }
   }
+}
+
+export function get_default_types() {
+  return Object.values(DEFAULT_TYPE)
 }

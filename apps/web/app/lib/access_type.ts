@@ -33,3 +33,7 @@ export function get_access_type_label(
     }
   }
 }
+
+export function get_access_types() {
+  return Object.values(ACCESS_TYPE)
+}

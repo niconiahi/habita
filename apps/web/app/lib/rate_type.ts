@@ -16,7 +16,41 @@ export const RateTypeSchema = v.picklist(
 )
 export type RateType = ObjectValues<typeof RATE_TYPE>
 
-export function get_rate_label(type: RateType) {
+export function get_rate_label(type: number | RateType) {
+  const rate_type = v.parse(RateTypeSchema, type)
+  switch (rate_type) {
+    case RATE_TYPE.IPC: {
+      return "IPC"
+    }
+    case RATE_TYPE.ICL: {
+      return "ICL"
+    }
+    case RATE_TYPE.CASA_PROPIA: {
+      return "Casa Propia"
+    }
+    case RATE_TYPE.CAC: {
+      return "CAC"
+    }
+    case RATE_TYPE.CER: {
+      return "CER"
+    }
+    case RATE_TYPE.IS: {
+      return "IS"
+    }
+    case RATE_TYPE.IPIM: {
+      return "IPIM"
+    }
+    case RATE_TYPE.UVA: {
+      return "UVA"
+    }
+    default: {
+      const _exhaustive: never = rate_type
+      return _exhaustive
+    }
+  }
+}
+
+export function get_rate_type_label(type: RateType) {
   switch (type) {
     case RATE_TYPE.IPC: {
       return "IPC"
@@ -47,4 +81,8 @@ export function get_rate_label(type: RateType) {
       return _exhaustive
     }
   }
+}
+
+export function get_rate_types() {
+  return Object.values(RATE_TYPE)
 }

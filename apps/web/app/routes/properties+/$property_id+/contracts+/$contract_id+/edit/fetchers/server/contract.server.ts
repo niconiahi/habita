@@ -1,5 +1,5 @@
 import { jsonArrayFrom } from "kysely/helpers/postgres"
-import { query_builder } from "~/lib/server/query_builder.server"
+import { query_builder } from "~/lib/query_builder.server"
 
 export async function fetch_contract(id: number) {
   return query_builder

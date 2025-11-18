@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { now } from "~/lib/now"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
+import { now } from "~/lib/now.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
 import { ServiceTypeSchema } from "~/lib/service"
 
 export async function update_service(

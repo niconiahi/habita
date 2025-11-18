@@ -1,17 +1,16 @@
 import { useState } from "react"
 import { Form, redirect } from "react-router"
-import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
-import { require_auth } from "~/lib/server/auth.server"
-import { error } from "~/lib/server/error.server"
-import { has_edit_access } from "~/lib/server/property_access.server"
+import { require_auth } from "~/lib/auth.server"
+import { error } from "~/lib/error.server"
+import { has_edit_access } from "~/lib/property_access.server"
 import type { Route } from "./+types/new"
 import {
   get_property_type_label,
   PROPERTY_TYPE,
-  PropertyTypeSchema,
   type PropertyType,
 } from "~/lib/property_type"
+import { get_property_types } from "~/lib/property_type"
 import * as actions from "./actions/index.server"
 
 const INTENT = {
@@ -25,7 +24,10 @@ export async function loader({
   if (!has_edit_access(user.accesses)) {
     throw error(400, "not found")
   }
-  return {}
+
+  return {
+    property_types: get_property_types(),
+  }
 }
 
 export async function action({
@@ -50,7 +52,10 @@ export async function action({
   }
 }
 
-export default function () {
+export default function ({
+  loaderData,
+}: Route.ComponentProps) {
+  const { property_types } = loaderData
   const [disabled, set_disabled] = useState(true)
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
@@ -80,14 +85,13 @@ export default function () {
               id="type"
               required
               onChange={(event) => {
-                const property_type = v.parse(
-                  PropertyTypeSchema,
-                  Number(event.target.value),
-                )
+                const property_type = Number(
+                  event.target.value,
+                ) as PropertyType
                 set_property_type(property_type)
               }}
             >
-              {Object.values(PROPERTY_TYPE).map((type) => {
+              {property_types.map((type) => {
                 const id = `property_type_${type}`
                 return (
                   <option key={id} value={type}>

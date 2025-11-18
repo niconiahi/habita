@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import Contract from "../../../../mdx/contract.mdx"
+import Contract from "../../../mdx/contract.mdx"
 import type { DefaultType } from "~/lib/default_type"
 import type { Duration } from "~/lib/duration"
 import type { FineType } from "~/lib/fine_type"

@@ -1,7 +1,6 @@
-import * as dateFns from "date-fns"
 import { renderToString } from "react-dom/server"
 import * as v from "valibot"
-import { generate_pdf_with_playwright } from "~/lib/server/pdf_generator.server"
+import { generate_pdf_with_playwright } from "~/lib/pdf_generator.server"
 import { DefaultTypeSchema } from "~/lib/default_type"
 import {
   DurationSchema,
@@ -12,20 +11,20 @@ import {
   get_escalation_label,
 } from "~/lib/escalation_type"
 import { FineTypeSchema } from "~/lib/fine_type"
-import { ForceNumberSchema } from "~/lib/server/force_number.server"
-import { fetch_owner } from "~/lib/server/owner.server"
-import { fetch_tenant } from "~/lib/server/tenant.server"
-import { ForceDateSchema } from "~/lib/server/force_date.server"
+import { ForceNumberSchema } from "~/lib/force_number.server"
+import { fetch_owner } from "~/lib/owner.server"
+import { fetch_tenant } from "~/lib/tenant.server"
+import { ForceDateSchema } from "~/lib/force_date.server"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
 import { query_builder } from "db/query_builder"
-import { now } from "~/lib/now"
+import { now } from "~/lib/now.server"
 import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type"
 import { fetch_contract } from "../../fetchers/server/contract.server"
 import {
   Pdf,
   SignatorySchema,
   type Props,
-} from "~/lib/server/contract/pdf.server"
+} from "~/lib/contract/pdf.server"
 
 export async function create_pdf(
   form_data: FormData,
@@ -98,10 +97,6 @@ export async function create_pdf(
     const props: Props = {
       end_date: end_date.toISOString(),
       start_date: start_date.toISOString(),
-      duration: `${dateFns.differenceInMonths(
-        end_date,
-        start_date,
-      )} meses`,
       fine: {
         type: fine_type,
         amount: fine_amount,

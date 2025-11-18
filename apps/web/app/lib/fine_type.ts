@@ -10,8 +10,9 @@ export const FineTypeSchema = v.picklist(
 )
 export type FineType = ObjectValues<typeof FINE_TYPE>
 
-export function get_fine_formula(type: FineType) {
-  switch (type) {
+export function get_fine_formula(type: number | FineType) {
+  const fine_type = v.parse(FineTypeSchema, type)
+  switch (fine_type) {
     case FINE_TYPE.FIXED: {
       return "fine + fixed_amount"
     }
@@ -19,14 +20,15 @@ export function get_fine_formula(type: FineType) {
       return "fine + (price * percentage)"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = fine_type
       return _exhaustive
     }
   }
 }
 
-export function get_fine_label(type: FineType) {
-  switch (type) {
+export function get_fine_label(type: number | FineType) {
+  const fine_type = v.parse(FineTypeSchema, type)
+  switch (fine_type) {
     case FINE_TYPE.FIXED: {
       return "Fijo"
     }
@@ -34,8 +36,12 @@ export function get_fine_label(type: FineType) {
       return "Porcentual"
     }
     default: {
-      const _exhaustive: never = type
+      const _exhaustive: never = fine_type
       return _exhaustive
     }
   }
+}
+
+export function get_fine_types() {
+  return Object.values(FINE_TYPE)
 }
