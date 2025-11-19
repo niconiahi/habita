@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto"
+import { get_origin } from "./origin"
 
 type ImageOptions = {
   width: number
@@ -58,22 +59,15 @@ function generate_image_url(
   hash: string,
   options: ImageOptions,
 ): string {
-  const base_url =
-    process.env.NODE_ENV === "production"
-      ? "https://habita.rent"
-      : "https://dev.habita.rent"
-  const source_base_url =
-    process.env.NODE_ENV === "production"
-      ? "https://habita.rent"
-      : "http://app:5173"
-  const source_url = `${source_base_url}/files/${file_id}?v=${hash}`
+  const origin = get_origin()
+  const source_url = `${origin}/files/${file_id}?v=${hash}`
   const encoded_source_url =
     Buffer.from(source_url).toString("base64url")
   const processing_options =
     build_processing_options(options)
   const path = `/${processing_options}/${encoded_source_url}`
   const signature = sign_path(path)
-  return `${base_url}/image/${signature}${path}`
+  return `${origin}/image/${signature}${path}`
 }
 
 export function get_img_props(
