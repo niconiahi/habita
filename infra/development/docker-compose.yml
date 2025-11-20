@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ../../apps/web:/apps/web
+      - ../../apps/web:/apps/web:delegated
       - web_deps:/apps/web/node_modules
     env_file:
       - ../../.env
