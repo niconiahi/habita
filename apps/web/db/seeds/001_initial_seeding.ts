@@ -2,38 +2,38 @@ import * as v from "valibot"
 import {
   ROOM_TYPE,
   type RoomType,
-} from "../../app/lib/room_type.ts"
+} from "~/lib/room_type.ts"
 import {
   ACCESS_TYPE,
   type AccessType,
-} from "../../app/lib/access_type.ts"
+} from "~/lib/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
-} from "../../app/lib/contract_file_type.ts"
-import { PROPERTY_FILE_TYPE } from "../../app/lib/server/property_file_type.server.ts"
-import { CONTRACT_STATE } from "../../app/lib/contract_state.ts"
-import { PROPERTY_STATE } from "../../app/lib/server/property_state.server.ts"
-import { PROPERTY_TYPE } from "../../app/lib/property_type.ts"
-import { get_month, get_year } from "../../app/lib/date.ts"
-import { SLOT_STATE } from "../../app/lib/slot_state.ts"
-import { ContractType } from "../../app/lib/contract_type.ts"
-import { compose_point } from "../../app/lib/server/point.server.ts"
+} from "~/lib/contract_file_type.ts"
+import { CONTRACT_STATE } from "~/lib/contract_state.ts"
+import { PROPERTY_TYPE } from "~/lib/property_type.ts"
+import { get_month, get_year } from "~/lib/date.ts"
+import { SLOT_STATE } from "~/lib/slot_state.ts"
 import {
   SERVICE_TYPE,
   type ServiceType,
-} from "../../app/lib/service.ts"
+} from "~/lib/service.ts"
 import {
   RATE_TYPE,
-  RateType,
-} from "../../app/lib/rate_type.ts"
-import { query_builder } from "../query_builder"
+  type RateType,
+} from "~/lib/rate_type.ts"
 import {
   subMonths,
   addMonths,
   addDays,
   subDays,
 } from "date-fns"
+import { PROPERTY_STATE } from "~/lib/property_state.ts"
+import { PROPERTY_FILE_TYPE } from "~/lib/property_file_type.ts"
+import { query_builder } from "db/query_builder"
+import { CONTRACT_TYPE } from "~/lib/contract_type"
+import { compose_point } from "~/lib/point.server"
 
 function compose_file_path(basename: string) {
   return `${import.meta.dir}/../files/${basename}`
@@ -139,7 +139,7 @@ async function make_finished_contract(
     .insertInto("contract")
     .values({
       property_id,
-      type: ContractType.LONG_TERM,
+      type: CONTRACT_TYPE.LONG_TERM,
       state: CONTRACT_STATE.FINISHED,
       start_date: contract_start_date,
       end_date: contract_end_date,
@@ -183,7 +183,7 @@ async function make_editing_contract(
     .insertInto("contract")
     .values({
       property_id,
-      type: ContractType.LONG_TERM,
+      type: CONTRACT_TYPE.LONG_TERM,
       state: CONTRACT_STATE.EDITING,
       start_date: contract_start_date,
       end_date: contract_end_date,
@@ -521,7 +521,7 @@ async function run() {
     .insertInto("contract")
     .values({
       property_id: property.id,
-      type: ContractType.LONG_TERM,
+      type: CONTRACT_TYPE.LONG_TERM,
       state: CONTRACT_STATE.ACTIVE,
       escalation_type: RATE_TYPE.IPC,
       escalation_duration: "P3M",

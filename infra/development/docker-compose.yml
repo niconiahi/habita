@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - memudo_app_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -18,14 +18,14 @@ services:
         limits:
           memory: 512M
 
-  app:
+  web:
     build:
       context: ../../apps/web
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ../../apps/web:/app
-      - memudo_app_deps:/app/node_modules
+      - ../../apps/web:/apps/web
+      - web_deps:/apps/web/node_modules
     env_file:
       - ../../.env
     ports:
@@ -50,7 +50,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - memudo_valkey_data:/data
+      - valkey_data:/data
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
@@ -66,6 +66,8 @@ services:
       context: ../../apps/go
       dockerfile: Dockerfile
     restart: unless-stopped
+    volumes:
+      - ../../apps/go:/apps/go
     env_file:
       - ../../.env
     environment:
@@ -88,14 +90,20 @@ services:
   image:
     image: darthsim/imgproxy:latest
     restart: unless-stopped
+    user: "0"
     env_file:
       - ../../.env
     environment:
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_AUTO_WEBP: "true"
       IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "true"
+    extra_hosts:
+      - "dev.habita.rent:host-gateway"
+    volumes:
+      - ./certs/habita.pem:/usr/local/share/ca-certificates/habita.crt:ro
+    command: sh -c "update-ca-certificates && imgproxy"
     depends_on:
-      app:
+      web:
         condition: service_started
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
@@ -124,6 +132,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./certs/dev.habita.rent.pem:/etc/ssl/certs/dev.habita.rent.pem:ro
       - ./certs/dev.habita.rent-key.pem:/etc/ssl/private/dev.habita.rent-key.pem:ro
+      - ./certs/habita.pem:/etc/ssl/certs/habita.pem:ro
     deploy:
       resources:
         limits:
@@ -141,7 +150,7 @@ services:
       - IMPORT_US_POSTCODES=false
       - IMPORT_GB_POSTCODES=false
     volumes:
-      - memudo_nominatim_data:/var/lib/postgresql/14/main
+      - nominatim_data:/var/lib/postgresql/14/main
     shm_size: 1gb
     deploy:
       resources:
@@ -154,7 +163,7 @@ services:
     image: mcuadros/ofelia:latest
     restart: unless-stopped
     depends_on:
-      - app
+      - web
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ofelia.ini:/etc/ofelia/config.ini:ro
@@ -165,7 +174,7 @@ services:
           memory: 64M
 
 volumes:
-  memudo_app_data:
-  memudo_app_deps:
-  memudo_nominatim_data:
-  memudo_valkey_data:
+  db_data:
+  web_deps:
+  nominatim_data:
+  valkey_data:
