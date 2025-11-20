@@ -60,12 +60,12 @@ function Header({ auth }: { auth: Auth }) {
         {auth.user ? (
           <div>
             <span>{auth.user.email}</span>
-            <Form method="post" action="/logout">
+            <Form method="post" action="/auth/logout">
               <button type="submit">Logout</button>
             </Form>
           </div>
         ) : (
-          <Form method="post" action="/login/google">
+          <Form method="post" action="/auth/google">
             <button type="submit">Login</button>
           </Form>
         )}

@@ -26,6 +26,5 @@ export async function action() {
       code_verifier,
     ),
   )
-
   return redirect(url.toString(), { headers })
 }

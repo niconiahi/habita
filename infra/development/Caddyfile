@@ -11,5 +11,5 @@ dev.habita.rent {
     reverse_proxy nominatim:8080
   }
 
-  reverse_proxy app:5173
+  reverse_proxy web:5173
 }

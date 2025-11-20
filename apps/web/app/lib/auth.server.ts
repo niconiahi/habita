@@ -177,6 +177,8 @@ export async function get_auth(request: Request) {
 }
 export type Auth = Awaited<ReturnType<typeof get_auth>>
 
-export function is_webmaster(user: NonNullable<Auth["user"]>): boolean {
+export function is_webmaster(
+  user: NonNullable<Auth["user"]>,
+): boolean {
   return user.email === "nicolas.accetta@gmail.com"
 }
