@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router"
+import { Form, redirect, useActionData } from "react-router"
 import type { Route } from "./+types/_index"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import * as v from "valibot"
@@ -32,15 +32,37 @@ export async function action({
   )
   switch (intent) {
     case INTENT.SET_DATE: {
-      const { redirect_to } = await actions.set_date(
-        request,
-        form_data,
-      )
-      return redirect(redirect_to)
+      try {
+        const { redirect_to } =
+          await actions.set_date.execute(request, form_data)
+        return redirect(redirect_to)
+      } catch (error) {
+        if (error instanceof v.ValiError) {
+          return {
+            errors: {
+              set_date: actions.set_date.get_errors(error),
+            },
+          }
+        }
+      }
     }
     case INTENT.UPDATE_SLOT: {
-      await actions.update_slot(form_data, property_id)
-      return redirect("..")
+      try {
+        await actions.update_slot.execute(
+          form_data,
+          property_id,
+        )
+        return redirect("..")
+      } catch (error) {
+        if (error instanceof v.ValiError) {
+          return {
+            errors: {
+              update_slot:
+                actions.update_slot.get_errors(error),
+            },
+          }
+        }
+      }
     }
   }
   return null
@@ -69,96 +91,127 @@ export async function loader({
 
 export default function ({
   loaderData,
+  actionData,
 }: Route.ComponentProps) {
-  const { dates, times, user } = loaderData
+  const { times } = loaderData
   return (
     <>
-      <details open>
-        <summary>Select Date & Time</summary>
-        <Form method="POST">
-          <fieldset>
-            <legend>Available Dates</legend>
-            <div>
-              {dates.map((date) => {
-                const date_string = get_date(date.date)
-                const formatted_date = format(
-                  parseISO(date_string),
-                  "EEE, MMM d",
-                )
-                return (
-                  <label key={date_string}>
-                    <input
-                      type="radio"
-                      name="date"
-                      value={date_string}
-                    />
-                    <time dateTime={date_string}>
-                      {formatted_date}
-                    </time>
-                  </label>
-                )
-              })}
-            </div>
-          </fieldset>
-          <button
-            type="submit"
-            value={INTENT.SET_DATE}
-            name="intent"
-          >
-            Select Date
-          </button>
-        </Form>
-      </details>
+      <SetDateForm
+        loaderData={loaderData}
+        actionData={actionData}
+      />
       {times.length > 0 && (
-        <details open>
-          <summary>Available Time Slots</summary>
-          <Form method="POST">
-            <fieldset>
-              <legend className="sr-only">
-                Select a time slot
-              </legend>
-
-              <div>
-                {times.map((time) => {
-                  const start_time = format_in_timezone(
-                    time.start_date,
-                  )
-                  const end_time = format_in_timezone(
-                    time.end_date,
-                  )
-                  return (
-                    <label key={time.id}>
-                      <input
-                        type="radio"
-                        name="id"
-                        value={time.id}
-                      />
-                      <time
-                        dateTime={time.start_date.toISOString()}
-                      >
-                        {start_time} - {end_time}
-                      </time>
-                    </label>
-                  )
-                })}
-              </div>
-            </fieldset>
-            <input
-              type="hidden"
-              value={user.id}
-              name="visitant_id"
-            />
-            <button
-              type="submit"
-              value={INTENT.UPDATE_SLOT}
-              name="intent"
-            >
-              Book This Time
-            </button>
-          </Form>
-        </details>
+        <UpdateSlotForm
+          loaderData={loaderData}
+          actionData={actionData}
+        />
       )}
     </>
+  )
+}
+
+function UpdateSlotForm({
+  loaderData,
+  actionData,
+}: {
+  loaderData: Route.ComponentProps["loaderData"]
+  actionData: Route.ComponentProps["actionData"]
+}) {
+  const { user, times } = loaderData
+  const errors = actionData?.errors?.update_slot
+  return (
+    <Form method="POST">
+      <fieldset>
+        <legend className="sr-only">
+          Select a time slot
+        </legend>
+
+        <div>
+          {times.map((time) => {
+            const start_time = format_in_timezone(
+              time.start_date,
+            )
+            const end_time = format_in_timezone(
+              time.end_date,
+            )
+            return (
+              <label key={time.id}>
+                <input
+                  type="radio"
+                  name="id"
+                  value={time.id}
+                />
+                <time
+                  dateTime={time.start_date.toISOString()}
+                >
+                  {start_time} - {end_time}
+                </time>
+              </label>
+            )
+          })}
+        </div>
+      </fieldset>
+      {errors?.id ? <span>{errors.id}</span> : null}
+      <input
+        type="hidden"
+        value={user.id}
+        name="visitant_id"
+      />
+      <button
+        type="submit"
+        value={INTENT.UPDATE_SLOT}
+        name="intent"
+      >
+        Book This Time
+      </button>
+    </Form>
+  )
+}
+
+function SetDateForm({
+  loaderData,
+  actionData,
+}: {
+  loaderData: Route.ComponentProps["loaderData"]
+  actionData: Route.ComponentProps["actionData"]
+}) {
+  const { dates } = loaderData
+  const errors = actionData?.errors?.set_date
+  return (
+    <Form method="POST">
+      <fieldset>
+        <legend>Available Dates</legend>
+        <div>
+          {dates.map((date) => {
+            const date_string = get_date(date.date)
+            const formatted_date = format(
+              parseISO(date_string),
+              "EEE, MMM d",
+            )
+            return (
+              <label key={date_string}>
+                <input
+                  type="radio"
+                  name="date"
+                  value={date_string}
+                />
+                <time dateTime={date_string}>
+                  {formatted_date}
+                </time>
+              </label>
+            )
+          })}
+        </div>
+      </fieldset>
+      {errors?.date ? <span>{errors.date}</span> : null}
+      <button
+        type="submit"
+        value={INTENT.SET_DATE}
+        name="intent"
+      >
+        Select Date
+      </button>
+    </Form>
   )
 }
 

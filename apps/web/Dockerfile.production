@@ -1,32 +1,25 @@
 FROM oven/bun AS builder
 
-WORKDIR /app
+WORKDIR /apps/web
 
 COPY package.json bun.lock ./
-
 RUN bun install --frozen-lockfile
 
 COPY . .
-
 RUN bun run build
 
 FROM node:22 AS runtime
 
-WORKDIR /app
-
-RUN curl -fsSL https://bun.sh/install | bash
-
-ENV PATH="/root/.bun/bin:$PATH"
+WORKDIR /apps/web
 
 COPY package.json bun.lock ./
+COPY --from=builder /apps/web/node_modules ./node_modules
 
-RUN bun install --frozen-lockfile --production
-
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/db ./db
-COPY --from=builder /app/app/lib ./app/lib
-COPY --from=builder /app/kysely.config.ts ./
+COPY --from=builder /apps/web/build ./build
+COPY --from=builder /apps/web/db ./db
+COPY --from=builder /apps/web/app/lib ./app/lib
+COPY --from=builder /apps/web/kysely.config.ts ./
 
 ENV NODE_ENV=production
 
-CMD ["bun", "run", "start"]
+CMD ["npm", "run", "start"]

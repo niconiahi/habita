@@ -6,18 +6,23 @@ import { create_ics, InviteeSchema } from "~/lib/ics.server"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
 import { send_calendar_invite } from "~/lib/send_calendar_invite.server"
 import { display_location } from "~/lib/display_location"
+import {
+  normalize_input,
+  get_errors,
+} from "~/lib/form.server"
 
-export async function update_slot(
+export const InputSchema = v.object({
+  id: ForceNumberSchema,
+  visitant_id: ForceNumberSchema,
+})
+
+async function execute(
   form_data: FormData,
   property_id: number,
 ) {
-  const visitant_id = v.parse(
-    ForceNumberSchema,
-    form_data.get("visitant_id"),
-  )
-  const slot_id = v.parse(
-    ForceNumberSchema,
-    form_data.get("id"),
+  const { visitant_id, id } = v.parse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
   const slot = await query_builder
     .updateTable("slot")
@@ -25,7 +30,7 @@ export async function update_slot(
       visitant_id,
       state: SLOT_STATE.RESERVED,
     })
-    .where("slot.id", "=", slot_id)
+    .where("slot.id", "=", id)
     .returning([
       "slot.start_date",
       "slot.end_date",
@@ -84,4 +89,10 @@ ${host.name}`
     text,
     content,
   })
+}
+
+export const update_slot = {
+  execute,
+  get_errors: (error: v.ValiError<typeof InputSchema>) =>
+    get_errors<typeof InputSchema>(error),
 }

@@ -21,6 +21,10 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 5173,
     allowedHosts: ["dev.habita.rent", "app"],
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
   },
   plugins: [
     tailwindcss(),
