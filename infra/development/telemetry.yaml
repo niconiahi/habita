@@ -13,22 +13,16 @@ processors:
     timeout: 10s
 
 exporters:
-  clickhouse:
-    endpoint: tcp://clickhouse:9000?database=signoz
-    timeout: 5s
-    retry_on_failure:
-      enabled: true
-      initial_interval: 5s
-      max_interval: 30s
-      max_elapsed_time: 300s
+  logging:
+    loglevel: debug
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [clickhouse]
+      exporters: [logging]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [clickhouse]
+      exporters: [logging]

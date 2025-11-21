@@ -1,4 +1,4 @@
-import { Form, redirect, useActionData } from "react-router"
+import { Form, redirect } from "react-router"
 import type { Route } from "./+types/_index"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import * as v from "valibot"
@@ -11,61 +11,98 @@ import { get_date } from "~/lib/date"
 import { SLOT_STATE } from "~/lib/slot_state"
 import { require_auth } from "~/lib/auth.server"
 import { format, parseISO } from "date-fns"
+import { trace } from "@opentelemetry/api"
+import { logger } from "~/lib/telemetry/logger.server"
+import type { ObjectValues } from "~/lib/rate_type"
 
 const INTENT = {
   SET_DATE: "set_date",
   UPDATE_SLOT: "update_slot",
 } as const
+export const IntentSchema = v.picklist(
+  Object.values(INTENT),
+)
+export type RateType = ObjectValues<typeof INTENT>
+
+const ERROR = {
+  NOT_FOUND: "not found",
+  INTENT_IS_REQUIRED: "intent is required",
+}
 
 export async function action({
   request,
   params,
 }: Route.ActionArgs) {
-  const form_data = await request.formData()
-  const intent = form_data.get("intent")
-  if (!intent) {
-    throw error(400, "intent is required")
-  }
-  const property_id = v.parse(
-    ForceNumberSchema,
-    params.property_id,
+  const tracer = trace.getTracer("web.action")
+  return tracer.startActiveSpan(
+    "/properties/:id/book",
+    async (span) => {
+      const form_data = await request.formData()
+      const { output: intent, success } = v.safeParse(
+        IntentSchema,
+        form_data.get("intent"),
+      )
+      if (!success) {
+        logger.error(ERROR.INTENT_IS_REQUIRED)
+        span.end()
+        throw error(400, ERROR.NOT_FOUND)
+      }
+      span.setAttribute("intent", intent)
+      const property_id = v.parse(
+        ForceNumberSchema,
+        params.property_id,
+      )
+      form_data.set("property_id", String(property_id))
+      span.setAttribute("property.id", property_id)
+      switch (intent) {
+        case INTENT.SET_DATE: {
+          try {
+            const { redirect_to } =
+              await actions.set_date.execute(
+                request,
+                form_data,
+              )
+            logger.info("date set successfully")
+            span.end()
+            return redirect(redirect_to)
+          } catch (error) {
+            if (error instanceof v.ValiError) {
+              span.end()
+              return {
+                errors: {
+                  set_date:
+                    actions.set_date.get_errors(error),
+                },
+              }
+            }
+          }
+        }
+        case INTENT.UPDATE_SLOT: {
+          try {
+            await actions.update_slot.execute(
+              form_data,
+              span,
+            )
+            logger.info("slot updated successfully")
+            span.end()
+            return redirect("..")
+          } catch (error) {
+            if (error instanceof v.ValiError) {
+              span.end()
+              return {
+                errors: {
+                  update_slot:
+                    actions.update_slot.get_errors(error),
+                },
+              }
+            }
+          }
+        }
+      }
+      span.end()
+      return null
+    },
   )
-  switch (intent) {
-    case INTENT.SET_DATE: {
-      try {
-        const { redirect_to } =
-          await actions.set_date.execute(request, form_data)
-        return redirect(redirect_to)
-      } catch (error) {
-        if (error instanceof v.ValiError) {
-          return {
-            errors: {
-              set_date: actions.set_date.get_errors(error),
-            },
-          }
-        }
-      }
-    }
-    case INTENT.UPDATE_SLOT: {
-      try {
-        await actions.update_slot.execute(
-          form_data,
-          property_id,
-        )
-        return redirect("..")
-      } catch (error) {
-        if (error instanceof v.ValiError) {
-          return {
-            errors: {
-              update_slot:
-                actions.update_slot.get_errors(error),
-            },
-          }
-        }
-      }
-    }
-  }
-  return null
 }
 
 export async function loader({

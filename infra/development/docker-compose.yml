@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - web_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -146,15 +146,15 @@ services:
 
   nominatim:
     image: mediagis/nominatim:4.4
-    container_name: nominatim
     ports:
-      - "8080:8080"
+      - "8090:8090"
     environment:
       - PBF_URL=https://download.geofabrik.de/south-america/argentina-latest.osm.pbf
       - REPLICATION_URL=https://download.geofabrik.de/south-america/argentina-updates/
       - IMPORT_WIKIPEDIA=false
       - IMPORT_US_POSTCODES=false
       - IMPORT_GB_POSTCODES=false
+      - NOMINATIM_LISTEN_PORT=8090
     volumes:
       - nominatim_data:/var/lib/postgresql/14/main
     shm_size: 1gb
@@ -184,10 +184,12 @@ services:
     restart: unless-stopped
     volumes:
       - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+      - ./clickhouse.xml:/etc/clickhouse-server/config.d/ipv4-only.xml:ro
     environment:
       - CLICKHOUSE_DB=signoz
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      test: ["CMD", "wget", "--spider", "-q", "127.0.0.1:8123/ping"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -204,9 +206,10 @@ services:
       - ./telemetry.yaml:/etc/telemetry.yaml:ro
     environment:
       - OTEL_RESOURCE_ATTRIBUTES=host.name=signoz-host,os.type=linux
+      - DOCKER_MULTI_NODE_CLUSTER=false
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
+      - "4317:4317"
+      - "4318:4318"
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -221,6 +224,7 @@ services:
     command: ["-config=/root/config/prometheus.yml"]
     volumes:
       - ./signoz.yaml:/root/config/prometheus.yml:ro
+      - signoz_data:/var/lib/signoz
     environment:
       - ClickHouseUrl=tcp://clickhouse:9000
       - STORAGE=clickhouse
@@ -263,6 +267,11 @@ services:
     restart: unless-stopped
     volumes:
       - alertmanager_data:/data
+      - alertmanager_config:/alertmanager
+    command:
+      - --queryService.url=http://signoz-query-service:8080
+      - --config.file=/alertmanager/config.yml
+      - --storage.path=/data
     depends_on:
       signoz-query-service:
         condition: service_healthy
@@ -272,9 +281,12 @@ services:
           memory: 128M
 
 volumes:
-  db_data:
+  web_data:
   web_deps:
   nominatim_data:
   valkey_data:
   clickhouse_data:
+  clickhouse_logs:
+  signoz_data:
   alertmanager_data:
+  alertmanager_config:

@@ -11,7 +11,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
-    "db:types": "bun run db/generate_types.mjs",
+    "db:types": "node db/generate_types.mjs",
     "db:seed": "bun kysely seed:run",
     "db:migrate": "bun kysely migrate:latest"
   },
