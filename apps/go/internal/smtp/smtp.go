@@ -1,6 +1,7 @@
 package smtp
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,11 @@ import (
 	"net/smtp"
 	"os"
 	"strings"
+
+	"habita/apps/go/internal/observability"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type EmailRequest struct {
@@ -26,7 +32,20 @@ type OwnerInviteRequest struct {
 	Text    string `json:"text"`
 }
 
-func SendCalendarInvite(req EmailRequest) error {
+func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req EmailRequest) error {
+	tracer := otel.Tracer("smtp")
+	ctx, span := tracer.Start(ctx, "smtp.send_calendar_invite")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("email.recipient", req.Visitant),
+		attribute.String("email.subject", req.Subject),
+	)
+
+	logger.Info(ctx, "sending calendar invite", map[string]any{
+		"recipient": req.Visitant,
+		"host":      req.Host,
+	})
 	if req.Visitant == "" || req.Host == "" || req.Subject == "" || req.Content == "" {
 		return fmt.Errorf("missing required fields")
 	}
@@ -151,11 +170,25 @@ func SendCalendarInvite(req EmailRequest) error {
 		return fmt.Errorf("failed to quit: %v", err)
 	}
 
-	log.Printf("Email sent successfully to %s", req.Visitant)
+	logger.Info(ctx, "calendar invite sent successfully", map[string]any{
+		"recipient": req.Visitant,
+	})
 	return nil
 }
 
-func SendOwnerInvite(req OwnerInviteRequest) error {
+func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req OwnerInviteRequest) error {
+	tracer := otel.Tracer("smtp")
+	ctx, span := tracer.Start(ctx, "smtp.send_owner_invite")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("email.recipient", req.Email),
+		attribute.String("email.subject", req.Subject),
+	)
+
+	logger.Info(ctx, "sending owner invite", map[string]any{
+		"recipient": req.Email,
+	})
 	if req.Email == "" || req.Subject == "" || req.Text == "" {
 		return fmt.Errorf("missing required fields")
 	}
@@ -258,55 +291,64 @@ func SendOwnerInvite(req OwnerInviteRequest) error {
 		return fmt.Errorf("failed to quit: %v", err)
 	}
 
-	log.Printf("Owner invite sent successfully to %s", req.Email)
+	logger.Info(ctx, "owner invite sent successfully", map[string]any{
+		"recipient": req.Email,
+	})
 	return nil
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func Handler(logger *observability.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var req EmailRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Printf("Failed to decode request: %v", err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
+		var req EmailRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.Error(ctx, "failed to decode request", nil, err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
 
-	if err := SendCalendarInvite(req); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
-		return
-	}
+		if err := SendCalendarInvite(ctx, logger, req); err != nil {
+			logger.Error(ctx, "failed to send calendar invite", map[string]any{
+				"recipient": req.Visitant,
+			}, err)
+			http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
+			return
+		}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status":"sent"}`))
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"sent"}`))
+	}
 }
 
-func OwnerInviteHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received owner invite request from %s", r.RemoteAddr)
+func OwnerInviteHandler(logger *observability.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var req OwnerInviteRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Printf("Failed to decode owner invite request: %v", err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
+		var req OwnerInviteRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.Error(ctx, "failed to decode owner invite request", nil, err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if err := SendOwnerInvite(ctx, logger, req); err != nil {
+			logger.Error(ctx, "failed to send owner invite", map[string]any{
+				"recipient": req.Email,
+			}, err)
+			http.Error(w, fmt.Sprintf("Failed to send owner invite: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"sent"}`))
 	}
-
-	log.Printf("Decoded request - Email: %s, Subject: %s", req.Email, req.Subject)
-
-	if err := SendOwnerInvite(req); err != nil {
-		log.Printf("SendOwnerInvite failed: %v", err)
-		http.Error(w, fmt.Sprintf("Failed to send owner invite: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("Owner invite handler completed successfully")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status":"sent"}`))
 }
