@@ -8,7 +8,7 @@
 
 ---
 
-## Phase 1: Infrastructure
+## Phase 1: Infrastructure ✅
 
 - [x] **Add SigNoz to docker-compose.yml**
   - Services: `signoz-collector`, `clickhouse`, `signoz-query-service`, `signoz-frontend`, `signoz-alertmanager`
@@ -25,7 +25,7 @@
 
 ---
 
-## Phase 2: Web App - OpenTelemetry Setup
+## Phase 2: Web App - OpenTelemetry Setup ✅
 
 ### 2.1 Install Dependencies
 
@@ -45,20 +45,20 @@
 
 ### 2.2 Core Setup Files
 
-- [x] **Create `/apps/web/app/lib/observability.server.ts`**
+- [x] **Create `/apps/web/app/lib/telemetry/sdk.server.ts`** (moved from observability.server.ts)
   - Initialize NodeSDK with OTLP exporters (traces + logs)
   - Configure resource with service metadata
   - Auto-instrumentation for HTTP/common libraries
   - Start SDK on import
   - **Note:** No helper functions - use `trace` from `@opentelemetry/api` directly
 
-- [x] **Create `/apps/web/app/entry.server.tsx`**
-  - Import `observability.server.ts` FIRST (before React Router)
+- [x] **Update `/apps/web/app/entry.server.tsx`**
+  - Import `~/lib/telemetry/sdk.server` FIRST (before React Router)
   - This ensures SDK initializes before app code
 
 ---
 
-## Phase 3: Custom Logger (TypeScript)
+## Phase 3: Custom Logger (TypeScript) ✅
 
 - [x] **Create `/apps/web/app/lib/telemetry/log.server.ts`**
 
@@ -100,11 +100,17 @@
 
 ---
 
-## Phase 4: Database Instrumentation (Kysely)
+## Phase 4: Database Instrumentation (Kysely) ✅
 
-- [ ] **Create `/apps/web/db/telemetry_plugin.ts`**
+- [x] **Create `/apps/web/db/telemetry_plugin.ts`**
 
   **Custom Kysely plugin** that implements `KyselyPlugin` interface:
+
+  **Implementation notes:**
+  - Uses Map to store span metadata (keyed by queryId)
+  - Fully type-safe, no `as` or `@ts-expect-error`
+  - Extracts operation type (SELECT, INSERT, UPDATE, DELETE)
+  - Table name simplified to "unknown" (AST navigation too complex)
 
   **In `transformQuery()`**:
   - Start a span: `tracer.startActiveSpan("db.query")`
@@ -158,7 +164,7 @@
   ```
   You can see EXACTLY which action, which query, and full error details!
 
-- [ ] **Update `/apps/web/db/query_builder.ts`**
+- [x] **Update `/apps/web/db/query_builder.ts`**
   - Add `TelemetryPlugin` to plugins array
   - Remove existing `log()` callback (replaced by plugin + logger)
   - Keep `ParseJSONResultsPlugin`
