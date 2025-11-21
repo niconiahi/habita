@@ -11,6 +11,7 @@ FROM node:22 AS runtime
 
 WORKDIR /apps/web
 
+COPY --from=builder /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY --from=builder /apps/web/node_modules ./node_modules
 

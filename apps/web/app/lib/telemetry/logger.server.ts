@@ -49,9 +49,9 @@ function info(
 }
 
 function error(
-  error: Error,
   message: string,
   fields?: Record<string, unknown>,
+  error?: Error,
 ) {
   const span = trace.getActiveSpan()
   const span_context = span?.spanContext()

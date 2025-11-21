@@ -2,60 +2,73 @@ import * as v from "valibot"
 import {
   ROOM_TYPE,
   type RoomType,
-} from "~/lib/room_type.ts"
+} from "../../app/lib/room_type.ts"
 import {
   ACCESS_TYPE,
   type AccessType,
-} from "~/lib/access_type.ts"
+} from "../../app/lib/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
-} from "~/lib/contract_file_type.ts"
-import { CONTRACT_STATE } from "~/lib/contract_state.ts"
-import { PROPERTY_TYPE } from "~/lib/property_type.ts"
-import { get_month, get_year } from "~/lib/date.ts"
-import { SLOT_STATE } from "~/lib/slot_state.ts"
+} from "../../app/lib/contract_file_type.ts"
+import { CONTRACT_STATE } from "../../app/lib/contract_state.ts"
+import { PROPERTY_TYPE } from "../../app/lib/property_type.ts"
+import { get_month, get_year } from "../../app/lib/date.ts"
+import { SLOT_STATE } from "../../app/lib/slot_state.ts"
 import {
   SERVICE_TYPE,
   type ServiceType,
-} from "~/lib/service.ts"
+} from "../../app/lib/service.ts"
 import {
   RATE_TYPE,
   type RateType,
-} from "~/lib/rate_type.ts"
+} from "../../app/lib/rate_type.ts"
 import {
   subMonths,
   addMonths,
   addDays,
   subDays,
 } from "date-fns"
-import { PROPERTY_STATE } from "~/lib/property_state.ts"
-import { PROPERTY_FILE_TYPE } from "~/lib/property_file_type.ts"
-import { query_builder } from "db/query_builder"
-import { CONTRACT_TYPE } from "~/lib/contract_type"
-import { compose_point } from "~/lib/point.server"
+import { PROPERTY_STATE } from "../../app/lib/property_state.ts"
+import { PROPERTY_FILE_TYPE } from "../../app/lib/property_file_type.ts"
+import { query_builder } from "../query_builder"
+import { CONTRACT_TYPE } from "../../app/lib/contract_type"
+import { compose_point } from "../../app/lib/point.server"
+import { readFile } from "node:fs/promises"
+import { createHash } from "node:crypto"
+import { dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 function compose_file_path(basename: string) {
-  return `${import.meta.dir}/../files/${basename}`
+  return `${__dirname}/../files/${basename}`
+}
+
+function get_mime_type(filename: string): string {
+  const ext = filename.split(".").pop()?.toLowerCase()
+  const mime_map: Record<string, string> = {
+    pdf: "application/pdf",
+    webp: "image/webp",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+  }
+  return mime_map[ext || ""] || "application/octet-stream"
 }
 
 async function upsert_file(path: string) {
-  const file = Bun.file(path)
-  const content = Buffer.from(await file.arrayBuffer())
+  const content = await readFile(path)
   const now = new Date()
-  const hash = Bun.CryptoHasher.hash(
-    "sha256",
-    content,
-    "hex",
-  )
+  const hash = createHash("sha256")
+    .update(content)
+    .digest("hex")
   const basename = v.parse(
     v.string("basename is required"),
     path.split("/").pop(),
   )
-  const mime = v.parse(
-    v.string("mime is required"),
-    file.type,
-  )
+  const mime = get_mime_type(path)
   const existing_file = await query_builder
     .selectFrom("file")
     .select("id")

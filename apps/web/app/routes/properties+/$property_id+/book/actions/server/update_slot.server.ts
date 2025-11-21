@@ -2,28 +2,40 @@ import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "~/lib/force_number.server"
 import { SLOT_STATE } from "~/lib/slot_state"
-import { create_ics, InviteeSchema } from "~/lib/ics.server"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
-import { send_calendar_invite } from "~/lib/send_calendar_invite.server"
 import { display_location } from "~/lib/display_location"
 import {
   normalize_input,
   get_errors,
 } from "~/lib/form.server"
+import {
+  escape_ics_text,
+  format_ics_date,
+} from "~/lib/ics.server"
+import { type Span } from "@opentelemetry/api"
+import { logger } from "~/lib/telemetry/logger.server"
+import { error } from "~/lib/error.server"
+import { propagation, context } from "@opentelemetry/api"
+
+const InviteeSchema = v.object({
+  email: v.string(),
+  name: v.string(),
+})
 
 export const InputSchema = v.object({
   id: ForceNumberSchema,
   visitant_id: ForceNumberSchema,
+  property_id: ForceNumberSchema,
 })
 
-async function execute(
-  form_data: FormData,
-  property_id: number,
-) {
-  const { visitant_id, id } = v.parse(
+async function execute(form_data: FormData, span: Span) {
+  const { visitant_id, id, property_id } = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
+  span.setAttribute("slot.id", id)
+  span.setAttribute("visitant.id", visitant_id)
+  logger.info("updating slot")
   const slot = await query_builder
     .updateTable("slot")
     .set({
@@ -39,6 +51,16 @@ async function execute(
       "slot.visitant_id",
     ])
     .executeTakeFirstOrThrow()
+  span.setAttribute(
+    "slot.start_date",
+    slot.start_date.toISOString(),
+  )
+  span.setAttribute(
+    "slot.end_date",
+    slot.end_date.toISOString(),
+  )
+  span.setAttribute("host.id", slot.host_id)
+  logger.info("slot updated")
   const host = v.parse(
     InviteeSchema,
     await query_builder
@@ -47,6 +69,8 @@ async function execute(
       .where("id", "=", slot.host_id)
       .executeTakeFirstOrThrow(),
   )
+  span.setAttribute("host.email", host.email)
+  span.setAttribute("host.name", host.name)
   const visitant = v.parse(
     InviteeSchema,
     await query_builder
@@ -55,21 +79,39 @@ async function execute(
       .where("id", "=", slot.visitant_id)
       .executeTakeFirstOrThrow(),
   )
+  span.setAttribute("visitant.email", visitant.email)
+  span.setAttribute("visitant.name", visitant.name)
   const property = await fetch_property(property_id)
   if (!property) {
-    throw new Response("property should exist", {
-      status: 404,
-    })
+    logger.error("property not found")
+    throw error(404, "property should exist")
   }
-  const summary = `Visita a la propiedad ubicada en ${property.location.road} ${property.location.house_number}`
-  const content = create_ics({
-    start_date: slot.start_date,
-    end_date: slot.end_date,
-    summary,
-    location: display_location(property.location),
-    host,
-    visitant,
-  })
+  span.setAttribute(
+    "property.location",
+    display_location(property.location),
+  )
+  const summary = `Visita a la propiedad ubicada en ${display_location(property.location)}`
+  const content = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Memudo//Visita de propiedad//ES
+METHOD:REQUEST
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${crypto.randomUUID()}
+DTSTAMP:${format_ics_date(new Date())}
+DTSTART:${format_ics_date(slot.start_date)}
+DTEND:${format_ics_date(slot.end_date)}
+SUMMARY:${escape_ics_text(summary)}
+LOCATION:${escape_ics_text(display_location(property.location))}
+ORGANIZER;CN=Habita:MAILTO:bookings@habita.rent
+ATTENDEE;CN=${host.name};RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:${host.email}
+ATTENDEE;CN=${visitant.name};RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:${visitant.email}
+STATUS:CONFIRMED
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR`
+
+  logger.info("ics file created")
 
   const text = `Hello ${visitant.name},
 
@@ -82,13 +124,33 @@ Please open the attached calendar invitation to add this event to your calendar.
 
 Best regards,
 ${host.name}`
-  await send_calendar_invite({
-    host: host.email,
-    visitant: visitant.email,
-    subject: summary,
-    text,
-    content,
-  })
+  span.setAttribute("email.recipient", visitant.email)
+  span.setAttribute("email.subject", summary)
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  }
+  propagation.inject(context.active(), headers)
+  const response = await fetch(
+    "http://go:8081/send-email",
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        host,
+        visitant,
+        subject: summary,
+        text,
+        content,
+      }),
+    },
+  )
+  if (!response.ok) {
+    const message = "email service returned error"
+    logger.error(message)
+    throw new Error(message)
+  }
+  logger.info("email sent via go service")
+  logger.info("slot booking completed")
 }
 
 export const update_slot = {
