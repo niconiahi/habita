@@ -1,6 +1,6 @@
-FROM golang:1.22-alpine AS runtime
+FROM golang:1.23-alpine AS runtime
 WORKDIR /src
-COPY go.mod .
+COPY go.mod go.sum ./
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/middleware cmd/server/main.go
