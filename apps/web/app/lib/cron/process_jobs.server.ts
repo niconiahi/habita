@@ -3,6 +3,7 @@ import { calculate_all_due_escalations } from "../calculate_all_due_escalations.
 import { now } from "~/lib/now.server"
 import { JOB_STATUS } from "~/lib/job_status"
 import { JOB_TYPE } from "~/lib/job_type"
+import { logger } from "~/lib/telemetry/log.server"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder
@@ -11,18 +12,19 @@ export async function process_jobs() {
     .where("status", "=", JOB_STATUS.PENDING)
     .orderBy("scheduled_at", "asc")
     .execute()
-  console.log(
-    `processing ${pending_jobs.length} pending jobs`,
-  )
+  logger.info("processing pending jobs", {
+    job_count: pending_jobs.length,
+  })
   for (const job of pending_jobs) {
     try {
       switch (job.type) {
         case JOB_TYPE.CALCULATE_PRICES: {
           const result =
             await calculate_all_due_escalations()
-          console.log(
-            `job ${job.id}: processed ${result.processed} contracts`,
-          )
+          logger.info("job processed contracts", {
+            job_id: job.id,
+            contracts_processed: result.processed,
+          })
           break
         }
         default: {
@@ -37,11 +39,14 @@ export async function process_jobs() {
         })
         .where("id", "=", job.id)
         .execute()
-      console.log(`job ${job.id} completed successfully`)
+      logger.info("job completed successfully", {
+        job_id: job.id,
+      })
     } catch (error) {
       if (error instanceof Error) {
-        console.log("error.message", error.message)
-        console.log("error.message", error.stack)
+        logger.error(error, "job failed", {
+          job_id: job.id,
+        })
       }
       await query_builder
         .transaction()
@@ -64,7 +69,9 @@ export async function process_jobs() {
             .where("id", "=", job.id)
             .execute()
         })
-      console.log(`job ${job.id} marked as failed`)
+      logger.info("job marked as failed", {
+        job_id: job.id,
+      })
     }
   }
 }

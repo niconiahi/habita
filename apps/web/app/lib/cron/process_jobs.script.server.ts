@@ -1,15 +1,16 @@
 import { process_jobs } from "./process_jobs.server"
+import { logger } from "~/lib/telemetry/log.server"
 
 async function main() {
   try {
-    console.log("starting job processing")
+    logger.info("starting job processing")
     await process_jobs()
-    console.log("job processing completed successfully")
+    logger.info("job processing completed successfully")
     process.exit(0)
   } catch (error) {
-    console.error(
-      "fatal error during job processing:",
-      error,
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "fatal error during job processing",
     )
     process.exit(1)
   }

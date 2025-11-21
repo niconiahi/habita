@@ -1,17 +1,18 @@
 import { create_escalation_jobs } from "./create_escalation_jobs.server"
+import { logger } from "~/lib/telemetry/log.server"
 
 async function main() {
   try {
-    console.log("starting escalation job creation")
+    logger.info("starting escalation job creation")
     const result = await create_escalation_jobs()
-    console.log(
-      `escalation job creation completed: ${result.created} jobs created`,
-    )
+    logger.info("escalation job creation completed", {
+      jobs_created: result.created,
+    })
     process.exit(0)
   } catch (error) {
-    console.error(
-      "fatal error during escalation job creation:",
-      error,
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "fatal error during escalation job creation",
     )
     process.exit(1)
   }
