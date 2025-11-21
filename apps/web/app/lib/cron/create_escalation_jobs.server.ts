@@ -6,6 +6,7 @@ import { JOB_TYPE } from "~/lib/job_type"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { ForceDateSchema } from "../force_date.server"
 import * as v from "valibot"
+import { logger } from "~/lib/telemetry/log.server"
 
 async function fetch_contracts() {
   return query_builder
@@ -54,11 +55,11 @@ function get_due_contracts(contracts: Contract[]) {
 export async function create_escalation_jobs() {
   const contracts = await fetch_contracts()
   const due_contracts = get_due_contracts(contracts)
-  console.log(
-    `found ${due_contracts.length} active contracts with due periods`,
-  )
+  logger.info("found active contracts with due periods", {
+    due_contracts_count: due_contracts.length,
+  })
   if (due_contracts.length === 0) {
-    console.log("no contracts due, skipping job creation")
+    logger.info("no contracts due, skipping job creation")
     return { created: 0 }
   }
   const job = await query_builder
@@ -68,9 +69,7 @@ export async function create_escalation_jobs() {
     .where("status", "=", JOB_STATUS.PENDING)
     .executeTakeFirst()
   if (job) {
-    console.log(
-      "pending escalation job already exists, skipping",
-    )
+    logger.info("pending escalation job already exists, skipping")
     return { created: 0 }
   }
   await query_builder
@@ -83,6 +82,6 @@ export async function create_escalation_jobs() {
       updated_at: now,
     })
     .execute()
-  console.log("created escalation job")
+  logger.info("created escalation job")
   return { created: 1 }
 }
