@@ -21,7 +21,7 @@ jobs:
       - name: Build and push web app image
         run: |
           docker build \
-            -f apps/web/Dockerfile.production \
+            -f infra/production/web/Dockerfile \
             -t niconiahi/habita:web-latest \
             -t niconiahi/habita:web-${{ github.sha }} \
             apps/web
