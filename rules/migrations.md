@@ -1,0 +1,1 @@
+- To create a new migration, you must use `kysely-ctl`

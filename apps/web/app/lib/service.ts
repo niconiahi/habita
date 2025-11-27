@@ -32,3 +32,7 @@ export function get_service_type_label(type: ServiceType) {
     }
   }
 }
+
+export function get_service_types() {
+  return Object.values(SERVICE_TYPE)
+}

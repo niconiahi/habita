@@ -4,14 +4,14 @@ export function normalize_input(
   form_data: FormData,
   schema: v.ObjectSchema<any, any>,
 ) {
-  const form_object: { [k: string]: unknown | undefined } =
-    Object.fromEntries(form_data)
+  const form_object: { [k: string]: unknown | undefined } = {}
   const schema_keys = Object.keys(schema.entries)
+
   for (const key of schema_keys) {
-    if (!(key in form_object)) {
-      form_object[key] = undefined
-    }
+    const value = form_data.get(key)
+    form_object[key] = value !== null ? value : undefined
   }
+
   return form_object
 }
 

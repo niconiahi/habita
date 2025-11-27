@@ -174,6 +174,15 @@ export interface Rate {
   year: number;
 }
 
+export interface Receipt {
+  contract_id: number;
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  type: number;
+  updated_at: Timestamp;
+}
+
 export interface Room {
   created_at: Timestamp;
   id: Generated<number>;
@@ -822,6 +831,7 @@ export interface DB {
   property: Property;
   property_file: PropertyFile;
   rate: Rate;
+  receipt: Receipt;
   room: Room;
   service: Service;
   session: Session;

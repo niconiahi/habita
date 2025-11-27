@@ -5,3 +5,4 @@
 - Read `rules/loading_data_in_loader.md` and respect it
 - Read `rules/when_deciding_on_technology.md` and respect it
 - Read `rules/date_and_time.md` and respect it
+- Do not read `plans` folder unless specifically told to do so

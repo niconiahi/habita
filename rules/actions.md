@@ -53,16 +53,21 @@ import * as v from "valibot"
 import { now } from "~/lib/now"
 import { ForceNumberSchema } from "~/lib/server/force_number"
 import { ServiceTypeSchema } from "~/lib/service"
+import { normalize_input } from "~/lib/form.server"
+
+export const InputSchema = v.object({
+  id: ForceNumberSchema,
+  property_id: ForceNumberSchema,
+  code: v.string(),
+  type: ServiceTypeSchema,
+})
 
 export async function update_service(
   form_data: FormData,
 ) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"))
-  const property_id = v.parse(ForceNumberSchema, form_data.get("property_id"))
-  const code = v.parse(v.string(), form_data.get("code"))
-  const type = v.parse(
-    ServiceTypeSchema,
-    Number(form_data.get("type")),
+  const { id, property_id, code, type } = v.parse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
   await query_builder
     .updateTable("service")
