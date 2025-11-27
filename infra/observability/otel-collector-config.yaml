@@ -1,0 +1,43 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 10s
+
+exporters:
+  logging:
+    loglevel: debug
+
+  clickhousetraces:
+    datasource: tcp://clickhouse:9000/signoz_traces
+    low_cardinal_exception_grouping: false
+
+  clickhousemetricswrite:
+    endpoint: tcp://clickhouse:9000/signoz_metrics
+
+  clickhouselogsexporter:
+    dsn: tcp://clickhouse:9000/signoz_logs
+    timeout: 10s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, clickhousetraces]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, clickhousemetricswrite]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, clickhouselogsexporter]

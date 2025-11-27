@@ -237,6 +237,54 @@ async function make_editing_contract(
       start_date: new Date(2024, 9, 25, 16, 15),
       end_date: new Date(2024, 9, 25, 16, 45),
     },
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
   ]
   for (const slot_ of SLOTS) {
     const slot = await query_builder

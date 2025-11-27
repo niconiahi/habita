@@ -16,7 +16,7 @@ import {
   ESCALATION_TYPE,
   get_escalation_label,
 } from "~/lib/escalation_type"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { has_edit_access } from "~/lib/property_access.server"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/server/index.server"

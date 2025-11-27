@@ -1,6 +1,6 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { SLOT_STATE } from "~/lib/slot_state"
 import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
 import { display_location } from "~/lib/display_location"

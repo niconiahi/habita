@@ -14,7 +14,7 @@ import {
   get_contract_state_label,
 } from "~/lib/contract_state"
 import { error } from "~/lib/error.server"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import {
   get_service_type_label,
   SERVICE_TYPE,

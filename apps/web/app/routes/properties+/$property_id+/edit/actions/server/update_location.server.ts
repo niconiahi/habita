@@ -2,7 +2,7 @@ import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { LocationSchema } from "~/components/location_input"
 import { now } from "~/lib/now.server"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { compose_point } from "~/lib/point.server"
 
 export async function update_location(form_data: FormData) {

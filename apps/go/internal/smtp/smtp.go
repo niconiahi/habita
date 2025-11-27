@@ -18,12 +18,17 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type Invitee struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
 type EmailRequest struct {
-	Host     string `json:"host"`
-	Visitant string `json:"visitant"`
-	Subject  string `json:"subject"`
-	Text     string `json:"text"`
-	Content  string `json:"content"`
+	Host     Invitee `json:"host"`
+	Visitant Invitee `json:"visitant"`
+	Subject  string  `json:"subject"`
+	Text     string  `json:"text"`
+	Content  string  `json:"content"`
 }
 
 type OwnerInviteRequest struct {
@@ -38,15 +43,11 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("email.recipient", req.Visitant),
 		attribute.String("email.subject", req.Subject),
 	)
 
-	logger.Info(ctx, "sending calendar invite", map[string]any{
-		"recipient": req.Visitant,
-		"host":      req.Host,
-	})
-	if req.Visitant == "" || req.Host == "" || req.Subject == "" || req.Content == "" {
+	logger.Info(ctx, "sending calendar invite", nil)
+	if req.Visitant.Email == "" || req.Host.Email == "" || req.Subject == "" || req.Content == "" {
 		return fmt.Errorf("missing required fields")
 	}
 
@@ -69,7 +70,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 
 	// Email headers
 	body.WriteString(fmt.Sprintf("From: %s\r\n", "bookings@habita.rent"))
-	body.WriteString(fmt.Sprintf("To: %s, %s\r\n", req.Host, req.Visitant))
+	body.WriteString(fmt.Sprintf("To: %s, %s\r\n", req.Host.Email, req.Visitant.Email))
 	body.WriteString(fmt.Sprintf("Subject: %s\r\n", req.Subject))
 	body.WriteString("MIME-Version: 1.0\r\n")
 	body.WriteString(fmt.Sprintf("Content-Type: multipart/alternative; boundary=\"%s\"\r\n", boundary))
@@ -101,7 +102,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 
 	// Send via authenticated SMTP with STARTTLS (Gmail)
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
-	log.Printf("Sending email from %s to %s via %s with user: %s", req.Host, req.Visitant, addr, smtpUser)
+	log.Printf("Sending email from %s to %s via %s with user: %s", req.Host.Email, req.Visitant.Email, addr, smtpUser)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", addr)
@@ -138,11 +139,11 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 		log.Printf("Failed to set sender: %v", err)
 		return fmt.Errorf("failed to set sender: %v", err)
 	}
-	if err = client.Rcpt(req.Host); err != nil {
+	if err = client.Rcpt(req.Host.Email); err != nil {
 		log.Printf("Failed to add host recipient: %v", err)
 		return fmt.Errorf("failed to add host recipient: %v", err)
 	}
-	if err = client.Rcpt(req.Visitant); err != nil {
+	if err = client.Rcpt(req.Visitant.Email); err != nil {
 		log.Printf("Failed to add visitant recipient: %v", err)
 		return fmt.Errorf("failed to add visitant recipient: %v", err)
 	}
@@ -170,9 +171,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 		return fmt.Errorf("failed to quit: %v", err)
 	}
 
-	logger.Info(ctx, "calendar invite sent successfully", map[string]any{
-		"recipient": req.Visitant,
-	})
+	logger.Info(ctx, "calendar invite sent successfully", nil)
 	return nil
 }
 
@@ -182,13 +181,10 @@ func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req Owne
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("email.recipient", req.Email),
 		attribute.String("email.subject", req.Subject),
 	)
 
-	logger.Info(ctx, "sending owner invite", map[string]any{
-		"recipient": req.Email,
-	})
+	logger.Info(ctx, "sending owner invite", nil)
 	if req.Email == "" || req.Subject == "" || req.Text == "" {
 		return fmt.Errorf("missing required fields")
 	}
@@ -291,9 +287,7 @@ func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req Owne
 		return fmt.Errorf("failed to quit: %v", err)
 	}
 
-	logger.Info(ctx, "owner invite sent successfully", map[string]any{
-		"recipient": req.Email,
-	})
+	logger.Info(ctx, "owner invite sent successfully", nil)
 	return nil
 }
 
@@ -313,9 +307,7 @@ func Handler(logger *observability.Logger) http.HandlerFunc {
 		}
 
 		if err := SendCalendarInvite(ctx, logger, req); err != nil {
-			logger.Error(ctx, "failed to send calendar invite", map[string]any{
-				"recipient": req.Visitant,
-			}, err)
+			logger.Error(ctx, "failed to send calendar invite", nil, err)
 			http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -341,9 +333,7 @@ func OwnerInviteHandler(logger *observability.Logger) http.HandlerFunc {
 		}
 
 		if err := SendOwnerInvite(ctx, logger, req); err != nil {
-			logger.Error(ctx, "failed to send owner invite", map[string]any{
-				"recipient": req.Email,
-			}, err)
+			logger.Error(ctx, "failed to send owner invite", nil, err)
 			http.Error(w, fmt.Sprintf("Failed to send owner invite: %v", err), http.StatusInternalServerError)
 			return
 		}

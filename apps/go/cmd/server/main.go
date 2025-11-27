@@ -16,10 +16,13 @@ import (
 
 func main() {
 	// Initialize OpenTelemetry
-	tp := observability.InitOTel()
+	tp, lp := observability.InitOTel()
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+		if err := lp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down logger provider: %v", err)
 		}
 	}()
 

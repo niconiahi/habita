@@ -1,83 +1,87 @@
 import { trace, SpanStatusCode } from "@opentelemetry/api"
-import { SeverityNumber } from "@opentelemetry/api-logs"
+import {
+  SeverityNumber,
+  logs,
+  type LogAttributes,
+} from "@opentelemetry/api-logs"
 
-type Entry = {
-  timestamp: string
-  severity: SeverityNumber
-  message: string
-  trace_id?: string
-  span_id?: string
-  [key: string]: unknown
+function get_otel_logger() {
+  return logs.getLoggerProvider().getLogger("web")
 }
 
 function warn(
   message: string,
-  fields?: Record<string, unknown>,
+  attributes?: LogAttributes,
 ): void {
   const span = trace.getActiveSpan()
   const span_context = span?.spanContext()
-  const entry: Entry = {
-    timestamp: new Date().toISOString(),
-    severity: SeverityNumber.WARN,
-    message,
-    ...fields,
+  const _attributes: LogAttributes = {
+    ...attributes,
   }
   if (span_context) {
-    entry.trace_id = span_context.traceId
-    entry.span_id = span_context.spanId
+    _attributes.trace_id = span_context.traceId
+    _attributes.span_id = span_context.spanId
   }
-  console.log(JSON.stringify(entry))
+  get_otel_logger().emit({
+    severityNumber: SeverityNumber.WARN,
+    body: message,
+    attributes: _attributes,
+  })
 }
 
 function info(
   message: string,
-  fields?: Record<string, unknown>,
+  attributes?: LogAttributes,
 ): void {
   const span = trace.getActiveSpan()
   const span_context = span?.spanContext()
-  const entry: Entry = {
-    timestamp: new Date().toISOString(),
-    severity: SeverityNumber.INFO,
-    message,
-    ...fields,
+  const _attributes: LogAttributes = {
+    ...attributes,
   }
   if (span_context) {
-    entry.trace_id = span_context.traceId
-    entry.span_id = span_context.spanId
+    _attributes.trace_id = span_context.traceId
+    _attributes.span_id = span_context.spanId
   }
-  console.log(JSON.stringify(entry))
+  get_otel_logger().emit({
+    severityNumber: SeverityNumber.INFO,
+    body: message,
+    attributes: _attributes,
+  })
 }
 
 function error(
   message: string,
-  fields?: Record<string, unknown>,
+  attributes?: LogAttributes,
   error?: Error,
 ) {
   const span = trace.getActiveSpan()
   const span_context = span?.spanContext()
-  const entry: Entry = {
-    timestamp: new Date().toISOString(),
-    severity: SeverityNumber.ERROR,
-    message,
-    ...fields,
+  const _attributes: LogAttributes = {
+    ...attributes,
   }
   if (span_context) {
-    entry.trace_id = span_context.traceId
-    entry.span_id = span_context.spanId
+    _attributes.trace_id = span_context.traceId
+    _attributes.span_id = span_context.spanId
   }
-  entry.error = {
-    name: error.name,
-    message: error.message,
-    stack: error.stack,
+  if (error) {
+    _attributes.error = {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    }
   }
-  if (span) {
+  if (span && error) {
     span.recordException(error)
     span.setStatus({
       code: SpanStatusCode.ERROR,
       message: error.message,
     })
   }
-  console.log(JSON.stringify(entry))
+  get_otel_logger().emit({
+    severityNumber: SeverityNumber.ERROR,
+    body: message,
+    attributes,
+  })
 }
 
 export const logger = {

@@ -2,7 +2,7 @@ import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { now } from "~/lib/now.server"
 import { CONTRACT_STATE } from "~/lib/contract_state"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 
 export async function create_contract(
   form_data: FormData,
