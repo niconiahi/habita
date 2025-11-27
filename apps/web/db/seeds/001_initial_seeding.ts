@@ -237,54 +237,6 @@ async function make_editing_contract(
       start_date: new Date(2024, 9, 25, 16, 15),
       end_date: new Date(2024, 9, 25, 16, 45),
     },
-    {
-      start_date: new Date(2024, 9, 25, 15, 15),
-      end_date: new Date(2024, 9, 25, 15, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 45),
-      end_date: new Date(2024, 9, 25, 16, 15),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 16, 15),
-      end_date: new Date(2024, 9, 25, 16, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 15),
-      end_date: new Date(2024, 9, 25, 15, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 45),
-      end_date: new Date(2024, 9, 25, 16, 15),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 16, 15),
-      end_date: new Date(2024, 9, 25, 16, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 15),
-      end_date: new Date(2024, 9, 25, 15, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 45),
-      end_date: new Date(2024, 9, 25, 16, 15),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 16, 15),
-      end_date: new Date(2024, 9, 25, 16, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 15),
-      end_date: new Date(2024, 9, 25, 15, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 45),
-      end_date: new Date(2024, 9, 25, 16, 15),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 16, 15),
-      end_date: new Date(2024, 9, 25, 16, 45),
-    },
   ]
   for (const slot_ of SLOTS) {
     const slot = await query_builder
@@ -334,7 +286,8 @@ async function run() {
     phone_number: "+5491188310588",
     document_number: 30019119,
     now,
-    email: "mario.luis@gmail.com",
+    // email: "mario.luis@gmail.com",
+    email: "nicolas.accetta@gmail.com",
   })
   const latitude = -34.595834
   const longitude = -58.447219
@@ -627,6 +580,33 @@ async function run() {
       })
       .execute()
     console.log("created period")
+  }
+
+  console.log("creating receipts for previous month")
+  const previous_month = subMonths(date, 1)
+  const receipt_file_id = await upsert_file(
+    compose_file_path("property_image_1.webp"),
+  )
+
+  const receipt_types = [
+    SERVICE_TYPE.MUNICIPAL_FEE,
+    SERVICE_TYPE.LIGHT,
+    SERVICE_TYPE.GAS,
+    4, // RENT
+  ]
+
+  for (const type of receipt_types) {
+    await query_builder
+      .insertInto("receipt")
+      .values({
+        contract_id: contract.id,
+        file_id: receipt_file_id,
+        type,
+        created_at: previous_month,
+        updated_at: previous_month,
+      })
+      .execute()
+    console.log(`created receipt for type ${type}`)
   }
 }
 

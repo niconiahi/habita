@@ -17,3 +17,5 @@ function create_user() {}
 ```ts
 const remaining_users = get_remaining_users()
 ```
+
+- Don't leave blank lines between code. I just put one line after the other
