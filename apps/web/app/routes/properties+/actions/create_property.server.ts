@@ -8,7 +8,7 @@ import {
 } from "~/lib/property_type"
 import { PROPERTY_STATE } from "~/lib/property_state"
 import { ACCESS_TYPE } from "~/lib/access_type"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 
 export async function create_property(form_data: FormData) {
   const location_ = v.parse(

@@ -1,6 +1,6 @@
 import { Form, redirect } from "react-router"
 import type { Route } from "./+types/_index"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
 import { sql } from "kysely"

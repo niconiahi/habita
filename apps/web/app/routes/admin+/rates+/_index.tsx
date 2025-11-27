@@ -12,7 +12,7 @@ import {
 import { get_rate_types } from "~/lib/rate_type"
 import { RateTypeSchema } from "~/lib/rate_type"
 import { query_builder } from "db/query_builder"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { now } from "~/lib/now.server"
 import type { Route } from "./+types/_index"
 

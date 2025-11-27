@@ -11,7 +11,7 @@ import {
   get_escalation_label,
 } from "~/lib/escalation_type"
 import { FineTypeSchema } from "~/lib/fine_type"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
 import { ForceDateSchema } from "~/lib/force_date.server"

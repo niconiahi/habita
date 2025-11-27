@@ -4,7 +4,7 @@ import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { query_builder } from "db/query_builder"
 import { SLOT_STATE } from "~/lib/slot_state"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import {
   get_property_accesses,
   require_edit_access,

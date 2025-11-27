@@ -2,7 +2,7 @@ import { Form, redirect } from "react-router"
 import * as v from "valibot"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { has_edit_access } from "~/lib/property_access.server"
 import {
   CONTRACT_TYPE,

@@ -1,6 +1,6 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { kv } from "~/lib/kv.server"
 import { compose_file_cache_key } from "~/routes/files+/$id"
 

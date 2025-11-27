@@ -1,5 +1,6 @@
 import { useState } from "react"
 import * as v from "valibot"
+import { ForceNumberSchema } from "~/lib/force_number"
 
 export const LocationSchema = v.object({
   place_id: v.number(),
@@ -14,7 +15,7 @@ export const LocationSchema = v.object({
   display_name: v.string(),
   address: v.object({
     road: v.string(),
-    house_number: v.number(),
+    house_number: v.optional(ForceNumberSchema),
     suburb: v.optional(v.string()),
     town: v.optional(v.string()),
     city: v.optional(v.string()),

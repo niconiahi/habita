@@ -5,7 +5,7 @@ import {
 } from "@oslojs/encoding"
 import * as v from "valibot"
 import { now } from "~/lib/now.server"
-import { ForceNumberSchema } from "~/lib/force_number.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { query_builder } from "~/lib/query_builder.server"
 
 export function make_token() {

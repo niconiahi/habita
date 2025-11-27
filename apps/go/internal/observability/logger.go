@@ -2,41 +2,31 @@ package observability
 
 import (
 	"context"
-	"encoding/json"
-	"log"
-	"os"
+	"fmt"
 	"time"
 
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/log"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/trace"
 )
 
-type Logger struct{}
-
-type logEntry struct {
-	Timestamp string         `json:"timestamp"`
-	Severity  string         `json:"severity"`
-	Message   string         `json:"message"`
-	TraceID   string         `json:"trace_id,omitempty"`
-	SpanID    string         `json:"span_id,omitempty"`
-	Fields    map[string]any `json:"fields,omitempty"`
-	Error     *errorDetails  `json:"error,omitempty"`
-}
-
-type errorDetails struct {
-	Message string `json:"message"`
+type Logger struct {
+	otelLogger log.Logger
 }
 
 func NewLogger() *Logger {
-	return &Logger{}
+	return &Logger{
+		otelLogger: global.GetLoggerProvider().Logger("habita-go"),
+	}
 }
 
 func (l *Logger) Info(ctx context.Context, msg string, fields map[string]any) {
-	l.log(ctx, "INFO", msg, fields, nil)
+	l.log(ctx, log.SeverityInfo, msg, fields, nil)
 }
 
 func (l *Logger) Warn(ctx context.Context, msg string, fields map[string]any) {
-	l.log(ctx, "WARN", msg, fields, nil)
+	l.log(ctx, log.SeverityWarn, msg, fields, nil)
 }
 
 func (l *Logger) Error(ctx context.Context, msg string, fields map[string]any, err error) {
@@ -48,38 +38,37 @@ func (l *Logger) Error(ctx context.Context, msg string, fields map[string]any, e
 	}
 
 	// Log with error details
-	l.log(ctx, "ERROR", msg, fields, err)
+	l.log(ctx, log.SeverityError, msg, fields, err)
 }
 
-func (l *Logger) log(ctx context.Context, severity, msg string, fields map[string]any, err error) {
-	entry := logEntry{
-		Timestamp: time.Now().UTC().Format(time.RFC3339Nano),
-		Severity:  severity,
-		Message:   msg,
-		Fields:    fields,
+func (l *Logger) log(ctx context.Context, severity log.Severity, msg string, fields map[string]any, err error) {
+	span := trace.SpanFromContext(ctx)
+	spanID := span.SpanContext().SpanID().String()
+	traceID := span.SpanContext().TraceID().String()
+
+	// Build attributes
+	attrs := []log.KeyValue{
+		log.String("trace_id", traceID),
+		log.String("span_id", spanID),
+		log.String("service", "habita-go"),
 	}
 
-	// Extract trace context from span
-	span := trace.SpanFromContext(ctx)
-	if span.SpanContext().IsValid() {
-		entry.TraceID = span.SpanContext().TraceID().String()
-		entry.SpanID = span.SpanContext().SpanID().String()
+	// Add custom fields as attributes
+	for k, v := range fields {
+		attrs = append(attrs, log.String(k, fmt.Sprintf("%v", v)))
 	}
 
 	// Add error details if present
 	if err != nil {
-		entry.Error = &errorDetails{
-			Message: err.Error(),
-		}
+		attrs = append(attrs, log.String("error", err.Error()))
 	}
 
-	// Output as JSON to stdout
-	jsonBytes, jsonErr := json.Marshal(entry)
-	if jsonErr != nil {
-		log.Printf("failed to marshal log entry: %v", jsonErr)
-		return
-	}
+	// Create and emit log record
+	var record log.Record
+	record.SetTimestamp(time.Now())
+	record.SetSeverity(severity)
+	record.SetBody(log.StringValue(msg))
+	record.AddAttributes(attrs...)
 
-	os.Stdout.Write(jsonBytes)
-	os.Stdout.Write([]byte("\n"))
+	l.otelLogger.Emit(ctx, record)
 }
