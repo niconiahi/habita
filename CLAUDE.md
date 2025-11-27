@@ -1,4 +1,7 @@
-- BEFORE making any code changes, ALWAYS read all files in the `/rules` directory first
 - Read `rules/code_style.md` and respect it
-- Read `rules/authentication.md` and respect it
 - Read `rules/runtime.md` and respect it
+- Read `rules/planning.md` and respect it
+- Read `rules/actions.md` and respect it
+- Read `rules/loading_data_in_loader.md` and respect it
+- Read `rules/when_deciding_on_technology.md` and respect it
+- Read `rules/date_and_time.md` and respect it
