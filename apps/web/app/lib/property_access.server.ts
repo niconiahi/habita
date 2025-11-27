@@ -21,6 +21,18 @@ export function has_view_access(
   return property_accesses.length > 0
 }
 
+export function has_tenant_access(
+  property_accesses: Array<{ type: number | AccessType }>,
+): boolean {
+  return property_accesses.some((access) => {
+    const access_type = v.parse(
+      AccessTypeSchema,
+      access.type,
+    )
+    return access_type === ACCESS_TYPE.TENANT
+  })
+}
+
 export function has_edit_access(
   property_accesses: Array<{ type: number | AccessType }>,
 ): boolean {

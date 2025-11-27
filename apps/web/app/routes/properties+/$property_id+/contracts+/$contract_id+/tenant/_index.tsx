@@ -5,8 +5,8 @@ import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { ACCESS_TYPE } from "~/lib/access_type"
-import { CONTRACT_STATE } from "~/lib/contract_state"
-import { fetch_property } from "../../fetchers/server/property.server"
+import { fetch_property } from "../../../../fetchers/server/property.server"
+import { fetch_contract } from "../edit/fetchers/server/contract.server"
 import { query_builder } from "~/lib/query_builder.server"
 import {
   RECEIPT_TYPE,
@@ -15,6 +15,10 @@ import {
 } from "~/lib/receipt_type"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/index.server"
+import {
+  get_property_accesses,
+  has_tenant_access,
+} from "~/lib/property_access.server"
 
 const INTENT = {
   UPLOAD_RECEIPT: "upload_receipt",
@@ -78,23 +82,24 @@ export async function loader({
       message: "property id should be a number",
     },
   )
-  const has_tenant_access = user.accesses.some(
-    (access) =>
-      access.property_id === property_id &&
-      access.type === ACCESS_TYPE.TENANT,
+  const contract_id = v.parse(
+    ForceNumberSchema,
+    params.contract_id,
+    {
+      message: "contract id should be a number",
+    },
   )
-  if (!has_tenant_access) {
+  const property_accesses = get_property_accesses(
+    user,
+    property_id,
+  )
+  if (!has_tenant_access(property_accesses)) {
     throw error(403, "not found")
   }
+  const contract = await fetch_contract(contract_id)
   const property = await fetch_property(property_id)
   if (!property) {
-    throw error(404, "property not found")
-  }
-  const active_contract = property.contracts.find(
-    (contract) => contract.state === CONTRACT_STATE.ACTIVE,
-  )
-  if (!active_contract) {
-    throw error(404, "no active contract")
+    throw error(400, "not found")
   }
   const two_months_ago = startOfMonth(
     subMonths(new Date(), 2),
@@ -102,7 +107,7 @@ export async function loader({
   const receipts = await query_builder
     .selectFrom("receipt")
     .innerJoin("file", "file.id", "receipt.file_id")
-    .where("receipt.contract_id", "=", active_contract.id)
+    .where("receipt.contract_id", "=", contract_id)
     .where("receipt.created_at", ">=", two_months_ago)
     .select([
       "receipt.id",
@@ -129,7 +134,7 @@ export async function loader({
   return {
     dates,
     receipt_types,
-    contract: active_contract,
+    contract,
     receipts,
   }
 }
