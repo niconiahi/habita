@@ -101,6 +101,12 @@ export async function loader({
   if (!property) {
     throw error(400, "not found")
   }
+  const latest_period = contract.periods.sort((a, b) => {
+    return (
+      new Date(b.start_date).getTime() -
+      new Date(a.start_date).getTime()
+    )
+  })[0]
   const two_months_ago = startOfMonth(
     subMonths(new Date(), 2),
   )
@@ -136,16 +142,26 @@ export async function loader({
     receipt_types,
     contract,
     receipts,
+    current_rent_price: latest_period.price,
   }
 }
 
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { contract, receipts, receipt_types, dates } =
-    loaderData
+  const {
+    contract,
+    receipts,
+    receipt_types,
+    dates,
+    current_rent_price,
+  } = loaderData
   return (
     <main>
+      <section>
+        <h2>Precio de alquiler actual</h2>
+        <p>${current_rent_price}</p>
+      </section>
       <h1>Comprobantes de pago</h1>
       {dates.map((date) => (
         <section key={date.toISOString()}>
