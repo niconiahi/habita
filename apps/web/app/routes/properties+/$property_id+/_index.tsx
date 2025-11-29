@@ -1,5 +1,6 @@
 import { Link } from "react-router"
 import * as v from "valibot"
+import { RoomMap } from "~/components/room_map"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { fetch_property } from "../fetchers/server/property.server"
 import type { Route } from "./+types/_index"
@@ -43,6 +44,10 @@ export default function ({
         la propiedad ubicada en {property.location.road}{" "}
         {property.location.house_number}{" "}
         <Link to="book">Book</Link>
+      </section>
+      <section>
+        <h2>mapa de ambientes</h2>
+        <RoomMap rooms={property.rooms} />
       </section>
     </main>
   )
