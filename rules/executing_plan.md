@@ -1,0 +1,1 @@
+- When executing a multi-phased plan, you must always stop after finish one. I'll manually confirm that you can continue with the next one
