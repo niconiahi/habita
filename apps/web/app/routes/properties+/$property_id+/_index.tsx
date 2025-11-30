@@ -47,7 +47,7 @@ export default function ({
       </section>
       <section>
         <h2>mapa de ambientes</h2>
-        <RoomMap rooms={property.rooms} />
+        <RoomMap rooms={property.rooms} is_readonly={true} />
       </section>
     </main>
   )
