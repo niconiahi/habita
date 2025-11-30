@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
 import { LocationInput } from "~/components/location_input"
+import { RoomMap } from "~/components/room_map"
 import { format_date_for_input } from "~/lib/date"
 import {
   display_room_type,
@@ -35,6 +36,7 @@ const INTENT = {
   UPDATE_LOCATION: "update_location",
   CREATE_ROOM: "create_room",
   UPDATE_ROOM: "update_room",
+  UPDATE_ROOM_POSITIONS: "update_room_positions",
   DESTROY_ROOM: "destroy_room",
   CREATE_SERVICE: "create_service",
   UPDATE_SERVICE: "update_service",
@@ -67,6 +69,10 @@ export async function action({
   switch (intent) {
     case INTENT.UPDATE_ROOM: {
       actions.update_room(form_data)
+      return null
+    }
+    case INTENT.UPDATE_ROOM_POSITIONS: {
+      await actions.update_room_positions(form_data)
       return null
     }
     case INTENT.DESTROY_ROOM: {
@@ -370,9 +376,39 @@ function Location({ property }: { property: Property }) {
 }
 
 function Rooms({ property }: { property: Property }) {
+  const [room_positions, set_room_positions] = useState<
+    Map<number, { x: number; y: number }>
+  >(new Map())
   return (
     <section>
       <h2>ambientes</h2>
+      <RoomMap
+        rooms={property.rooms}
+        on_positions_change={set_room_positions}
+      />
+      <Form method="POST">
+        <input
+          type="hidden"
+          name="positions"
+          value={JSON.stringify(
+            Array.from(room_positions.entries()).map(
+              ([room_id, pos]) => ({
+                room_id,
+                position_x: pos.x,
+                position_y: pos.y,
+              }),
+            ),
+          )}
+        />
+        <button
+          type="submit"
+          name="intent"
+          value={INTENT.UPDATE_ROOM_POSITIONS}
+          disabled={room_positions.size === 0}
+        >
+          guardar mapa
+        </button>
+      </Form>
       <ul>
         {property.rooms.map((room) => {
           const id = `room-${room.id}`

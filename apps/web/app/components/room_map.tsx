@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from "react"
 import { display_room_type } from "~/lib/room_type"
 
-const PADDING = 40
-const SNAP_THRESHOLD = 12
+const PADDING = 20
+const SNAP_THRESHOLD = 1
 const ROOM_STROKE_WIDTH = 2
-const ROOM_STROKE_OFFSET = 1
 
 interface Room {
   id: number
   type: number
   width: string
   length: string
+  position_x: string | null
+  position_y: string | null
 }
 
 interface RoomMapProps {
   rooms: Room[]
+  is_readonly?: boolean
+  on_positions_change?: (
+    positions: Map<number, Position>,
+  ) => void
 }
 
 interface Position {
@@ -218,6 +223,8 @@ function create_pointer_move_handler(deps: {
     )
     new_x = snapped.x
     new_y = snapped.y
+    new_x = Math.max(0, new_x)
+    new_y = Math.max(0, new_y)
     const has_collision = check_collision(
       dragging_room,
       new_x,
@@ -248,7 +255,11 @@ function create_pointer_up_handler(deps: {
   }
 }
 
-export function RoomMap({ rooms }: RoomMapProps) {
+export function RoomMap({
+  rooms,
+  is_readonly = false,
+  on_positions_change,
+}: RoomMapProps) {
   const canvas_ref = useRef<HTMLCanvasElement>(null)
   const [room_positions, set_room_positions] = useState<
     Map<number, Position>
@@ -266,9 +277,28 @@ export function RoomMap({ rooms }: RoomMapProps) {
     set_room_positions(function (prev) {
       const updated = new Map(prev)
       updated.set(room_id, { x, y })
+      on_positions_change?.(updated)
       return updated
     })
   }
+  useEffect(
+    function () {
+      const initial_positions = new Map<number, Position>()
+      for (const room of rooms) {
+        if (
+          room.position_x !== null &&
+          room.position_y !== null
+        ) {
+          initial_positions.set(room.id, {
+            x: Number.parseFloat(room.position_x),
+            y: Number.parseFloat(room.position_y),
+          })
+        }
+      }
+      set_room_positions(initial_positions)
+    },
+    [rooms],
+  )
   useEffect(
     function () {
       const canvas = canvas_ref.current
@@ -401,6 +431,7 @@ export function RoomMap({ rooms }: RoomMapProps) {
   )
   useEffect(
     function () {
+      if (is_readonly) return
       const canvas = canvas_ref.current
       if (!canvas) return
       const handle_pointer_down =
@@ -457,7 +488,12 @@ export function RoomMap({ rooms }: RoomMapProps) {
         )
       }
     },
-    [dragging_state, room_bounds, update_room_position],
+    [
+      is_readonly,
+      dragging_state,
+      room_bounds,
+      update_room_position,
+    ],
   )
   return (
     <>
@@ -465,6 +501,7 @@ export function RoomMap({ rooms }: RoomMapProps) {
         ref={canvas_ref}
         style={{
           border: "1px solid #ccc",
+          cursor: is_readonly ? "default" : undefined,
         }}
       />
     </>

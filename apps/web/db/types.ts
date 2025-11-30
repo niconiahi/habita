@@ -193,6 +193,15 @@ export interface Room {
   width: Numeric;
 }
 
+export interface RoomMap {
+  created_at: Timestamp;
+  id: Generated<number>;
+  position_x: Numeric;
+  position_y: Numeric;
+  room_id: number;
+  updated_at: Timestamp;
+}
+
 export interface Service {
   code: string;
   created_at: Timestamp;
@@ -833,6 +842,7 @@ export interface DB {
   rate: Rate;
   receipt: Receipt;
   room: Room;
+  room_map: RoomMap;
   service: Service;
   session: Session;
   slot: Slot;
