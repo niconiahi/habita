@@ -23,15 +23,11 @@
   overflow: hidden;
 }
 
-.carousel img {
+.carousel .images img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  user-select: none;
-  -webkit-user-drag: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .carousel .dots {
@@ -45,7 +41,6 @@
   list-style: none;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 16px;
-  backdrop-filter: blur(4px);
 }
 
 .carousel .dot {
