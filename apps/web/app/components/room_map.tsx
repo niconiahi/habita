@@ -496,14 +496,19 @@ export function RoomMap({
     ],
   )
   return (
-    <>
+    <div
+      style={{
+        overflow: "auto",
+        maxWidth: "100%",
+        border: "1px solid #ccc",
+      }}
+    >
       <canvas
         ref={canvas_ref}
         style={{
-          border: "1px solid #ccc",
           cursor: is_readonly ? "default" : undefined,
         }}
       />
-    </>
+    </div>
   )
 }
