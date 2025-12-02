@@ -24,19 +24,6 @@ import {
   fetch_contract,
   type Contract,
 } from "./fetchers/server/contract.server"
-import {
-  FINE_TYPE,
-  FineTypeSchema,
-  get_fine_label,
-  type FineType,
-} from "~/lib/fine_type"
-import { useState } from "react"
-import {
-  DEFAULT_TYPE,
-  DefaultTypeSchema,
-  get_default_label,
-  type DefaultType,
-} from "~/lib/default_type"
 import { fetch_owner, type Owner } from "~/lib/owner.server"
 import {
   fetch_tenant,
@@ -51,6 +38,30 @@ const INTENT = {
   DESTROY_FILE: "destroy_file",
   CREATE_PDF: "create_pdf",
 } as const
+
+const INVENTORY = [
+  { id: 1, name: "mesa algarrobo", has_photo: false },
+  { id: 2, name: "velador de dormitorio", has_photo: true },
+] as const
+
+const PROPERTY_TYPE = {
+  VIVIENDA: 0,
+  COMERCIO: 1,
+} as const
+
+function get_property_type_label(type: number) {
+  switch (type) {
+    case PROPERTY_TYPE.VIVIENDA: {
+      return "vivienda"
+    }
+    case PROPERTY_TYPE.COMERCIO: {
+      return "comercio"
+    }
+    default: {
+      return "desconocido"
+    }
+  }
+}
 
 export async function action({
   request,
@@ -138,241 +149,42 @@ export default function ({
     loaderData
   return (
     <>
-      <Fields
-        contract={contract}
-        tenant={tenant}
-        owner={owner}
-      />
-      <Documents
-        contract={contract}
-        contract_file_types={contract_file_types}
-      />
-      <Periods contract={contract} />
-    </>
-  )
-}
-
-function Fields({
-  contract,
-  tenant,
-  owner,
-}: {
-  tenant: Tenant
-  owner: Owner
-  contract: Contract
-}) {
-  const [fine_type, set_fine_type] = useState<FineType>(
-    FINE_TYPE.FIXED,
-  )
-  const [default_type, set_default_type] =
-    useState<DefaultType>(DEFAULT_TYPE.FIXED)
-  return (
-    <section>
       <Form method="POST">
         <input
           type="hidden"
           value={contract.id}
           name="id"
         />
-        <p>
-          <label htmlFor="start_date">
-            fecha de inicio
-          </label>
-          <input
-            id="start_date"
-            name="start_date"
-            type="datetime-local"
-            defaultValue={
-              contract.start_date
-                ? format_date_for_input(contract.start_date)
-                : undefined
-            }
-          />
-        </p>
-        <p>
-          <label htmlFor="end_date">
-            fecha de finalizacion
-          </label>
-          <input
-            id="end_date"
-            type="datetime-local"
-            name="end_date"
-            defaultValue={
-              contract.end_date
-                ? format_date_for_input(contract.end_date)
-                : undefined
-            }
-          />
-        </p>
-        <fieldset>
-          <legend>aumento</legend>
-          <p>
-            <label htmlFor="escalation_type">tipo</label>
-            <select
-              name="escalation_type"
-              id="escalation_type"
-              defaultValue={
-                contract.escalation_type ?? undefined
-              }
-            >
-              {Object.values(ESCALATION_TYPE).map(
-                (type) => {
-                  const id = `escalation_${type}`
-                  return (
-                    <option key={id} value={type}>
-                      {get_escalation_label(type)}
-                    </option>
-                  )
-                },
-              )}
-            </select>
-          </p>
-          <p>
-            <label htmlFor="escalation_duration">
-              frecuencia
-            </label>
-            <select
-              name="escalation_duration"
-              id="escalation_duration"
-              defaultValue={
-                contract.escalation_duration ?? undefined
-              }
-            >
-              {DURATIONS.map((duration) => {
-                const id = `escalation_duration_${duration}`
-                return (
-                  <option key={id} value={duration}>
-                    {get_duration_label(duration)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-        </fieldset>
-        <fieldset>
-          <legend>mora</legend>
-          <p>
-            <label htmlFor="fine_type">tipo</label>
-            <select
-              name="fine_type"
-              id="fine_type"
-              defaultValue={contract.fine_type ?? undefined}
-              onClick={(event) => {
-                const fine_type = v.parse(
-                  FineTypeSchema,
-                  Number(event.currentTarget.value),
-                )
-                set_fine_type(fine_type)
-              }}
-            >
-              {Object.values(FINE_TYPE).map((type) => {
-                const id = `fine_${type}`
-                return (
-                  <option key={id} value={type}>
-                    {get_fine_label(type)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-          <p>
-            <label htmlFor="fine_amount">
-              {fine_type === FINE_TYPE.FIXED
-                ? "monto"
-                : "porcentaje"}
-            </label>
-            <input
-              id="fine_amount"
-              name="fine_amount"
-              defaultValue={
-                contract.fine_amount ?? undefined
-              }
-              type="number"
-              required
-            />
-          </p>
-        </fieldset>
-        <fieldset>
-          <legend>multa</legend>
-          <p>
-            <label htmlFor="default_type">tipo</label>
-            <select
-              name="default_type"
-              id="default_type"
-              defaultValue={
-                contract.default_type ?? undefined
-              }
-              onClick={(event) => {
-                const default_type = v.parse(
-                  DefaultTypeSchema,
-                  Number(event.currentTarget.value),
-                )
-                set_default_type(default_type)
-              }}
-            >
-              {Object.values(DEFAULT_TYPE).map((type) => {
-                const id = `default_${type}`
-                return (
-                  <option key={id} value={type}>
-                    {get_default_label(type)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-          <p>
-            <label htmlFor="default_amount">
-              {default_type === DEFAULT_TYPE.FIXED
-                ? "monto"
-                : "porcentaje"}
-            </label>
-            <input
-              id="default_amount"
-              defaultValue={
-                contract.default_amount ?? undefined
-              }
-              name="default_amount"
-              type="number"
-              required
-            />
-          </p>
-          <p>
-            <label htmlFor="default_duration">
-              frecuencia
-            </label>
-            <select
-              name="default_duration"
-              defaultValue={
-                contract.default_duration ?? undefined
-              }
-              id="default_duration"
-            >
-              {DURATIONS.map((duration) => {
-                const id = `default_duration_${duration}`
-                return (
-                  <option key={id} value={duration}>
-                    {get_duration_label(duration)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-        </fieldset>
-        <p>
-          <label htmlFor="early_termination">
-            resolucion anticipada
-          </label>
-          <input
-            id="early_termination"
-            name="early_termination"
-            defaultValue={
-              contract.early_termination ?? undefined
-            }
-            type="number"
-            required
-          />
-          <span>en cantidad de meses</span>
-        </p>
+        <Section number={2} title="estado">
+          <SectionTwo />
+        </Section>
+        <Section number={3} title="destino">
+          <SectionThree contract={contract} />
+        </Section>
+        <Section number={6} title="plazo">
+          <SectionSix contract={contract} />
+        </Section>
+        <Section number={7} title="canon locativo">
+          <SectionSeven contract={contract} />
+        </Section>
+        <Section number={8} title="forma de pago">
+          <SectionEight contract={contract} />
+        </Section>
+        <Section number={9} title="mora">
+          <SectionNine contract={contract} />
+        </Section>
+        <Section number={14} title="devoluciones">
+          <SectionFourteen contract={contract} />
+        </Section>
+        <Section number={15} title="recesion anticipada">
+          <SectionFifteen contract={contract} />
+        </Section>
+        <Section number={16} title="muestra de propiedad">
+          <SectionSixteen contract={contract} />
+        </Section>
+        <Section number={21} title="jurisdiccion">
+          <SectionTwentyOne contract={contract} />
+        </Section>
         <button
           type="submit"
           name="intent"
@@ -396,7 +208,274 @@ function Fields({
           generar pdf
         </button>
       </Form>
+      <Documents
+        contract={contract}
+        contract_file_types={contract_file_types}
+      />
+      <Periods contract={contract} />
+    </>
+  )
+}
+
+function Section({
+  number,
+  title,
+  children,
+}: {
+  number: number
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <section>
+      <h3>
+        seccion {number}: {title}
+      </h3>
+      {children}
     </section>
+  )
+}
+
+function SectionTwo() {
+  return (
+    <ul>
+      {INVENTORY.map((item) => {
+        const id = `inventory_${item.id}`
+        return (
+          <li key={id}>
+            <span>{item.name}</span>
+            <button type="button">
+              {item.has_photo
+                ? "cambiar foto"
+                : "subir foto"}
+            </button>
+            <button type="button">eliminar objeto</button>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+function SectionThree({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <fieldset>
+      <legend>tipo de propiedad</legend>
+      {Object.values(PROPERTY_TYPE).map((type) => {
+        const id = `property_type_${type}`
+        return (
+          <p key={id}>
+            <input
+              type="radio"
+              id={id}
+              name="property_type"
+              value={type}
+              defaultChecked={
+                type === PROPERTY_TYPE.VIVIENDA
+              }
+            />
+            <label htmlFor={id}>
+              {get_property_type_label(type)}
+            </label>
+          </p>
+        )
+      })}
+    </fieldset>
+  )
+}
+
+function SectionSix({ contract }: { contract: Contract }) {
+  return (
+    <>
+      <p>
+        <label htmlFor="start_date">fecha de inicio</label>
+        <input
+          id="start_date"
+          name="start_date"
+          type="datetime-local"
+          defaultValue={
+            contract.start_date
+              ? format_date_for_input(contract.start_date)
+              : undefined
+          }
+        />
+      </p>
+      <p>
+        <label htmlFor="end_date">
+          fecha de finalizacion
+        </label>
+        <input
+          id="end_date"
+          type="datetime-local"
+          name="end_date"
+          defaultValue={
+            contract.end_date
+              ? format_date_for_input(contract.end_date)
+              : undefined
+          }
+        />
+      </p>
+    </>
+  )
+}
+
+function SectionSeven({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <fieldset>
+      <legend>aumento</legend>
+      <p>
+        <label htmlFor="escalation_type">tipo</label>
+        <select
+          name="escalation_type"
+          id="escalation_type"
+          defaultValue={
+            contract.escalation_type ?? undefined
+          }
+        >
+          {Object.values(ESCALATION_TYPE).map((type) => {
+            const id = `escalation_${type}`
+            return (
+              <option key={id} value={type}>
+                {get_escalation_label(type)}
+              </option>
+            )
+          })}
+        </select>
+      </p>
+      <p>
+        <label htmlFor="escalation_duration">cada</label>
+        <select
+          name="escalation_duration"
+          id="escalation_duration"
+          defaultValue={
+            contract.escalation_duration ?? undefined
+          }
+        >
+          {DURATIONS.map((duration) => {
+            const id = `escalation_duration_${duration}`
+            return (
+              <option key={id} value={duration}>
+                {get_duration_label(duration)}
+              </option>
+            )
+          })}
+        </select>
+      </p>
+    </fieldset>
+  )
+}
+
+function SectionEight({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <p>
+      <label htmlFor="cbu">cbu</label>
+      <input id="cbu" name="cbu" type="text" />
+    </p>
+  )
+}
+
+function SectionNine({ contract }: { contract: Contract }) {
+  return (
+    <p>
+      <label htmlFor="fine_percentage">porcentaje</label>
+      <input
+        id="fine_percentage"
+        name="fine_percentage"
+        type="number"
+        defaultValue={contract.fine_amount ?? undefined}
+      />
+    </p>
+  )
+}
+
+function SectionFourteen({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <p>
+      <label htmlFor="devoluciones_percentage">
+        porcentaje
+      </label>
+      <input
+        id="devoluciones_percentage"
+        name="devoluciones_percentage"
+        type="number"
+      />
+    </p>
+  )
+}
+
+function SectionFifteen({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <p>
+      <label htmlFor="early_termination">descripcion</label>
+      <textarea
+        id="early_termination"
+        name="early_termination"
+        defaultValue={
+          contract.early_termination ?? undefined
+        }
+      />
+    </p>
+  )
+}
+
+function SectionSixteen({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <p>
+      <label htmlFor="muestra_horas">
+        cantidad de horas
+      </label>
+      <input
+        id="muestra_horas"
+        name="muestra_horas"
+        type="number"
+      />
+    </p>
+  )
+}
+
+function SectionTwentyOne({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <p>
+      <label htmlFor="tribunal">tribunal</label>
+      <select name="tribunal" id="tribunal">
+        {Object.values(TRIBUNAL).map((type) => {
+          const id = `tribunal_${type}`
+          return (
+            <option key={id} value={type}>
+              {get_tribunal_label(type)}
+            </option>
+          )
+        })}
+      </select>
+    </p>
   )
 }
 
