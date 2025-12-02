@@ -3,51 +3,38 @@ import * as v from "valibot"
 import { DateSchema } from "~/lib/date"
 import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number"
+import { normalize_input } from "~/lib/form.server"
+
+export const InputSchema = v.object({
+  id: ForceNumberSchema,
+  start_date: v.optional(DateSchema),
+  end_date: v.optional(DateSchema),
+  escalation_type: v.optional(ForceNumberSchema),
+  escalation_duration: v.optional(v.string()),
+  fine_percentage: v.optional(ForceNumberSchema),
+  early_termination: v.optional(v.string()),
+  property_type: v.optional(ForceNumberSchema),
+  cbu: v.optional(v.string()),
+  devoluciones_percentage: v.optional(ForceNumberSchema),
+  muestra_horas: v.optional(ForceNumberSchema),
+  tribunal: v.optional(ForceNumberSchema),
+})
 
 export async function update_contract(
   form_data: FormData,
   property_id: number,
 ) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"))
-  const start_date = v.parse(
-    DateSchema,
-    form_data.get("start_date"),
-  )
-  const end_date = v.parse(
-    DateSchema,
-    form_data.get("end_date"),
-  )
-  const escalation_type = v.parse(
-    ForceNumberSchema,
-    form_data.get("escalation_type"),
-  )
-  const escalation_duration = v.parse(
-    v.string(),
-    form_data.get("escalation_duration"),
-  )
-  const fine_type = v.parse(
-    ForceNumberSchema,
-    form_data.get("fine_type"),
-  )
-  const fine_amount = v.parse(
-    ForceNumberSchema,
-    form_data.get("fine_amount"),
-  )
-  const default_type = v.parse(
-    ForceNumberSchema,
-    form_data.get("default_type"),
-  )
-  const default_amount = v.parse(
-    ForceNumberSchema,
-    form_data.get("default_amount"),
-  )
-  const default_duration = v.parse(
-    v.string(),
-    form_data.get("default_duration"),
-  )
-  const early_termination = v.parse(
-    ForceNumberSchema,
-    form_data.get("early_termination"),
+  const {
+    id,
+    start_date,
+    end_date,
+    escalation_type,
+    escalation_duration,
+    fine_percentage,
+    early_termination,
+  } = v.parse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
   await query_builder
     .updateTable("contract")
@@ -58,12 +45,8 @@ export async function update_contract(
       end_date,
       escalation_type,
       escalation_duration,
-      fine_type,
-      fine_amount,
-      default_type,
-      default_amount,
-      default_duration,
-      early_termination,
+      fine_amount: fine_percentage,
+      early_termination: early_termination ? Number(early_termination) : undefined,
     })
     .where("contract.id", "=", id)
     .execute()
