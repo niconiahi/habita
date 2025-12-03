@@ -24,11 +24,9 @@ import {
   fetch_contract,
   type Contract,
 } from "./fetchers/server/contract.server"
-import { fetch_owner, type Owner } from "~/lib/owner.server"
-import {
-  fetch_tenant,
-  type Tenant,
-} from "~/lib/tenant.server"
+import { fetch_owner } from "~/lib/owner.server"
+import { fetch_tenant } from "~/lib/tenant.server"
+import { get_tribunal_label, TRIBUNAL } from "~/lib/court"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
