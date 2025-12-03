@@ -40,7 +40,9 @@ export default function ({
           const key = `property-${property.id}`
           return (
             <li key={key}>
-              <Carousel.Root>
+              <Carousel.Root
+                label={`Property images at ${display_location(property.location)}`}
+              >
                 {property.images.map((image, index) => {
                   const id = `img-${property.id}-${index}`
                   return (
