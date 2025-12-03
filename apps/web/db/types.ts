@@ -147,6 +147,7 @@ export interface Period {
 
 export interface Property {
   created_at: Timestamp;
+  destinies: number[];
   id: Generated<number>;
   location_id: number;
   state: number;

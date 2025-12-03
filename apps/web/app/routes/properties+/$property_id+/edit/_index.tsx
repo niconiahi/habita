@@ -31,6 +31,10 @@ import {
   get_access_type_label,
 } from "~/lib/access_type"
 import { has_edit_access } from "~/lib/property_access.server"
+import {
+  get_property_destinies,
+  get_property_destiny_label,
+} from "~/lib/property_destiny"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -43,6 +47,7 @@ const INTENT = {
   DESTROY_SERVICE: "destroy_service",
   CREATE_PROPERTY_FILE: "create_property_file",
   INVITE_OWNER: "invite_owner",
+  UPDATE_DESTINIES: "update_destinies",
 } as const
 
 export async function action({
@@ -114,6 +119,10 @@ export async function action({
       actions.invite_owner(form_data)
       return null
     }
+    case INTENT.UPDATE_DESTINIES: {
+      await actions.update_destinies(form_data, property_id)
+      return null
+    }
   }
   return null
 }
@@ -150,6 +159,7 @@ export default function ({
     <main>
       <h1>propiedad</h1>
       <Location property={property} />
+      <Destinies property={property} />
       <Rooms property={property} />
       <Members property={property} />
       <Photos property={property} />
@@ -370,6 +380,44 @@ function Location({ property }: { property: Property }) {
         >
           View on Google Maps
         </a>
+      </Form>
+    </section>
+  )
+}
+
+function Destinies({ property }: { property: Property }) {
+  const property_destinies = get_property_destinies()
+  return (
+    <section>
+      <h2>destino</h2>
+      <Form method="POST">
+        <fieldset>
+          {property_destinies.map((destiny) => {
+            const id = `destiny_${destiny}`
+            const is_checked = property.destinies.includes(destiny)
+            return (
+              <p key={id}>
+                <input
+                  type="checkbox"
+                  id={id}
+                  name="destiny"
+                  value={destiny}
+                  defaultChecked={is_checked}
+                />
+                <label htmlFor={id}>
+                  {get_property_destiny_label(destiny)}
+                </label>
+              </p>
+            )
+          })}
+        </fieldset>
+        <button
+          type="submit"
+          name="intent"
+          value={INTENT.UPDATE_DESTINIES}
+        >
+          guardar destino
+        </button>
       </Form>
     </section>
   )

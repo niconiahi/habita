@@ -15,6 +15,7 @@ import { CONTRACT_STATE } from "../../app/lib/contract_state.ts"
 import { PROPERTY_TYPE } from "../../app/lib/property_type.ts"
 import { get_month, get_year } from "../../app/lib/date.ts"
 import { SLOT_STATE } from "../../app/lib/slot_state.ts"
+import { PROPERTY_DESTINY } from "../../app/lib/property_destiny.ts"
 import {
   SERVICE_TYPE,
   type ServiceType,
@@ -316,6 +317,7 @@ async function run() {
       state: PROPERTY_STATE.PUBLISHED,
       type: PROPERTY_TYPE.DEPARTMENT,
       unit: "10C",
+      destinies: [PROPERTY_DESTINY.RESIDENTIAL],
       location_id: location.id,
       created_at: now,
       updated_at: now,

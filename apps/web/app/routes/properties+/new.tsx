@@ -11,6 +11,10 @@ import {
   type PropertyType,
 } from "~/lib/property_type"
 import { get_property_types } from "~/lib/property_type"
+import {
+  get_property_destinies,
+  get_property_destiny_label,
+} from "~/lib/property_destiny"
 import * as actions from "./actions/index.server"
 
 const INTENT = {
@@ -27,6 +31,7 @@ export async function loader({
 
   return {
     property_types: get_property_types(),
+    property_destinies: get_property_destinies(),
   }
 }
 
@@ -55,7 +60,7 @@ export async function action({
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { property_types } = loaderData
+  const { property_types, property_destinies } = loaderData
   const [disabled, set_disabled] = useState(true)
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
@@ -112,6 +117,25 @@ export default function ({
               />
             </p>
           ) : null}
+          <fieldset>
+            <legend>destino</legend>
+            {property_destinies.map((destiny) => {
+              const id = `destiny_${destiny}`
+              return (
+                <p key={id}>
+                  <input
+                    type="checkbox"
+                    id={id}
+                    name="destiny"
+                    value={destiny}
+                  />
+                  <label htmlFor={id}>
+                    {get_property_destiny_label(destiny)}
+                  </label>
+                </p>
+              )
+            })}
+          </fieldset>
           <button disabled={disabled} type="submit">
             crear propiedad
           </button>
