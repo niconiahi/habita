@@ -1,1 +1,1 @@
-- To create a new migration, you must use `kysely-ctl`
+- To create a new migration, you must use `kysely-ctl migrate:make some_migration_file_name`

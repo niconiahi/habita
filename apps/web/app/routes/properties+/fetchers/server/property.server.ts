@@ -17,6 +17,7 @@ export async function fetch_property(id: number) {
       "property.id",
       "property.created_at",
       "property.unit",
+      "property.destinies",
       jsonArrayFrom(
         eb
           .selectFrom("room")

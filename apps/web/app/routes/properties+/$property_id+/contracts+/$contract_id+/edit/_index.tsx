@@ -27,6 +27,11 @@ import {
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
 import { get_tribunal_label, TRIBUNAL } from "~/lib/court"
+import { get_property_destiny_label } from "~/lib/property_destiny"
+import {
+  fetch_property,
+  type Property,
+} from "../../../../fetchers/server/property.server"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",
@@ -41,25 +46,6 @@ const INVENTORY = [
   { id: 1, name: "mesa algarrobo", has_photo: false },
   { id: 2, name: "velador de dormitorio", has_photo: true },
 ] as const
-
-const PROPERTY_TYPE = {
-  VIVIENDA: 0,
-  COMERCIO: 1,
-} as const
-
-function get_property_type_label(type: number) {
-  switch (type) {
-    case PROPERTY_TYPE.VIVIENDA: {
-      return "vivienda"
-    }
-    case PROPERTY_TYPE.COMERCIO: {
-      return "comercio"
-    }
-    default: {
-      return "desconocido"
-    }
-  }
-}
 
 export async function action({
   request,
@@ -131,20 +117,37 @@ export async function loader({
   const contract = await fetch_contract(contract_id)
   if (!contract) {
     throw new Error(
-      `property does not exist for id ${contract_id}`,
+      `contract does not exist for id ${contract_id}`,
+    )
+  }
+  const property = await fetch_property(property_id)
+  if (!property) {
+    throw new Error(
+      `property does not exist for id ${property_id}`,
     )
   }
   const owner = await fetch_owner(property_id)
   const tenant = await fetch_tenant(property_id)
   const contract_file_types = get_contract_file_types()
-  return { contract, owner, tenant, contract_file_types }
+  return {
+    contract,
+    property,
+    owner,
+    tenant,
+    contract_file_types,
+  }
 }
 
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const { contract, tenant, owner, contract_file_types } =
-    loaderData
+  const {
+    contract,
+    property,
+    tenant,
+    owner,
+    contract_file_types,
+  } = loaderData
   return (
     <>
       <Form method="POST">
@@ -157,7 +160,7 @@ export default function ({
           <SectionTwo />
         </Section>
         <Section number={3} title="destino">
-          <SectionThree contract={contract} />
+          <SectionThree property={property} />
         </Section>
         <Section number={6} title="plazo">
           <SectionSix contract={contract} />
@@ -256,33 +259,29 @@ function SectionTwo() {
 }
 
 function SectionThree({
-  contract,
+  property,
 }: {
-  contract: Contract
+  property: Property
 }) {
   return (
-    <fieldset>
-      <legend>tipo de propiedad</legend>
-      {Object.values(PROPERTY_TYPE).map((type) => {
-        const id = `property_type_${type}`
+    <ul>
+      {property.destinies.map((destiny) => {
+        const id = `destiny_${destiny}`
         return (
-          <p key={id}>
+          <li key={id}>
             <input
               type="radio"
               id={id}
-              name="property_type"
-              value={type}
-              defaultChecked={
-                type === PROPERTY_TYPE.VIVIENDA
-              }
+              name="destiny"
+              value={destiny}
             />
             <label htmlFor={id}>
-              {get_property_type_label(type)}
+              {get_property_destiny_label(destiny)}
             </label>
-          </p>
+          </li>
         )
       })}
-    </fieldset>
+    </ul>
   )
 }
 

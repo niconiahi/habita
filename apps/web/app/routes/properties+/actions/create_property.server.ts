@@ -9,6 +9,7 @@ import {
 import { PROPERTY_STATE } from "~/lib/property_state"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { ForceNumberSchema } from "~/lib/force_number"
+import { PropertyDestinySchema } from "~/lib/property_destiny"
 
 export async function create_property(form_data: FormData) {
   const location_ = v.parse(
@@ -18,6 +19,10 @@ export async function create_property(form_data: FormData) {
   const type = v.parse(
     PropertyTypeSchema,
     Number(form_data.get("type")),
+  )
+  const destinies = v.parse(
+    v.array(PropertyDestinySchema),
+    form_data.getAll("destiny").map(Number),
   )
   const now = new Date().toISOString()
   const property = await query_builder
@@ -57,6 +62,7 @@ export async function create_property(form_data: FormData) {
         .values({
           type,
           unit,
+          destinies,
           state: PROPERTY_STATE.EDITING,
           created_at: now,
           updated_at: now,
