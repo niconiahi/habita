@@ -46,12 +46,12 @@ export default function ({
                 {property.images.map((image, index) => {
                   const id = `img-${property.id}-${index}`
                   return (
-                    <Carousel.Item key={id}>
+                    <Carousel.Slide key={id}>
                       <img
                         {...image.props}
                         alt={image.alt}
                       />
-                    </Carousel.Item>
+                    </Carousel.Slide>
                   )
                 })}
               </Carousel.Root>
