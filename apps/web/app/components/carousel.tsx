@@ -1,6 +1,5 @@
 import {
   Children,
-  cloneElement,
   isValidElement,
   useEffect,
   useRef,
@@ -58,13 +57,18 @@ export function Root({
         aria-atomic="false"
       >
         {Children.map(children, (child, index) => {
-          if (!isValidElement(child)) return child
+          if (!isValidElement<SlideProps>(child))
+            return child
           const is_current = index === current_index
-          return cloneElement(child, {
-            index,
-            total: images_count,
-            is_current,
-          } as SlideProps)
+          return (
+            <_Slide
+              index={index}
+              total={images_count}
+              is_current={is_current}
+            >
+              {child.props.children}
+            </_Slide>
+          )
         })}
       </div>
       <div
@@ -99,16 +103,18 @@ export function Root({
 
 type SlideProps = {
   children: ReactNode
+}
+type _SlideProps = SlideProps & {
   index: number
   total: number
   is_current: boolean
 }
-export function Slide({
+function _Slide({
   children,
   index,
   total,
   is_current,
-}: SlideProps) {
+}: _SlideProps) {
   const label = `slide ${index + 1} of ${total}`
   return (
     <figure
@@ -119,6 +125,15 @@ export function Slide({
     >
       {children}
     </figure>
+  )
+}
+export function Slide({ children }: SlideProps) {
+  return (
+    // these props will get overwritten in the "cloneElement"
+    // inside the body of the "Root" component
+    <_Slide index={0} total={0} is_current={false}>
+      {children}
+    </_Slide>
   )
 }
 
