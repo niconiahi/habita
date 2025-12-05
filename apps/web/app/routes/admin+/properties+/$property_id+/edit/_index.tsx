@@ -622,7 +622,7 @@ function Contracts({ property }: { property: Property }) {
                   </span>
                   <span>${contract.initial_price}</span>
                   <Link
-                    to={`/properties/${property.id}/contracts/${contract.id}/edit`}
+                    to={`/admin/properties/${property.id}/contracts/${contract.id}/edit`}
                     reloadDocument
                   >
                     Edit
