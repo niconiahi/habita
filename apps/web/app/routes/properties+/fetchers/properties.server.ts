@@ -53,11 +53,22 @@ export async function fetch_properties() {
       jsonArrayFrom(
         eb
           .selectFrom("contract")
-          .select([
+          .select((eb) => [
             "contract.id",
             "contract.start_date",
             "contract.end_date",
             "contract.state",
+            eb
+              .selectFrom("period")
+              .select("period.price")
+              .whereRef(
+                "period.contract_id",
+                "=",
+                "contract.id",
+              )
+              .orderBy("period.created_at", "desc")
+              .limit(1)
+              .as("current_price"),
           ])
           .whereRef(
             "contract.property_id",

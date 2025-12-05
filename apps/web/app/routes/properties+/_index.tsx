@@ -1,14 +1,13 @@
+import { Link } from "react-router"
 import { display_location } from "~/lib/display_location"
 import { get_img_props } from "~/lib/image.server"
-import type { Route } from "./+types/_index"
+import { Card } from "~/components/card"
+import { Button } from "~/components/button"
 import { fetch_properties } from "./fetchers/properties.server"
-import { Link } from "react-router"
-import { Carousel } from "~/components/carousel"
+import type { Route } from "./+types/_index"
 
 export async function loader() {
   const properties = await fetch_properties()
-
-  // Generate image props on the server
   const properties_with_image_props = properties.map(
     (property) => ({
       ...property,
@@ -24,7 +23,6 @@ export async function loader() {
       })),
     }),
   )
-
   return { properties: properties_with_image_props }
 }
 
@@ -33,32 +31,50 @@ export default function ({
 }: Route.ComponentProps) {
   const { properties } = loaderData
   return (
-    <main>
-      <h1>properties</h1>
-      <ul>
+    <main className="p-8 grid place-items-center gap-4">
+      <h1 className="text-2xl font-bold mb-6">
+        Propiedades
+      </h1>
+      <ul className="flex flex-col gap-4 w-1/2">
         {properties.map((property) => {
           const key = `property-${property.id}`
+          const current_contract = property.contracts[0]
+          const price = current_contract?.current_price
+          const carousel_images = property.images.map(
+            (image) => ({
+              src: image.props.src,
+              srcSet: image.props.srcSet,
+              sizes: image.props.sizes,
+              alt: image.alt,
+            }),
+          )
           return (
             <li key={key}>
-              <Carousel.Root
-                label={`Property images at ${display_location(property.location)}`}
-              >
-                {property.images.map((image, index) => {
-                  const id = `img-${property.id}-${index}`
-                  return (
-                    <Carousel.Slide key={id}>
-                      <img
-                        {...image.props}
-                        alt={image.alt}
-                      />
-                    </Carousel.Slide>
-                  )
-                })}
-              </Carousel.Root>
-              <Link to={`${property.id}`}>
-                propiedad localizada en{" "}
-                {display_location(property.location)}
-              </Link>
+              <Card.Root>
+                {carousel_images.length > 0 && (
+                  <Card.Carousel
+                    images={carousel_images}
+                    label={`Imágenes de ${display_location(property.location)}`}
+                  />
+                )}
+                <Card.Body>
+                  <Card.Title>
+                    {display_location(property.location)}
+                  </Card.Title>
+                  <Card.Actions>
+                    <Card.Action>
+                      <Link to={`${property.id}`}>
+                        <Button.Root>Ver</Button.Root>
+                      </Link>
+                    </Card.Action>
+                  </Card.Actions>
+                  <Card.Content>
+                    {price
+                      ? `$${price.toLocaleString("es-AR")}/mes`
+                      : "Consultar precio"}
+                  </Card.Content>
+                </Card.Body>
+              </Card.Root>
             </li>
           )
         })}

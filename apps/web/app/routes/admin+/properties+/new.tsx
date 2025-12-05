@@ -65,7 +65,7 @@ export default function ({
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
   return (
-    <main>
+    <>
       <h1>create property</h1>
       <section>
         <h2>ubicacion</h2>
@@ -141,6 +141,6 @@ export default function ({
           </button>
         </Form>
       </section>
-    </main>
+    </>
   )
 }

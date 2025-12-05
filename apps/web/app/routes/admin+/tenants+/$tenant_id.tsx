@@ -1,0 +1,51 @@
+import { useLoaderData } from "react-router"
+import { require_auth } from "~/lib/auth.server"
+import { ACCESS_TYPE } from "~/lib/access_type"
+import { fetch_tenant_by_id } from "./fetchers/tenant.server"
+import { Card } from "~/components/card"
+import type { Route } from "./+types/$tenant_id"
+
+export async function loader({
+  request,
+  params,
+}: Route.LoaderArgs) {
+  const { user } = await require_auth(request)
+  const tenant_id = Number(params.tenant_id)
+  const admin_property_ids = user.accesses
+    .filter(
+      (access) =>
+        access.type === ACCESS_TYPE.OWNER ||
+        access.type === ACCESS_TYPE.ADMINISTRATOR,
+    )
+    .map((access) => access.property_id)
+  if (admin_property_ids.length === 0) {
+    throw new Response("No autorizado", { status: 403 })
+  }
+  const tenant = await fetch_tenant_by_id(tenant_id)
+  if (!tenant) {
+    throw new Response("Inquilino no encontrado", { status: 404 })
+  }
+  return { tenant }
+}
+
+export default function TenantProfile() {
+  const { tenant } = useLoaderData<typeof loader>()
+  const full_name = [tenant.name, tenant.surname]
+    .filter(Boolean)
+    .join(" ")
+  return (
+    <>
+      <h1 className="text-2xl font-bold mb-6">
+        Perfil del inquilino
+      </h1>
+      <Card.Root>
+        <Card.Body>
+          <Card.Title>Información de contacto</Card.Title>
+          <Card.Content>
+            {full_name} · {tenant.email}
+          </Card.Content>
+        </Card.Body>
+      </Card.Root>
+    </>
+  )
+}
