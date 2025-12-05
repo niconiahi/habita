@@ -213,7 +213,7 @@ export default function ({
                         required
                         accept="image/*,application/pdf"
                       />
-                      <Button.Root type="submit">Subir</Button.Root>
+                      <Button type="submit">Subir</Button>
                     </Form>
                   )}
                 </li>

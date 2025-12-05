@@ -57,7 +57,7 @@ export default function Contracts() {
                           <Link
                             to={`/admin/properties/${contract.property_id}/contracts/${contract.id}/edit`}
                           >
-                            <Button.Root>Editar</Button.Root>
+                            <Button>Editar</Button>
                           </Link>
                         </Card.Action>
                       </Card.Actions>

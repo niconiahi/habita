@@ -115,13 +115,13 @@ export default function ({
             <label htmlFor="file">documento</label>
             <input type="file" id="file" name="file" />
           </p>
-          <Button.Root
+          <Button
             type="submit"
             name="intent"
             value={INTENT.CREATE_FILE}
           >
             agregar documento
-          </Button.Root>
+          </Button>
         </Form>
       </section>
     </main>

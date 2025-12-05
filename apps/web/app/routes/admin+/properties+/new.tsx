@@ -137,9 +137,9 @@ export default function ({
               )
             })}
           </fieldset>
-          <Button.Root disabled={disabled} type="submit">
+          <Button disabled={disabled} type="submit">
             crear propiedad
-          </Button.Root>
+          </Button>
         </Form>
       </section>
     </>

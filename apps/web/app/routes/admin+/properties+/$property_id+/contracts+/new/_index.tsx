@@ -88,13 +88,13 @@ export default function ({
             required
           />
         </p>
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.CREATE_CONTRACT}
         >
           crear contrato
-        </Button.Root>
+        </Button>
       </Form>
     </main>
   )

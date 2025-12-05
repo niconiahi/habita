@@ -49,9 +49,9 @@ export default function Tenants() {
                         <Link
                           to={`/admin/tenants/${tenant.id}`}
                         >
-                          <Button.Root>
+                          <Button>
                             Ver perfil
-                          </Button.Root>
+                          </Button>
                         </Link>
                       </Card.Action>
                     </Card.Actions>

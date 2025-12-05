@@ -33,7 +33,7 @@ export default function Properties() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Propiedades</h1>
         <Link to="/admin/properties/new">
-          <Button.Root>Nueva propiedad</Button.Root>
+          <Button>Nueva propiedad</Button>
         </Link>
       </div>
       {properties.length === 0 ? (
@@ -53,7 +53,7 @@ export default function Properties() {
                         <Link
                           to={`/admin/properties/${property.id}/edit`}
                         >
-                          <Button.Root>Editar</Button.Root>
+                          <Button>Editar</Button>
                         </Link>
                       </Card.Action>
                     </Card.Actions>

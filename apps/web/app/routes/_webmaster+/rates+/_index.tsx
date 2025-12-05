@@ -144,9 +144,9 @@ export default function AdminRates() {
                   required
                 />
               </p>
-              <Button.Root type="submit">
+              <Button type="submit">
                 Guardar
-              </Button.Root>
+              </Button>
             </Form>
           )
         })}

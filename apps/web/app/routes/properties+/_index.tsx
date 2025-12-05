@@ -62,7 +62,7 @@ export default function ({
                   <Card.Actions>
                     <Card.Action>
                       <Link to={`${property.id}`}>
-                        <Button.Root>Ver</Button.Root>
+                        <Button>Ver</Button>
                       </Link>
                     </Card.Action>
                   </Card.Actions>
