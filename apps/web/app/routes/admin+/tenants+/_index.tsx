@@ -3,7 +3,7 @@ import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { display_location } from "~/lib/display_location"
 import { fetch_tenants } from "./fetchers/tenants.server"
-import { Card } from "~/components/card"
+import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
 
@@ -30,40 +30,37 @@ export default function Tenants() {
       {tenants.length === 0 ? (
         <p>No hay inquilinos.</p>
       ) : (
-        <ul className="space-y-4">
-          {tenants.map((tenant) => {
-            const full_name = [tenant.name, tenant.surname]
-              .filter(Boolean)
-              .join(" ")
-            return (
-              <li
-                key={`${tenant.id}-${tenant.property_id}`}
-              >
-                <Card.Root>
-                  <Card.Body>
-                    <Card.Title>
-                      {display_location(tenant.location)}
-                    </Card.Title>
-                    <Card.Actions>
-                      <Card.Action>
-                        <Link
-                          to={`/admin/tenants/${tenant.id}`}
-                        >
-                          <Button>
-                            Ver perfil
-                          </Button>
-                        </Link>
-                      </Card.Action>
-                    </Card.Actions>
-                    <Card.Content>
-                      {full_name} · {tenant.email}
-                    </Card.Content>
-                  </Card.Body>
-                </Card.Root>
-              </li>
-            )
-          })}
-        </ul>
+        <Table.Root>
+          <Table.Header>
+            <Table.Cell header>Nombre</Table.Cell>
+            <Table.Cell header>Email</Table.Cell>
+            <Table.Cell header>Propiedad</Table.Cell>
+            <Table.Cell header>Acciones</Table.Cell>
+          </Table.Header>
+          <Table.Body>
+            {tenants.map((tenant) => {
+              const full_name = [tenant.name, tenant.surname]
+                .filter(Boolean)
+                .join(" ")
+              return (
+                <Table.Row
+                  key={`${tenant.id}-${tenant.property_id}`}
+                >
+                  <Table.Cell>{full_name}</Table.Cell>
+                  <Table.Cell>{tenant.email}</Table.Cell>
+                  <Table.Cell>
+                    {display_location(tenant.location)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link to={`/admin/tenants/${tenant.id}`}>
+                      <Button>Ver perfil</Button>
+                    </Link>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table.Root>
       )}
     </>
   )
