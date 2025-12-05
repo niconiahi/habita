@@ -1,7 +1,12 @@
 header {
-  display: grid;
-  place-items: end;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   padding: var(--spacing-2);
+  height: var(--header-height);
   background-color: var(--gray-700);
 }
 

@@ -6,6 +6,9 @@
   --gray-700: #151512;
   --gray-900: #090908;
 
+  /* layout */
+  --header-height: 3.5rem;
+
   /* spacing */
   --spacing: 0.25rem;
   --spacing-1: calc(var(--spacing) * 1);
