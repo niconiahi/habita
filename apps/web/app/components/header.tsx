@@ -11,14 +11,14 @@ export function Header({ auth }: { auth: Auth }) {
           <>
             <span>{auth.user.email}</span>
             <Form method="post" action="/auth/logout">
-              <Button.Root type="submit">
+              <Button type="submit">
                 Logout
-              </Button.Root>
+              </Button>
             </Form>
           </>
         ) : (
           <Form method="post" action="/auth/google">
-            <Button.Root type="submit">Login</Button.Root>
+            <Button type="submit">Login</Button>
           </Form>
         )}
       </nav>

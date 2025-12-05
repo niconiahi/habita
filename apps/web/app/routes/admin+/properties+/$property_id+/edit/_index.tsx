@@ -201,13 +201,13 @@ function Photos({ property }: { property: Property }) {
           <label htmlFor="file">foto</label>
           <input type="file" id="file" name="file" />
         </p>
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.CREATE_PROPERTY_FILE}
         >
           agregar
-        </Button.Root>
+        </Button>
       </Form>
     </section>
   )
@@ -248,13 +248,13 @@ function Members({ property }: { property: Property }) {
       {!has_owner ? (
         <Form method="POST">
           <input name="email" />
-          <Button.Root
+          <Button
             type="submit"
             name="intent"
             value={INTENT.INVITE_OWNER}
           >
             invitar dueño
-          </Button.Root>
+          </Button>
         </Form>
       ) : null}
     </section>
@@ -311,21 +311,21 @@ function Services({ property }: { property: Property }) {
                     defaultValue={service.code}
                   />
                 </p>
-                <Button.Root
+                <Button
                   type="submit"
                   name="intent"
                   value={INTENT.UPDATE_SERVICE}
                 >
                   guardar servicio
-                </Button.Root>
+                </Button>
                 <input type="hidden" />
-                <Button.Root
+                <Button
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_SERVICE}
                 >
                   eliminar servicio
-                </Button.Root>
+                </Button>
               </Form>
             </li>
           )
@@ -335,13 +335,13 @@ function Services({ property }: { property: Property }) {
         <p style={{ color: "red" }}>{action_data.error}</p>
       )}
       <Form method="POST">
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.CREATE_SERVICE}
         >
           agregar servicio
-        </Button.Root>
+        </Button>
       </Form>
     </section>
   )
@@ -372,9 +372,9 @@ function Location({ property }: { property: Property }) {
             set_disabled(true)
           }}
         />
-        <Button.Root disabled={disabled} type="submit">
+        <Button disabled={disabled} type="submit">
           actualizar ubicacion
-        </Button.Root>
+        </Button>
         <a
           href={`https://www.google.com/maps?q=${property.location.latitude},${property.location.longitude}`}
           target="_blank"
@@ -413,13 +413,13 @@ function Destinies({ property }: { property: Property }) {
             )
           })}
         </fieldset>
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.UPDATE_DESTINIES}
         >
           guardar destino
-        </Button.Root>
+        </Button>
       </Form>
     </section>
   )
@@ -450,14 +450,14 @@ function Rooms({ property }: { property: Property }) {
             ),
           )}
         />
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.UPDATE_ROOM_POSITIONS}
           disabled={room_positions.size === 0}
         >
           guardar mapa
-        </Button.Root>
+        </Button>
       </Form>
       <ul>
         {property.rooms.map((room) => {
@@ -508,34 +508,34 @@ function Rooms({ property }: { property: Property }) {
                     defaultValue={room.width}
                   />
                 </p>
-                <Button.Root
+                <Button
                   type="submit"
                   name="intent"
                   value={INTENT.UPDATE_ROOM}
                 >
                   guardar habitacion
-                </Button.Root>
+                </Button>
                 <input type="hidden" />
-                <Button.Root
+                <Button
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_ROOM}
                 >
                   eliminar habitacion
-                </Button.Root>
+                </Button>
               </Form>
             </li>
           )
         })}
       </ul>
       <Form method="POST">
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.CREATE_ROOM}
         >
           agregar habitacion
-        </Button.Root>
+        </Button>
       </Form>
     </section>
   )

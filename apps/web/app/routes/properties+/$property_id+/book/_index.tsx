@@ -195,13 +195,13 @@ function UpdateSlotForm({
         value={user.id}
         name="visitant_id"
       />
-      <Button.Root
+      <Button
         type="submit"
         value={INTENT.UPDATE_SLOT}
         name="intent"
       >
         Book This Time
-      </Button.Root>
+      </Button>
     </Form>
   )
 }
@@ -242,13 +242,13 @@ function SetDateForm({
         </div>
       </fieldset>
       {errors?.date ? <span>{errors.date}</span> : null}
-      <Button.Root
+      <Button
         type="submit"
         value={INTENT.SET_DATE}
         name="intent"
       >
         Select Date
-      </Button.Root>
+      </Button>
     </Form>
   )
 }

@@ -187,28 +187,28 @@ export default function ({
         <Section number={21} title="jurisdiccion">
           <SectionTwentyOne contract={contract} />
         </Section>
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.UPDATE_CONTRACT}
         >
           actualizar contrato
-        </Button.Root>
-        <Button.Root
+        </Button>
+        <Button
           type="submit"
           name="intent"
           value={INTENT.DESTROY_CONTRACT}
         >
           eliminar contrato
-        </Button.Root>
-        <Button.Root
+        </Button>
+        <Button
           type="submit"
           name="intent"
           disabled={!owner || !tenant}
           value={INTENT.CREATE_PDF}
         >
           generar pdf
-        </Button.Root>
+        </Button>
       </Form>
       <Documents
         contract={contract}
@@ -246,12 +246,12 @@ function SectionTwo() {
         return (
           <li key={id}>
             <span>{item.name}</span>
-            <Button.Root type="button">
+            <Button type="button">
               {item.has_photo
                 ? "cambiar foto"
                 : "subir foto"}
-            </Button.Root>
-            <Button.Root type="button">eliminar objeto</Button.Root>
+            </Button>
+            <Button type="button">eliminar objeto</Button>
           </li>
         )
       })}
@@ -517,13 +517,13 @@ function Documents({
             })}
           </select>
         </p>
-        <Button.Root
+        <Button
           type="submit"
           name="intent"
           value={INTENT.CREATE_FILE}
         >
           agregar documento
-        </Button.Root>
+        </Button>
         <ul
           style={{
             display: "flex",
@@ -555,13 +555,13 @@ function Documents({
                   value={file.id}
                   name="id"
                 />
-                <Button.Root
+                <Button
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_FILE}
                 >
                   eliminar
-                </Button.Root>
+                </Button>
                 <a href={`/files/${file.id}`}>
                   Download {file.basename}
                 </a>
