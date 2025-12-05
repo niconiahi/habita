@@ -7,11 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router"
+import { Button } from "~/components/button"
 import { type Auth, get_auth } from "~/lib/auth.server"
 import type { Route } from "./+types/root"
 import "./styles/fonts.css"
 import "./styles/global.css"
 import "./styles/tokens.css"
+import { Header } from "./components/header"
 
 export function Layout({
   children,
@@ -53,27 +55,6 @@ export default function App({
       <Header auth={loaderData.user} />
       <Outlet />
     </div>
-  )
-}
-
-function Header({ auth }: { auth: Auth }) {
-  return (
-    <header>
-      <nav>
-        {auth.user ? (
-          <div>
-            <span>{auth.user.email}</span>
-            <Form method="post" action="/auth/logout">
-              <button type="submit">Logout</button>
-            </Form>
-          </div>
-        ) : (
-          <Form method="post" action="/auth/google">
-            <button type="submit">Login</button>
-          </Form>
-        )}
-      </nav>
-    </header>
   )
 }
 

@@ -156,8 +156,8 @@ export default function ({
 }: Route.ComponentProps) {
   const { property } = loaderData
   return (
-    <main>
-      <h1>propiedad</h1>
+    <>
+      <h1>Edición de propiedad</h1>
       <Location property={property} />
       <Destinies property={property} />
       <Rooms property={property} />
@@ -165,7 +165,7 @@ export default function ({
       <Photos property={property} />
       <Services property={property} />
       <Contracts property={property} />
-    </main>
+    </>
   )
 }
 
@@ -394,7 +394,8 @@ function Destinies({ property }: { property: Property }) {
         <fieldset>
           {property_destinies.map((destiny) => {
             const id = `destiny_${destiny}`
-            const is_checked = property.destinies.includes(destiny)
+            const is_checked =
+              property.destinies.includes(destiny)
             return (
               <p key={id}>
                 <input

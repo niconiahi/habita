@@ -7,9 +7,6 @@ export default function () {
     <div style={{ display: "flex" }}>
       <Dashboard.Root label="Admin navigation">
         <Dashboard.Section>
-          <Dashboard.Link to="/admin/properties/new">
-            Nueva propiedad
-          </Dashboard.Link>
           <Dashboard.Link to="/admin/properties">
             Propiedades
           </Dashboard.Link>
