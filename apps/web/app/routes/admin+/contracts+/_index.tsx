@@ -3,10 +3,10 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
-import { CONTRACT_STATE } from "~/lib/contract_state"
+import { CONTRACT_STATE, get_contract_state_label } from "~/lib/contract_state"
 import { display_location } from "~/lib/display_location"
 import { fetch_contracts } from "./fetchers/contracts.server"
-import { Card } from "~/components/card"
+import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
 
@@ -29,7 +29,7 @@ function format_end_date(end_date: Date | null) {
   if (!end_date) {
     return "Sin fecha de fin"
   }
-  return `Hasta ${format(new Date(end_date), "d 'de' MMMM 'de' yyyy", { locale: es })}`
+  return format(new Date(end_date), "d 'de' MMMM 'de' yyyy", { locale: es })
 }
 
 export default function Contracts() {
@@ -40,37 +40,44 @@ export default function Contracts() {
       {contracts.length === 0 ? (
         <p>No hay contratos.</p>
       ) : (
-        <ul className="space-y-4">
-          {contracts.map((contract) => {
-            const is_editing =
-              contract.state === CONTRACT_STATE.EDITING
-            return (
-              <li key={contract.id}>
-                <Card.Root>
-                  <Card.Body>
-                    <Card.Title>
-                      {display_location(contract.location)}
-                    </Card.Title>
+        <Table.Root>
+          <Table.Header>
+            <Table.Cell header>Propiedad</Table.Cell>
+            <Table.Cell header>Estado</Table.Cell>
+            <Table.Cell header>Fecha de fin</Table.Cell>
+            <Table.Cell header>Acciones</Table.Cell>
+          </Table.Header>
+          <Table.Body>
+            {contracts.map((contract) => {
+              const is_editing =
+                contract.state === CONTRACT_STATE.EDITING
+              return (
+                <Table.Row key={contract.id}>
+                  <Table.Cell>
+                    {display_location(contract.location)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {get_contract_state_label(contract.state)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {format_end_date(contract.end_date)}
+                  </Table.Cell>
+                  <Table.Cell>
                     {is_editing ? (
-                      <Card.Actions>
-                        <Card.Action>
-                          <Link
-                            to={`/admin/properties/${contract.property_id}/contracts/${contract.id}/edit`}
-                          >
-                            <Button>Editar</Button>
-                          </Link>
-                        </Card.Action>
-                      </Card.Actions>
-                    ) : null}
-                    <Card.Content>
-                      {format_end_date(contract.end_date)}
-                    </Card.Content>
-                  </Card.Body>
-                </Card.Root>
-              </li>
-            )
-          })}
-        </ul>
+                      <Link
+                        to={`/admin/properties/${contract.property_id}/contracts/${contract.id}/edit`}
+                      >
+                        <Button>Editar</Button>
+                      </Link>
+                    ) : (
+                      "—"
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table.Root>
       )}
     </>
   )

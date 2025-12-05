@@ -5,7 +5,7 @@ import { display_location } from "~/lib/display_location"
 import { get_property_state_label } from "~/lib/property_state"
 import { get_property_type_label } from "~/lib/property_type"
 import { fetch_properties } from "./fetchers/properties.server"
-import { Card } from "~/components/card"
+import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
 
@@ -39,42 +39,37 @@ export default function Properties() {
       {properties.length === 0 ? (
         <p>No hay propiedades.</p>
       ) : (
-        <ul className="space-y-4">
-          {properties.map((property) => {
-            return (
-              <li key={property.id}>
-                <Card.Root>
-                  <Card.Body>
-                    <Card.Title>
-                      {display_location(property.location)}
-                    </Card.Title>
-                    <Card.Actions>
-                      <Card.Action>
-                        <Link
-                          to={`/admin/properties/${property.id}/edit`}
-                        >
-                          <Button>Editar</Button>
-                        </Link>
-                      </Card.Action>
-                    </Card.Actions>
-                    <Card.Content>
-                      {get_property_type_label(
-                        property.type,
-                      )}
-                      {property.unit
-                        ? ` - ${property.unit}`
-                        : ""}{" "}
-                      ·{" "}
-                      {get_property_state_label(
-                        property.state,
-                      )}
-                    </Card.Content>
-                  </Card.Body>
-                </Card.Root>
-              </li>
-            )
-          })}
-        </ul>
+        <Table.Root>
+          <Table.Header>
+            <Table.Cell header>Ubicación</Table.Cell>
+            <Table.Cell header>Tipo</Table.Cell>
+            <Table.Cell header>Estado</Table.Cell>
+            <Table.Cell header>Acciones</Table.Cell>
+          </Table.Header>
+          <Table.Body>
+            {properties.map((property) => (
+              <Table.Row key={property.id}>
+                <Table.Cell>
+                  {display_location(property.location)}
+                </Table.Cell>
+                <Table.Cell>
+                  {get_property_type_label(property.type)}
+                  {property.unit ? ` - ${property.unit}` : ""}
+                </Table.Cell>
+                <Table.Cell>
+                  {get_property_state_label(property.state)}
+                </Table.Cell>
+                <Table.Cell>
+                  <Link
+                    to={`/admin/properties/${property.id}/edit`}
+                  >
+                    <Button>Editar</Button>
+                  </Link>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table.Root>
       )}
     </>
   )
