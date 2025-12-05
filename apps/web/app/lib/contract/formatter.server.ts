@@ -2,7 +2,7 @@ import {
   get_service_type_label,
   type ServiceType,
 } from "~/lib/service"
-import type { Property } from "~/routes/properties+/fetchers/server/property.server"
+import type { Property } from "~/routes/properties+/fetchers/property.server"
 
 export function day_as_word(day_number: number) {
   switch (day_number) {

@@ -1,0 +1,10 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--gray-100);
+  font-family: "Geist Mono";
+  background-color: var(--gray-900);
+}

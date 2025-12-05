@@ -15,11 +15,11 @@ import { ForceNumberSchema } from "~/lib/force_number"
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
 import { ForceDateSchema } from "~/lib/force_date.server"
-import { fetch_property } from "~/routes/properties+/fetchers/server/property.server"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
 import { query_builder } from "db/query_builder"
 import { now } from "~/lib/now.server"
 import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type"
-import { fetch_contract } from "../../fetchers/server/contract.server"
+import { fetch_contract } from "../fetchers/contract.server"
 import {
   Pdf,
   SignatorySchema,

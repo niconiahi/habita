@@ -1,17 +1,5 @@
-import { Link, Outlet } from "react-router"
+import { Outlet } from "react-router"
 
 export default function () {
-  return (
-    <div>
-      <nav>
-        <Link to="/properties" reloadDocument>
-          All Properties
-        </Link>
-        <Link to="new">New Property</Link>
-      </nav>
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  )
+  return <Outlet />
 }

@@ -10,7 +10,7 @@ import {
   USER_FILE_TYPE,
 } from "~/lib/user_file_type"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server/index.server"
+import * as actions from "./actions/index.server"
 
 const INTENT = {
   CREATE_FILE: "create_file",
