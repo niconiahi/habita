@@ -9,3 +9,18 @@ main {
 main h1 {
   min-height: 36px;
 }
+
+main ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+main article {
+  min-height: 120px;
+}
+
+main ul,
+main li {
+  width: 100%;
+}
