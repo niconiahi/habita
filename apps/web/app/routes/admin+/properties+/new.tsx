@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Form, redirect } from "react-router"
+import { Button } from "~/components/button"
 import { LocationInput } from "~/components/location_input"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
@@ -136,9 +137,9 @@ export default function ({
               )
             })}
           </fieldset>
-          <button disabled={disabled} type="submit">
+          <Button.Root disabled={disabled} type="submit">
             crear propiedad
-          </button>
+          </Button.Root>
         </Form>
       </section>
     </>

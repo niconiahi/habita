@@ -1,6 +1,7 @@
 import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { Form, Link } from "react-router"
+import { Button } from "~/components/button"
 import { get_access_type_label } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
@@ -114,13 +115,13 @@ export default function ({
             <label htmlFor="file">documento</label>
             <input type="file" id="file" name="file" />
           </p>
-          <button
+          <Button.Root
             type="submit"
             name="intent"
             value={INTENT.CREATE_FILE}
           >
             agregar documento
-          </button>
+          </Button.Root>
         </Form>
       </section>
     </main>

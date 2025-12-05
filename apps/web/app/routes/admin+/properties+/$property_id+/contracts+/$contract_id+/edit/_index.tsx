@@ -1,5 +1,6 @@
 import { Form } from "react-router"
 import * as v from "valibot"
+import { Button } from "~/components/button"
 import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/auth.server"
 import {
@@ -186,28 +187,28 @@ export default function ({
         <Section number={21} title="jurisdiccion">
           <SectionTwentyOne contract={contract} />
         </Section>
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.UPDATE_CONTRACT}
         >
           actualizar contrato
-        </button>
-        <button
+        </Button.Root>
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.DESTROY_CONTRACT}
         >
           eliminar contrato
-        </button>
-        <button
+        </Button.Root>
+        <Button.Root
           type="submit"
           name="intent"
           disabled={!owner || !tenant}
           value={INTENT.CREATE_PDF}
         >
           generar pdf
-        </button>
+        </Button.Root>
       </Form>
       <Documents
         contract={contract}
@@ -245,12 +246,12 @@ function SectionTwo() {
         return (
           <li key={id}>
             <span>{item.name}</span>
-            <button type="button">
+            <Button.Root type="button">
               {item.has_photo
                 ? "cambiar foto"
                 : "subir foto"}
-            </button>
-            <button type="button">eliminar objeto</button>
+            </Button.Root>
+            <Button.Root type="button">eliminar objeto</Button.Root>
           </li>
         )
       })}
@@ -516,13 +517,13 @@ function Documents({
             })}
           </select>
         </p>
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.CREATE_FILE}
         >
           agregar documento
-        </button>
+        </Button.Root>
         <ul
           style={{
             display: "flex",
@@ -554,13 +555,13 @@ function Documents({
                   value={file.id}
                   name="id"
                 />
-                <button
+                <Button.Root
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_FILE}
                 >
                   eliminar
-                </button>
+                </Button.Root>
                 <a href={`/files/${file.id}`}>
                   Download {file.basename}
                 </a>

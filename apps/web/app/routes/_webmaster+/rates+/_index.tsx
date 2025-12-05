@@ -1,5 +1,6 @@
 import { Form, useLoaderData } from "react-router"
 import * as v from "valibot"
+import { Button } from "~/components/button"
 import {
   is_webmaster,
   require_auth,
@@ -143,14 +144,9 @@ export default function AdminRates() {
                   required
                 />
               </p>
-              <button
-                type="submit"
-                style={{
-                  height: "30px",
-                }}
-              >
+              <Button.Root type="submit">
                 Guardar
-              </button>
+              </Button.Root>
             </Form>
           )
         })}

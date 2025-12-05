@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
+import { Button } from "~/components/button"
 import { LocationInput } from "~/components/location_input"
 import { RoomMap } from "~/components/room_map"
 import { format_date_for_input } from "~/lib/date"
@@ -200,13 +201,13 @@ function Photos({ property }: { property: Property }) {
           <label htmlFor="file">foto</label>
           <input type="file" id="file" name="file" />
         </p>
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.CREATE_PROPERTY_FILE}
         >
           agregar
-        </button>
+        </Button.Root>
       </Form>
     </section>
   )
@@ -247,13 +248,13 @@ function Members({ property }: { property: Property }) {
       {!has_owner ? (
         <Form method="POST">
           <input name="email" />
-          <button
+          <Button.Root
             type="submit"
             name="intent"
             value={INTENT.INVITE_OWNER}
           >
             invitar dueño
-          </button>
+          </Button.Root>
         </Form>
       ) : null}
     </section>
@@ -310,21 +311,21 @@ function Services({ property }: { property: Property }) {
                     defaultValue={service.code}
                   />
                 </p>
-                <button
+                <Button.Root
                   type="submit"
                   name="intent"
                   value={INTENT.UPDATE_SERVICE}
                 >
                   guardar servicio
-                </button>
+                </Button.Root>
                 <input type="hidden" />
-                <button
+                <Button.Root
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_SERVICE}
                 >
                   eliminar servicio
-                </button>
+                </Button.Root>
               </Form>
             </li>
           )
@@ -334,13 +335,13 @@ function Services({ property }: { property: Property }) {
         <p style={{ color: "red" }}>{action_data.error}</p>
       )}
       <Form method="POST">
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.CREATE_SERVICE}
         >
           agregar servicio
-        </button>
+        </Button.Root>
       </Form>
     </section>
   )
@@ -371,9 +372,9 @@ function Location({ property }: { property: Property }) {
             set_disabled(true)
           }}
         />
-        <button disabled={disabled} type="submit">
+        <Button.Root disabled={disabled} type="submit">
           actualizar ubicacion
-        </button>
+        </Button.Root>
         <a
           href={`https://www.google.com/maps?q=${property.location.latitude},${property.location.longitude}`}
           target="_blank"
@@ -412,13 +413,13 @@ function Destinies({ property }: { property: Property }) {
             )
           })}
         </fieldset>
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.UPDATE_DESTINIES}
         >
           guardar destino
-        </button>
+        </Button.Root>
       </Form>
     </section>
   )
@@ -449,14 +450,14 @@ function Rooms({ property }: { property: Property }) {
             ),
           )}
         />
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.UPDATE_ROOM_POSITIONS}
           disabled={room_positions.size === 0}
         >
           guardar mapa
-        </button>
+        </Button.Root>
       </Form>
       <ul>
         {property.rooms.map((room) => {
@@ -507,34 +508,34 @@ function Rooms({ property }: { property: Property }) {
                     defaultValue={room.width}
                   />
                 </p>
-                <button
+                <Button.Root
                   type="submit"
                   name="intent"
                   value={INTENT.UPDATE_ROOM}
                 >
                   guardar habitacion
-                </button>
+                </Button.Root>
                 <input type="hidden" />
-                <button
+                <Button.Root
                   type="submit"
                   name="intent"
                   value={INTENT.DESTROY_ROOM}
                 >
                   eliminar habitacion
-                </button>
+                </Button.Root>
               </Form>
             </li>
           )
         })}
       </ul>
       <Form method="POST">
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.CREATE_ROOM}
         >
           agregar habitacion
-        </button>
+        </Button.Root>
       </Form>
     </section>
   )
