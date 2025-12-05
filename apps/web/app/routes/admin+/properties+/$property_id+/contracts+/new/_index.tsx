@@ -1,5 +1,6 @@
 import { Form, redirect } from "react-router"
 import * as v from "valibot"
+import { Button } from "~/components/button"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
@@ -87,13 +88,13 @@ export default function ({
             required
           />
         </p>
-        <button
+        <Button.Root
           type="submit"
           name="intent"
           value={INTENT.CREATE_CONTRACT}
         >
           crear contrato
-        </button>
+        </Button.Root>
       </Form>
     </main>
   )

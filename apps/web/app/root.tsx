@@ -1,5 +1,4 @@
 import {
-  Form,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -7,12 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router"
-import { Button } from "~/components/button"
-import { type Auth, get_auth } from "~/lib/auth.server"
+import { get_auth } from "~/lib/auth.server"
 import type { Route } from "./+types/root"
-import "./styles/fonts.css"
-import "./styles/global.css"
-import "./styles/tokens.css"
+import "./styles/styles.css"
 import { Header } from "./components/header"
 
 export function Layout({

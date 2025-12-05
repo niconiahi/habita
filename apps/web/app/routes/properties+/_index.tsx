@@ -31,10 +31,8 @@ export default function ({
 }: Route.ComponentProps) {
   const { properties } = loaderData
   return (
-    <main className="p-8 grid place-items-center gap-4">
-      <h1 className="text-2xl font-bold mb-6">
-        Propiedades
-      </h1>
+    <main className="grid place-items-center gap-4 mt-4">
+      <h1 className="text-2xl font-bold">Propiedades</h1>
       <ul className="flex flex-col gap-4 w-1/2">
         {properties.map((property) => {
           const key = `property-${property.id}`

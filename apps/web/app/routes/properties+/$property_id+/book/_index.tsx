@@ -1,4 +1,5 @@
 import { Form, redirect } from "react-router"
+import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
 import { ForceNumberSchema } from "~/lib/force_number"
 import * as v from "valibot"
@@ -194,13 +195,13 @@ function UpdateSlotForm({
         value={user.id}
         name="visitant_id"
       />
-      <button
+      <Button.Root
         type="submit"
         value={INTENT.UPDATE_SLOT}
         name="intent"
       >
         Book This Time
-      </button>
+      </Button.Root>
     </Form>
   )
 }
@@ -241,13 +242,13 @@ function SetDateForm({
         </div>
       </fieldset>
       {errors?.date ? <span>{errors.date}</span> : null}
-      <button
+      <Button.Root
         type="submit"
         value={INTENT.SET_DATE}
         name="intent"
       >
         Select Date
-      </button>
+      </Button.Root>
     </Form>
   )
 }
