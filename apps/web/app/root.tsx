@@ -9,6 +9,9 @@ import {
 } from "react-router"
 import { type Auth, get_auth } from "~/lib/auth.server"
 import type { Route } from "./+types/root"
+import "./styles/fonts.css"
+import "./styles/global.css"
+import "./styles/tokens.css"
 
 export function Layout({
   children,

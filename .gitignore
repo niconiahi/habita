@@ -4,5 +4,5 @@ node_modules
 build
 .env
 .env.production
-docs
+temp
 plans

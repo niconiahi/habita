@@ -23,9 +23,9 @@ import {
 import {
   fetch_property,
   type Property,
-} from "../../fetchers/server/property.server"
+} from "~/routes/properties+/fetchers/property.server"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server/index.server"
+import * as actions from "./actions/index.server"
 import {
   ACCESS_TYPE,
   get_access_type_label,

@@ -15,7 +15,7 @@ import {
   get_property_destinies,
   get_property_destiny_label,
 } from "~/lib/property_destiny"
-import * as actions from "./actions/index.server"
+import * as actions from "~/routes/properties+/actions/index.server"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",

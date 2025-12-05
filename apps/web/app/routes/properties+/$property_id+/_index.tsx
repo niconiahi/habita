@@ -2,7 +2,7 @@ import { Link } from "react-router"
 import * as v from "valibot"
 import { RoomMap } from "~/components/room_map"
 import { ForceNumberSchema } from "~/lib/force_number"
-import { fetch_property } from "../fetchers/server/property.server"
+import { fetch_property } from "../fetchers/property.server"
 import type { Route } from "./+types/_index"
 
 export async function action({ params }: Route.LoaderArgs) {

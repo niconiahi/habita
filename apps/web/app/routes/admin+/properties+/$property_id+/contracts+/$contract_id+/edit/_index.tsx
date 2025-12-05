@@ -19,11 +19,11 @@ import {
 import { ForceNumberSchema } from "~/lib/force_number"
 import { has_edit_access } from "~/lib/property_access.server"
 import type { Route } from "./+types/_index"
-import * as actions from "./actions/server/index.server"
+import * as actions from "./actions/index.server"
 import {
   fetch_contract,
   type Contract,
-} from "./fetchers/server/contract.server"
+} from "./fetchers/contract.server"
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
 import { get_tribunal_label, TRIBUNAL } from "~/lib/court"
@@ -31,7 +31,7 @@ import { get_property_destiny_label } from "~/lib/property_destiny"
 import {
   fetch_property,
   type Property,
-} from "../../../../fetchers/server/property.server"
+} from "~/routes/properties+/fetchers/property.server"
 
 const INTENT = {
   CREATE_CONTRACT: "create_contract",

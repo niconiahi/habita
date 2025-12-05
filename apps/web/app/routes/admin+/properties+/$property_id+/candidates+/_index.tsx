@@ -9,7 +9,7 @@ import {
   get_property_accesses,
   require_edit_access,
 } from "~/lib/property_access.server"
-import { fetch_property } from "../../fetchers/server/property.server"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
 import { display_location } from "~/lib/display_location"
 import type { Route } from "./+types/_index"
 

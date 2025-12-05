@@ -1,7 +1,7 @@
 import { display_location } from "~/lib/display_location"
 import { get_img_props } from "~/lib/image.server"
 import type { Route } from "./+types/_index"
-import { fetch_properties } from "./fetchers/server/properties.server"
+import { fetch_properties } from "./fetchers/properties.server"
 import { Link } from "react-router"
 import { Carousel } from "~/components/carousel"
 

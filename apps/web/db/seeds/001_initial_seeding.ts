@@ -271,7 +271,7 @@ async function run() {
     phone_number: "+5491125597648",
     document_number: 36829114,
     now,
-    email: "medina93andrea@gmail.com",
+    email: "nicolas.accetta@gmail.com",
   })
   const admin_id = await upsert_user({
     surname: "Accetta",

@@ -5,8 +5,8 @@ import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { ACCESS_TYPE } from "~/lib/access_type"
-import { fetch_property } from "../../../../fetchers/server/property.server"
-import { fetch_contract } from "../edit/fetchers/server/contract.server"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
+import { fetch_contract } from "../edit/fetchers/contract.server"
 import { query_builder } from "~/lib/query_builder.server"
 import {
   RECEIPT_TYPE,
