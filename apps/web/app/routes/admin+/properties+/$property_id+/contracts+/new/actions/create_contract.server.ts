@@ -43,6 +43,6 @@ export async function create_contract(
       return contract
     })
   return {
-    redirect_to: `/properties/${property_id}/contracts/${contract.id}/edit`,
+    redirect_to: `/admin/properties/${property_id}/contracts/${contract.id}/edit`,
   }
 }

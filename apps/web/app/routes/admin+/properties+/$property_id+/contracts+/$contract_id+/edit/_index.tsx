@@ -1,6 +1,8 @@
+import { useRef } from "react"
 import { Form } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Formulary } from "~/components/formulary"
 import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/auth.server"
 import {
@@ -150,148 +152,115 @@ export default function ({
     contract_file_types,
   } = loaderData
   return (
-    <>
+    <Formulary.Root label="Edición de contrato">
       <Form method="POST">
         <input
           type="hidden"
           value={contract.id}
           name="id"
         />
-        <Section number={2} title="estado">
-          <SectionTwo />
-        </Section>
-        <Section number={3} title="destino">
-          <SectionThree property={property} />
-        </Section>
-        <Section number={6} title="plazo">
-          <SectionSix contract={contract} />
-        </Section>
-        <Section number={7} title="canon locativo">
-          <SectionSeven contract={contract} />
-        </Section>
-        <Section number={8} title="forma de pago">
-          <SectionEight contract={contract} />
-        </Section>
-        <Section number={9} title="mora">
-          <SectionNine contract={contract} />
-        </Section>
-        <Section number={14} title="devoluciones">
-          <SectionFourteen contract={contract} />
-        </Section>
-        <Section number={15} title="recesion anticipada">
-          <SectionFifteen contract={contract} />
-        </Section>
-        <Section number={16} title="muestra de propiedad">
-          <SectionSixteen contract={contract} />
-        </Section>
-        <Section number={21} title="jurisdiccion">
-          <SectionTwentyOne contract={contract} />
-        </Section>
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.UPDATE_CONTRACT}
-        >
-          actualizar contrato
-        </Button>
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.DESTROY_CONTRACT}
-        >
-          eliminar contrato
-        </Button>
-        <Button
-          type="submit"
-          name="intent"
-          disabled={!owner || !tenant}
-          value={INTENT.CREATE_PDF}
-        >
-          generar pdf
-        </Button>
+        <InventorySection />
+        <DestinySection property={property} />
+        <DatesSection contract={contract} />
+        <EscalationSection contract={contract} />
+        <PaymentSection />
+        <FineSection contract={contract} />
+        <ReturnsSection />
+        <EarlyTerminationSection contract={contract} />
+        <ShowingSection />
+        <JurisdictionSection />
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            actualizar contrato
+          </Button>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.DESTROY_CONTRACT}
+          >
+            eliminar contrato
+          </Button>
+          <Button
+            type="submit"
+            name="intent"
+            disabled={!owner || !tenant}
+            value={INTENT.CREATE_PDF}
+          >
+            generar pdf
+          </Button>
+        </Formulary.Actions>
       </Form>
-      <Documents
+      <DocumentsSection
         contract={contract}
         contract_file_types={contract_file_types}
       />
-      <Periods contract={contract} />
-    </>
+      <PeriodsSection contract={contract} />
+    </Formulary.Root>
   )
 }
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: number
-  title: string
-  children: React.ReactNode
-}) {
+function InventorySection() {
   return (
-    <section>
-      <h3>
-        seccion {number}: {title}
-      </h3>
-      {children}
-    </section>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 2: estado</Formulary.Title>
+      </Formulary.Header>
+      <ul className="flex flex-col gap-2 list-none p-0 m-0">
+        {INVENTORY.map((item) => {
+          const id = `inventory_${item.id}`
+          return (
+            <li key={id} className="flex items-center gap-4">
+              <span>{item.name}</span>
+              <Button type="button">
+                {item.has_photo ? "cambiar foto" : "subir foto"}
+              </Button>
+              <Button type="button">eliminar objeto</Button>
+            </li>
+          )
+        })}
+      </ul>
+    </Formulary.Section>
   )
 }
-
-function SectionTwo() {
-  return (
-    <ul>
-      {INVENTORY.map((item) => {
-        const id = `inventory_${item.id}`
-        return (
-          <li key={id}>
-            <span>{item.name}</span>
-            <Button type="button">
-              {item.has_photo
-                ? "cambiar foto"
-                : "subir foto"}
-            </Button>
-            <Button type="button">eliminar objeto</Button>
-          </li>
-        )
-      })}
-    </ul>
-  )
-}
-
-function SectionThree({
+function DestinySection({
   property,
 }: {
   property: Property
 }) {
   return (
-    <ul>
-      {property.destinies.map((destiny) => {
-        const id = `destiny_${destiny}`
-        return (
-          <li key={id}>
-            <input
-              type="radio"
-              id={id}
-              name="destiny"
-              value={destiny}
-            />
-            <label htmlFor={id}>
-              {get_property_destiny_label(destiny)}
-            </label>
-          </li>
-        )
-      })}
-    </ul>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 3: destino</Formulary.Title>
+      </Formulary.Header>
+      <fieldset>
+        {property.destinies.map((destiny) => (
+          <Formulary.Radio
+            key={destiny}
+            name="destiny"
+            value={destiny}
+          >
+            {get_property_destiny_label(destiny)}
+          </Formulary.Radio>
+        ))}
+      </fieldset>
+    </Formulary.Section>
   )
 }
-
-function SectionSix({ contract }: { contract: Contract }) {
+function DatesSection({ contract }: { contract: Contract }) {
   return (
-    <>
-      <p>
-        <label htmlFor="start_date">fecha de inicio</label>
-        <input
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 6: plazo</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="start_date">
+          fecha de inicio
+        </Formulary.Label>
+        <Formulary.Input
           id="start_date"
           name="start_date"
           type="datetime-local"
@@ -301,12 +270,12 @@ function SectionSix({ contract }: { contract: Contract }) {
               : undefined
           }
         />
-      </p>
-      <p>
-        <label htmlFor="end_date">
+      </Formulary.Field>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="end_date">
           fecha de finalizacion
-        </label>
-        <input
+        </Formulary.Label>
+        <Formulary.Input
           id="end_date"
           type="datetime-local"
           name="end_date"
@@ -316,27 +285,28 @@ function SectionSix({ contract }: { contract: Contract }) {
               : undefined
           }
         />
-      </p>
-    </>
+      </Formulary.Field>
+    </Formulary.Section>
   )
 }
-
-function SectionSeven({
+function EscalationSection({
   contract,
 }: {
   contract: Contract
 }) {
   return (
-    <fieldset>
-      <legend>aumento</legend>
-      <p>
-        <label htmlFor="escalation_type">tipo</label>
-        <select
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 7: canon locativo</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="escalation_type">
+          tipo
+        </Formulary.Label>
+        <Formulary.Select
           name="escalation_type"
           id="escalation_type"
-          defaultValue={
-            contract.escalation_type ?? undefined
-          }
+          defaultValue={contract.escalation_type ?? undefined}
         >
           {Object.values(ESCALATION_TYPE).map((type) => {
             const id = `escalation_${type}`
@@ -346,16 +316,16 @@ function SectionSeven({
               </option>
             )
           })}
-        </select>
-      </p>
-      <p>
-        <label htmlFor="escalation_duration">cada</label>
-        <select
+        </Formulary.Select>
+      </Formulary.Field>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="escalation_duration">
+          cada
+        </Formulary.Label>
+        <Formulary.Select
           name="escalation_duration"
           id="escalation_duration"
-          defaultValue={
-            contract.escalation_duration ?? undefined
-          }
+          defaultValue={contract.escalation_duration ?? undefined}
         >
           {DURATIONS.map((duration) => {
             const id = `escalation_duration_${duration}`
@@ -365,148 +335,177 @@ function SectionSeven({
               </option>
             )
           })}
-        </select>
-      </p>
-    </fieldset>
+        </Formulary.Select>
+      </Formulary.Field>
+    </Formulary.Section>
   )
 }
-
-function SectionEight({
+function PaymentSection() {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 8: forma de pago</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="cbu">cbu</Formulary.Label>
+        <Formulary.Input id="cbu" name="cbu" type="text" />
+      </Formulary.Field>
+    </Formulary.Section>
+  )
+}
+function FineSection({ contract }: { contract: Contract }) {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 9: mora</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="fine_percentage">
+          porcentaje
+        </Formulary.Label>
+        <Formulary.Input
+          id="fine_percentage"
+          name="fine_percentage"
+          type="number"
+          defaultValue={contract.fine_amount ?? undefined}
+        />
+      </Formulary.Field>
+    </Formulary.Section>
+  )
+}
+function ReturnsSection() {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 14: devoluciones</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="devoluciones_percentage">
+          porcentaje
+        </Formulary.Label>
+        <Formulary.Input
+          id="devoluciones_percentage"
+          name="devoluciones_percentage"
+          type="number"
+        />
+      </Formulary.Field>
+    </Formulary.Section>
+  )
+}
+function EarlyTerminationSection({
   contract,
 }: {
   contract: Contract
 }) {
   return (
-    <p>
-      <label htmlFor="cbu">cbu</label>
-      <input id="cbu" name="cbu" type="text" />
-    </p>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 15: recesion anticipada</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="early_termination">
+          descripcion
+        </Formulary.Label>
+        <textarea
+          id="early_termination"
+          name="early_termination"
+          className="border border-gray-400 bg-gray-700 p-2"
+          defaultValue={contract.early_termination ?? undefined}
+        />
+      </Formulary.Field>
+    </Formulary.Section>
   )
 }
-
-function SectionNine({ contract }: { contract: Contract }) {
+function ShowingSection() {
   return (
-    <p>
-      <label htmlFor="fine_percentage">porcentaje</label>
-      <input
-        id="fine_percentage"
-        name="fine_percentage"
-        type="number"
-        defaultValue={contract.fine_amount ?? undefined}
-      />
-    </p>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 16: muestra de propiedad</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="muestra_horas">
+          cantidad de horas
+        </Formulary.Label>
+        <Formulary.Input
+          id="muestra_horas"
+          name="muestra_horas"
+          type="number"
+        />
+      </Formulary.Field>
+    </Formulary.Section>
   )
 }
-
-function SectionFourteen({
-  contract,
-}: {
-  contract: Contract
-}) {
+function JurisdictionSection() {
   return (
-    <p>
-      <label htmlFor="devoluciones_percentage">
-        porcentaje
-      </label>
-      <input
-        id="devoluciones_percentage"
-        name="devoluciones_percentage"
-        type="number"
-      />
-    </p>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>sección 21: jurisdiccion</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="tribunal">
+          tribunal
+        </Formulary.Label>
+        <Formulary.Select name="tribunal" id="tribunal">
+          {Object.values(TRIBUNAL).map((type) => {
+            const id = `tribunal_${type}`
+            return (
+              <option key={id} value={type}>
+                {get_tribunal_label(type)}
+              </option>
+            )
+          })}
+        </Formulary.Select>
+      </Formulary.Field>
+    </Formulary.Section>
   )
 }
-
-function SectionFifteen({
-  contract,
-}: {
-  contract: Contract
-}) {
-  return (
-    <p>
-      <label htmlFor="early_termination">descripcion</label>
-      <textarea
-        id="early_termination"
-        name="early_termination"
-        defaultValue={
-          contract.early_termination ?? undefined
-        }
-      />
-    </p>
-  )
-}
-
-function SectionSixteen({
-  contract,
-}: {
-  contract: Contract
-}) {
-  return (
-    <p>
-      <label htmlFor="muestra_horas">
-        cantidad de horas
-      </label>
-      <input
-        id="muestra_horas"
-        name="muestra_horas"
-        type="number"
-      />
-    </p>
-  )
-}
-
-function SectionTwentyOne({
-  contract,
-}: {
-  contract: Contract
-}) {
-  return (
-    <p>
-      <label htmlFor="tribunal">tribunal</label>
-      <select name="tribunal" id="tribunal">
-        {Object.values(TRIBUNAL).map((type) => {
-          const id = `tribunal_${type}`
-          return (
-            <option key={id} value={type}>
-              {get_tribunal_label(type)}
-            </option>
-          )
-        })}
-      </select>
-    </p>
-  )
-}
-
-function Documents({
+function DocumentsSection({
   contract,
   contract_file_types,
 }: {
   contract: Contract
   contract_file_types: number[]
 }) {
+  const file_input_ref = useRef<HTMLInputElement>(null)
+  const form_ref = useRef<HTMLFormElement>(null)
+  function handle_add_click() {
+    file_input_ref.current?.click()
+  }
+  function handle_file_change() {
+    form_ref.current?.requestSubmit()
+  }
   return (
-    <section>
-      <h3>documentos</h3>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>documentos</Formulary.Title>
+        <Formulary.Actions>
+          <Button type="button" onClick={handle_add_click}>
+            agregar documento
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Header>
       <Form
+        ref={form_ref}
         method="POST"
         encType="multipart/form-data"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-        }}
       >
         <input
           type="hidden"
           value={contract.id}
           name="contract_id"
         />
-        <p>
-          <label htmlFor="file">documento</label>
-          <input type="file" id="file" name="file" />
-        </p>
-        <p>
-          <label htmlFor="file_type">tipo</label>
-          <select name="file_type" id="file_type" required>
+        <input
+          ref={file_input_ref}
+          type="file"
+          name="file"
+          className="sr-only"
+          onChange={handle_file_change}
+        />
+        <Formulary.Field>
+          <Formulary.Label htmlFor="file_type">
+            tipo
+          </Formulary.Label>
+          <Formulary.Select name="file_type" id="file_type" required>
             {contract_file_types.map((type) => {
               const id = `file_type_${type}`
               return (
@@ -515,46 +514,29 @@ function Documents({
                 </option>
               )
             })}
-          </select>
-        </p>
-        <Button
-          type="submit"
+          </Formulary.Select>
+        </Formulary.Field>
+        <input
+          type="hidden"
           name="intent"
           value={INTENT.CREATE_FILE}
-        >
-          agregar documento
-        </Button>
-        <ul
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
-          {contract.files.map((file) => {
-            const id = `file_${file.basename}`
-            const contract_type = v.parse(
-              ContractFileTypeSchema,
-              file.type,
-            )
-            return (
-              <li
-                key={id}
-                style={{
-                  display: "flex",
-                  gap: "8px",
-                }}
-              >
-                <span style={{ fontWeight: "bold" }}>
-                  {get_contract_file_type_label(
-                    contract_type,
-                  )}
-                </span>
-                <input
-                  type="hidden"
-                  value={file.id}
-                  name="id"
-                />
+        />
+      </Form>
+      <ul className="flex flex-col gap-2 list-none p-0 m-0">
+        {contract.files.map((file) => {
+          const id = `file_${file.basename}`
+          const contract_type = v.parse(
+            ContractFileTypeSchema,
+            file.type,
+          )
+          return (
+            <li key={id} className="flex items-center gap-4">
+              <span className="font-bold">
+                {get_contract_file_type_label(contract_type)}
+              </span>
+              <a href={`/files/${file.id}`}>{file.basename}</a>
+              <Form method="POST">
+                <input type="hidden" value={file.id} name="id" />
                 <Button
                   type="submit"
                   name="intent"
@@ -562,70 +544,35 @@ function Documents({
                 >
                   eliminar
                 </Button>
-                <a href={`/files/${file.id}`}>
-                  Download {file.basename}
-                </a>
-              </li>
-            )
-          })}
-        </ul>
-      </Form>
-    </section>
+              </Form>
+            </li>
+          )
+        })}
+      </ul>
+    </Formulary.Section>
   )
 }
-
-function Periods({ contract }: { contract: Contract }) {
+function PeriodsSection({ contract }: { contract: Contract }) {
   return (
-    <section>
-      <h3>períodos</h3>
-      <Form
-        method="POST"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <input
-          type="hidden"
-          value={contract.id}
-          name="contract_id"
-        />
-        <ul
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
-          {contract.periods.map((period) => {
-            const id = `file_${period.start_date}`
-            const is_first =
-              contract.periods[0].start_date ===
-              period.start_date
-            return (
-              <li
-                key={id}
-                style={{
-                  display: "flex",
-                  gap: "8px",
-                }}
-              >
-                <input
-                  type="hidden"
-                  value={period.id}
-                  name="id"
-                />
-                {is_first ? (
-                  <span style={{ fontWeight: "bold" }}>
-                    inicial
-                  </span>
-                ) : null}
-                <span>${period.price}</span>
-              </li>
-            )
-          })}
-        </ul>
-      </Form>
-    </section>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>períodos</Formulary.Title>
+      </Formulary.Header>
+      <ul className="flex flex-col gap-2 list-none p-0 m-0">
+        {contract.periods.map((period) => {
+          const id = `period_${period.start_date}`
+          const is_first =
+            contract.periods[0].start_date === period.start_date
+          return (
+            <li key={id} className="flex items-center gap-4">
+              {is_first ? (
+                <span className="font-bold">inicial</span>
+              ) : null}
+              <span>${period.price}</span>
+            </li>
+          )
+        })}
+      </ul>
+    </Formulary.Section>
   )
 }

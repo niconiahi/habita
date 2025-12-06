@@ -138,10 +138,10 @@ export interface Location {
 export interface Period {
   contract_id: number;
   created_at: Timestamp;
-  end_date: Timestamp;
+  end_date: Timestamp | null;
   id: Generated<number>;
   price: number;
-  start_date: Timestamp;
+  start_date: Timestamp | null;
   updated_at: Timestamp;
 }
 

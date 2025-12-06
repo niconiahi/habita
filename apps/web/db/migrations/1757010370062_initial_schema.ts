@@ -147,12 +147,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("price", "integer", (col) => col.notNull())
-    .addColumn("start_date", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .addColumn("end_date", "timestamptz", (col) =>
-      col.notNull(),
-    )
+    .addColumn("start_date", "timestamptz")
+    .addColumn("end_date", "timestamptz")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
