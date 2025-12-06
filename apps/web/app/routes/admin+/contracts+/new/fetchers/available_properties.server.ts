@@ -1,0 +1,52 @@
+import { jsonObjectFrom } from "kysely/helpers/postgres"
+import { CONTRACT_STATE } from "~/lib/contract_state"
+import { query_builder } from "~/lib/query_builder.server"
+
+export async function fetch_available_properties(admin_property_ids: number[]) {
+  if (admin_property_ids.length === 0) {
+    return []
+  }
+  return query_builder
+    .selectFrom("property")
+    .innerJoin("location", "location.id", "property.location_id")
+    .where("property.id", "in", admin_property_ids)
+    .where(({ not, exists, selectFrom }) =>
+      not(
+        exists(
+          selectFrom("contract")
+            .whereRef("contract.property_id", "=", "property.id")
+            .where("contract.state", "in", [
+              CONTRACT_STATE.EDITING,
+              CONTRACT_STATE.ACTIVE,
+            ]),
+        ),
+      ),
+    )
+    .select((eb) => [
+      "property.id",
+      "property.unit",
+      jsonObjectFrom(
+        eb
+          .selectFrom("location")
+          .select([
+            "location.id",
+            "location.address",
+            "location.latitude",
+            "location.longitude",
+            "location.road",
+            "location.house_number",
+            "location.suburb",
+            "location.city",
+            "location.town",
+            "location.state",
+          ])
+          .whereRef("location.id", "=", "property.location_id"),
+      )
+        .$notNull()
+        .as("location"),
+    ])
+    .execute()
+}
+export type AvailableProperty = NonNullable<
+  Awaited<ReturnType<typeof fetch_available_properties>>[0]
+>

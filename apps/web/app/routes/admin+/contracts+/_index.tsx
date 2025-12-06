@@ -45,7 +45,12 @@ export default function Contracts() {
   const { contracts } = useLoaderData<typeof loader>()
   return (
     <>
-      <h1 className="text-2xl font-bold">Contratos</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Contratos</h1>
+        <Link to="/admin/contracts/new">
+          <Button>Nuevo contrato</Button>
+        </Link>
+      </div>
       {contracts.length === 0 ? (
         <p>No hay contratos.</p>
       ) : (

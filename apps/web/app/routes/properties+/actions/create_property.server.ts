@@ -86,5 +86,7 @@ export async function create_property(form_data: FormData) {
         .executeTakeFirstOrThrow()
       return property
     })
-  return { redirect_to: `/properties/${property.id}/edit` }
+  return {
+    redirect_to: `/admin/properties/${property.id}/edit`,
+  }
 }

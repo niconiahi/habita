@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Form, redirect } from "react-router"
 import { Button } from "~/components/button"
+import { Formulary } from "~/components/formulary"
 import { LocationInput } from "~/components/location_input"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
@@ -29,7 +30,6 @@ export async function loader({
   if (!has_edit_access(user.accesses)) {
     throw error(400, "not found")
   }
-
   return {
     property_types: get_property_types(),
     property_destinies: get_property_destinies(),
@@ -66,82 +66,128 @@ export default function ({
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
   return (
-    <>
-      <h1>create property</h1>
-      <section>
-        <h2>ubicacion</h2>
-        <Form method="POST">
-          <input
-            type="hidden"
-            value={INTENT.CREATE_PROPERTY}
-            name="intent"
+    <Formulary.Root label="Creación de propiedad">
+      <Form method="POST">
+        <input
+          type="hidden"
+          value={INTENT.CREATE_PROPERTY}
+          name="intent"
+        />
+        <LocationSection
+          on_selection={() => set_disabled(false)}
+          on_clear={() => set_disabled(true)}
+        />
+        <CharacteristicsSection
+          property_types={property_types}
+          property_type={property_type}
+          on_type_change={set_property_type}
+        />
+        <DestinySection
+          property_destinies={property_destinies}
+        />
+        <Button disabled={disabled} type="submit">
+          Crear propiedad
+        </Button>
+      </Form>
+    </Formulary.Root>
+  )
+}
+function LocationSection({
+  on_selection,
+  on_clear,
+}: {
+  on_selection: () => void
+  on_clear: () => void
+}) {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>ubicación</Formulary.Title>
+      </Formulary.Header>
+      <LocationInput
+        on_selection={on_selection}
+        on_clear={on_clear}
+      />
+    </Formulary.Section>
+  )
+}
+function CharacteristicsSection({
+  property_types,
+  property_type,
+  on_type_change,
+}: {
+  property_types: PropertyType[]
+  property_type: PropertyType
+  on_type_change: (type: PropertyType) => void
+}) {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>características</Formulary.Title>
+      </Formulary.Header>
+      <Formulary.Field>
+        <Formulary.Label htmlFor="type">
+          Tipo
+        </Formulary.Label>
+        <Formulary.Select
+          name="type"
+          id="type"
+          required
+          onChange={(event) => {
+            const property_type = Number(
+              event.target.value,
+            ) as PropertyType
+            on_type_change(property_type)
+          }}
+        >
+          {property_types.map((type) => {
+            const id = `property_type_${type}`
+            return (
+              <option key={id} value={type}>
+                {get_property_type_label(type)}
+              </option>
+            )
+          })}
+        </Formulary.Select>
+      </Formulary.Field>
+      {property_type === PROPERTY_TYPE.DEPARTMENT ? (
+        <Formulary.Field>
+          <Formulary.Label htmlFor="unit">
+            Unidad
+          </Formulary.Label>
+          <Formulary.Input
+            placeholder="ej. 9A o 4011"
+            required
+            name="unit"
+            id="unit"
+            type="text"
           />
-          <LocationInput
-            on_selection={() => {
-              set_disabled(false)
-            }}
-            on_clear={() => {
-              set_disabled(true)
-            }}
-          />
-          <p>
-            <label htmlFor="type">tipo</label>
-            <select
-              name="type"
-              id="type"
-              required
-              onChange={(event) => {
-                const property_type = Number(
-                  event.target.value,
-                ) as PropertyType
-                set_property_type(property_type)
-              }}
-            >
-              {property_types.map((type) => {
-                const id = `property_type_${type}`
-                return (
-                  <option key={id} value={type}>
-                    {get_property_type_label(type)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-          {property_type === PROPERTY_TYPE.DEPARTMENT ? (
-            <p>
-              <label htmlFor="unit">unidad</label>
-              <input
-                required
-                name="unit"
-                id="unit"
-                type="text"
-              />
-            </p>
-          ) : null}
-          <fieldset>
-            <legend>destino</legend>
-            {property_destinies.map((destiny) => {
-              const id = `destiny_${destiny}`
-              return (
-                <p key={id}>
-                  <input
-                    type="checkbox"
-                    id={id}
-                    name="destiny"
-                    value={destiny}
-                  />
-                  <label htmlFor={id}>
-                    {get_property_destiny_label(destiny)}
-                  </label>
-                </p>
-              )
-            })}
-          </fieldset>
-          <Button disabled={disabled} type="submit">
-            crear propiedad
-          </Button>
-        </Form>
-      </section>
-    </>
+        </Formulary.Field>
+      ) : null}
+    </Formulary.Section>
+  )
+}
+function DestinySection({
+  property_destinies,
+}: {
+  property_destinies: number[]
+}) {
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>destino</Formulary.Title>
+      </Formulary.Header>
+      <fieldset>
+        {property_destinies.map((destiny) => (
+          <Formulary.Checkbox
+            key={destiny}
+            name="destiny"
+            value={destiny}
+          >
+            {get_property_destiny_label(destiny)}
+          </Formulary.Checkbox>
+        ))}
+      </fieldset>
+    </Formulary.Section>
   )
 }
