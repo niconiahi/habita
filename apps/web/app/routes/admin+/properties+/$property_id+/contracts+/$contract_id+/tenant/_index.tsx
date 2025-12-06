@@ -103,9 +103,11 @@ export async function loader({
     throw error(400, "not found")
   }
   const latest_period = contract.periods.sort((a, b) => {
+    const b_start_date = v.parse(v.string(), b.start_date)
+    const a_start_date = v.parse(v.string(), a.start_date)
     return (
-      new Date(b.start_date).getTime() -
-      new Date(a.start_date).getTime()
+      new Date(b_start_date).getTime() -
+      new Date(a_start_date).getTime()
     )
   })[0]
   const two_months_ago = startOfMonth(

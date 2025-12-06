@@ -35,8 +35,8 @@ export function LocationInput({
   default_value?: string
   on_selection: () => void
   on_clear: () => void
-  default_lon?: number
-  default_lat?: number
+  default_lon?: string
+  default_lat?: string
 }) {
   const [query, set_query] = useState(default_value ?? "")
   const [locations, set_locations] = useState<Location[]>(

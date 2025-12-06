@@ -18,7 +18,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw new Response("File not found", { status: 404 })
   }
 
-  return new Response(file.content, {
+  return new Response(new Uint8Array(file.content), {
     headers: {
       "Content-Type": file.mime,
       "Content-Disposition": `inline; filename="${file.basename}"`,

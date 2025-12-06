@@ -5,4 +5,4 @@
 - All plans should have clear phases. In other words, all plans should be multi-phased
 - When asked to save the plan, it should be done as a Github PR
 - Always use AskUserQuestion for clarifications instead of listing questions in text
-
+- After finishing a phase, run `cd /Users/niconiahi/Documents/repos/habita/apps/web && bun run typecheck 2>&1` to check your work for type errors

@@ -1,2 +1,2 @@
-export * from "./set_date.server"
-export * from "./update_slot.server"
+export { set_date } from "./set_date.server"
+export { update_slot } from "./update_slot.server"
