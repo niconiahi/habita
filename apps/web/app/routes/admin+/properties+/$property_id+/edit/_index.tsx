@@ -177,7 +177,7 @@ function Photos({ property }: { property: Property }) {
   return (
     <Formulary.Section>
       <Formulary.Header>
-        <Formulary.Title>fotos</Formulary.Title>
+        <Formulary.Title>Fotos</Formulary.Title>
         <Formulary.Actions>
           <Button type="button" onClick={handle_add_click}>
             Agregar foto
@@ -205,6 +205,7 @@ function Photos({ property }: { property: Property }) {
         ref={form_ref}
         method="POST"
         encType="multipart/form-data"
+        className="!contents"
       >
         <input
           ref={file_input_ref}
@@ -416,6 +417,7 @@ function Destinies({ property }: { property: Property }) {
         <Formulary.Title>Destino</Formulary.Title>
       </Formulary.Header>
       <Form method="POST">
+        <Formulary.Label>Tipos</Formulary.Label>
         <fieldset>
           {property_destinies.map((destiny) => {
             const is_checked =
@@ -432,13 +434,15 @@ function Destinies({ property }: { property: Property }) {
             )
           })}
         </fieldset>
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.UPDATE_DESTINIES}
-        >
-          Guardar destino
-        </Button>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_DESTINIES}
+          >
+            Guardar destino
+          </Button>
+        </Formulary.Actions>
       </Form>
     </Formulary.Section>
   )

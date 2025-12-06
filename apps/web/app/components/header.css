@@ -5,7 +5,7 @@ header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: var(--spacing-2);
+  padding: var(--spacing-4);
   height: var(--header-height);
   background-color: var(--gray-700);
 }

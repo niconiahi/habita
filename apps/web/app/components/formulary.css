@@ -11,7 +11,7 @@
 .formulary > section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: 0;
 }
 
 .formulary section h3 {
@@ -25,9 +25,19 @@
   top: var(--header-height);
   background-color: var(--gray-900);
   z-index: 5;
-  padding-block: var(--spacing-2);
-  height: auto;
   padding-inline: 0;
+  padding-block: var(--spacing-4);
+  height: auto;
+  width: calc(100% + var(--spacing-8));
+  margin-left: calc(var(--spacing-4) * -1);
+}
+
+.formulary section > .header h3 {
+  margin-left: var(--spacing-4);
+}
+
+.formulary section > .header .actions {
+  margin-right: var(--spacing-4);
 }
 .formulary section .actions {
   display: flex;
@@ -65,30 +75,28 @@
 .formulary .radio input[type="radio"] {
   width: var(--spacing-4);
   height: var(--spacing-4);
-  /* margin: 0; */
 }
 
 .formulary .radio label {
   display: inline;
-  /* margin: 0; */
 }
 
 .formulary form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
 }
 
 .formulary form .actions {
   display: flex;
   gap: var(--spacing-2);
-  margin-top: var(--spacing-2);
+  margin-top: var(--spacing-4);
 }
 
 .formulary .checkbox {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
 }
 
 .formulary .checkbox input[type="checkbox"] {
@@ -104,6 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
+  margin-top: var(--spacing-2);
 }
 
 .formulary .field .error {
