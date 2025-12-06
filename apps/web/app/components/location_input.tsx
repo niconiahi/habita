@@ -1,6 +1,7 @@
 import { useState } from "react"
 import * as v from "valibot"
 import { ForceNumberSchema } from "~/lib/force_number"
+import "./location_input.css"
 
 export const LocationSchema = v.object({
   place_id: v.number(),
@@ -28,10 +29,14 @@ export function LocationInput({
   default_value,
   on_selection,
   on_clear,
+  default_lon,
+  default_lat,
 }: {
   default_value?: string
   on_selection: () => void
   on_clear: () => void
+  default_lon?: number
+  default_lat?: number
 }) {
   const [query, set_query] = useState(default_value ?? "")
   const [locations, set_locations] = useState<Location[]>(
@@ -39,11 +44,11 @@ export function LocationInput({
   )
   const [selected, set_selected] =
     useState<Location | null>(null)
-  const id = "location"
+  const id = "location_input"
   const list_id = `${id}_listbox`
   return (
     <div>
-      <label htmlFor={id}>direccion</label>
+      <label htmlFor={id}>Dirección</label>
       <input
         id={id}
         style={{ minWidth: "400px" }}
@@ -118,6 +123,21 @@ export function LocationInput({
         name="location"
         value={JSON.stringify(selected)}
       />
+      {selected ? (
+        <a
+          href={`https://www.google.com/maps?q=${selected.lat},${selected.lon}`}
+          target="_blank"
+        >
+          View on Google Maps
+        </a>
+      ) : default_lat && default_lon ? (
+        <a
+          href={`https://www.google.com/maps?q=${default_lat},${default_lon}`}
+          target="_blank"
+        >
+          View on Google Maps
+        </a>
+      ) : null}
     </div>
   )
 }

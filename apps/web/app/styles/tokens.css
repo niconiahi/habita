@@ -5,6 +5,8 @@
   --gray-600: #252420;
   --gray-700: #151512;
   --gray-900: #090908;
+  --destructive: #ef4444;
+  --accent: #5498ed;
 
   /* layout */
   --header-height: 3.5rem;
@@ -21,4 +23,5 @@
   --spacing-8: calc(var(--spacing) * 8);
   --spacing-9: calc(var(--spacing) * 9);
   --spacing-10: calc(var(--spacing) * 10);
+  --spacing-12: calc(var(--spacing) * 12);
 }

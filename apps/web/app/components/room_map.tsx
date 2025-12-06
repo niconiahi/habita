@@ -368,7 +368,7 @@ export function RoomMap({
         0,
       )
       ctx.imageSmoothingEnabled = false
-      ctx.fillStyle = "#ffffff"
+      ctx.fillStyle = "#252420"
       ctx.fillRect(0, 0, display_width, display_height)
       const colors = [
         "#d0d0d0",
@@ -500,7 +500,6 @@ export function RoomMap({
       style={{
         overflow: "auto",
         maxWidth: "100%",
-        border: "1px solid #ccc",
       }}
     >
       <canvas
