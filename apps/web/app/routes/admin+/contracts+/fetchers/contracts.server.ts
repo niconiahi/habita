@@ -1,20 +1,32 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
-import { CONTRACT_STATE } from "~/lib/contract_state"
+import {
+  get_contract_states,
+  type ContractState,
+} from "~/lib/contract_state"
 import { query_builder } from "~/lib/query_builder.server"
 
-export async function fetch_contracts(admin_property_ids: number[]) {
-  if (admin_property_ids.length === 0) {
-    return []
-  }
+export async function fetch_contracts(
+  property_ids: number[],
+  states?: ContractState[],
+) {
   return query_builder
     .selectFrom("contract")
-    .innerJoin("property", "property.id", "contract.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
-    .where("contract.property_id", "in", admin_property_ids)
-    .where("contract.state", "in", [
-      CONTRACT_STATE.EDITING,
-      CONTRACT_STATE.ACTIVE,
-    ])
+    .innerJoin(
+      "property",
+      "property.id",
+      "contract.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
+    .where("contract.property_id", "in", property_ids)
+    .where(
+      "contract.state",
+      "in",
+      states ? states : get_contract_states(),
+    )
     .select((eb) => [
       "contract.id",
       "contract.state",
@@ -35,7 +47,11 @@ export async function fetch_contracts(admin_property_ids: number[]) {
             "location.town",
             "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id"),
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),

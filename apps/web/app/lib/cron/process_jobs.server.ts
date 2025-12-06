@@ -3,7 +3,7 @@ import { calculate_all_due_escalations } from "../calculate_all_due_escalations.
 import { now } from "~/lib/now.server"
 import { JOB_STATUS } from "~/lib/job_status"
 import { JOB_TYPE } from "~/lib/job_type"
-import { logger } from "~/lib/telemetry/log.server"
+import { logger } from "~/lib/telemetry/logger.server"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder
@@ -44,9 +44,7 @@ export async function process_jobs() {
       })
     } catch (error) {
       if (error instanceof Error) {
-        logger.error(error, "job failed", {
-          job_id: job.id,
-        })
+        logger.error("job failed", { job_id: job.id }, error)
       }
       await query_builder
         .transaction()

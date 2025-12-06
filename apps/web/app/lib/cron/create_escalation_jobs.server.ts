@@ -6,7 +6,7 @@ import { JOB_TYPE } from "~/lib/job_type"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { ForceDateSchema } from "../force_date.server"
 import * as v from "valibot"
-import { logger } from "~/lib/telemetry/log.server"
+import { logger } from "~/lib/telemetry/logger.server"
 
 async function fetch_contracts() {
   return query_builder
@@ -69,7 +69,9 @@ export async function create_escalation_jobs() {
     .where("status", "=", JOB_STATUS.PENDING)
     .executeTakeFirst()
   if (job) {
-    logger.info("pending escalation job already exists, skipping")
+    logger.info(
+      "pending escalation job already exists, skipping",
+    )
     return { created: 0 }
   }
   await query_builder

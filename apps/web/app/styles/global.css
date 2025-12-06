@@ -9,7 +9,7 @@ body {
   background-color: var(--gray-900);
 }
 
-input,
+input:not([type="radio"]):not([type="checkbox"]),
 select,
 textarea {
   height: var(--spacing-12);

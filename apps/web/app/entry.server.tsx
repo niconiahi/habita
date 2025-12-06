@@ -89,10 +89,11 @@ export default function handleRequest(
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
             logger.error(
+              "render error",
+              {},
               error instanceof Error
                 ? error
                 : new Error(String(error)),
-              "render error",
             )
           }
         },
