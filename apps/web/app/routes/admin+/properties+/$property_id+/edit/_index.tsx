@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Form, Link, useActionData } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Formulary } from "~/components/formulary"
 import { LocationInput } from "~/components/location_input"
 import { RoomMap } from "~/components/room_map"
 import { format_date_for_input } from "~/lib/date"
@@ -157,8 +158,7 @@ export default function ({
 }: Route.ComponentProps) {
   const { property } = loaderData
   return (
-    <>
-      <h1>Edición de propiedad</h1>
+    <Formulary.Root label="Edición de propiedad">
       <Location property={property} />
       <Destinies property={property} />
       <Rooms property={property} />
@@ -166,50 +166,66 @@ export default function ({
       <Photos property={property} />
       <Services property={property} />
       <Contracts property={property} />
-    </>
+    </Formulary.Root>
   )
 }
 
 function Photos({ property }: { property: Property }) {
   const action_data = useActionData<{ error?: string }>()
+  const file_input_ref = useRef<HTMLInputElement>(null)
+  const form_ref = useRef<HTMLFormElement>(null)
+  function handle_add_click() {
+    file_input_ref.current?.click()
+  }
+  function handle_file_change() {
+    form_ref.current?.requestSubmit()
+  }
   return (
-    <section>
-      <h2>fotos</h2>
-      <ul
-        style={{
-          gap: "1rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>fotos</Formulary.Title>
+        <Formulary.Actions>
+          <Button type="button" onClick={handle_add_click}>
+            Agregar foto
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Header>
+      <ul className="!grid grid-cols-1 min-[800px]:grid-cols-2 min-[1200px]:grid-cols-3 gap-4 list-none p-0 m-0">
         {property.images.map((image) => {
           const id = `image_${image.id}`
           return (
-            <img
-              alt="someresr"
-              key={id}
-              src={`data:image/webp;base64,${image.content}`}
-            />
+            <li key={id}>
+              <img
+                className="w-full aspect-video object-cover block"
+                alt="Foto de la propiedad"
+                src={`data:image/webp;base64,${image.content}`}
+              />
+            </li>
           )
         })}
       </ul>
       {action_data?.error && (
-        <p style={{ color: "red" }}>{action_data.error}</p>
+        <p className="text-red-500">{action_data.error}</p>
       )}
-      <Form method="POST" encType="multipart/form-data">
-        <p>
-          <label htmlFor="file">foto</label>
-          <input type="file" id="file" name="file" />
-        </p>
-        <Button
-          type="submit"
+      <Form
+        ref={form_ref}
+        method="POST"
+        encType="multipart/form-data"
+      >
+        <input
+          ref={file_input_ref}
+          type="file"
+          name="file"
+          className="sr-only"
+          onChange={handle_file_change}
+        />
+        <input
+          type="hidden"
           name="intent"
           value={INTENT.CREATE_PROPERTY_FILE}
-        >
-          agregar
-        </Button>
+        />
       </Form>
-    </section>
+    </Formulary.Section>
   )
 }
 
@@ -219,19 +235,15 @@ function Members({ property }: { property: Property }) {
     return member.type === ACCESS_TYPE.OWNER
   })
   return (
-    <section>
-      <h2>miembros</h2>
-      <ul
-        style={{
-          gap: "1rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>miembros</Formulary.Title>
+      </Formulary.Header>
+      <ul className="flex flex-col gap-4 list-none p-0 m-0">
         {property.members.map((member) => {
           const id = `member-${member.id}`
           return (
-            <li key={id}>
+            <li className="flex gap-4" key={id}>
               <input
                 type="hidden"
                 value={member.id}
@@ -247,7 +259,16 @@ function Members({ property }: { property: Property }) {
       </ul>
       {!has_owner ? (
         <Form method="POST">
-          <input name="email" />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="email">
+              email
+            </Formulary.Label>
+            <Formulary.Input
+              id="email"
+              name="email"
+              type="email"
+            />
+          </Formulary.Field>
           <Button
             type="submit"
             name="intent"
@@ -257,22 +278,29 @@ function Members({ property }: { property: Property }) {
           </Button>
         </Form>
       ) : null}
-    </section>
+    </Formulary.Section>
   )
 }
 
 function Services({ property }: { property: Property }) {
   const action_data = useActionData<{ error?: string }>()
   return (
-    <section>
-      <h2>servicios</h2>
-      <ul
-        style={{
-          gap: "1rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>servicios</Formulary.Title>
+        <Formulary.Actions>
+          <Form method="POST">
+            <Button
+              type="submit"
+              name="intent"
+              value={INTENT.CREATE_SERVICE}
+            >
+              Agregar servicio
+            </Button>
+          </Form>
+        </Formulary.Actions>
+      </Formulary.Header>
+      <ul className="flex flex-col gap-4 list-none p-0 m-0">
         {property.services.map((service) => {
           const id = `service_${service.id}`
           return (
@@ -283,75 +311,80 @@ function Services({ property }: { property: Property }) {
                   value={service.id}
                   name="id"
                 />
-                <p>
-                  <label htmlFor="type">tipo</label>
-                  <select
+                <Formulary.Field>
+                  <Formulary.Label
+                    htmlFor={`type_${service.id}`}
+                  >
+                    Tipo
+                  </Formulary.Label>
+                  <Formulary.Select
                     name="type"
-                    id="type"
+                    id={`type_${service.id}`}
                     defaultValue={service.type}
                   >
                     {Object.values(SERVICE_TYPE).map(
                       (type) => {
-                        const id = `service_type_${type}`
+                        const option_id = `service_type_${type}`
                         return (
-                          <option key={id} value={type}>
+                          <option
+                            key={option_id}
+                            value={type}
+                          >
                             {get_service_type_label(type)}
                           </option>
                         )
                       },
                     )}
-                  </select>
-                </p>
-                <p>
-                  <label htmlFor="code">code</label>
-                  <input
-                    id="code"
+                  </Formulary.Select>
+                </Formulary.Field>
+                <Formulary.Field>
+                  <Formulary.Label
+                    htmlFor={`code_${service.id}`}
+                  >
+                    Identificador
+                  </Formulary.Label>
+                  <Formulary.Input
+                    id={`code_${service.id}`}
                     type="number"
                     name="code"
                     defaultValue={service.code}
                   />
-                </p>
-                <Button
-                  type="submit"
-                  name="intent"
-                  value={INTENT.UPDATE_SERVICE}
-                >
-                  guardar servicio
-                </Button>
-                <input type="hidden" />
-                <Button
-                  type="submit"
-                  name="intent"
-                  value={INTENT.DESTROY_SERVICE}
-                >
-                  eliminar servicio
-                </Button>
+                </Formulary.Field>
+                <Formulary.Actions>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.UPDATE_SERVICE}
+                  >
+                    Guardar servicio
+                  </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.DESTROY_SERVICE}
+                  >
+                    Eliminar servicio
+                  </Button>
+                </Formulary.Actions>
               </Form>
             </li>
           )
         })}
       </ul>
       {action_data?.error && (
-        <p style={{ color: "red" }}>{action_data.error}</p>
+        <p className="text-red-500">{action_data.error}</p>
       )}
-      <Form method="POST">
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.CREATE_SERVICE}
-        >
-          agregar servicio
-        </Button>
-      </Form>
-    </section>
+    </Formulary.Section>
   )
 }
 
 function Location({ property }: { property: Property }) {
   const [disabled, set_disabled] = useState(true)
   return (
-    <section>
-      <h2>ubicacion</h2>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>ubicación</Formulary.Title>
+      </Formulary.Header>
       <Form method="POST">
         <input
           type="hidden"
@@ -365,6 +398,8 @@ function Location({ property }: { property: Property }) {
         />
         <LocationInput
           default_value={property.location.address}
+          default_lon={property.location.longitude}
+          default_lat={property.location.latitude}
           on_selection={() => {
             set_disabled(false)
           }}
@@ -373,43 +408,34 @@ function Location({ property }: { property: Property }) {
           }}
         />
         <Button disabled={disabled} type="submit">
-          actualizar ubicacion
+          Guardar ubicación
         </Button>
-        <a
-          href={`https://www.google.com/maps?q=${property.location.latitude},${property.location.longitude}`}
-          target="_blank"
-        >
-          View on Google Maps
-        </a>
       </Form>
-    </section>
+    </Formulary.Section>
   )
 }
 
 function Destinies({ property }: { property: Property }) {
   const property_destinies = get_property_destinies()
   return (
-    <section>
-      <h2>destino</h2>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>Destino</Formulary.Title>
+      </Formulary.Header>
       <Form method="POST">
         <fieldset>
           {property_destinies.map((destiny) => {
-            const id = `destiny_${destiny}`
             const is_checked =
               property.destinies.includes(destiny)
             return (
-              <p key={id}>
-                <input
-                  type="checkbox"
-                  id={id}
-                  name="destiny"
-                  value={destiny}
-                  defaultChecked={is_checked}
-                />
-                <label htmlFor={id}>
-                  {get_property_destiny_label(destiny)}
-                </label>
-              </p>
+              <Formulary.Checkbox
+                key={destiny}
+                name="destiny"
+                value={destiny}
+                defaultChecked={is_checked}
+              >
+                {get_property_destiny_label(destiny)}
+              </Formulary.Checkbox>
             )
           })}
         </fieldset>
@@ -418,10 +444,10 @@ function Destinies({ property }: { property: Property }) {
           name="intent"
           value={INTENT.UPDATE_DESTINIES}
         >
-          guardar destino
+          Guardar destino
         </Button>
       </Form>
-    </section>
+    </Formulary.Section>
   )
 }
 
@@ -430,8 +456,106 @@ function Rooms({ property }: { property: Property }) {
     Map<number, { x: number; y: number }>
   >(new Map())
   return (
-    <section>
-      <h2>ambientes</h2>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>ambientes</Formulary.Title>
+        <Formulary.Actions>
+          <Form method="POST">
+            <Button
+              type="submit"
+              name="intent"
+              value={INTENT.CREATE_ROOM}
+            >
+              Agregar ambiente
+            </Button>
+          </Form>
+        </Formulary.Actions>
+      </Formulary.Header>
+      <ul>
+        {property.rooms.map((room) => {
+          const id = `room-${room.id}`
+          return (
+            <li key={id}>
+              <Form method="POST">
+                <input
+                  type="hidden"
+                  value={room.id}
+                  name="id"
+                />
+                <Formulary.Field>
+                  <Formulary.Label
+                    htmlFor={`type_${room.id}`}
+                  >
+                    Tipo
+                  </Formulary.Label>
+                  <Formulary.Select
+                    name="type"
+                    id={`type_${room.id}`}
+                    defaultValue={room.type}
+                  >
+                    {Object.values(ROOM_TYPE).map(
+                      (type) => {
+                        const option_id = `room_type_${type}`
+                        return (
+                          <option
+                            key={option_id}
+                            value={type}
+                          >
+                            {display_room_type(type)}
+                          </option>
+                        )
+                      },
+                    )}
+                  </Formulary.Select>
+                </Formulary.Field>
+                <Formulary.Field>
+                  <Formulary.Label
+                    htmlFor={`length_${room.id}`}
+                  >
+                    Largo
+                  </Formulary.Label>
+                  <Formulary.Input
+                    id={`length_${room.id}`}
+                    type="number"
+                    name="length"
+                    step={0.1}
+                    defaultValue={room.length}
+                  />
+                </Formulary.Field>
+                <Formulary.Field>
+                  <Formulary.Label
+                    htmlFor={`width_${room.id}`}
+                  >
+                    Ancho
+                  </Formulary.Label>
+                  <Formulary.Input
+                    id={`width_${room.id}`}
+                    type="number"
+                    name="width"
+                    defaultValue={room.width}
+                  />
+                </Formulary.Field>
+                <Formulary.Actions>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.UPDATE_ROOM}
+                  >
+                    Guardar ambiente
+                  </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value={INTENT.DESTROY_ROOM}
+                  >
+                    Eliminar ambiente
+                  </Button>
+                </Formulary.Actions>
+              </Form>
+            </li>
+          )
+        })}
+      </ul>
       <RoomMap
         rooms={property.rooms}
         on_positions_change={set_room_positions}
@@ -459,85 +583,7 @@ function Rooms({ property }: { property: Property }) {
           guardar mapa
         </Button>
       </Form>
-      <ul>
-        {property.rooms.map((room) => {
-          const id = `room-${room.id}`
-          return (
-            <li key={id}>
-              <Form method="POST">
-                <input
-                  type="hidden"
-                  value={room.id}
-                  name="id"
-                />
-                <p>
-                  <label htmlFor="type">tipo</label>
-                  <select
-                    name="type"
-                    id="type"
-                    defaultValue={room.type}
-                  >
-                    {Object.values(ROOM_TYPE).map(
-                      (type) => {
-                        const id = `room_type_${type}`
-                        return (
-                          <option key={id} value={type}>
-                            {display_room_type(type)}
-                          </option>
-                        )
-                      },
-                    )}
-                  </select>
-                </p>
-                <p>
-                  <label htmlFor="length">length</label>
-                  <input
-                    id="length"
-                    type="number"
-                    name="length"
-                    step={0.1}
-                    defaultValue={room.length}
-                  />
-                </p>
-                <p>
-                  <label htmlFor="width">width</label>
-                  <input
-                    id="width"
-                    type="number"
-                    name="width"
-                    defaultValue={room.width}
-                  />
-                </p>
-                <Button
-                  type="submit"
-                  name="intent"
-                  value={INTENT.UPDATE_ROOM}
-                >
-                  guardar habitacion
-                </Button>
-                <input type="hidden" />
-                <Button
-                  type="submit"
-                  name="intent"
-                  value={INTENT.DESTROY_ROOM}
-                >
-                  eliminar habitacion
-                </Button>
-              </Form>
-            </li>
-          )
-        })}
-      </ul>
-      <Form method="POST">
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.CREATE_ROOM}
-        >
-          agregar habitacion
-        </Button>
-      </Form>
-    </section>
+    </Formulary.Section>
   )
 }
 
@@ -548,30 +594,20 @@ function Contracts({ property }: { property: Property }) {
     },
   )
   return (
-    <section>
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <h2>contratos</h2>
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>contratos</Formulary.Title>
         {has_inactive_contract ? null : (
-          <Link
-            to={`/properties/${property.id}/contracts/new`}
-          >
-            crear contrato
-          </Link>
+          <Formulary.Actions>
+            <Link
+              to={`/properties/${property.id}/contracts/new`}
+            >
+              crear contrato
+            </Link>
+          </Formulary.Actions>
         )}
-      </header>
-      <ul
-        style={{
-          gap: "1rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      </Formulary.Header>
+      <ul className="flex flex-col gap-4 list-none p-0 m-0">
         {property.contracts.map((contract) => {
           const id = `contract-${contract.id}`
           const contract_state = v.parse(
@@ -579,24 +615,14 @@ function Contracts({ property }: { property: Property }) {
             contract.state,
           )
           return (
-            <li
-              style={{
-                display: "flex",
-                gap: "1rem",
-              }}
-              key={id}
-            >
-              <span style={{ fontWeight: "bold" }}>
-                estado
-              </span>
+            <li className="flex gap-4" key={id}>
+              <strong>estado</strong>
               <span>
                 {get_contract_state_label(contract_state)}
               </span>
               {contract.start_date ? (
                 <>
-                  <span style={{ fontWeight: "bold" }}>
-                    inicio
-                  </span>
+                  <strong>inicio</strong>
                   <span>
                     {format_date_for_input(
                       contract.start_date,
@@ -606,9 +632,7 @@ function Contracts({ property }: { property: Property }) {
               ) : null}
               {contract.end_date ? (
                 <>
-                  <span style={{ fontWeight: "bold" }}>
-                    finalizacion
-                  </span>
+                  <strong>finalizacion</strong>
                   <span>
                     {format_date_for_input(
                       contract.end_date,
@@ -618,9 +642,7 @@ function Contracts({ property }: { property: Property }) {
               ) : null}
               {contract.state === CONTRACT_STATE.EDITING ? (
                 <>
-                  <span style={{ fontWeight: "bold" }}>
-                    precio inicial
-                  </span>
+                  <strong>precio inicial</strong>
                   <span>${contract.initial_price}</span>
                   <Link
                     to={`/admin/properties/${property.id}/contracts/${contract.id}/edit`}
@@ -634,6 +656,6 @@ function Contracts({ property }: { property: Property }) {
           )
         })}
       </ul>
-    </section>
+    </Formulary.Section>
   )
 }

@@ -1,56 +1,63 @@
-import { useId, type ReactNode, type ComponentPropsWithoutRef } from "react"
+import {
+  useId,
+  type ReactNode,
+  type ComponentPropsWithoutRef,
+} from "react"
 import "~/components/formulary.css"
 
-type RootProps = {
+function Root({
+  children,
+  label,
+}: {
   children: ReactNode
   label: string
-}
-function Root({ children, label }: RootProps) {
+}) {
   return (
-    <main className="formulary" aria-label={label}>
+    <div className="formulary" aria-label={label}>
       {children}
-    </main>
+    </div>
   )
 }
-
-type SectionProps = {
-  children: ReactNode
-}
-function Section({ children }: SectionProps) {
+function Section({ children }: { children: ReactNode }) {
   return <section>{children}</section>
 }
 
-type TitleProps = {
-  children: ReactNode
+function Header({ children }: { children: ReactNode }) {
+  return <header className="header">{children}</header>
 }
-function Title({ children }: TitleProps) {
+function Actions({ children }: { children: ReactNode }) {
+  return <div className="actions">{children}</div>
+}
+function Title({ children }: { children: ReactNode }) {
   return <h3>{children}</h3>
 }
-
-type LabelProps = {
+function Label({
+  children,
+  htmlFor,
+}: {
   children: ReactNode
   htmlFor?: string
-}
-function Label({ children, htmlFor }: LabelProps) {
+}) {
   return <label htmlFor={htmlFor}>{children}</label>
 }
-
-type InputProps = ComponentPropsWithoutRef<"input">
-function Input(props: InputProps) {
+function Input(props: ComponentPropsWithoutRef<"input">) {
   return <input {...props} />
 }
-
-type SelectProps = ComponentPropsWithoutRef<"select"> & {
+function Select({
+  children,
+  ...props
+}: ComponentPropsWithoutRef<"select"> & {
   children: ReactNode
-}
-function Select({ children, ...props }: SelectProps) {
+}) {
   return <select {...props}>{children}</select>
 }
-
-type RadioProps = Omit<ComponentPropsWithoutRef<"input">, "type"> & {
+function Radio({
+  children,
+  id,
+  ...props
+}: Omit<ComponentPropsWithoutRef<"input">, "type"> & {
   children: ReactNode
-}
-function Radio({ children, id, ...props }: RadioProps) {
+}) {
   const generated_id = useId()
   const input_id = id ?? generated_id
   return (
@@ -60,13 +67,40 @@ function Radio({ children, id, ...props }: RadioProps) {
     </span>
   )
 }
+function Checkbox({
+  children,
+  id,
+  ...props
+}: Omit<ComponentPropsWithoutRef<"input">, "type"> & {
+  children: ReactNode
+}) {
+  const generated_id = useId()
+  const input_id = id ?? generated_id
+  return (
+    <span className="checkbox">
+      <input type="checkbox" id={input_id} {...props} />
+      <label htmlFor={input_id}>{children}</label>
+    </span>
+  )
+}
+function Field({ children }: { children: ReactNode }) {
+  return <div className="field">{children}</div>
+}
+function Error({ children }: { children: ReactNode }) {
+  return <span className="error">{children}</span>
+}
 
 export const Formulary = {
   Root,
   Section,
+  Header,
+  Actions,
   Title,
   Label,
   Input,
   Select,
   Radio,
+  Checkbox,
+  Field,
+  Error,
 }
