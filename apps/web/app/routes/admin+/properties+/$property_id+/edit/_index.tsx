@@ -1,21 +1,15 @@
 import { useRef, useState } from "react"
-import { Form, Link, useActionData } from "react-router"
+import { Form, useActionData } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
 import { Formulary } from "~/components/formulary"
 import { LocationInput } from "~/components/location_input"
 import { RoomMap } from "~/components/room_map"
-import { format_date_for_input } from "~/lib/date"
 import {
   display_room_type,
   ROOM_TYPE,
 } from "~/lib/room_type"
 import { require_auth } from "~/lib/auth.server"
-import {
-  CONTRACT_STATE,
-  ContractStateSchema,
-  get_contract_state_label,
-} from "~/lib/contract_state"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
 import {
@@ -162,10 +156,10 @@ export default function ({
       <Location property={property} />
       <Destinies property={property} />
       <Rooms property={property} />
+      <RoomMapSection property={property} />
       <Members property={property} />
       <Photos property={property} />
       <Services property={property} />
-      <Contracts property={property} />
     </Formulary.Root>
   )
 }
@@ -230,7 +224,6 @@ function Photos({ property }: { property: Property }) {
 }
 
 function Members({ property }: { property: Property }) {
-  console.log("property.members", property.members)
   const has_owner = property.members.some((member) => {
     return member.type === ACCESS_TYPE.OWNER
   })
@@ -240,8 +233,8 @@ function Members({ property }: { property: Property }) {
         <Formulary.Title>miembros</Formulary.Title>
       </Formulary.Header>
       <ul className="flex flex-col gap-4 list-none p-0 m-0">
-        {property.members.map((member) => {
-          const id = `member-${member.id}`
+        {property.members.map((member, index) => {
+          const id = `member-${member.id}-${index}`
           return (
             <li className="flex gap-4" key={id}>
               <input
@@ -452,9 +445,6 @@ function Destinies({ property }: { property: Property }) {
 }
 
 function Rooms({ property }: { property: Property }) {
-  const [room_positions, set_room_positions] = useState<
-    Map<number, { x: number; y: number }>
-  >(new Map())
   return (
     <Formulary.Section>
       <Formulary.Header>
@@ -556,6 +546,22 @@ function Rooms({ property }: { property: Property }) {
           )
         })}
       </ul>
+    </Formulary.Section>
+  )
+}
+function RoomMapSection({
+  property,
+}: {
+  property: Property
+}) {
+  const [room_positions, set_room_positions] = useState<
+    Map<number, { x: number; y: number }>
+  >(new Map())
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>mapa</Formulary.Title>
+      </Formulary.Header>
       <RoomMap
         rooms={property.rooms}
         on_positions_change={set_room_positions}
@@ -574,88 +580,17 @@ function Rooms({ property }: { property: Property }) {
             ),
           )}
         />
-        <Button
-          type="submit"
-          name="intent"
-          value={INTENT.UPDATE_ROOM_POSITIONS}
-          disabled={room_positions.size === 0}
-        >
-          guardar mapa
-        </Button>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_ROOM_POSITIONS}
+            disabled={room_positions.size === 0}
+          >
+            Guardar mapa
+          </Button>
+        </Formulary.Actions>
       </Form>
-    </Formulary.Section>
-  )
-}
-
-function Contracts({ property }: { property: Property }) {
-  const has_inactive_contract = property.contracts.some(
-    (contract) => {
-      return contract.state === CONTRACT_STATE.EDITING
-    },
-  )
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>contratos</Formulary.Title>
-        {has_inactive_contract ? null : (
-          <Formulary.Actions>
-            <Link
-              to={`/properties/${property.id}/contracts/new`}
-            >
-              crear contrato
-            </Link>
-          </Formulary.Actions>
-        )}
-      </Formulary.Header>
-      <ul className="flex flex-col gap-4 list-none p-0 m-0">
-        {property.contracts.map((contract) => {
-          const id = `contract-${contract.id}`
-          const contract_state = v.parse(
-            ContractStateSchema,
-            contract.state,
-          )
-          return (
-            <li className="flex gap-4" key={id}>
-              <strong>estado</strong>
-              <span>
-                {get_contract_state_label(contract_state)}
-              </span>
-              {contract.start_date ? (
-                <>
-                  <strong>inicio</strong>
-                  <span>
-                    {format_date_for_input(
-                      contract.start_date,
-                    ).slice(0, 10)}
-                  </span>
-                </>
-              ) : null}
-              {contract.end_date ? (
-                <>
-                  <strong>finalizacion</strong>
-                  <span>
-                    {format_date_for_input(
-                      contract.end_date,
-                    ).slice(0, 10)}
-                  </span>
-                </>
-              ) : null}
-              {contract.state === CONTRACT_STATE.EDITING ? (
-                <>
-                  <strong>precio inicial</strong>
-                  <span>${contract.initial_price}</span>
-                  <Link
-                    to={`/admin/properties/${property.id}/contracts/${contract.id}/edit`}
-                    reloadDocument
-                  >
-                    Edit
-                  </Link>
-                </>
-              ) : null}
-            </li>
-          )
-        })}
-      </ul>
     </Formulary.Section>
   )
 }
