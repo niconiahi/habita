@@ -1,6 +1,9 @@
+This skills guides on best practices when creating any React related code. This is how this team writes React, so it should be respected to the detail
+
 1. Declare `props` always inline, unless you reuse such prop. That's the only case where you should define the prop's types as a separate declaration
 
 No:
+
 ```tsx
 type RootProps = {
   children: ReactNode
@@ -16,6 +19,7 @@ function Root({ children, label }: RootProps) {
 ```
 
 Yes:
+
 ```tsx
 function Root({
   children,
@@ -32,3 +36,4 @@ function Root({
 }
 ```
 
+2. Prevent usage of `useEffect` at all costs. If the implementation can be moved to the server, we should do that instead

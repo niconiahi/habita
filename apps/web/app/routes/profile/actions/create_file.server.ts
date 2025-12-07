@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { now } from "~/lib/now.server"
@@ -15,11 +16,7 @@ export async function create_file(form_data: FormData) {
   )
   await query_builder.transaction().execute(async (tx) => {
     const content = Buffer.from(await file_.bytes())
-    const hash = Bun.CryptoHasher.hash(
-      "sha256",
-      content,
-      "hex",
-    )
+    const hash = createHash("sha256").update(content).digest("hex")
     const file = await tx
       .insertInto("file")
       .values({

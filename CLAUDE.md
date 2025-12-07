@@ -1,2 +1,3 @@
 - Read every rule at `rules` folder and respect it
 - Do not read `plans` folder unless specifically told to do so
+- All consider all the `.claude/skills` that you have

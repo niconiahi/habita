@@ -1,7 +1,10 @@
 import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
+import { useRef } from "react"
 import { Form, Link } from "react-router"
 import { Button } from "~/components/button"
+import { Formulary } from "~/components/formulary"
+import { Table } from "~/components/table"
 import { get_access_type_label } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
@@ -56,75 +59,133 @@ export default function ({
 }: Route.ComponentProps) {
   const { user, properties, user_files } = loaderData
   return (
-    <main>
+    <main className="flex flex-col gap-8 p-4">
       <h1>Perfil</h1>
       <section>
         <h3>accesos</h3>
-        <ul>
-          {user.accesses.map((access) => {
-            const id = `access_${access.id}`
-            const property = get_property(
-              properties,
-              access.property_id,
-            )
-            return (
-              <li key={id}>
-                {get_access_type_label(access.id)} de la
-                propiedad en{" "}
-                <Link to={`/properties/${property.id}`}>
-                  {property.location.road}{" "}
-                  {property.location.house_number}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+        <Table.Root>
+          <Table.Header>
+            <Table.Cell header>Rol</Table.Cell>
+            <Table.Cell header>Propiedad</Table.Cell>
+          </Table.Header>
+          <Table.Body>
+            {user.accesses.map((access) => {
+              const id = `access_${access.id}`
+              const property = get_property(
+                properties,
+                access.property_id,
+              )
+              return (
+                <Table.Row key={id}>
+                  <Table.Cell>
+                    {get_access_type_label(access.type)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link to={`/properties/${property.id}`}>
+                      {property.location.road}{" "}
+                      {property.location.house_number}
+                    </Link>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table.Root>
       </section>
-      <section>
-        <h3>documentos</h3>
-        <ul>
-          {user_files.map((file) => {
-            const id = `file_${file.basename}`
-            return <li key={id}>{file.basename}</li>
-          })}
-        </ul>
-        <Form
-          method="POST"
-          encType="multipart/form-data"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: "0.25rem",
-            border: "1px solid green",
-          }}
-        >
-          <p>
-            <label htmlFor="type">tipo</label>
-            <select name="type" id="type">
-              {Object.values(USER_FILE_TYPE).map((type) => {
-                const id = `user_file_type_${type}`
-                return (
-                  <option key={id} value={type}>
-                    {get_user_file_type_label(type)}
-                  </option>
-                )
-              })}
-            </select>
-          </p>
-          <p>
-            <label htmlFor="file">documento</label>
-            <input type="file" id="file" name="file" />
-          </p>
-          <Button
-            type="submit"
-            name="intent"
-            value={INTENT.CREATE_FILE}
-          >
+      <DocumentsSection user_files={user_files} />
+    </main>
+  )
+}
+
+type UserFile = Awaited<
+  ReturnType<typeof fetch_user_files>
+>[0]
+function DocumentsSection({
+  user_files,
+}: {
+  user_files: UserFile[]
+}) {
+  const file_input_ref = useRef<HTMLInputElement>(null)
+  const form_ref = useRef<HTMLFormElement>(null)
+  function handle_add_click() {
+    file_input_ref.current?.click()
+  }
+  function handle_file_change() {
+    form_ref.current?.requestSubmit()
+  }
+  return (
+    <Formulary.Section>
+      <Formulary.Header>
+        <Formulary.Title>documentos</Formulary.Title>
+        <Formulary.Actions>
+          <Button type="button" onClick={handle_add_click}>
             agregar documento
           </Button>
-        </Form>
-      </section>
-    </main>
+        </Formulary.Actions>
+      </Formulary.Header>
+      <Form
+        ref={form_ref}
+        method="POST"
+        encType="multipart/form-data"
+      >
+        <input
+          ref={file_input_ref}
+          type="file"
+          name="file"
+          className="sr-only"
+          onChange={handle_file_change}
+        />
+        <Formulary.Field>
+          <Formulary.Label htmlFor="type">
+            tipo
+          </Formulary.Label>
+          <Formulary.Select name="type" id="type">
+            {Object.values(USER_FILE_TYPE).map((type) => {
+              const id = `user_file_type_${type}`
+              return (
+                <option key={id} value={type}>
+                  {get_user_file_type_label(type)}
+                </option>
+              )
+            })}
+          </Formulary.Select>
+        </Formulary.Field>
+        <input
+          type="hidden"
+          name="intent"
+          value={INTENT.CREATE_FILE}
+        />
+      </Form>
+      <Table.Root>
+        <Table.Header>
+          <Table.Cell header>Documento</Table.Cell>
+          <Table.Cell header>Tipo</Table.Cell>
+          <Table.Cell header>Acciones</Table.Cell>
+        </Table.Header>
+        <Table.Body>
+          {user_files.map((file) => {
+            const id = `file_${file.id}`
+            return (
+              <Table.Row key={id}>
+                <Table.Cell>{file.basename}</Table.Cell>
+                <Table.Cell>
+                  {get_user_file_type_label(file.type)}
+                </Table.Cell>
+                <Table.Cell>
+                  <a
+                    href={`/files/${file.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    descargar
+                  </a>
+                </Table.Cell>
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
+      </Table.Root>
+    </Formulary.Section>
   )
 }
 
@@ -134,7 +195,7 @@ async function fetch_user_files(user_id: number) {
     .innerJoin("user", "user.id", "user_file.user_id")
     .innerJoin("file", "file.id", "user_file.file_id")
     .where("user.id", "=", user_id)
-    .select(["file.basename"])
+    .select(["file.id", "file.basename", "user_file.type"])
     .execute()
 }
 
