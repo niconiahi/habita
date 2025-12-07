@@ -24,3 +24,7 @@ select:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
+
+td a {
+  margin-right: 0;
+}
