@@ -1,4 +1,6 @@
-# Actions
+# Metaframework
+
+## Actions
 
 Whenever new functionality is added to the application, it will be added as a server side action. That's why I've set up a pattern which I want you to use every time you are adding functionality to the application
 
@@ -84,3 +86,4 @@ export async function update_service(
 ```
 
 As you can see, every piece of information is received as `FormData` so that it's consistent. It's barely more verbose
+

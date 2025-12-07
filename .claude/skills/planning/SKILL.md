@@ -1,4 +1,6 @@
-# Planning
+This skills guides what plan considerations must be held and how to execute such plan
+
+## Planning
 
 - In all interactions, be extremely concise and sacrifice grammar for the sake of concision
 - At the end of each plan, give me a list of unresolved questions to answer, if any. Make the question extremly concise. Sacrifice grammer for the sake of concision
@@ -6,3 +8,7 @@
 - When asked to save the plan, it should be done as a Github PR
 - Always use AskUserQuestion for clarifications instead of listing questions in text
 - After finishing a phase, run `cd /Users/niconiahi/Documents/repos/habita/apps/web && bun run typecheck 2>&1` to check your work for type errors
+
+## Executing plan
+
+- When executing a multi-phased plan, you must always stop after finish one. I'll manually confirm that you can continue with the next one
