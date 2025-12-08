@@ -5,7 +5,7 @@ services:
     env_file:
       - ../../../.env.production
     volumes:
-      - habita_prod_db_data:/var/lib/postgresql/data
+      - web_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
     image: valkey/valkey:7
     restart: unless-stopped
     volumes:
-      - habita_prod_valkey_data:/data
+      - valkey_data:/data
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
       interval: 10s
@@ -99,8 +99,8 @@ services:
       - "443:443/udp"  # HTTP/3
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - habita_prod_caddy_data:/data
-      - habita_prod_caddy_config:/config
+      - caddy_data:/data
+      - caddy_config:/config
     deploy:
       resources:
         limits:
@@ -118,7 +118,7 @@ services:
       - IMPORT_US_POSTCODES=false
       - IMPORT_GB_POSTCODES=false
     volumes:
-      - habita_prod_nominatim_data:/var/lib/postgresql/14/main
+      - nominatim_data:/var/lib/postgresql/14/main
     shm_size: 2gb
     deploy:
       resources:
@@ -171,11 +171,11 @@ services:
       - web
 
 volumes:
-  habita_prod_db_data:
-  habita_prod_valkey_data:
-  habita_prod_nominatim_data:
-  habita_prod_caddy_data:
-  habita_prod_caddy_config:
+  web_data:
+  valkey_data:
+  nominatim_data:
+  caddy_data:
+  caddy_config:
 
 networks:
   web:
