@@ -58,11 +58,11 @@ jobs:
 
             echo ""
             echo "=== Pulling latest images ==="
-            docker compose -f infra/production/docker-compose.yml pull app go
+            docker compose -f infra/production/docker-compose.yml pull web go
 
             echo ""
             echo "=== Running migrations ==="
-            docker compose -f infra/production/docker-compose.yml run --rm app bun run db:migrate
+            docker compose -f infra/production/docker-compose.yml run --rm web bun run db:migrate
 
             echo ""
             echo "=== Restarting containers ==="
