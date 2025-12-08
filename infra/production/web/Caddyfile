@@ -24,7 +24,7 @@ habita.rent {
   }
 
   # Main application
-  reverse_proxy app:3000
+  reverse_proxy web:3000
 
   # Enable compression
   encode gzip
