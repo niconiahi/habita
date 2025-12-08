@@ -1,4 +1,4 @@
-header {
+body > div > header {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -9,7 +9,7 @@ header {
   height: var(--header-height);
   background-color: var(--gray-700);
 }
-header nav {
+body > div > header > nav {
   display: flex;
   align-items: center;
   gap: var(--spacing-4);

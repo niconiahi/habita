@@ -1,7 +1,9 @@
-import { Form, redirect } from "react-router"
+import { redirect } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
+import { Section } from "~/components/section"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
@@ -63,8 +65,9 @@ export default function ({
 }: Route.ComponentProps) {
   const { contract_types } = loaderData
   return (
-    <Formulary.Root label="Creación de contrato">
-      <Form method="POST">
+    <Content.Root label="Creación de contrato">
+      <Content.Title>Creación de contrato</Content.Title>
+      <Formulary.Root method="POST">
         <TypeSection contract_types={contract_types} />
         <PriceSection />
         <Formulary.Actions>
@@ -76,8 +79,8 @@ export default function ({
             Crear contrato
           </Button>
         </Formulary.Actions>
-      </Form>
-    </Formulary.Root>
+      </Formulary.Root>
+    </Content.Root>
   )
 }
 function TypeSection({
@@ -86,10 +89,10 @@ function TypeSection({
   contract_types: ContractType[]
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>tipo</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>tipo</Section.Title>
+      </Section.Header>
       <Formulary.Field>
         <Formulary.Label htmlFor="type">
           Tipo de contrato
@@ -107,15 +110,15 @@ function TypeSection({
           ))}
         </Formulary.Select>
       </Formulary.Field>
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 function PriceSection() {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>precio</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>precio</Section.Title>
+      </Section.Header>
       <Formulary.Field>
         <Formulary.Label htmlFor="price">
           Precio inicial
@@ -127,6 +130,6 @@ function PriceSection() {
           required
         />
       </Formulary.Field>
-    </Formulary.Section>
+    </Content.Section>
   )
 }

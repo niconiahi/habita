@@ -1,3 +1,8 @@
+---
+name: docker
+description: Docker compose command conventions. Use when running docker compose commands, managing containers, or working with the development infrastructure.
+---
+
 # Docker Commands
 
 ## Docker Compose

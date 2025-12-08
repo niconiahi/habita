@@ -2,9 +2,11 @@ import { useRef, useState } from "react"
 import { Form, useActionData } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
 import { LocationInput } from "~/components/location_input"
 import { RoomMap } from "~/components/room_map"
+import { Section } from "~/components/section"
 import {
   display_room_type,
   ROOM_TYPE,
@@ -152,7 +154,8 @@ export default function ({
 }: Route.ComponentProps) {
   const { property } = loaderData
   return (
-    <Formulary.Root label="Edición de propiedad">
+    <Content.Root>
+      <Content.Title>Edición de propiedad</Content.Title>
       <Location property={property} />
       <Destinies property={property} />
       <Rooms property={property} />
@@ -160,30 +163,27 @@ export default function ({
       <Members property={property} />
       <Photos property={property} />
       <Services property={property} />
-    </Formulary.Root>
+    </Content.Root>
   )
 }
 
 function Photos({ property }: { property: Property }) {
-  const action_data = useActionData<{ error?: string }>()
   const file_input_ref = useRef<HTMLInputElement>(null)
-  const form_ref = useRef<HTMLFormElement>(null)
-  function handle_add_click() {
-    file_input_ref.current?.click()
-  }
-  function handle_file_change() {
-    form_ref.current?.requestSubmit()
-  }
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>Fotos</Formulary.Title>
-        <Formulary.Actions>
-          <Button type="button" onClick={handle_add_click}>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>Fotos</Section.Title>
+        <Section.Actions>
+          <Button
+            type="button"
+            onClick={() => {
+              file_input_ref.current?.click()
+            }}
+          >
             Agregar foto
           </Button>
-        </Formulary.Actions>
-      </Formulary.Header>
+        </Section.Actions>
+      </Section.Header>
       <ul className="!grid grid-cols-1 min-[800px]:grid-cols-2 min-[1200px]:grid-cols-3 gap-4 list-none p-0 m-0">
         {property.images.map((image) => {
           const id = `image_${image.id}`
@@ -198,29 +198,29 @@ function Photos({ property }: { property: Property }) {
           )
         })}
       </ul>
-      {action_data?.error && (
-        <p className="text-red-500">{action_data.error}</p>
-      )}
-      <Form
-        ref={form_ref}
+      <Formulary.Root
         method="POST"
         encType="multipart/form-data"
         className="!contents"
+        onChange={(event) => {
+          event.currentTarget.requestSubmit()
+        }}
       >
-        <input
-          ref={file_input_ref}
-          type="file"
-          name="file"
-          className="sr-only"
-          onChange={handle_file_change}
-        />
-        <input
-          type="hidden"
-          name="intent"
-          value={INTENT.CREATE_PROPERTY_FILE}
-        />
-      </Form>
-    </Formulary.Section>
+        <Formulary.Fields>
+          <input
+            ref={file_input_ref}
+            type="file"
+            name="file"
+            className="sr-only"
+          />
+          <input
+            type="hidden"
+            name="intent"
+            value={INTENT.CREATE_PROPERTY_FILE}
+          />
+        </Formulary.Fields>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
 
@@ -229,11 +229,11 @@ function Members({ property }: { property: Property }) {
     return member.type === ACCESS_TYPE.OWNER
   })
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>miembros</Formulary.Title>
-      </Formulary.Header>
-      <ul className="flex flex-col gap-4 list-none p-0 m-0">
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>miembros</Section.Title>
+      </Section.Header>
+      <ul className="flex flex-col gap-4 list-none p-0 m-0 mb-4">
         {property.members.map((member, index) => {
           const id = `member-${member.id}-${index}`
           return (
@@ -251,38 +251,42 @@ function Members({ property }: { property: Property }) {
           )
         })}
       </ul>
-      {!has_owner ? (
-        <Form method="POST">
-          <Formulary.Field>
-            <Formulary.Label htmlFor="email">
-              email
-            </Formulary.Label>
-            <Formulary.Input
-              id="email"
-              name="email"
-              type="email"
-            />
-          </Formulary.Field>
-          <Button
-            type="submit"
-            name="intent"
-            value={INTENT.INVITE_OWNER}
-          >
-            invitar dueño
-          </Button>
-        </Form>
+      {has_owner ? (
+        <Formulary.Root method="POST">
+          <Formulary.Fields>
+            <Formulary.Field>
+              <Formulary.Label htmlFor="email">
+                Email
+              </Formulary.Label>
+              <Formulary.Input
+                id="email"
+                name="email"
+                type="email"
+              />
+            </Formulary.Field>
+          </Formulary.Fields>
+          <Formulary.Actions>
+            <Button
+              type="submit"
+              name="intent"
+              value={INTENT.INVITE_OWNER}
+            >
+              Invitar dueño
+            </Button>
+          </Formulary.Actions>
+        </Formulary.Root>
       ) : null}
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 
 function Services({ property }: { property: Property }) {
   const action_data = useActionData<{ error?: string }>()
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>servicios</Formulary.Title>
-        <Formulary.Actions>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>servicios</Section.Title>
+        <Section.Actions>
           <Form method="POST">
             <Button
               type="submit"
@@ -292,58 +296,60 @@ function Services({ property }: { property: Property }) {
               Agregar servicio
             </Button>
           </Form>
-        </Formulary.Actions>
-      </Formulary.Header>
+        </Section.Actions>
+      </Section.Header>
       <ul className="flex flex-col gap-4 list-none p-0 m-0">
         {property.services.map((service) => {
           const id = `service_${service.id}`
           return (
             <li key={id}>
-              <Form method="POST">
-                <input
-                  type="hidden"
-                  value={service.id}
-                  name="id"
-                />
-                <Formulary.Field>
-                  <Formulary.Label
-                    htmlFor={`type_${service.id}`}
-                  >
-                    Tipo
-                  </Formulary.Label>
-                  <Formulary.Select
-                    name="type"
-                    id={`type_${service.id}`}
-                    defaultValue={service.type}
-                  >
-                    {Object.values(SERVICE_TYPE).map(
-                      (type) => {
-                        const option_id = `service_type_${type}`
-                        return (
-                          <option
-                            key={option_id}
-                            value={type}
-                          >
-                            {get_service_type_label(type)}
-                          </option>
-                        )
-                      },
-                    )}
-                  </Formulary.Select>
-                </Formulary.Field>
-                <Formulary.Field>
-                  <Formulary.Label
-                    htmlFor={`code_${service.id}`}
-                  >
-                    Identificador
-                  </Formulary.Label>
-                  <Formulary.Input
-                    id={`code_${service.id}`}
-                    type="number"
-                    name="code"
-                    defaultValue={service.code}
+              <Formulary.Root method="POST">
+                <Formulary.Fields>
+                  <input
+                    type="hidden"
+                    value={service.id}
+                    name="id"
                   />
-                </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      htmlFor={`type_${service.id}`}
+                    >
+                      Tipo
+                    </Formulary.Label>
+                    <Formulary.Select
+                      name="type"
+                      id={`type_${service.id}`}
+                      defaultValue={service.type}
+                    >
+                      {Object.values(SERVICE_TYPE).map(
+                        (type) => {
+                          const option_id = `service_type_${type}`
+                          return (
+                            <option
+                              key={option_id}
+                              value={type}
+                            >
+                              {get_service_type_label(type)}
+                            </option>
+                          )
+                        },
+                      )}
+                    </Formulary.Select>
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      htmlFor={`code_${service.id}`}
+                    >
+                      Identificador
+                    </Formulary.Label>
+                    <Formulary.Input
+                      id={`code_${service.id}`}
+                      type="number"
+                      name="code"
+                      defaultValue={service.code}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
                 <Formulary.Actions>
                   <Button
                     type="submit"
@@ -360,7 +366,7 @@ function Services({ property }: { property: Property }) {
                     Eliminar servicio
                   </Button>
                 </Formulary.Actions>
-              </Form>
+              </Formulary.Root>
             </li>
           )
         })}
@@ -368,72 +374,82 @@ function Services({ property }: { property: Property }) {
       {action_data?.error && (
         <p className="text-red-500">{action_data.error}</p>
       )}
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 
 function Location({ property }: { property: Property }) {
   const [disabled, set_disabled] = useState(true)
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>ubicación</Formulary.Title>
-      </Formulary.Header>
-      <Form method="POST">
-        <input
-          type="hidden"
-          value={INTENT.UPDATE_LOCATION}
-          name="intent"
-        />
-        <input
-          type="hidden"
-          value={property.location.id}
-          name="id"
-        />
-        <LocationInput
-          default_value={property.location.address}
-          default_lon={property.location.longitude}
-          default_lat={property.location.latitude}
-          on_selection={() => {
-            set_disabled(false)
-          }}
-          on_clear={() => {
-            set_disabled(true)
-          }}
-        />
-        <Button disabled={disabled} type="submit">
-          Guardar ubicación
-        </Button>
-      </Form>
-    </Formulary.Section>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>ubicación</Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={INTENT.UPDATE_LOCATION}
+            name="intent"
+          />
+          <input
+            type="hidden"
+            value={property.location.id}
+            name="id"
+          />
+          <LocationInput
+            default_value={property.location.address}
+            default_lon={property.location.longitude}
+            default_lat={property.location.latitude}
+            on_selection={() => {
+              set_disabled(false)
+            }}
+            on_clear={() => {
+              set_disabled(true)
+            }}
+          />
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button disabled={disabled} type="submit">
+            Guardar ubicación
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
 
 function Destinies({ property }: { property: Property }) {
   const property_destinies = get_property_destinies()
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>Destino</Formulary.Title>
-      </Formulary.Header>
-      <Form method="POST">
-        <Formulary.Label>Tipos</Formulary.Label>
-        <fieldset>
-          {property_destinies.map((destiny) => {
-            const is_checked =
-              property.destinies.includes(destiny)
-            return (
-              <Formulary.Checkbox
-                key={destiny}
-                name="destiny"
-                value={destiny}
-                defaultChecked={is_checked}
-              >
-                {get_property_destiny_label(destiny)}
-              </Formulary.Checkbox>
-            )
-          })}
-        </fieldset>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>Destino</Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label htmlFor="destiny">
+              Tipos
+            </Formulary.Label>
+            <fieldset>
+              {property_destinies.map((destiny) => {
+                const is_checked =
+                  property.destinies.includes(destiny)
+                return (
+                  <Formulary.Checkbox
+                    key={destiny}
+                    name="destiny"
+                    value={destiny}
+                    defaultChecked={is_checked}
+                  >
+                    {get_property_destiny_label(destiny)}
+                  </Formulary.Checkbox>
+                )
+              })}
+            </fieldset>
+          </Formulary.Field>
+        </Formulary.Fields>
         <Formulary.Actions>
           <Button
             type="submit"
@@ -443,17 +459,17 @@ function Destinies({ property }: { property: Property }) {
             Guardar destino
           </Button>
         </Formulary.Actions>
-      </Form>
-    </Formulary.Section>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
 
 function Rooms({ property }: { property: Property }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>ambientes</Formulary.Title>
-        <Formulary.Actions>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>ambientes</Section.Title>
+        <Section.Actions>
           <Form method="POST">
             <Button
               type="submit"
@@ -463,72 +479,74 @@ function Rooms({ property }: { property: Property }) {
               Agregar ambiente
             </Button>
           </Form>
-        </Formulary.Actions>
-      </Formulary.Header>
+        </Section.Actions>
+      </Section.Header>
       <ul>
         {property.rooms.map((room) => {
           const id = `room-${room.id}`
           return (
             <li key={id}>
-              <Form method="POST">
-                <input
-                  type="hidden"
-                  value={room.id}
-                  name="id"
-                />
-                <Formulary.Field>
-                  <Formulary.Label
-                    htmlFor={`type_${room.id}`}
-                  >
-                    Tipo
-                  </Formulary.Label>
-                  <Formulary.Select
-                    name="type"
-                    id={`type_${room.id}`}
-                    defaultValue={room.type}
-                  >
-                    {Object.values(ROOM_TYPE).map(
-                      (type) => {
-                        const option_id = `room_type_${type}`
-                        return (
-                          <option
-                            key={option_id}
-                            value={type}
-                          >
-                            {display_room_type(type)}
-                          </option>
-                        )
-                      },
-                    )}
-                  </Formulary.Select>
-                </Formulary.Field>
-                <Formulary.Field>
-                  <Formulary.Label
-                    htmlFor={`length_${room.id}`}
-                  >
-                    Largo
-                  </Formulary.Label>
-                  <Formulary.Input
-                    id={`length_${room.id}`}
-                    type="number"
-                    name="length"
-                    step={0.1}
-                    defaultValue={room.length}
+              <Formulary.Root method="POST">
+                <Formulary.Fields>
+                  <input
+                    type="hidden"
+                    value={room.id}
+                    name="id"
                   />
-                </Formulary.Field>
-                <Formulary.Field>
-                  <Formulary.Label
-                    htmlFor={`width_${room.id}`}
-                  >
-                    Ancho
-                  </Formulary.Label>
-                  <Formulary.Input
-                    id={`width_${room.id}`}
-                    type="number"
-                    name="width"
-                    defaultValue={room.width}
-                  />
-                </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      htmlFor={`type_${room.id}`}
+                    >
+                      Tipo
+                    </Formulary.Label>
+                    <Formulary.Select
+                      name="type"
+                      id={`type_${room.id}`}
+                      defaultValue={room.type}
+                    >
+                      {Object.values(ROOM_TYPE).map(
+                        (type) => {
+                          const option_id = `room_type_${type}`
+                          return (
+                            <option
+                              key={option_id}
+                              value={type}
+                            >
+                              {display_room_type(type)}
+                            </option>
+                          )
+                        },
+                      )}
+                    </Formulary.Select>
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      htmlFor={`length_${room.id}`}
+                    >
+                      Largo
+                    </Formulary.Label>
+                    <Formulary.Input
+                      id={`length_${room.id}`}
+                      type="number"
+                      name="length"
+                      step={0.1}
+                      defaultValue={room.length}
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      htmlFor={`width_${room.id}`}
+                    >
+                      Ancho
+                    </Formulary.Label>
+                    <Formulary.Input
+                      id={`width_${room.id}`}
+                      type="number"
+                      name="width"
+                      defaultValue={room.width}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
                 <Formulary.Actions>
                   <Button
                     type="submit"
@@ -545,12 +563,12 @@ function Rooms({ property }: { property: Property }) {
                     Eliminar ambiente
                   </Button>
                 </Formulary.Actions>
-              </Form>
+              </Formulary.Root>
             </li>
           )
         })}
       </ul>
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 function RoomMapSection({
@@ -562,28 +580,30 @@ function RoomMapSection({
     Map<number, { x: number; y: number }>
   >(new Map())
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>mapa</Formulary.Title>
-      </Formulary.Header>
-      <RoomMap
-        rooms={property.rooms}
-        on_positions_change={set_room_positions}
-      />
-      <Form method="POST">
-        <input
-          type="hidden"
-          name="positions"
-          value={JSON.stringify(
-            Array.from(room_positions.entries()).map(
-              ([room_id, pos]) => ({
-                room_id,
-                position_x: pos.x,
-                position_y: pos.y,
-              }),
-            ),
-          )}
-        />
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>Mapa</Section.Title>
+      </Section.Header>
+      <Formulary.Root>
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            name="positions"
+            value={JSON.stringify(
+              Array.from(room_positions.entries()).map(
+                ([room_id, pos]) => ({
+                  room_id,
+                  position_x: pos.x,
+                  position_y: pos.y,
+                }),
+              ),
+            )}
+          />
+          <RoomMap
+            rooms={property.rooms}
+            on_positions_change={set_room_positions}
+          />
+        </Formulary.Fields>
         <Formulary.Actions>
           <Button
             type="submit"
@@ -594,7 +614,7 @@ function RoomMapSection({
             Guardar mapa
           </Button>
         </Formulary.Actions>
-      </Form>
-    </Formulary.Section>
+      </Formulary.Root>
+    </Content.Section>
   )
 }

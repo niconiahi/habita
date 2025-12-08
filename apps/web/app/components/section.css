@@ -1,0 +1,33 @@
+header.section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: sticky;
+  top: var(--header-height);
+  background-color: var(--gray-900);
+  z-index: 5;
+  padding-inline: 0;
+  padding-block: var(--spacing-4);
+  height: auto;
+  width: calc(100% + var(--spacing-8));
+  margin-left: calc(var(--spacing-4) * -1);
+}
+
+header.section:has(.actions) {
+  justify-content: space-between;
+}
+
+header.section h3 {
+  margin-left: var(--spacing-4);
+  font-size: var(--spacing-8);
+}
+
+header.section h3:first-letter {
+  text-transform: uppercase;
+}
+
+header.section .actions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-right: var(--spacing-4);
+}

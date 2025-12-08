@@ -2,6 +2,8 @@ import { Form } from "react-router"
 import * as v from "valibot"
 import { subMonths, startOfMonth, format } from "date-fns"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
+import { Section } from "~/components/section"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
@@ -160,15 +162,19 @@ export default function ({
     current_rent_price,
   } = loaderData
   return (
-    <main>
-      <section>
-        <h2>Precio de alquiler actual</h2>
+    <Content.Root>
+      <Content.Title>Comprobantes de pago</Content.Title>
+      <Content.Section>
+        <Section.Header>
+          <Section.Title>Precio de alquiler actual</Section.Title>
+        </Section.Header>
         <p>${current_rent_price}</p>
-      </section>
-      <h1>Comprobantes de pago</h1>
+      </Content.Section>
       {dates.map((date) => (
-        <section key={date.toISOString()}>
-          <h2>{format(date, "MMMM yyyy")}</h2>
+        <Content.Section key={date.toISOString()}>
+          <Section.Header>
+            <Section.Title>{format(date, "MMMM yyyy")}</Section.Title>
+          </Section.Header>
           <ul>
             {receipt_types.map((type) => {
               const receipt =
@@ -222,9 +228,9 @@ export default function ({
               )
             })}
           </ul>
-        </section>
+        </Content.Section>
       ))}
-    </main>
+    </Content.Root>
   )
 }
 

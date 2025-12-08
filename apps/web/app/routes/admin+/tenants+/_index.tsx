@@ -3,6 +3,7 @@ import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { display_location } from "~/lib/display_location"
 import { fetch_tenants } from "./fetchers/tenants.server"
+import { Content } from "~/components/content"
 import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
@@ -22,14 +23,12 @@ export async function loader({
   return { tenants }
 }
 
-export default function Tenants() {
+export default function () {
   const { tenants } = useLoaderData<typeof loader>()
   return (
-    <>
-      <h1 className="text-2xl font-bold">Inquilinos</h1>
-      {tenants.length === 0 ? (
-        <p>No hay inquilinos.</p>
-      ) : (
+    <Content.Root>
+      <Content.Title>Inquilinos</Content.Title>
+      <Content.Section>
         <Table.Root>
           <Table.Header>
             <Table.Cell header>Nombre</Table.Cell>
@@ -39,7 +38,10 @@ export default function Tenants() {
           </Table.Header>
           <Table.Body>
             {tenants.map((tenant) => {
-              const full_name = [tenant.name, tenant.surname]
+              const full_name = [
+                tenant.name,
+                tenant.surname,
+              ]
                 .filter(Boolean)
                 .join(" ")
               return (
@@ -52,7 +54,9 @@ export default function Tenants() {
                     {display_location(tenant.location)}
                   </Table.Cell>
                   <Table.Cell>
-                    <Link to={`/admin/tenants/${tenant.id}`}>
+                    <Link
+                      to={`/admin/tenants/${tenant.id}`}
+                    >
                       <Button>Ver perfil</Button>
                     </Link>
                   </Table.Cell>
@@ -61,7 +65,7 @@ export default function Tenants() {
             })}
           </Table.Body>
         </Table.Root>
-      )}
-    </>
+      </Content.Section>
+    </Content.Root>
   )
 }

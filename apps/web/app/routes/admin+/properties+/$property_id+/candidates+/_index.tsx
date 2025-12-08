@@ -11,6 +11,7 @@ import {
 } from "~/lib/property_access.server"
 import { fetch_property } from "~/routes/properties+/fetchers/property.server"
 import { display_location } from "~/lib/display_location"
+import { Content } from "~/components/content"
 import type { Route } from "./+types/_index"
 
 export async function loader({
@@ -46,53 +47,49 @@ export async function loader({
 export default function PropertyCandidates() {
   const { candidates, property } =
     useLoaderData<typeof loader>()
-
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">
-          Candidatos
-        </h1>
+    <Content.Root>
+      <Content.Title>Candidatos</Content.Title>
+      <Content.Section>
         <p className="text-gray-600">
           {display_location(property.location)}
         </p>
-      </div>
-      {candidates.length === 0 ? (
-        <p>No hay candidatos para revisar.</p>
-      ) : (
-        <div className="space-y-4">
-          {candidates.map((candidate) => {
-            const full_name = [
-              candidate.name,
-              candidate.surname,
-            ]
-              .filter(Boolean)
-              .join(" ")
-
-            return (
-              <div
-                key={candidate.id}
-                className="border rounded-lg p-4 space-y-2"
-              >
-                <div className="space-y-1">
-                  <h2 className="text-lg font-semibold">
-                    {full_name || "Sin nombre"}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {candidate.email}
-                  </p>
-                  {candidate.phone_number && (
+        {candidates.length === 0 ? (
+          <p>No hay candidatos para revisar.</p>
+        ) : (
+          <div className="space-y-4">
+            {candidates.map((candidate) => {
+              const full_name = [
+                candidate.name,
+                candidate.surname,
+              ]
+                .filter(Boolean)
+                .join(" ")
+              return (
+                <div
+                  key={candidate.id}
+                  className="border rounded-lg p-4 space-y-2"
+                >
+                  <div className="space-y-1">
+                    <h2 className="text-lg font-semibold">
+                      {full_name || "Sin nombre"}
+                    </h2>
                     <p className="text-sm text-gray-600">
-                      {candidate.phone_number}
+                      {candidate.email}
                     </p>
-                  )}
+                    {candidate.phone_number && (
+                      <p className="text-sm text-gray-600">
+                        {candidate.phone_number}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
+              )
+            })}
+          </div>
+        )}
+      </Content.Section>
+    </Content.Root>
   )
 }
 

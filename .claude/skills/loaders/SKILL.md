@@ -1,3 +1,8 @@
+---
+name: loaders
+description: Data fetching patterns for loaders. Use when writing database queries, creating data fetching functions, or implementing route loaders.
+---
+
 - Every block of code that calls the database using `query_builder` will be wrapped in a function with prefix `fetch`
 
 ```ts

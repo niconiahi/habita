@@ -10,6 +10,7 @@ export const InputSchema = v.object({
   start_date: v.optional(DateSchema),
   end_date: v.optional(DateSchema),
   escalation_type: v.optional(ForceNumberSchema),
+  destiny: v.optional(ForceNumberSchema),
   escalation_duration: v.optional(v.string()),
   fine_percentage: v.optional(ForceNumberSchema),
   early_termination: v.optional(v.string()),
@@ -32,6 +33,7 @@ export async function update_contract(
     escalation_duration,
     fine_percentage,
     early_termination,
+    destiny,
   } = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),
@@ -40,13 +42,16 @@ export async function update_contract(
     .updateTable("contract")
     .set({
       property_id,
-      updated_at: now,
       start_date,
       end_date,
+      destiny,
       escalation_type,
       escalation_duration,
+      updated_at: now,
       fine_amount: fine_percentage,
-      early_termination: early_termination ? Number(early_termination) : undefined,
+      early_termination: early_termination
+        ? Number(early_termination)
+        : undefined,
     })
     .where("contract.id", "=", id)
     .execute()

@@ -1,3 +1,8 @@
+---
+name: security
+description: Authentication and authorization patterns. Use when implementing auth checks, protecting routes, handling sessions, or managing user access control.
+---
+
 - Upon session creation, also fetch `accesses` so that we know up front which pages will this user be able to go, without further `Request`s to the server. At least for authorization
 - These `accesses` would get stored as _user attributes_
 - **Authentication checks must be explicit in each protected route** - never use middleware or layout-level auth validation

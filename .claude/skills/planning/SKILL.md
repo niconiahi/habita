@@ -1,3 +1,8 @@
+---
+name: planning
+description: Multi-phased planning and execution workflow. Use when planning complex tasks, creating implementation plans, or executing phased work.
+---
+
 This skills guides what plan considerations must be held and how to execute such plan
 
 ## Planning

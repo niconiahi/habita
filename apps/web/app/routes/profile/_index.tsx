@@ -3,7 +3,9 @@ import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { useRef } from "react"
 import { Form, Link } from "react-router"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
+import { Section } from "~/components/section"
 import { Table } from "~/components/table"
 import { get_access_type_label } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
@@ -114,15 +116,15 @@ function DocumentsSection({
     form_ref.current?.requestSubmit()
   }
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>documentos</Formulary.Title>
-        <Formulary.Actions>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>documentos</Section.Title>
+        <Section.Actions>
           <Button type="button" onClick={handle_add_click}>
             agregar documento
           </Button>
-        </Formulary.Actions>
-      </Formulary.Header>
+        </Section.Actions>
+      </Section.Header>
       <Form
         ref={form_ref}
         method="POST"
@@ -185,7 +187,7 @@ function DocumentsSection({
           })}
         </Table.Body>
       </Table.Root>
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 

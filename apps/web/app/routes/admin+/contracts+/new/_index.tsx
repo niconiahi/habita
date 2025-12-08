@@ -1,5 +1,6 @@
 import { Form, redirect } from "react-router"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
 import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
@@ -55,11 +56,12 @@ export default function ({
     )
   }
   return (
-    <Formulary.Root label="Creación de contrato">
+    <Content.Root label="Creación de contrato">
+      <Content.Title>Creación de contrato</Content.Title>
       <PropertySection
         available_properties={available_properties}
       />
-    </Formulary.Root>
+    </Content.Root>
   )
 }
 function PropertySection({
@@ -68,8 +70,8 @@ function PropertySection({
   available_properties: AvailableProperty[]
 }) {
   return (
-    <Formulary.Section>
-      <Form method="POST">
+    <Content.Section>
+      <Formulary.Root method="POST">
         <Formulary.Field>
           <Formulary.Label htmlFor="property_id">
             Propiedad
@@ -93,7 +95,7 @@ function PropertySection({
         <Formulary.Actions>
           <Button type="submit">Continuar</Button>
         </Formulary.Actions>
-      </Form>
-    </Formulary.Section>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
