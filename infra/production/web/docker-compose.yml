@@ -16,7 +16,7 @@ services:
         limits:
           memory: 1G
     networks:
-      - habita-network
+      - web
 
   app:
     image: niconiahi/habita:web-latest
@@ -41,8 +41,7 @@ services:
         limits:
           memory: 2G
     networks:
-      - habita-network
-      - observability
+      - web
 
   valkey:
     image: valkey/valkey:7
@@ -59,7 +58,7 @@ services:
         limits:
           memory: 512M
     networks:
-      - habita-network
+      - web
 
   go:
     image: niconiahi/habita:go-latest
@@ -84,8 +83,7 @@ services:
         limits:
           memory: 512M
     networks:
-      - habita-network
-      - observability
+      - web
 
   caddy:
     image: caddy:2
@@ -108,7 +106,7 @@ services:
         limits:
           memory: 256M
     networks:
-      - habita-network
+      - web
 
   nominatim:
     image: mediagis/nominatim:4.4
@@ -129,7 +127,7 @@ services:
         reservations:
           memory: 4G
     networks:
-      - habita-network
+      - web
 
   ofelia:
     image: mcuadros/ofelia:latest
@@ -146,7 +144,7 @@ services:
         limits:
           memory: 128M
     networks:
-      - habita-network
+      - web
 
   image:
     image: darthsim/imgproxy:latest
@@ -170,7 +168,7 @@ services:
         limits:
           memory: 512M
     networks:
-      - habita-network
+      - web
 
 volumes:
   habita_prod_db_data:
@@ -180,5 +178,5 @@ volumes:
   habita_prod_caddy_config:
 
 networks:
-  habita-network:
+  web:
     driver: bridge
