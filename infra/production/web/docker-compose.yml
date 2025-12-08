@@ -18,7 +18,7 @@ services:
     networks:
       - web
 
-  app:
+  web:
     image: niconiahi/habita:web-latest
     restart: unless-stopped
     env_file:
@@ -89,7 +89,7 @@ services:
     image: caddy:2
     restart: unless-stopped
     depends_on:
-      app:
+      web:
         condition: service_started
       go:
         condition: service_healthy
@@ -133,7 +133,7 @@ services:
     image: mcuadros/ofelia:latest
     restart: unless-stopped
     depends_on:
-      app:
+      web:
         condition: service_started
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -156,7 +156,7 @@ services:
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_AUTO_WEBP: "true"
     depends_on:
-      app:
+      web:
         condition: service_started
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
