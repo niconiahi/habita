@@ -29,6 +29,7 @@ export interface Contract {
   default_amount: Numeric | null;
   default_duration: string | null;
   default_type: number | null;
+  destiny: number | null;
   early_termination: number | null;
   end_date: Timestamp | null;
   escalation_duration: string | null;

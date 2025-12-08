@@ -3,6 +3,7 @@ import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 import { Card } from "~/components/card"
+import { Content } from "~/components/content"
 import type { Route } from "./+types/$tenant_id"
 
 export async function loader({
@@ -34,18 +35,18 @@ export default function TenantProfile() {
     .filter(Boolean)
     .join(" ")
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-6">
-        Perfil del inquilino
-      </h1>
-      <Card.Root>
-        <Card.Body>
-          <Card.Title>Información de contacto</Card.Title>
-          <Card.Content>
-            {full_name} · {tenant.email}
-          </Card.Content>
-        </Card.Body>
-      </Card.Root>
-    </>
+    <Content.Root>
+      <Content.Title>Perfil del inquilino</Content.Title>
+      <Content.Section>
+        <Card.Root>
+          <Card.Body>
+            <Card.Title>Información de contacto</Card.Title>
+            <Card.Content>
+              {full_name} · {tenant.email}
+            </Card.Content>
+          </Card.Body>
+        </Card.Root>
+      </Content.Section>
+    </Content.Root>
   )
 }

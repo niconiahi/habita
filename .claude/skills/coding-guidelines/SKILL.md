@@ -1,3 +1,8 @@
+---
+name: coding-guidelines
+description: Mandatory code style rules. Use always when writing any code - covers naming conventions, function declarations, and formatting.
+---
+
 # Obligatory code style
 
 - Every function name should be `snake_case`

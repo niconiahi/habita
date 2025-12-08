@@ -3,33 +3,26 @@ import {
   type ReactNode,
   type ComponentPropsWithoutRef,
 } from "react"
+import { Form } from "react-router"
 import "~/components/formulary.css"
 
 function Root({
   children,
-  label,
-}: {
+  ...props
+}: ComponentPropsWithoutRef<typeof Form> & {
   children: ReactNode
-  label: string
 }) {
   return (
-    <div className="formulary" aria-label={label}>
+    <Form className="formulary" {...props}>
       {children}
-    </div>
+    </Form>
   )
 }
-function Section({ children }: { children: ReactNode }) {
-  return <section>{children}</section>
-}
-
-function Header({ children }: { children: ReactNode }) {
-  return <header className="header">{children}</header>
+function Fields({ children }: { children: ReactNode }) {
+  return <div className="fields">{children}</div>
 }
 function Actions({ children }: { children: ReactNode }) {
   return <div className="actions">{children}</div>
-}
-function Title({ children }: { children: ReactNode }) {
-  return <h3>{children}</h3>
 }
 function Label({
   children,
@@ -89,13 +82,14 @@ function Field({ children }: { children: ReactNode }) {
 function Error({ children }: { children: ReactNode }) {
   return <span className="error">{children}</span>
 }
+function Textarea(props: ComponentPropsWithoutRef<"textarea">) {
+  return <textarea {...props} />
+}
 
 export const Formulary = {
   Root,
-  Section,
-  Header,
+  Fields,
   Actions,
-  Title,
   Label,
   Input,
   Select,
@@ -103,4 +97,5 @@ export const Formulary = {
   Checkbox,
   Field,
   Error,
+  Textarea,
 }

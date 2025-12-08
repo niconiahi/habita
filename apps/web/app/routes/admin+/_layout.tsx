@@ -1,6 +1,5 @@
 import { Outlet } from "react-router"
 import { Dashboard } from "~/components/dashboard"
-import "./_layout.css"
 
 export default function () {
   return (
@@ -18,9 +17,7 @@ export default function () {
           </Dashboard.Link>
         </Dashboard.Section>
       </Dashboard.Root>
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
     </div>
   )
 }

@@ -2,7 +2,9 @@ import { useRef } from "react"
 import { Form } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
+import { Section } from "~/components/section"
 import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/auth.server"
 import {
@@ -37,9 +39,7 @@ import {
 } from "~/routes/properties+/fetchers/property.server"
 
 const INTENT = {
-  CREATE_CONTRACT: "create_contract",
   UPDATE_CONTRACT: "update_contract",
-  DESTROY_CONTRACT: "destroy_contract",
   CREATE_FILE: "create_file",
   DESTROY_FILE: "destroy_file",
   CREATE_PDF: "create_pdf",
@@ -72,11 +72,8 @@ export async function action({
   )
   switch (intent) {
     case INTENT.UPDATE_CONTRACT: {
+      console.log("form_data", form_data)
       await actions.update_contract(form_data, property_id)
-      return null
-    }
-    case INTENT.DESTROY_CONTRACT: {
-      await actions.destroy_contract(form_data)
       return null
     }
     case INTENT.CREATE_FILE: {
@@ -152,311 +149,518 @@ export default function ({
     contract_file_types,
   } = loaderData
   return (
-    <Formulary.Root label="Edición de contrato">
-      <Form method="POST">
-        <input
-          type="hidden"
-          value={contract.id}
-          name="id"
-        />
-        <InventorySection />
-        <DestinySection property={property} />
-        <DatesSection contract={contract} />
-        <EscalationSection contract={contract} />
-        <PaymentSection />
-        <FineSection contract={contract} />
-        <ReturnsSection />
-        <EarlyTerminationSection contract={contract} />
-        <ShowingSection />
-        <JurisdictionSection />
+    <Content.Root>
+      <Content.Title>Edición de contrato</Content.Title>
+      <SectionTwo contract={contract} />
+      <SectionThree
+        contract={contract}
+        property={property}
+      />
+      <SectionSix contract={contract} />
+      <SectionSeven contract={contract} />
+      <SectionEight contract={contract} />
+      <SectionNine contract={contract} />
+      <SectionFourteen contract={contract} />
+      <SectionFifteen contract={contract} />
+      <SectionSixteen contract={contract} />
+      <SectionTwentyOne contract={contract} />
+      <DocumentsSection
+        contract={contract}
+        contract_file_types={contract_file_types}
+      />
+      <PeriodsSection contract={contract} />
+    </Content.Root>
+  )
+}
+
+function SectionTwo({ contract }: { contract: Contract }) {
+  return (
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>sección 2: estado</Section.Title>
+      </Section.Header>
+      <ul>
+        {INVENTORY.map((item) => {
+          const id = `inventory_${item.id}`
+          return (
+            <li key={id}>
+              <Formulary.Fields>
+                <Formulary.Field>
+                  <Formulary.Label htmlFor="start_date">
+                    Nombre del elemento
+                  </Formulary.Label>
+                  <Formulary.Input
+                    id="name"
+                    name="name"
+                    defaultValue={item.name}
+                  />
+                </Formulary.Field>
+              </Formulary.Fields>
+              <Formulary.Root>
+                <Formulary.Fields>
+                  <input
+                    type="hidden"
+                    value={contract.id}
+                    name="id"
+                  />
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button type="button">
+                    {item.has_photo
+                      ? "Cambiar foto"
+                      : "Subir foto"}
+                  </Button>
+                  <Button type="button">
+                    Eliminar objeto
+                  </Button>
+                </Formulary.Actions>
+              </Formulary.Root>
+            </li>
+          )
+        })}
+      </ul>
+    </Content.Section>
+  )
+}
+function SectionThree({
+  property,
+  contract,
+}: {
+  property: Property
+  contract: Contract
+}) {
+  return (
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>sección 3: destino</Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          {property.destinies.map((destiny) => (
+            <Formulary.Radio
+              key={destiny}
+              name="destiny"
+              value={destiny}
+              defaultChecked={contract.destiny === destiny}
+            >
+              {get_property_destiny_label(destiny)}
+            </Formulary.Radio>
+          ))}
+        </Formulary.Fields>
         <Formulary.Actions>
           <Button
             type="submit"
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            actualizar contrato
-          </Button>
-          <Button
-            type="submit"
-            name="intent"
-            value={INTENT.DESTROY_CONTRACT}
-          >
-            eliminar contrato
-          </Button>
-          <Button
-            type="submit"
-            name="intent"
-            disabled={!owner || !tenant}
-            value={INTENT.CREATE_PDF}
-          >
-            generar pdf
+            Guardar destino
           </Button>
         </Formulary.Actions>
-      </Form>
-      <DocumentsSection
-        contract={contract}
-        contract_file_types={contract_file_types}
-      />
-      <PeriodsSection contract={contract} />
-    </Formulary.Root>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
-
-function InventorySection() {
+function SectionSix({ contract }: { contract: Contract }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 2: estado</Formulary.Title>
-      </Formulary.Header>
-      <ul className="flex flex-col gap-2 list-none p-0 m-0">
-        {INVENTORY.map((item) => {
-          const id = `inventory_${item.id}`
-          return (
-            <li key={id} className="flex items-center gap-4">
-              <span>{item.name}</span>
-              <Button type="button">
-                {item.has_photo ? "cambiar foto" : "subir foto"}
-              </Button>
-              <Button type="button">eliminar objeto</Button>
-            </li>
-          )
-        })}
-      </ul>
-    </Formulary.Section>
-  )
-}
-function DestinySection({
-  property,
-}: {
-  property: Property
-}) {
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 3: destino</Formulary.Title>
-      </Formulary.Header>
-      <fieldset>
-        {property.destinies.map((destiny) => (
-          <Formulary.Radio
-            key={destiny}
-            name="destiny"
-            value={destiny}
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>sección 6: plazo</Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="start_date">
+              fecha de inicio
+            </Formulary.Label>
+            <Formulary.Input
+              id="start_date"
+              name="start_date"
+              type="datetime-local"
+              defaultValue={
+                contract.start_date
+                  ? format_date_for_input(
+                      contract.start_date,
+                    )
+                  : undefined
+              }
+            />
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label htmlFor="end_date">
+              fecha de finalizacion
+            </Formulary.Label>
+            <Formulary.Input
+              id="end_date"
+              type="datetime-local"
+              name="end_date"
+              defaultValue={
+                contract.end_date
+                  ? format_date_for_input(contract.end_date)
+                  : undefined
+              }
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
           >
-            {get_property_destiny_label(destiny)}
-          </Formulary.Radio>
-        ))}
-      </fieldset>
-    </Formulary.Section>
+            Guardar plazo
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
-function DatesSection({ contract }: { contract: Contract }) {
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 6: plazo</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="start_date">
-          fecha de inicio
-        </Formulary.Label>
-        <Formulary.Input
-          id="start_date"
-          name="start_date"
-          type="datetime-local"
-          defaultValue={
-            contract.start_date
-              ? format_date_for_input(contract.start_date)
-              : undefined
-          }
-        />
-      </Formulary.Field>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="end_date">
-          fecha de finalizacion
-        </Formulary.Label>
-        <Formulary.Input
-          id="end_date"
-          type="datetime-local"
-          name="end_date"
-          defaultValue={
-            contract.end_date
-              ? format_date_for_input(contract.end_date)
-              : undefined
-          }
-        />
-      </Formulary.Field>
-    </Formulary.Section>
-  )
-}
-function EscalationSection({
+function SectionSeven({
   contract,
 }: {
   contract: Contract
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 7: canon locativo</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="escalation_type">
-          tipo
-        </Formulary.Label>
-        <Formulary.Select
-          name="escalation_type"
-          id="escalation_type"
-          defaultValue={contract.escalation_type ?? undefined}
-        >
-          {Object.values(ESCALATION_TYPE).map((type) => {
-            const id = `escalation_${type}`
-            return (
-              <option key={id} value={type}>
-                {get_escalation_label(type)}
-              </option>
-            )
-          })}
-        </Formulary.Select>
-      </Formulary.Field>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="escalation_duration">
-          cada
-        </Formulary.Label>
-        <Formulary.Select
-          name="escalation_duration"
-          id="escalation_duration"
-          defaultValue={contract.escalation_duration ?? undefined}
-        >
-          {DURATIONS.map((duration) => {
-            const id = `escalation_duration_${duration}`
-            return (
-              <option key={id} value={duration}>
-                {get_duration_label(duration)}
-              </option>
-            )
-          })}
-        </Formulary.Select>
-      </Formulary.Field>
-    </Formulary.Section>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 7: canon locativo
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="escalation_type">
+              tipo
+            </Formulary.Label>
+            <Formulary.Select
+              name="escalation_type"
+              id="escalation_type"
+              defaultValue={
+                contract.escalation_type ?? undefined
+              }
+            >
+              {Object.values(ESCALATION_TYPE).map(
+                (type) => {
+                  const id = `escalation_${type}`
+                  return (
+                    <option key={id} value={type}>
+                      {get_escalation_label(type)}
+                    </option>
+                  )
+                },
+              )}
+            </Formulary.Select>
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label htmlFor="escalation_duration">
+              cada
+            </Formulary.Label>
+            <Formulary.Select
+              name="escalation_duration"
+              id="escalation_duration"
+              defaultValue={
+                contract.escalation_duration ?? undefined
+              }
+            >
+              {DURATIONS.map((duration) => {
+                const id = `escalation_duration_${duration}`
+                return (
+                  <option key={id} value={duration}>
+                    {get_duration_label(duration)}
+                  </option>
+                )
+              })}
+            </Formulary.Select>
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar aumento
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
-function PaymentSection() {
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 8: forma de pago</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="cbu">cbu</Formulary.Label>
-        <Formulary.Input id="cbu" name="cbu" type="text" />
-      </Formulary.Field>
-    </Formulary.Section>
-  )
-}
-function FineSection({ contract }: { contract: Contract }) {
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 9: mora</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="fine_percentage">
-          porcentaje
-        </Formulary.Label>
-        <Formulary.Input
-          id="fine_percentage"
-          name="fine_percentage"
-          type="number"
-          defaultValue={contract.fine_amount ?? undefined}
-        />
-      </Formulary.Field>
-    </Formulary.Section>
-  )
-}
-function ReturnsSection() {
-  return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 14: devoluciones</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="devoluciones_percentage">
-          porcentaje
-        </Formulary.Label>
-        <Formulary.Input
-          id="devoluciones_percentage"
-          name="devoluciones_percentage"
-          type="number"
-        />
-      </Formulary.Field>
-    </Formulary.Section>
-  )
-}
-function EarlyTerminationSection({
+function SectionEight({
   contract,
 }: {
   contract: Contract
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 15: recesion anticipada</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="early_termination">
-          descripcion
-        </Formulary.Label>
-        <textarea
-          id="early_termination"
-          name="early_termination"
-          className="border border-gray-400 bg-gray-700 p-2"
-          defaultValue={contract.early_termination ?? undefined}
-        />
-      </Formulary.Field>
-    </Formulary.Section>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 8: forma de pago
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="cbu">
+              cbu
+            </Formulary.Label>
+            <Formulary.Input
+              id="cbu"
+              name="cbu"
+              type="text"
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar forma de pago
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
-function ShowingSection() {
+function SectionNine({ contract }: { contract: Contract }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 16: muestra de propiedad</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="muestra_horas">
-          cantidad de horas
-        </Formulary.Label>
-        <Formulary.Input
-          id="muestra_horas"
-          name="muestra_horas"
-          type="number"
-        />
-      </Formulary.Field>
-    </Formulary.Section>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>sección 9: mora</Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="fine_percentage">
+              porcentaje
+            </Formulary.Label>
+            <Formulary.Input
+              id="fine_percentage"
+              name="fine_percentage"
+              type="number"
+              defaultValue={
+                contract.fine_amount ?? undefined
+              }
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar mora
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
-function JurisdictionSection() {
+function SectionFourteen({
+  contract,
+}: {
+  contract: Contract
+}) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>sección 21: jurisdiccion</Formulary.Title>
-      </Formulary.Header>
-      <Formulary.Field>
-        <Formulary.Label htmlFor="tribunal">
-          tribunal
-        </Formulary.Label>
-        <Formulary.Select name="tribunal" id="tribunal">
-          {Object.values(TRIBUNAL).map((type) => {
-            const id = `tribunal_${type}`
-            return (
-              <option key={id} value={type}>
-                {get_tribunal_label(type)}
-              </option>
-            )
-          })}
-        </Formulary.Select>
-      </Formulary.Field>
-    </Formulary.Section>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 14: devoluciones
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="devoluciones_percentage">
+              porcentaje
+            </Formulary.Label>
+            <Formulary.Input
+              id="devoluciones_percentage"
+              name="devoluciones_percentage"
+              type="number"
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar devoluciones
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
+  )
+}
+function SectionFifteen({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 15: recesion anticipada
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="early_termination">
+              descripcion
+            </Formulary.Label>
+            <Formulary.Textarea
+              id="early_termination"
+              name="early_termination"
+              defaultValue={
+                contract.early_termination ?? undefined
+              }
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar recesion anticipada
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
+  )
+}
+function SectionSixteen({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 16: muestra de propiedad
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="muestra_horas">
+              cantidad de horas
+            </Formulary.Label>
+            <Formulary.Input
+              id="muestra_horas"
+              name="muestra_horas"
+              type="number"
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar muestra de propiedad
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
+  )
+}
+function SectionTwentyOne({
+  contract,
+}: {
+  contract: Contract
+}) {
+  return (
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>
+          sección 21: jurisdiccion
+        </Section.Title>
+      </Section.Header>
+      <Formulary.Root method="POST">
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label htmlFor="tribunal">
+              tribunal
+            </Formulary.Label>
+            <Formulary.Select name="tribunal" id="tribunal">
+              {Object.values(TRIBUNAL).map((type) => {
+                const id = `tribunal_${type}`
+                return (
+                  <option key={id} value={type}>
+                    {get_tribunal_label(type)}
+                  </option>
+                )
+              })}
+            </Formulary.Select>
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            type="submit"
+            name="intent"
+            value={INTENT.UPDATE_CONTRACT}
+          >
+            Guardar jurisdiccion
+          </Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    </Content.Section>
   )
 }
 function DocumentsSection({
@@ -475,15 +679,15 @@ function DocumentsSection({
     form_ref.current?.requestSubmit()
   }
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>documentos</Formulary.Title>
-        <Formulary.Actions>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>documentos</Section.Title>
+        <Section.Actions>
           <Button type="button" onClick={handle_add_click}>
             agregar documento
           </Button>
-        </Formulary.Actions>
-      </Formulary.Header>
+        </Section.Actions>
+      </Section.Header>
       <Form
         ref={form_ref}
         method="POST"
@@ -505,7 +709,11 @@ function DocumentsSection({
           <Formulary.Label htmlFor="file_type">
             tipo
           </Formulary.Label>
-          <Formulary.Select name="file_type" id="file_type" required>
+          <Formulary.Select
+            name="file_type"
+            id="file_type"
+            required
+          >
             {contract_file_types.map((type) => {
               const id = `file_type_${type}`
               return (
@@ -530,13 +738,24 @@ function DocumentsSection({
             file.type,
           )
           return (
-            <li key={id} className="flex items-center gap-4">
+            <li
+              key={id}
+              className="flex items-center gap-4"
+            >
               <span className="font-bold">
-                {get_contract_file_type_label(contract_type)}
+                {get_contract_file_type_label(
+                  contract_type,
+                )}
               </span>
-              <a href={`/files/${file.id}`}>{file.basename}</a>
+              <a href={`/files/${file.id}`}>
+                {file.basename}
+              </a>
               <Form method="POST">
-                <input type="hidden" value={file.id} name="id" />
+                <input
+                  type="hidden"
+                  value={file.id}
+                  name="id"
+                />
                 <Button
                   type="submit"
                   name="intent"
@@ -549,22 +768,30 @@ function DocumentsSection({
           )
         })}
       </ul>
-    </Formulary.Section>
+    </Content.Section>
   )
 }
-function PeriodsSection({ contract }: { contract: Contract }) {
+function PeriodsSection({
+  contract,
+}: {
+  contract: Contract
+}) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>períodos</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>períodos</Section.Title>
+      </Section.Header>
       <ul className="flex flex-col gap-2 list-none p-0 m-0">
         {contract.periods.map((period) => {
           const id = `period_${period.start_date}`
           const is_first =
-            contract.periods[0].start_date === period.start_date
+            contract.periods[0].start_date ===
+            period.start_date
           return (
-            <li key={id} className="flex items-center gap-4">
+            <li
+              key={id}
+              className="flex items-center gap-4"
+            >
               {is_first ? (
                 <span className="font-bold">inicial</span>
               ) : null}
@@ -573,6 +800,6 @@ function PeriodsSection({ contract }: { contract: Contract }) {
           )
         })}
       </ul>
-    </Formulary.Section>
+    </Content.Section>
   )
 }

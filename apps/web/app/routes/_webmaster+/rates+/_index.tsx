@@ -1,6 +1,7 @@
 import { Form, useLoaderData } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import {
   is_webmaster,
   require_auth,
@@ -89,68 +90,68 @@ export default function AdminRates() {
   const { current_month, current_year, rates, rate_types } =
     useLoaderData<typeof loader>()
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">
-        Índice de actualización
-      </h1>
-      <p className="mb-4">
-        Mes actual: {current_month}/{current_year}
-      </p>
-      <div className="space-y-4">
-        {rate_types.map((type) => {
-          const existing_rate = rates.find(
-            (rate) => rate.type === type,
-          )
-          return (
-            <Form
-              key={type}
-              method="POST"
-              navigate={false}
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <input
-                type="hidden"
-                name="type"
-                value={type}
-              />
-              <input
-                type="hidden"
-                name="month"
-                value={current_month}
-              />
-              <input
-                type="hidden"
-                name="year"
-                value={current_year}
-              />
-              <p>
-                <label
-                  htmlFor="value"
-                  className="w-32 font-medium"
-                >
-                  {get_rate_label(type as RateType)}
-                </label>
+    <Content.Root>
+      <Content.Title>Índice de actualización</Content.Title>
+      <Content.Section>
+        <p className="mb-4">
+          Mes actual: {current_month}/{current_year}
+        </p>
+        <div className="space-y-4">
+          {rate_types.map((type) => {
+            const existing_rate = rates.find(
+              (rate) => rate.type === type,
+            )
+            return (
+              <Form
+                key={type}
+                method="POST"
+                navigate={false}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <input
-                  type="number"
-                  id="value"
-                  name="value"
-                  step="0.01"
-                  defaultValue={existing_rate?.value || ""}
-                  placeholder="Valor"
-                  className="border rounded px-3 py-2 w-48"
-                  required
+                  type="hidden"
+                  name="type"
+                  value={type}
                 />
-              </p>
-              <Button type="submit">
-                Guardar
-              </Button>
-            </Form>
-          )
-        })}
-      </div>
-    </div>
+                <input
+                  type="hidden"
+                  name="month"
+                  value={current_month}
+                />
+                <input
+                  type="hidden"
+                  name="year"
+                  value={current_year}
+                />
+                <p>
+                  <label
+                    htmlFor="value"
+                    className="w-32 font-medium"
+                  >
+                    {get_rate_label(type as RateType)}
+                  </label>
+                  <input
+                    type="number"
+                    id="value"
+                    name="value"
+                    step="0.01"
+                    defaultValue={existing_rate?.value || ""}
+                    placeholder="Valor"
+                    className="border rounded px-3 py-2 w-48"
+                    required
+                  />
+                </p>
+                <Button type="submit">
+                  Guardar
+                </Button>
+              </Form>
+            )
+          })}
+        </div>
+      </Content.Section>
+    </Content.Root>
   )
 }

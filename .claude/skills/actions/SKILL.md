@@ -1,3 +1,8 @@
+---
+name: actions
+description: Server-side action patterns with intent-based routing. Use when adding functionality via form submissions, handling FormData, or creating modular action functions.
+---
+
 # Metaframework
 
 ## Actions

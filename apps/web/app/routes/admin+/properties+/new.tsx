@@ -1,8 +1,10 @@
 import { useState } from "react"
-import { Form, redirect } from "react-router"
+import { redirect } from "react-router"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
 import { LocationInput } from "~/components/location_input"
+import { Section } from "~/components/section"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { has_edit_access } from "~/lib/property_access.server"
@@ -66,8 +68,9 @@ export default function ({
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
   return (
-    <Formulary.Root label="Creación de propiedad">
-      <Form method="POST">
+    <Content.Root label="Creación de propiedad">
+      <Content.Title>Creación de propiedad</Content.Title>
+      <Formulary.Root method="POST">
         <input
           type="hidden"
           value={INTENT.CREATE_PROPERTY}
@@ -88,8 +91,8 @@ export default function ({
         <Button disabled={disabled} type="submit">
           Crear propiedad
         </Button>
-      </Form>
-    </Formulary.Root>
+      </Formulary.Root>
+    </Content.Root>
   )
 }
 function LocationSection({
@@ -100,15 +103,15 @@ function LocationSection({
   on_clear: () => void
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>ubicación</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>ubicación</Section.Title>
+      </Section.Header>
       <LocationInput
         on_selection={on_selection}
         on_clear={on_clear}
       />
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 function CharacteristicsSection({
@@ -121,10 +124,10 @@ function CharacteristicsSection({
   on_type_change: (type: PropertyType) => void
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>características</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>características</Section.Title>
+      </Section.Header>
       <Formulary.Field>
         <Formulary.Label htmlFor="type">
           Tipo
@@ -164,7 +167,7 @@ function CharacteristicsSection({
           />
         </Formulary.Field>
       ) : null}
-    </Formulary.Section>
+    </Content.Section>
   )
 }
 function DestinySection({
@@ -173,10 +176,10 @@ function DestinySection({
   property_destinies: number[]
 }) {
   return (
-    <Formulary.Section>
-      <Formulary.Header>
-        <Formulary.Title>destino</Formulary.Title>
-      </Formulary.Header>
+    <Content.Section>
+      <Section.Header>
+        <Section.Title>destino</Section.Title>
+      </Section.Header>
       <fieldset>
         {property_destinies.map((destiny) => (
           <Formulary.Checkbox
@@ -188,6 +191,6 @@ function DestinySection({
           </Formulary.Checkbox>
         ))}
       </fieldset>
-    </Formulary.Section>
+    </Content.Section>
   )
 }

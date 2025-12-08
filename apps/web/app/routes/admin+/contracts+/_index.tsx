@@ -15,12 +15,15 @@ import {
   fetch_contracts,
   type Contract,
 } from "./fetchers/contracts.server"
+import { Content } from "~/components/content"
+import { Section } from "~/components/section"
 import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import { Formulary } from "~/components/formulary"
 import { error } from "~/lib/error.server"
 import * as actions from "./actions/index.server"
 import type { Route } from "./+types/_index"
+import type { Header } from "~/components/header"
 
 const INTENT = {
   SET_STATE: "set_state",
@@ -86,25 +89,30 @@ export async function loader({
   return { contracts, state }
 }
 
-export default function Contracts({
+export default function ({
   loaderData,
 }: Route.ComponentProps) {
   const { contracts, state } = loaderData
   return (
-    <>
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Contratos</h1>
-        <Link to="/admin/contracts/new">
-          <Button>Nuevo contrato</Button>
-        </Link>
-      </div>
-      <Filters state={state} />
-      {contracts.length === 0 ? (
-        <p>No hay contratos.</p>
-      ) : (
+    <Content.Root>
+      <Content.Title>Contratos</Content.Title>
+      <Content.Section>
+        <Section.Header>
+          <Section.Title>Contratos</Section.Title>
+          <Section.Actions>
+            <Link to="/admin/contracts/new">
+              <Button>Nuevo contrato</Button>
+            </Link>
+          </Section.Actions>
+        </Section.Header>
+      </Content.Section>
+      <Content.Section>
+        <Filters state={state} />
+      </Content.Section>
+      <Content.Section>
         <ContractsTable contracts={contracts} />
-      )}
-    </>
+      </Content.Section>
+    </Content.Root>
   )
 }
 
@@ -176,26 +184,24 @@ function Filters({ state }: { state: number }) {
         fetcher.submit(event.currentTarget)
       }}
     >
-      <Formulary.Root label="Filtros">
-        <Formulary.Section>
-          <Formulary.Field>
-            <Formulary.Label htmlFor="state">
-              Estado
-            </Formulary.Label>
-            <Formulary.Select
-              id="state"
-              name="state"
-              defaultValue={state}
-            >
-              {get_contract_states().map((state) => (
-                <option key={state} value={state}>
-                  {get_contract_state_label(state)}
-                </option>
-              ))}
-            </Formulary.Select>
-          </Formulary.Field>
-        </Formulary.Section>
-      </Formulary.Root>
+      <Content.Section>
+        <Formulary.Field>
+          <Formulary.Label htmlFor="state">
+            Estado
+          </Formulary.Label>
+          <Formulary.Select
+            id="state"
+            name="state"
+            defaultValue={state}
+          >
+            {get_contract_states().map((state) => (
+              <option key={state} value={state}>
+                {get_contract_state_label(state)}
+              </option>
+            ))}
+          </Formulary.Select>
+        </Formulary.Field>
+      </Content.Section>
       <input
         type="hidden"
         name="intent"

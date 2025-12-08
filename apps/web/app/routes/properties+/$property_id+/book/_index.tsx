@@ -1,5 +1,7 @@
 import { Form, redirect } from "react-router"
 import { Button } from "~/components/button"
+import { Content } from "~/components/content"
+import { Section } from "~/components/section"
 import type { Route } from "./+types/_index"
 import { ForceNumberSchema } from "~/lib/force_number"
 import * as v from "valibot"
@@ -133,18 +135,29 @@ export default function ({
 }: Route.ComponentProps) {
   const { times } = loaderData
   return (
-    <>
-      <SetDateForm
-        loaderData={loaderData}
-        actionData={actionData}
-      />
-      {times.length > 0 && (
-        <UpdateSlotForm
+    <Content.Root>
+      <Content.Title>Reservar visita</Content.Title>
+      <Content.Section>
+        <Section.Header>
+          <Section.Title>Seleccionar fecha</Section.Title>
+        </Section.Header>
+        <SetDateForm
           loaderData={loaderData}
           actionData={actionData}
         />
+      </Content.Section>
+      {times.length > 0 && (
+        <Content.Section>
+          <Section.Header>
+            <Section.Title>Seleccionar horario</Section.Title>
+          </Section.Header>
+          <UpdateSlotForm
+            loaderData={loaderData}
+            actionData={actionData}
+          />
+        </Content.Section>
       )}
-    </>
+    </Content.Root>
   )
 }
 

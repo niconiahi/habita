@@ -9,6 +9,7 @@ export async function fetch_contract(id: number) {
       "contract.start_date",
       "contract.end_date",
       "contract.state",
+      "contract.destiny",
       "contract.default_type",
       "contract.default_amount",
       "contract.default_duration",

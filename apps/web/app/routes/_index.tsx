@@ -1,4 +1,5 @@
 import { Link } from "react-router"
+import { Content } from "~/components/content"
 
 export function meta() {
   return [
@@ -12,8 +13,13 @@ export function meta() {
 
 export default function Home() {
   return (
-    <Link to="/properties" reloadDocument>
-      propiedades
-    </Link>
+    <Content.Root>
+      <Content.Title>Bienvenido</Content.Title>
+      <Content.Section>
+        <Link to="/properties" reloadDocument>
+          propiedades
+        </Link>
+      </Content.Section>
+    </Content.Root>
   )
 }

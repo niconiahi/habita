@@ -3,11 +3,12 @@ main {
   display: flex;
   flex-direction: column;
   padding: var(--spacing-4);
-  gap: var(--spacing-4);
+  gap: var(--spacing-12);
 }
 
 main h1 {
   min-height: 36px;
+  font-size: var(--spacing-10);
 }
 
 main ul {

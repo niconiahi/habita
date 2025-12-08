@@ -5,6 +5,8 @@ import { display_location } from "~/lib/display_location"
 import { get_property_state_label } from "~/lib/property_state"
 import { get_property_type_label } from "~/lib/property_type"
 import { fetch_properties } from "./fetchers/properties.server"
+import { Content } from "~/components/content"
+import { Section } from "~/components/section"
 import { Table } from "~/components/table"
 import { Button } from "~/components/button"
 import type { Route } from "./+types/_index"
@@ -13,32 +15,31 @@ export async function loader({
   request,
 }: Route.LoaderArgs) {
   const { user } = await require_auth(request)
-  const admin_property_ids = user.accesses
+  const property_ids = user.accesses
     .filter(
       (access) =>
         access.type === ACCESS_TYPE.OWNER ||
         access.type === ACCESS_TYPE.ADMINISTRATOR,
     )
     .map((access) => access.property_id)
-  const properties = await fetch_properties(
-    admin_property_ids,
-  )
+  const properties = await fetch_properties(property_ids)
   return { properties }
 }
 
-export default function Properties() {
+export default function () {
   const { properties } = useLoaderData<typeof loader>()
   return (
-    <>
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Propiedades</h1>
-        <Link to="/admin/properties/new">
-          <Button>Nueva propiedad</Button>
-        </Link>
-      </div>
-      {properties.length === 0 ? (
-        <p>No hay propiedades.</p>
-      ) : (
+    <Content.Root>
+      <Content.Title>Propiedades</Content.Title>
+      <Content.Section>
+        <Section.Header>
+          <Section.Title>Propiedades</Section.Title>
+          <Section.Actions>
+            <Link to="/admin/properties/new">
+              <Button>Nueva propiedad</Button>
+            </Link>
+          </Section.Actions>
+        </Section.Header>
         <Table.Root>
           <Table.Header>
             <Table.Cell header>Ubicación</Table.Cell>
@@ -54,7 +55,9 @@ export default function Properties() {
                 </Table.Cell>
                 <Table.Cell>
                   {get_property_type_label(property.type)}
-                  {property.unit ? ` - ${property.unit}` : ""}
+                  {property.unit
+                    ? ` - ${property.unit}`
+                    : ""}
                 </Table.Cell>
                 <Table.Cell>
                   {get_property_state_label(property.state)}
@@ -70,7 +73,7 @@ export default function Properties() {
             ))}
           </Table.Body>
         </Table.Root>
-      )}
-    </>
+      </Content.Section>
+    </Content.Root>
   )
 }
