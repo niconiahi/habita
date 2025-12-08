@@ -114,7 +114,7 @@ dev-db-create-migration:
 	@:
 
 dev-db-shell:
-	docker compose -f infra/development/docker-compose.yml exec db psql -U $(shell grep POSTGRES_USER .env | cut -d '=' -f2) -d $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
+	docker compose -f infra/development/docker-compose.yml exec db psql -U $(shell grep POSTGRES_USER infra/development/.env | cut -d '=' -f2) -d $(shell grep POSTGRES_DB infra/development/.env | cut -d '=' -f2)
 
 dev-db-drop:
 	@echo "WARNING: This will destroy all database data!"
@@ -177,5 +177,5 @@ prod-db-migrate:
 	docker compose -f infra/production/docker-compose.yml exec app bun run db:migrate
 
 prod-db-shell:
-	docker compose -f infra/production/docker-compose.yml exec db psql -U $(shell grep POSTGRES_USER .env.production | cut -d '=' -f2) -d $(shell grep POSTGRES_DB .env.production | cut -d '=' -f2)
+	docker compose -f infra/production/docker-compose.yml exec db psql -U $(shell grep POSTGRES_USER infra/production/.env | cut -d '=' -f2) -d $(shell grep POSTGRES_DB infra/production/.env | cut -d '=' -f2)
 

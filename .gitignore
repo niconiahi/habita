@@ -3,6 +3,6 @@ node_modules
 .react-router
 build
 .env
-.env.production
+infra/*/.env
 temp
 plans

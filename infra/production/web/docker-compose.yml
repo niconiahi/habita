@@ -3,7 +3,7 @@ services:
     image: postgis/postgis:17-3.4
     restart: unless-stopped
     env_file:
-      - ../../../.env.production
+      - ../.env
     volumes:
       - web_data:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
     image: niconiahi/habita:web-latest
     restart: unless-stopped
     env_file:
-      - ../../../.env.production
+      - ../.env
     environment:
       PORT: 3000
       NODE_ENV: production
@@ -64,7 +64,7 @@ services:
     image: niconiahi/habita:go-latest
     restart: unless-stopped
     env_file:
-      - ../../../.env.production
+      - ../.env
     environment:
       PORT: 8081
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -150,7 +150,7 @@ services:
     image: darthsim/imgproxy:latest
     restart: unless-stopped
     env_file:
-      - ../../../.env.production
+      - ../.env
     environment:
       IMGPROXY_BIND: ":8080"
       IMGPROXY_USE_ETAG: "true"
