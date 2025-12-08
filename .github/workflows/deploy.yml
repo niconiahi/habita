@@ -62,7 +62,7 @@ jobs:
 
             echo ""
             echo "=== Running migrations ==="
-            docker compose -f infra/production/docker-compose.yml run --rm web bun run db:migrate
+            docker compose -f infra/production/docker-compose.yml run --rm web npx kysely migrate:latest
 
             echo ""
             echo "=== Restarting containers ==="
