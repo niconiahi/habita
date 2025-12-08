@@ -14,6 +14,9 @@ cp "$SSH_CONFIG" "${SSH_CONFIG}.backup.$(date +%Y%m%d)"
 echo ""
 echo "=== Configuring SSH Security ==="
 
+# Change SSH to non-standard port for security
+sed -i 's/^#\?Port.*/Port 42069/' "$SSH_CONFIG"
+
 # Disable password authentication
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' "$SSH_CONFIG"
 
@@ -29,7 +32,7 @@ sshd -t
 
 echo ""
 echo "=== Current SSH Security Settings ==="
-grep -E "^(PasswordAuthentication|PermitRootLogin|PubkeyAuthentication)" "$SSH_CONFIG"
+grep -E "^(Port|PasswordAuthentication|PermitRootLogin|PubkeyAuthentication)" "$SSH_CONFIG"
 
 echo ""
 echo "=== Restarting SSH Service ==="
@@ -37,6 +40,7 @@ systemctl restart sshd
 
 echo ""
 echo "✅ SSH security configured"
+echo "   ✅ SSH port: 42069 (non-standard for security)"
 echo "   ❌ Password authentication: DISABLED"
 echo "   ❌ Root SSH login: DISABLED"
 echo "   ✅ SSH key authentication: ENABLED"

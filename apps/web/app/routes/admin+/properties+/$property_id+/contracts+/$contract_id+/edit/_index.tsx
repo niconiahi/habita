@@ -141,13 +141,8 @@ export async function loader({
 export default function ({
   loaderData,
 }: Route.ComponentProps) {
-  const {
-    contract,
-    property,
-    tenant,
-    owner,
-    contract_file_types,
-  } = loaderData
+  const { contract, property, contract_file_types } =
+    loaderData
   return (
     <Content.Root>
       <Content.Title>Edición de contrato</Content.Title>
@@ -241,16 +236,24 @@ function SectionThree({
             value={contract.id}
             name="id"
           />
-          {property.destinies.map((destiny) => (
-            <Formulary.Radio
-              key={destiny}
-              name="destiny"
-              value={destiny}
-              defaultChecked={contract.destiny === destiny}
-            >
-              {get_property_destiny_label(destiny)}
-            </Formulary.Radio>
-          ))}
+          <Formulary.Field>
+            <Formulary.Label htmlFor="destiny">
+              Tipo
+            </Formulary.Label>
+            {property.destinies.map((destiny) => (
+              <Formulary.Radio
+                id="destiny"
+                key={destiny}
+                name="destiny"
+                value={destiny}
+                defaultChecked={
+                  contract.destiny === destiny
+                }
+              >
+                {get_property_destiny_label(destiny)}
+              </Formulary.Radio>
+            ))}
+          </Formulary.Field>
         </Formulary.Fields>
         <Formulary.Actions>
           <Button
@@ -394,7 +397,7 @@ function SectionSeven({
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            Guardar aumento
+            Guardar valores
           </Button>
         </Formulary.Actions>
       </Formulary.Root>
@@ -422,7 +425,7 @@ function SectionEight({
           />
           <Formulary.Field>
             <Formulary.Label htmlFor="cbu">
-              cbu
+              CBU
             </Formulary.Label>
             <Formulary.Input
               id="cbu"
@@ -437,7 +440,7 @@ function SectionEight({
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            Guardar forma de pago
+            Guardar CBU
           </Button>
         </Formulary.Actions>
       </Formulary.Root>
@@ -477,7 +480,7 @@ function SectionNine({ contract }: { contract: Contract }) {
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            Guardar mora
+            Guardar porcentaje
           </Button>
         </Formulary.Actions>
       </Formulary.Root>
@@ -520,7 +523,7 @@ function SectionFourteen({
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            Guardar devoluciones
+            Guardar porcentaje
           </Button>
         </Formulary.Actions>
       </Formulary.Root>
@@ -608,7 +611,7 @@ function SectionSixteen({
             name="intent"
             value={INTENT.UPDATE_CONTRACT}
           >
-            Guardar muestra de propiedad
+            Guardar cantidad
           </Button>
         </Formulary.Actions>
       </Formulary.Root>

@@ -43,6 +43,7 @@ All scripts can be run with `bash script_name.sh` (no need to make them executab
 - ⚠️ Test SSH as habita before proceeding!
 
 **06_secure_ssh_config.sh**
+- Changes SSH port to 42069 (non-standard for security)
 - Disables password authentication
 - Disables root SSH login
 - Run on: VPS as root
@@ -53,9 +54,9 @@ All scripts can be run with `bash script_name.sh` (no need to make them executab
 
 **07_configure_firewall.sh**
 - Configures UFW firewall
-- Opens ports 22, 80, 443
+- Opens ports 42069 (SSH), 80, 443
 - Run on: VPS as habita
-- Usage: `ssh -i ~/.ssh/habita habita@VPS_IP < 07_configure_firewall.sh`
+- Usage: `ssh -i ~/.ssh/habita -p 42069 habita@VPS_IP < 07_configure_firewall.sh`
 
 ### All-in-One Script
 
@@ -84,10 +85,11 @@ ssh root@209.38.143.22 < infra/scripts/05_move_ssh_keys.sh
 ssh -i ~/.ssh/habita habita@209.38.143.22
 
 # Back on VPS as root (only if test above works!)
+# NOTE: This changes SSH port to 42069
 ssh root@209.38.143.22 < infra/scripts/06_secure_ssh_config.sh
 
-# On VPS as habita
-ssh -i ~/.ssh/habita habita@209.38.143.22 < infra/scripts/07_configure_firewall.sh
+# On VPS as habita (note: use port 42069 after running 06_secure_ssh_config.sh)
+ssh -i ~/.ssh/habita -p 42069 habita@209.38.143.22 < infra/scripts/07_configure_firewall.sh
 ```
 
 ### Option 2: All-in-one (Quick setup)
@@ -109,10 +111,11 @@ Or copy/paste the contents of `complete_vps_setup.sh` into the console.
 ## Security
 
 These scripts implement:
+- SSH on non-standard port 42069 (reduces bot scanning)
 - SSH key-only authentication (no passwords)
 - Root SSH access disabled
 - Non-root deployment user with limited sudo
-- UFW firewall (ports 22, 80, 443 only)
+- UFW firewall (ports 42069, 80, 443 only)
 - Principle of least privilege
 
 ## Documentation
