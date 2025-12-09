@@ -584,7 +584,7 @@ function RoomMapSection({
       <Section.Header>
         <Section.Title>Mapa</Section.Title>
       </Section.Header>
-      <Formulary.Root>
+      <Formulary.Root method="POST">
         <Formulary.Fields>
           <input
             type="hidden"
