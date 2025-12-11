@@ -26,7 +26,9 @@ type Location = {
   house_number: number
 }
 type Service = {
+  id: number
   type: number
+  code: string
 }
 type Escalation = {
   type: string

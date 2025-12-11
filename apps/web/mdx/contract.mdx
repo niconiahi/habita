@@ -1,72 +1,91 @@
-import n2words from 'n2words'
-import { day_as_word, get_day, get_month, get_year, concatenate_services } from '../app/lib/contract/formatter.server.ts'
+import * as sections from './sections'
 
 # Contrato de locación
 
 ## Preámbulo
 
-En **{props.location.state}**, a los {day_as_word(get_day(props.start_date))} **({get_day(props.start_date)}) días** del **MES** de **{get_month(props.start_date)}** de **{get_year(props.start_date)}**, entre el **Sr/a. {props.owner.surname.toLocaleUpperCase()}, {props.owner.name}** con **DNI {props.owner.document_number}**, en adelante denominado **“EL LOCADOR”** y por la otra parte el **Sr/a. {props.tenant.surname.toLocaleUpperCase()}, {props.tenant.name}** con **DNI {props.tenant.document_number}**, en adelante denominado **“EL LOCATARIO”**. Las partes convienen en celebrar el siguiente contrato de locación, en adelante denominado **“EL CONTRATO”**:
+<sections.Preface contract={props} />
 
-## Primera
+## Primera: Objeto
 
-**EL LOCADOR** cede la locación a **EL LOCATARIO** el inmueble sito en la calle **{props.location.road}** Nº **{props.location.house_number}**, la unidad **{props.property.unit}**, en adelante denominado **“EL INMUEBLE”**
+<sections.SectionOne contract={props} />
 
-## Segunda
+## Segunda: Estado del inmueble e inventario
 
-El término de la presente locación se fija por el plazo de {props.duration}, contados a partir del día **{get_day(props.start_date)} de {get_month(props.start_date)} de {get_year(props.start_date)}** al **{get_day(props.end_date)} de {get_month(props.end_date)} de {get_year(props.end_date)}**, en forma automática y por el solo vencimiento del plazo, sin necesidad de interpelación previa alguna, debiendo **EL LOCATARIO** en dicha fecha reintegrar el inmueble totalmente  desocupado y en las condiciones convenidas, y ponerlo a disposición de **EL LOCADOR** mediante la devolución de las llaves
+<sections.SectionTwo contract={props} />
 
-## Tercera
+## Tercera: Destino
 
-El precio del alquiler se conviene en cuotas mensual de **{n2words(props.price, { lang: 'es' }).toLocaleUpperCase()} (${props.price})** durante la vigencia del contrato, y se actualizará cada **{props.escalation.duration}** utilizando el índice **{props.escalation.type}**. Todos los alquileres mensuales serán abonadas dentro de los  primeros **OCHO DIAS (8)** de cada mes por adelantado, sin necesidad de requerimiento alguno, en el domicilio de **EL LOCADOR** o donde este lo indique; bastando que no se abone el alquiler dentro del plazo fijado para que **EL LOCATARIO** quede constituido en **MORA**, sin necesidad de requerimiento judicial o extrajudicial alguno. El precio **NO** incluye: {concatenate_services(props.services)}
+<sections.SectionThree contract={props} />
 
-## Cuarta
+## Cuarta: Uso
 
-**EL LOCATARIO** recibe el inmueble alquilado en buen estado de uso y conservación, con todos los vidrios, herrajes, llaves y demás accesorios, obligándose a mantener el inmueble en las mismas condiciones y a pagar el importe de los objetos que falten o estén rotos. Tambien deberá pagar los deterioros ocasionados, salvo que resulten del buen uso y de la acción del tiempo. El departamento se entrega pintado, por lo cual se deberá entregar de igual al término del contrato. Se entregan dos juegos de llaves, cocina a gas con horno, calefón eléctrico nuevo. Los desperfectos menores si lo hubiera en un futuro, serán a cargo de **EL LOCATARIO** como por ejemplo: canillas de duchas, baño y cocina, bidet, inodoro, alacenas, bajo mesadas, luces y térmicas en general, cocina, horno, termo eléctrico, entre otros
+<sections.SectionFour contract={props} />
 
-## Quinta
+## Quinta: Entrega y conservación del bien arrendado
 
-**EL LOCATARIO** se obliga a: no subarrendar el todo o parte de la propiedad alquilada, no transferir absolutamente, ni ceder, ni vender este contrato, sopena de rescindirse el mismo atenta la prohibición establecida
+<sections.SectionFive contract={props} />
 
-## Sexta
+## Sexta: Plazo del contrato
 
-**EL LOCATARIO** ocupará la propiedad exclusivamente como **VIVIENDA**. No podrá cambiar su destino, ni hacer modificaciones que alteren la estructura de la misma sin consentimiento por escrito de **EL LOCADOR**; no podrá tampoco efectuar ningún acto que atente contra la moral y las buenas costumbres, tampoco podrá dar remates en la finca alquilada. Dará inmediata cuenta a **EL LOCADOR** de cualquier desperfecto que sufriera la propiedad. Corren por cuenta de **EL LOCATARIO** la reparación de los desperfectos menores provocados por el uso de la unidad funcional locada y conservará también por su cuenta el buen funcionamiento de las instalaciones sanitarias, muebles, o artefactos pertenecientes a la propiedad. Permitirá a **EL LOCADOR** o a sus representantes, el libre acceso a cualquier dependencia de la propiedad cuando este juzgue necesario su inspección y permitirá la ejecución de todo trabajo necesario para su mejora sin derecho a cobrar indemnización
+<sections.SectionSix contract={props} />
 
-## Séptima
+## Séptima: Canon
 
-**EL LOCATARIO** se compromete a pagar las expensas ordinarias y extraordinarias mensuales, los impuestos, tasas y contribuciones que graven, o puedan gravar, en el futuro el bien locado, como así mismo los gastos de electricidad, gas, agua y ABL. Un **SEGURO** desde el **comienzo del contrato hasta la entrega** de la propiedad, obligándose a entregar a **EL LOCADOR** con el pago de la mensualidad, con expensas y boletas abonadas de impuestos y servicios mencionados
+<sections.SectionSeven contract={props} />
 
-## Octava
+## Octava: Forma y lugar de pago
 
-**EL LOCADOR** no se responsabiliza de los daños y perjuicios que pudieran producirle, a **EL LOCATARIO** o a terceros, las inundaciones y desprendimientos provenientes de roturas o desperfectos de caños o techos o cualquier otro accidente en la propiedad
+<sections.SectionEight contract={props} />
 
-## Novena
+## Novena: Pago de servicios e impuestos
 
-La falta de pago de un mes de alquiler por parte de **EL LOCATARIO** o el incumplimiento a cualquiera de las obligaciones que este asume por el presente contrato, dará derecho a **EL LOCADOR** a declarar rescindido el mismo, de pleno derecho y demandar el desalojo del inmueble, más el resarcimiento por los daños y perjuicios resultantes. La **MORA** se producirá en forma automática y sin necesidad de interpelación previa. La presente estipulación no obstará a las distintas sanciones pactadas en otras cláusulas de este contrato
+<sections.SectionNine contract={props} />
 
-## Décima
+## Décima: Intransferibilidad del contrato
 
-**EL LOCADOR** podrá en cualquier momento exigir garantía en reemplazo de la aceptada, si tuviera causa justificada. **EL LOCATARIO** deberá presentarla en el término de **DIEZ DIAS** hábiles.
+<sections.SectionTen contract={props} />
 
-## Décima primera
+## Décima primera: Modificaciones y mejoras
 
-Si **EL LOCATARIO** diera motivo, habiendo incumplido las cláusulas o condiciones que contempla este contrato para tal fin, se le iniciara juicio de desalojo. Por ello, o por cualquiera de los motivos que autorizan las leyes en vigencia. **EL LOCATARIO** se compromete a pagar, desde la iniciación del juicio y hasta que **EL LOCADOR** reciba las llaves de la propiedad, una suma igual al alquiler que está abonando en ese momento, en concepto de indemnización
+<sections.SectionEleven contract={props} />
 
-## Décima segunda
+## Décima segunda: Reparaciones
 
-La entrega de las llaves de la propiedad deberá justificarla **EL LOCATARIO** con documento escrito, emanado de **EL LOCADOR**
+<sections.SectionTwelve contract={props} />
 
-## Décima tercera
+## Décima tercera: Exención de responsabilidad
 
-**EL LOCADOR** constituye domicilio especial para todos los efectos legales, en **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**. CEL.: {props.owner.phone_number}. **EL LOCATARIO** constituye domicilio en **{props.location.road}** Nº **{props.location.house_number}** de **{props.location.state}**, la unidad la unidad **{props.property.unit}**. CEL.: {props.tenant.phone_number}
+<sections.SectionThirteen contract={props} />
 
-## Décima quinta
+## Décima cuarta: Incumplimientos
 
-El alquiler se pacta por periodos de mes entero y, aunque **EL LOCATARIO** se mudare antes de finalizar el mes, pagará íntegramente el alquiler. En el supuesto caso de demora por parte de **EL LOCATARIO** en el pago del alquiler, deberá abonar una multa igual a {props.fine.amount} por cada {props.fine.duration} de retraso, no estando **EL LOCADOR** obligado a aceptar sumas inferiores al alquiler con sus intereses devengados. La multa correspondiente podrá ser reclamada por vía ejecutiva y/o conjuntamente con los alquileres
+<sections.SectionFourteen contract={props} />
 
-## Décima sexta
+## Décima quinta: Falta de devoluciones. Abandono
 
-En caso de producirse la rescisión anticipada del presente contrato, **EL LOCATARIO** solo podrá rescindir el presente contrato de locación a partir de los SEIS (6) meses. Si se ejerce esta opción durante el transcurso del presente contrato, **EL LOCATARIO** deberá abonar a **EL LOCADOR** una suma indemnizatoria equivalente a ${props.default.amount}. En el caso que lo haga avisando con 60 días de antelación, no tendrá penalidad alguna
+<sections.SectionFifteen contract={props} />
 
-## Décima novena
+## Décima sexta: Rescisión anticipada
 
-Las partes convienen como lugar de pago de los alquileres en la calle **{props.owner_location.road}** Nº **{props.owner_location.house_number}** de **{props.owner_location.state}**, de lunes a viernes de 9 a 19hs, o donde **EL LOCADOR** indique en el futuro, de forma fehaciente, a **EL LOCATARIO**
+<sections.SectionSixteen contract={props} />
+
+## Décima séptima: Muestra de la propiedad
+
+<sections.SectionSeventeen contract={props} />
+
+## Décima octava: Fiadores
+
+<sections.SectionEighteen contract={props} />
+
+## Décima novena: Título ejecutivo
+
+<sections.SectionNineteen contract={props} />
+
+## Vigésima: Domicilios
+
+<sections.SectionTwenty contract={props} />
+
+## Vigésima primera: Jurisdicción
+
+<sections.SectionTwentyOne contract={props} />

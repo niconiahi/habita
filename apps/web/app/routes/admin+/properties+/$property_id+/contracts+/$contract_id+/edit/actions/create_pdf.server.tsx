@@ -1,7 +1,8 @@
+import { createHash } from "node:crypto"
 import { renderToString } from "react-dom/server"
 import * as v from "valibot"
 import { generate_pdf_with_playwright } from "~/lib/pdf_generator.server"
-import { DefaultTypeSchema } from "~/lib/default_type"
+import { DEFAULT_TYPE, DefaultTypeSchema } from "~/lib/default_type"
 import {
   DurationSchema,
   get_duration_label,
@@ -10,7 +11,7 @@ import {
   EscalationTypeSchema,
   get_escalation_label,
 } from "~/lib/escalation_type"
-import { FineTypeSchema } from "~/lib/fine_type"
+import { FINE_TYPE, FineTypeSchema } from "~/lib/fine_type"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { fetch_owner } from "~/lib/owner.server"
 import { fetch_tenant } from "~/lib/tenant.server"
@@ -70,7 +71,7 @@ export async function create_pdf(
     )
     const fine_type = v.parse(
       FineTypeSchema,
-      contract.fine_type,
+      FINE_TYPE.PORCENTUAL,
     )
     const fine_amount = v.parse(
       ForceNumberSchema,
@@ -78,11 +79,12 @@ export async function create_pdf(
     )
     const default_type = v.parse(
       DefaultTypeSchema,
-      contract.default_type,
+      DEFAULT_TYPE.PORCENTUAL,
     )
+    const DEFAULT_AMOUNT = 3
     const default_amount = v.parse(
       ForceNumberSchema,
-      contract.default_amount,
+      DEFAULT_AMOUNT
     )
     const unit = v.parse(v.string(), property.unit)
     const owner_location: {
@@ -150,11 +152,7 @@ export async function create_pdf(
             .where("id", "=", contract_file_.file_id)
             .executeTakeFirstOrThrow()
         }
-        const hash = Bun.CryptoHasher.hash(
-          "sha256",
-          content,
-          "hex",
-        )
+        const hash = createHash("sha256").update(content).digest("hex")
         const file = await tx
           .insertInto("file")
           .values({

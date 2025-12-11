@@ -72,7 +72,6 @@ export async function action({
   )
   switch (intent) {
     case INTENT.UPDATE_CONTRACT: {
-      console.log("form_data", form_data)
       await actions.update_contract(form_data, property_id)
       return null
     }
@@ -138,7 +137,7 @@ export async function loader({
   }
 }
 
-export default function ({
+export default function({
   loaderData,
 }: Route.ComponentProps) {
   const { contract, property, contract_file_types } =
@@ -292,8 +291,8 @@ function SectionSix({ contract }: { contract: Contract }) {
               defaultValue={
                 contract.start_date
                   ? format_date_for_input(
-                      contract.start_date,
-                    )
+                    contract.start_date,
+                  )
                   : undefined
               }
             />
@@ -689,6 +688,16 @@ function DocumentsSection({
           <Button type="button" onClick={handle_add_click}>
             agregar documento
           </Button>
+          <Form method="POST">
+            <input type="hidden" value={contract.id} name="id" />
+            <Button
+              type="submit"
+              name="intent"
+              value={INTENT.CREATE_PDF}
+            >
+              Generar contrato
+            </Button>
+          </Form>
         </Section.Actions>
       </Section.Header>
       <Form
