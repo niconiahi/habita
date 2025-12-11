@@ -57,7 +57,7 @@ export default function ({
       <Content.Section>
         la propiedad ubicada en {property.location.road}{" "}
         {property.location.house_number}{" "}
-        <Link to={has_credit_report ? "book" : "book/restricted"} className="button">Reservar</Link>
+        <Link to={has_credit_report ? "book" : "/learn/booking"} className="button">Reservar</Link>
       </Content.Section>
       <Content.Section>
         <Section.Header>
