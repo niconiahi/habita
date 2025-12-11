@@ -15,6 +15,7 @@
   "formatter": {
     "includes": [
       "**",
+      "**/mdx/**",
       "!**/.wrangler/**",
       "!**/.react-router/**",
       "!**/worker-configuration.d.ts"

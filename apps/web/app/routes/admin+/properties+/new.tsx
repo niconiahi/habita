@@ -68,30 +68,36 @@ export default function ({
   const [property_type, set_property_type] =
     useState<PropertyType>(PROPERTY_TYPE.DEPARTMENT)
   return (
-    <Content.Root label="Creación de propiedad">
+    <Content.Root>
       <Content.Title>Creación de propiedad</Content.Title>
-      <Formulary.Root method="POST">
-        <input
-          type="hidden"
-          value={INTENT.CREATE_PROPERTY}
-          name="intent"
-        />
-        <LocationSection
-          on_selection={() => set_disabled(false)}
-          on_clear={() => set_disabled(true)}
-        />
-        <CharacteristicsSection
-          property_types={property_types}
-          property_type={property_type}
-          on_type_change={set_property_type}
-        />
-        <DestinySection
-          property_destinies={property_destinies}
-        />
-        <Button disabled={disabled} type="submit">
-          Crear propiedad
-        </Button>
-      </Formulary.Root>
+      <Content.Section>
+        <Formulary.Root method="POST">
+          <Formulary.Fields>
+            <input
+              type="hidden"
+              value={INTENT.CREATE_PROPERTY}
+              name="intent"
+            />
+            <LocationSection
+              on_selection={() => set_disabled(false)}
+              on_clear={() => set_disabled(true)}
+            />
+            <CharacteristicsSection
+              property_types={property_types}
+              property_type={property_type}
+              on_type_change={set_property_type}
+            />
+            <DestinySection
+              property_destinies={property_destinies}
+            />
+          </Formulary.Fields>
+          <Formulary.Actions>
+            <Button disabled={disabled} type="submit">
+              Crear propiedad
+            </Button>
+          </Formulary.Actions>
+        </Formulary.Root>
+      </Content.Section>
     </Content.Root>
   )
 }
