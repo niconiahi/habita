@@ -2,11 +2,10 @@ import { useId, type ReactNode } from "react"
 import { NavLink } from "react-router"
 import "~/components/dashboard.css"
 
-type RootProps = {
+function Root({ children, label }: {
   children: ReactNode
   label: string
-}
-function Root({ children, label }: RootProps) {
+}) {
   return (
     <nav className="dashboard" aria-label={label}>
       {children}
@@ -14,11 +13,10 @@ function Root({ children, label }: RootProps) {
   )
 }
 
-type SectionProps = {
+function Section({ children, label }: {
   children: ReactNode
   label?: string
-}
-function Section({ children, label }: SectionProps) {
+}) {
   const id = useId()
   return (
     <section aria-labelledby={label ? id : undefined}>
@@ -32,11 +30,10 @@ function Section({ children, label }: SectionProps) {
   )
 }
 
-type LinkProps = {
+function Link({ children, to }: {
   children: ReactNode
   to: string
-}
-function Link({ children, to }: LinkProps) {
+}) {
   return (
     <li>
       <NavLink to={to}>{children}</NavLink>

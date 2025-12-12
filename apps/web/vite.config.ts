@@ -3,6 +3,8 @@ import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import mdx from "@mdx-js/rollup"
+import remark_frontmatter from "remark-frontmatter"
+import remark_mdx_frontmatter from "remark-mdx-frontmatter"
 import { reactRouter } from "@react-router/dev/vite"
 import tailwindcss from "@tailwindcss/vite"
 import type { Plugin } from "vite"
@@ -38,6 +40,7 @@ export default defineConfig({
     mdx({
       jsxImportSource: "react",
       development: process.env.NODE_ENV === "development",
+      remarkPlugins: [remark_frontmatter, remark_mdx_frontmatter],
     }),
     reactRouter(),
     tsconfigPaths(),
