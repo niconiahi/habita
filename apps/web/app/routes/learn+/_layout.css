@@ -1,0 +1,5 @@
+main a {
+  text-decoration: underline;
+  text-underline-offset: var(--spacing-1);
+  color: var(--gray-300);
+}
