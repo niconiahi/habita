@@ -1,40 +1,31 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
-import { CONTRACT_STATE } from "~/lib/contract_state"
 import { query_builder } from "~/lib/query_builder.server"
+import { SLOT_STATE } from "~/lib/slot_state"
 
-export async function fetch_available_properties(
-  admin_property_ids: number[],
+export async function fetch_candidates(
+  property_ids: number[],
 ) {
-  if (admin_property_ids.length === 0) {
-    return []
-  }
   return query_builder
-    .selectFrom("property")
+    .selectFrom("slot")
+    .innerJoin("user", "user.id", "slot.visitant_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "slot.property_id",
+    )
     .innerJoin(
       "location",
       "location.id",
       "property.location_id",
     )
-    .where("property.id", "in", admin_property_ids)
-    .where(({ not, exists, selectFrom }) =>
-      not(
-        exists(
-          selectFrom("contract")
-            .whereRef(
-              "contract.property_id",
-              "=",
-              "property.id",
-            )
-            .where("contract.state", "in", [
-              CONTRACT_STATE.EDITING,
-              CONTRACT_STATE.ACTIVE,
-            ]),
-        ),
-      ),
-    )
+    .where("slot.property_id", "in", property_ids)
+    .where("slot.state", "=", SLOT_STATE.RESERVED)
     .select((eb) => [
-      "property.id",
-      "property.unit",
+      "user.id",
+      "user.name",
+      "user.surname",
+      "slot.start_date",
+      "property.id as property_id",
       jsonObjectFrom(
         eb
           .selectFrom("location")
@@ -61,6 +52,7 @@ export async function fetch_available_properties(
     ])
     .execute()
 }
-export type AvailableProperty = NonNullable<
-  Awaited<ReturnType<typeof fetch_available_properties>>[0]
+
+export type Candidate = NonNullable<
+  Awaited<ReturnType<typeof fetch_candidates>>[0]
 >

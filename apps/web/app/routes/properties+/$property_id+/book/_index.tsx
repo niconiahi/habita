@@ -1,22 +1,22 @@
+import { trace } from "@opentelemetry/api"
+import { query_builder } from "db/query_builder"
+import { sql } from "kysely"
 import { Form, redirect } from "react-router"
+import * as v from "valibot"
 import { Button } from "~/components/button"
 import { Content } from "~/components/content"
 import { Section } from "~/components/section"
-import type { Route } from "./+types/_index"
-import { ForceNumberSchema } from "~/lib/force_number"
-import * as v from "valibot"
-import { query_builder } from "db/query_builder"
-import { sql } from "kysely"
-import { error } from "~/lib/error.server"
-import * as actions from "./actions/index.server"
-import { ForceDateSchema } from "~/lib/force_date.server"
-import { get_date } from "~/lib/date"
-import { SLOT_STATE } from "~/lib/slot_state"
 import { require_auth } from "~/lib/auth.server"
-import { format, parseISO } from "date-fns"
-import { trace } from "@opentelemetry/api"
-import { logger } from "~/lib/telemetry/logger.server"
+import { get_date } from "~/lib/date"
+import { display_date } from "~/lib/display_date"
+import { error } from "~/lib/error.server"
+import { ForceDateSchema } from "~/lib/force_date.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import type { ObjectValues } from "~/lib/rate_type"
+import { SLOT_STATE } from "~/lib/slot_state"
+import { logger } from "~/lib/telemetry/logger.server"
+import type { Route } from "./+types/_index"
+import * as actions from "./actions/index.server"
 
 const INTENT = {
   SET_DATE: "set_date",
@@ -149,7 +149,9 @@ export default function ({
       {times.length > 0 && (
         <Content.Section>
           <Section.Header>
-            <Section.Title>Seleccionar horario</Section.Title>
+            <Section.Title>
+              Seleccionar horario
+            </Section.Title>
           </Section.Header>
           <UpdateSlotForm
             loaderData={loaderData}
@@ -178,28 +180,28 @@ function UpdateSlotForm({
         </legend>
 
         <div>
-          {times.map((time) => {
-            const start_time = format_in_timezone(
-              time.start_date,
-            )
-            const end_time = format_in_timezone(
-              time.end_date,
-            )
-            return (
-              <label key={time.id}>
-                <input
-                  type="radio"
-                  name="id"
-                  value={time.id}
-                />
-                <time
-                  dateTime={time.start_date.toISOString()}
-                >
-                  {start_time} - {end_time}
-                </time>
-              </label>
-            )
-          })}
+          {times.map((time) => (
+            <label key={time.id}>
+              <input
+                type="radio"
+                name="id"
+                value={time.id}
+              />
+              <time
+                dateTime={time.start_date.toISOString()}
+              >
+                {display_date(time.start_date, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}{" "}
+                -{" "}
+                {display_date(time.end_date, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </time>
+            </label>
+          ))}
         </div>
       </fieldset>
       {errors?.id ? <span>{errors.id}</span> : null}
@@ -235,10 +237,6 @@ function SetDateForm({
         <div>
           {dates.map((date) => {
             const date_string = get_date(date.date)
-            const formatted_date = format(
-              parseISO(date_string),
-              "EEE, MMM d",
-            )
             return (
               <label key={date_string}>
                 <input
@@ -247,7 +245,10 @@ function SetDateForm({
                   value={date_string}
                 />
                 <time dateTime={date_string}>
-                  {formatted_date}
+                  {display_date(date.date, {
+                    weekday: "short",
+                    month: "short",
+                  })}
                 </time>
               </label>
             )
@@ -312,13 +313,4 @@ async function fetch_times(
     ])
     .orderBy("slot.start_date")
     .execute()
-}
-function format_in_timezone(date: Date) {
-  const TIMEZONE = "America/Argentina/Buenos_Aires"
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: TIMEZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(date)
 }

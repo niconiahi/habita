@@ -1,13 +1,13 @@
+import { createHash } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { createHash } from "node:crypto"
-import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number"
-import { ReceiptTypeSchema } from "~/lib/receipt_type"
 import {
-  normalize_input,
   get_errors,
+  normalize_input,
 } from "~/lib/form.server"
+import { now } from "~/lib/now.server"
+import { ReceiptTypeSchema } from "~/lib/receipt_type"
 
 export const InputSchema = v.object({
   contract_id: ForceNumberSchema,
@@ -17,7 +17,10 @@ export const InputSchema = v.object({
 
 export async function execute(form_data: FormData) {
   console.log("upload_receipt.execute called")
-  console.log("form_data keys:", Array.from(form_data.keys()))
+  console.log(
+    "form_data keys:",
+    Array.from(form_data.keys()),
+  )
 
   const input = v.parse(
     InputSchema,

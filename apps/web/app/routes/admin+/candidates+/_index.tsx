@@ -4,53 +4,58 @@ import { Content } from "~/components/content"
 import { Table } from "~/components/table"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
+import { display_date } from "~/lib/display_date"
 import { display_location } from "~/lib/display_location"
 import { display_name } from "~/lib/display_name"
 import type { Route } from "./+types/_index"
-import { fetch_tenants } from "./fetchers/tenants.server"
+import { fetch_candidates } from "./fetchers/candidates.server"
 
 export async function loader({
   request,
 }: Route.LoaderArgs) {
   const { user } = await require_auth(request)
-  const admin_property_ids = user.accesses
+  const property_ids = user.accesses
     .filter(
       (access) =>
         access.type === ACCESS_TYPE.OWNER ||
         access.type === ACCESS_TYPE.ADMINISTRATOR,
     )
     .map((access) => access.property_id)
-  const tenants = await fetch_tenants(admin_property_ids)
-  return { tenants }
+  const candidates = await fetch_candidates(property_ids)
+  return { candidates }
 }
 
 export default function () {
-  const { tenants } = useLoaderData<typeof loader>()
+  const { candidates } = useLoaderData<typeof loader>()
   return (
     <Content.Root>
-      <Content.Title>Inquilinos</Content.Title>
+      <Content.Title>Candidatos</Content.Title>
       <Content.Section>
         <Table.Root>
           <Table.Header>
             <Table.Cell header>Nombre</Table.Cell>
-            <Table.Cell header>Email</Table.Cell>
+            <Table.Cell header>Fecha</Table.Cell>
             <Table.Cell header>Propiedad</Table.Cell>
             <Table.Cell header>Acciones</Table.Cell>
           </Table.Header>
           <Table.Body>
-            {tenants.map((tenant) => (
+            {candidates.map((candidate) => (
               <Table.Row
-                key={`${tenant.id}-${tenant.property_id}`}
+                key={`${candidate.id}-${candidate.property_id}`}
               >
                 <Table.Cell>
-                  {display_name(tenant)}
-                </Table.Cell>
-                <Table.Cell>{tenant.email}</Table.Cell>
-                <Table.Cell>
-                  {display_location(tenant.location)}
+                  {display_name(candidate)}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={`/admin/tenants/${tenant.id}`}>
+                  {display_date(candidate.start_date)}
+                </Table.Cell>
+                <Table.Cell>
+                  {display_location(candidate.location)}
+                </Table.Cell>
+                <Table.Cell>
+                  <Link
+                    to={`/admin/candidates/${candidate.id}`}
+                  >
                     <Button>Ver perfil</Button>
                   </Link>
                 </Table.Cell>

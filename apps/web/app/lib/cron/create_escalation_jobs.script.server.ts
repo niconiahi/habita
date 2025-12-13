@@ -1,5 +1,5 @@
-import { create_escalation_jobs } from "./create_escalation_jobs.server"
 import { logger } from "~/lib/telemetry/logger.server"
+import { create_escalation_jobs } from "./create_escalation_jobs.server"
 
 async function main() {
   try {
@@ -13,7 +13,9 @@ async function main() {
     logger.error(
       "fatal error during escalation job creation",
       {},
-      error instanceof Error ? error : new Error(String(error)),
+      error instanceof Error
+        ? error
+        : new Error(String(error)),
     )
     process.exit(1)
   }

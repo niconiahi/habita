@@ -3,7 +3,10 @@ import * as v from "valibot"
 import { now } from "~/lib/now.server"
 import { PropertyDestinySchema } from "~/lib/property_destiny"
 
-export async function update_destinies(form_data: FormData, property_id: number) {
+export async function update_destinies(
+  form_data: FormData,
+  property_id: number,
+) {
   const destinies = v.parse(
     v.array(PropertyDestinySchema),
     form_data.getAll("destiny").map(Number),

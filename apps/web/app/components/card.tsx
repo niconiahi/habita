@@ -1,10 +1,16 @@
-import { type ComponentProps, type ReactNode } from "react"
+import type { ComponentProps } from "react"
 import { Carousel } from "~/components/carousel"
 import "~/components/card.css"
 
 type RootProps = ComponentProps<"article">
-function Root({ children, className, ...props }: RootProps) {
-  const class_name = className ? `card ${className}` : "card"
+function Root({
+  children,
+  className,
+  ...props
+}: RootProps) {
+  const class_name = className
+    ? `card ${className}`
+    : "card"
   return (
     <article className={class_name} {...props}>
       {children}
@@ -27,7 +33,10 @@ type CardCarouselProps = {
   images: CarouselImage[]
   label: string
 }
-function CardCarousel({ images, label }: CardCarouselProps) {
+function CardCarousel({
+  images,
+  label,
+}: CardCarouselProps) {
   return (
     <Carousel.Root label={label}>
       {images.map((image, index) => {
@@ -48,7 +57,11 @@ function CardCarousel({ images, label }: CardCarouselProps) {
 }
 
 type BodyProps = ComponentProps<"div">
-function Body({ children, className, ...props }: BodyProps) {
+function Body({
+  children,
+  className,
+  ...props
+}: BodyProps) {
   return (
     <div className={className} {...props}>
       {children}
@@ -57,7 +70,11 @@ function Body({ children, className, ...props }: BodyProps) {
 }
 
 type TitleProps = ComponentProps<"h4">
-function Title({ children, className, ...props }: TitleProps) {
+function Title({
+  children,
+  className,
+  ...props
+}: TitleProps) {
   return (
     <h4 className={className} {...props}>
       {children}
@@ -66,7 +83,11 @@ function Title({ children, className, ...props }: TitleProps) {
 }
 
 type ActionsProps = ComponentProps<"ul">
-function Actions({ children, className, ...props }: ActionsProps) {
+function Actions({
+  children,
+  className,
+  ...props
+}: ActionsProps) {
   return (
     <ul
       role="group"
@@ -80,7 +101,11 @@ function Actions({ children, className, ...props }: ActionsProps) {
 }
 
 type ActionProps = ComponentProps<"li">
-function Action({ children, className, ...props }: ActionProps) {
+function Action({
+  children,
+  className,
+  ...props
+}: ActionProps) {
   return (
     <li className={className} {...props}>
       {children}
@@ -89,7 +114,11 @@ function Action({ children, className, ...props }: ActionProps) {
 }
 
 type ContentProps = ComponentProps<"p">
-function Content({ children, className, ...props }: ContentProps) {
+function Content({
+  children,
+  className,
+  ...props
+}: ContentProps) {
   return (
     <p className={className} {...props}>
       {children}

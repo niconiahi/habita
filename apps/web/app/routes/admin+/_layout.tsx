@@ -12,6 +12,9 @@ export default function () {
           <Dashboard.Link to="/admin/tenants">
             Inquilinos
           </Dashboard.Link>
+          <Dashboard.Link to="/admin/candidates">
+            Candidatos
+          </Dashboard.Link>
           <Dashboard.Link to="/admin/contracts?state=0">
             Contratos
           </Dashboard.Link>

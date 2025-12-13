@@ -8,7 +8,8 @@ import { display_name } from "~/lib/display_name"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { query_builder } from "~/lib/query_builder.server"
-import { fetch_tenant_by_id } from "../fetchers/tenant.server"
+import { SLOT_STATE } from "~/lib/slot_state"
+import { fetch_candidate } from "../fetchers/candidate.server"
 import type { Route } from "./+types/_index"
 
 export async function loader({
@@ -16,42 +17,44 @@ export async function loader({
   params,
 }: Route.LoaderArgs) {
   const { user } = await require_auth(request)
-  const tenant_id = v.parse(
+  const candidate_id = v.parse(
     ForceNumberSchema,
-    params.tenant_id,
+    params.candidate_id,
     {
-      message: "tenant id should be a number",
+      message: "candidate id should be a number",
     },
   )
-  const admin_property_ids = user.accesses
+  const property_ids = user.accesses
     .filter(
       (access) =>
         access.type === ACCESS_TYPE.OWNER ||
         access.type === ACCESS_TYPE.ADMINISTRATOR,
     )
     .map((access) => access.property_id)
-  const tenant_access = await query_builder
-    .selectFrom("access")
-    .where("access.user_id", "=", tenant_id)
-    .where("access.type", "=", ACCESS_TYPE.TENANT)
-    .where("access.property_id", "in", admin_property_ids)
-    .select(["access.id"])
+  const candidate_slot = await query_builder
+    .selectFrom("slot")
+    .where("slot.visitant_id", "=", candidate_id)
+    .where("slot.state", "=", SLOT_STATE.RESERVED)
+    .where("slot.property_id", "in", property_ids)
+    .select(["slot.id"])
     .executeTakeFirst()
-  if (!tenant_access) {
+  if (!candidate_slot) {
     throw error(403, "not authorized")
   }
-  const tenant = await fetch_tenant_by_id(tenant_id)
-  if (!tenant) {
-    throw error(404, "tenant not found")
+  const candidate = await fetch_candidate(candidate_id)
+  if (!candidate) {
+    throw error(404, "candidate not found")
   }
-  return { tenant }
+  return { candidate }
 }
 
 export default function () {
-  const { tenant } = useLoaderData<typeof loader>()
+  const { candidate } = useLoaderData<typeof loader>()
   return (
     <Content.Root>
-      <Content.Title>{display_name(tenant)}</Content.Title>
+      <Content.Title>
+        {display_name(candidate)}
+      </Content.Title>
       <Content.Section>
         <Section.Header>
           <Section.Title>
@@ -61,12 +64,20 @@ export default function () {
         <div className="space-y-2">
           <div className="space-y-1">
             <p className="text-sm text-gray-500">Nombre</p>
-            <p>{display_name(tenant)}</p>
+            <p>{display_name(candidate)}</p>
           </div>
           <div className="space-y-1">
             <p className="text-sm text-gray-500">Email</p>
-            <p>{tenant.email}</p>
+            <p>{candidate.email}</p>
           </div>
+          {candidate.phone_number && (
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">
+                Teléfono
+              </p>
+              <p>{candidate.phone_number}</p>
+            </div>
+          )}
         </div>
       </Content.Section>
     </Content.Root>

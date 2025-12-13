@@ -1,17 +1,18 @@
+import { query_builder } from "db/query_builder"
 import { useLoaderData } from "react-router"
 import * as v from "valibot"
+import { Content } from "~/components/content"
 import { require_auth } from "~/lib/auth.server"
+import { display_location } from "~/lib/display_location"
+import { display_name } from "~/lib/display_name"
 import { error } from "~/lib/error.server"
-import { query_builder } from "db/query_builder"
-import { SLOT_STATE } from "~/lib/slot_state"
 import { ForceNumberSchema } from "~/lib/force_number"
 import {
   get_property_accesses,
   require_edit_access,
 } from "~/lib/property_access.server"
+import { SLOT_STATE } from "~/lib/slot_state"
 import { fetch_property } from "~/routes/properties+/fetchers/property.server"
-import { display_location } from "~/lib/display_location"
-import { Content } from "~/components/content"
 import type { Route } from "./+types/_index"
 
 export async function loader({
@@ -58,34 +59,26 @@ export default function PropertyCandidates() {
           <p>No hay candidatos para revisar.</p>
         ) : (
           <div className="space-y-4">
-            {candidates.map((candidate) => {
-              const full_name = [
-                candidate.name,
-                candidate.surname,
-              ]
-                .filter(Boolean)
-                .join(" ")
-              return (
-                <div
-                  key={candidate.id}
-                  className="border rounded-lg p-4 space-y-2"
-                >
-                  <div className="space-y-1">
-                    <h2 className="text-lg font-semibold">
-                      {full_name || "Sin nombre"}
-                    </h2>
+            {candidates.map((candidate) => (
+              <div
+                key={candidate.id}
+                className="border rounded-lg p-4 space-y-2"
+              >
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold">
+                    {display_name(candidate)}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    {candidate.email}
+                  </p>
+                  {candidate.phone_number && (
                     <p className="text-sm text-gray-600">
-                      {candidate.email}
+                      {candidate.phone_number}
                     </p>
-                    {candidate.phone_number && (
-                      <p className="text-sm text-gray-600">
-                        {candidate.phone_number}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
         )}
       </Content.Section>

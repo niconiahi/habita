@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number"
+import { now } from "~/lib/now.server"
 import { UserFileTypeSchema } from "~/lib/user_file_type"
 
 export async function create_file(form_data: FormData) {
@@ -16,7 +16,9 @@ export async function create_file(form_data: FormData) {
   )
   await query_builder.transaction().execute(async (tx) => {
     const content = Buffer.from(await file_.bytes())
-    const hash = createHash("sha256").update(content).digest("hex")
+    const hash = createHash("sha256")
+      .update(content)
+      .digest("hex")
     const file = await tx
       .insertInto("file")
       .values({

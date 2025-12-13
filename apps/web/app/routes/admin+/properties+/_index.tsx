@@ -1,15 +1,15 @@
 import { Link, useLoaderData } from "react-router"
-import { require_auth } from "~/lib/auth.server"
-import { ACCESS_TYPE } from "~/lib/access_type"
-import { display_location } from "~/lib/display_location"
-import { get_property_state_label } from "~/lib/property_state"
-import { get_property_type_label } from "~/lib/property_type"
-import { fetch_properties } from "./fetchers/properties.server"
+import { Button } from "~/components/button"
 import { Content } from "~/components/content"
 import { Section } from "~/components/section"
 import { Table } from "~/components/table"
-import { Button } from "~/components/button"
+import { ACCESS_TYPE } from "~/lib/access_type"
+import { require_auth } from "~/lib/auth.server"
+import { display_location } from "~/lib/display_location"
+import { get_property_state_label } from "~/lib/property_state"
+import { get_property_type_label } from "~/lib/property_type"
 import type { Route } from "./+types/_index"
+import { fetch_properties } from "./fetchers/properties.server"
 
 export async function loader({
   request,

@@ -1,9 +1,9 @@
 import { query_builder } from "db/query_builder"
-import { calculate_all_due_escalations } from "../calculate_all_due_escalations.server"
-import { now } from "~/lib/now.server"
 import { JOB_STATUS } from "~/lib/job_status"
 import { JOB_TYPE } from "~/lib/job_type"
+import { now } from "~/lib/now.server"
 import { logger } from "~/lib/telemetry/logger.server"
+import { calculate_all_due_escalations } from "../calculate_all_due_escalations.server"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder
@@ -44,7 +44,11 @@ export async function process_jobs() {
       })
     } catch (error) {
       if (error instanceof Error) {
-        logger.error("job failed", { job_id: job.id }, error)
+        logger.error(
+          "job failed",
+          { job_id: job.id },
+          error,
+        )
       }
       await query_builder
         .transaction()

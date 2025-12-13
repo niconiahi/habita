@@ -1,15 +1,15 @@
-import { Form, redirect } from "react-router"
+import { redirect } from "react-router"
 import { Button } from "~/components/button"
 import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
-import { require_auth } from "~/lib/auth.server"
 import { ACCESS_TYPE } from "~/lib/access_type"
+import { require_auth } from "~/lib/auth.server"
 import { display_location } from "~/lib/display_location"
-import {
-  fetch_available_properties,
-  type AvailableProperty,
-} from "./fetchers/available_properties.server"
 import type { Route } from "./+types/_index"
+import {
+  type AvailableProperty,
+  fetch_available_properties,
+} from "./fetchers/available_properties.server"
 
 export async function loader({
   request,

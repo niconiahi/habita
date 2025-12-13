@@ -2,7 +2,9 @@ import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { ACCESS_TYPE } from "~/lib/access_type"
 import { query_builder } from "~/lib/query_builder.server"
 
-export async function fetch_tenants(admin_property_ids: number[]) {
+export async function fetch_tenants(
+  admin_property_ids: number[],
+) {
   if (admin_property_ids.length === 0) {
     return []
   }
@@ -10,8 +12,16 @@ export async function fetch_tenants(admin_property_ids: number[]) {
   return query_builder
     .selectFrom("user")
     .innerJoin("access", "access.user_id", "user.id")
-    .innerJoin("property", "property.id", "access.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "access.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("access.type", "=", ACCESS_TYPE.TENANT)
     .where("access.property_id", "in", admin_property_ids)
     .select((eb) => [
@@ -35,7 +45,11 @@ export async function fetch_tenants(admin_property_ids: number[]) {
             "location.town",
             "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id"),
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),

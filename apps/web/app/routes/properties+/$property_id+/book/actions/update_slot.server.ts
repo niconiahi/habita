@@ -1,23 +1,26 @@
+import {
+  context,
+  propagation,
+  type Span,
+} from "@opentelemetry/api"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { ForceNumberSchema } from "~/lib/force_number"
-import { SLOT_STATE } from "~/lib/slot_state"
-import { fetch_property } from "~/routes/properties+/fetchers/property.server"
-import { fetch_user_files } from "~/routes/properties+/fetchers/user_files.server"
 import { display_location } from "~/lib/display_location"
+import { error } from "~/lib/error.server"
+import { ForceNumberSchema } from "~/lib/force_number"
 import {
-  normalize_input,
   get_errors,
+  normalize_input,
 } from "~/lib/form.server"
 import {
   escape_ics_text,
   format_ics_date,
 } from "~/lib/ics.server"
-import { type Span } from "@opentelemetry/api"
+import { SLOT_STATE } from "~/lib/slot_state"
 import { logger } from "~/lib/telemetry/logger.server"
-import { error } from "~/lib/error.server"
-import { propagation, context } from "@opentelemetry/api"
 import { USER_FILE_TYPE } from "~/lib/user_file_type"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
+import { fetch_user_files } from "~/routes/properties+/fetchers/user_files.server"
 
 const InviteeSchema = v.object({
   email: v.string(),
@@ -37,10 +40,12 @@ async function execute(form_data: FormData, span: Span) {
   )
   const user_files = await fetch_user_files(visitant_id)
   const has_credit_report = user_files.some(
-    (file) => file.type === USER_FILE_TYPE.CREDIT_REPORT
+    (file) => file.type === USER_FILE_TYPE.CREDIT_REPORT,
   )
   if (!has_credit_report) {
-    throw new Response("credit report required", { status: 403 })
+    throw new Response("credit report required", {
+      status: 403,
+    })
   }
   span.setAttribute("slot.id", id)
   span.setAttribute("visitant.id", visitant_id)

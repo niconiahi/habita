@@ -1,5 +1,8 @@
 import * as v from "valibot"
-import { compose_types, type ObjectValues } from "./compose_types"
+import {
+  compose_types,
+  type ObjectValues,
+} from "./compose_types"
 import { SERVICE_TYPE } from "./service"
 
 export const RECEIPT_TYPE = compose_types(SERVICE_TYPE, {

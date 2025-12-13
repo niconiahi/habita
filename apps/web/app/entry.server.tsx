@@ -1,13 +1,12 @@
 import "~/lib/telemetry/sdk.server"
 
 import { PassThrough } from "node:stream"
-
-import type { EntryContext } from "react-router"
 import { createReadableStreamFromReadable } from "@react-router/node"
-import { ServerRouter } from "react-router"
 import { isbot } from "isbot"
 import type { RenderToPipeableStreamOptions } from "react-dom/server"
 import { renderToPipeableStream } from "react-dom/server"
+import type { EntryContext } from "react-router"
+import { ServerRouter } from "react-router"
 import { logger } from "~/lib/telemetry/logger.server"
 
 export const streamTimeout = 5_000

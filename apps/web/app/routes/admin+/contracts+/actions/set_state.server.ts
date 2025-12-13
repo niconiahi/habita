@@ -1,10 +1,10 @@
 import * as v from "valibot"
-import {
-  normalize_input,
-  get_errors,
-} from "~/lib/form.server"
 import { ContractStateSchema } from "~/lib/contract_state"
 import { ForceNumberSchema } from "~/lib/force_number"
+import {
+  get_errors,
+  normalize_input,
+} from "~/lib/form.server"
 
 export const InputSchema = v.object({
   state: v.pipe(ForceNumberSchema, ContractStateSchema),

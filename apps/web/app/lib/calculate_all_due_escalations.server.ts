@@ -1,12 +1,12 @@
+import { addDays, addMonths } from "date-fns"
 import { query_builder } from "db/query_builder"
-import { CONTRACT_STATE } from "~/lib/contract_state"
-import { now } from "~/lib/now.server"
-import type { Duration } from "~/lib/duration"
-import { addMonths, addDays } from "date-fns"
-import type { Insertable } from "kysely"
 import type { FormulaParameter, Period } from "db/types"
-import * as v from "valibot"
+import type { Insertable } from "kysely"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
+import * as v from "valibot"
+import { CONTRACT_STATE } from "~/lib/contract_state"
+import type { Duration } from "~/lib/duration"
+import { now } from "~/lib/now.server"
 import { ForceDateSchema } from "./force_date.server"
 
 async function fetch_rates() {
@@ -124,7 +124,7 @@ function get_current_rate(
   rates: Rate[],
 ): Rate {
   const current_date = new Date()
-  let rate: Rate | undefined = undefined
+  let rate: Rate | undefined
   rate = rates.find(
     (rate) =>
       rate.type === contract.escalation_type &&
@@ -145,7 +145,7 @@ function get_old_rate(contract: Contract, rates: Rate[]) {
     contract.escalation_duration as Duration,
   )
   const past_date = addMonths(current_date, -months_offset)
-  let rate: Rate | undefined = undefined
+  let rate: Rate | undefined
   rate = rates.find(
     (rate) =>
       rate.type === contract.escalation_type &&

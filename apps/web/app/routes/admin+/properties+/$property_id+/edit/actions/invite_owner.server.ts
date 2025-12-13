@@ -4,8 +4,8 @@ import {
   encodeHexLowerCase,
 } from "@oslojs/encoding"
 import * as v from "valibot"
-import { now } from "~/lib/now.server"
 import { ForceNumberSchema } from "~/lib/force_number"
+import { now } from "~/lib/now.server"
 import { query_builder } from "~/lib/query_builder.server"
 
 export function make_token() {
@@ -68,21 +68,27 @@ async function send_owner_invite({
 }): Promise<void> {
   console.log("Attempting to send owner invite to:", email)
   try {
-    const response = await fetch("http://go:8081/send-owner-invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "http://go:8081/send-owner-invite",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          subject,
+          text,
+        }),
       },
-      body: JSON.stringify({
-        email,
-        subject,
-        text,
-      }),
-    })
+    )
     console.log("Response status:", response.status)
     if (!response.ok) {
       const error_text = await response.text()
-      console.error("Error response from Go service:", error_text)
+      console.error(
+        "Error response from Go service:",
+        error_text,
+      )
       throw new Error(
         `Failed to send owner invite: ${response.status} - ${error_text}`,
       )

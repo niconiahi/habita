@@ -1,4 +1,4 @@
-import { type ReactNode } from "react"
+import type { ReactNode } from "react"
 import "~/components/section.css"
 
 function Header({ children }: { children: ReactNode }) {

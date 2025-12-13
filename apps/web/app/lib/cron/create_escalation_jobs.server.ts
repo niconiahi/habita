@@ -1,12 +1,12 @@
 import { query_builder } from "db/query_builder"
+import { jsonArrayFrom } from "kysely/helpers/postgres"
+import * as v from "valibot"
 import { CONTRACT_STATE } from "~/lib/contract_state"
-import { now } from "~/lib/now.server"
 import { JOB_STATUS } from "~/lib/job_status"
 import { JOB_TYPE } from "~/lib/job_type"
-import { jsonArrayFrom } from "kysely/helpers/postgres"
-import { ForceDateSchema } from "../force_date.server"
-import * as v from "valibot"
+import { now } from "~/lib/now.server"
 import { logger } from "~/lib/telemetry/logger.server"
+import { ForceDateSchema } from "../force_date.server"
 
 async function fetch_contracts() {
   return query_builder

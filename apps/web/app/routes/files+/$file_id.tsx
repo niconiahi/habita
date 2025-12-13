@@ -1,12 +1,16 @@
 import * as v from "valibot"
-import { query_builder } from "~/lib/query_builder.server"
 import { ForceNumberSchema } from "~/lib/force_number"
+import { query_builder } from "~/lib/query_builder.server"
 import type { Route } from "./+types/$file_id"
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const file_id = v.parse(ForceNumberSchema, params.file_id, {
-    message: "file id should be a number",
-  })
+  const file_id = v.parse(
+    ForceNumberSchema,
+    params.file_id,
+    {
+      message: "file id should be a number",
+    },
+  )
 
   const file = await query_builder
     .selectFrom("file")
