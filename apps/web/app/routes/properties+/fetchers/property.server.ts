@@ -21,7 +21,11 @@ export async function fetch_property(id: number) {
       jsonArrayFrom(
         eb
           .selectFrom("room")
-          .leftJoin("room_map", "room_map.room_id", "room.id")
+          .leftJoin(
+            "room_map",
+            "room_map.room_id",
+            "room.id",
+          )
           .select([
             "room.id",
             "room.type",

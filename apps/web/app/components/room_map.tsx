@@ -167,7 +167,7 @@ function create_pointer_down_handler(deps: {
   room_bounds: RoomBounds[]
   set_dragging_state: (state: DraggingState | null) => void
 }) {
-  return function (event: PointerEvent): void {
+  return (event: PointerEvent): void => {
     const rect = deps.canvas.getBoundingClientRect()
     const canvas_x = event.clientX - rect.left
     const canvas_y = event.clientY - rect.top
@@ -201,7 +201,7 @@ function create_pointer_move_handler(deps: {
     y: number,
   ) => void
 }) {
-  return function (event: PointerEvent): void {
+  return (event: PointerEvent): void => {
     if (!deps.dragging_state) return
     const rect = deps.canvas.getBoundingClientRect()
     const canvas_x = event.clientX - rect.left
@@ -211,7 +211,7 @@ function create_pointer_move_handler(deps: {
     let new_x = deps.dragging_state.room_start_x + delta_x
     let new_y = deps.dragging_state.room_start_y + delta_y
     const dragging_room = deps.room_bounds.find(
-      (room) => room.id === deps.dragging_state!.room_id,
+      (room) => room.id === deps.dragging_state?.room_id,
     )
     if (!dragging_room) return
     const snapped = get_snapped_position(
@@ -246,7 +246,7 @@ function create_pointer_up_handler(deps: {
   dragging_state: DraggingState | null
   set_dragging_state: (state: DraggingState | null) => void
 }) {
-  return function (event: PointerEvent): void {
+  return (event: PointerEvent): void => {
     if (deps.dragging_state) {
       deps.canvas.releasePointerCapture(event.pointerId)
       deps.set_dragging_state(null)
@@ -269,232 +269,215 @@ export function RoomMap({
   const [room_bounds, set_room_bounds] = useState<
     RoomBounds[]
   >([])
-  const update_room_position = function (
+  const update_room_position = (
     room_id: number,
     x: number,
     y: number,
-  ): void {
-    set_room_positions(function (prev) {
+  ): void => {
+    set_room_positions((prev) => {
       const updated = new Map(prev)
       updated.set(room_id, { x, y })
       on_positions_change?.(updated)
       return updated
     })
   }
-  useEffect(
-    function () {
-      const initial_positions = new Map<number, Position>()
-      for (const room of rooms) {
-        if (
-          room.position_x !== null &&
-          room.position_y !== null
-        ) {
-          initial_positions.set(room.id, {
-            x: Number.parseFloat(room.position_x),
-            y: Number.parseFloat(room.position_y),
-          })
-        }
-      }
-      set_room_positions(initial_positions)
-    },
-    [rooms],
-  )
-  useEffect(
-    function () {
-      const canvas = canvas_ref.current
-      if (!canvas) return
-      const ctx = canvas.getContext("2d", {
-        alpha: false,
-      })
-      if (!ctx) return
-      const device_pixel_ratio =
-        window.devicePixelRatio || 1
-      const padding = PADDING
-      const room_data = rooms.map(function (r) {
-        return {
-          id: r.id,
-          type: r.type,
-          width: Number.parseFloat(r.width),
-          length: Number.parseFloat(r.length),
-        }
-      })
-      const total_width = room_data.reduce(function (
-        sum,
-        room,
+  useEffect(() => {
+    const initial_positions = new Map<number, Position>()
+    for (const room of rooms) {
+      if (
+        room.position_x !== null &&
+        room.position_y !== null
       ) {
-        return sum + room.width
-      }, 0)
-      const max_length = Math.max(
-        ...room_data.map(function (r) {
-          return r.length
-        }),
-      )
-      const default_available_width = 600 - padding * 2
-      const default_available_height = 300 - padding * 2
-      const scale_x = default_available_width / total_width
-      const scale_y = default_available_height / max_length
-      const scale = Math.min(scale_x, scale_y)
-      let max_x = 0
-      let max_y = 0
-      let x_offset_calc = 0
-      for (const room of room_data) {
-        const w = room.width * scale
-        const h = room.length * scale
-        const position = room_positions.get(room.id) || {
-          x: x_offset_calc,
-          y: 0,
-        }
-        const right_edge = position.x + w
-        const bottom_edge = position.y + h
-        if (right_edge > max_x) max_x = right_edge
-        if (bottom_edge > max_y) max_y = bottom_edge
-        if (!room_positions.has(room.id)) {
-          x_offset_calc += w + 10
-        }
+        initial_positions.set(room.id, {
+          x: Number.parseFloat(room.position_x),
+          y: Number.parseFloat(room.position_y),
+        })
       }
-      const display_width = Math.ceil(max_x + padding * 2)
-      const display_height = Math.ceil(max_y + padding * 2)
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
-      canvas.width = display_width * device_pixel_ratio
-      canvas.height = display_height * device_pixel_ratio
-      canvas.style.width = `${display_width}px`
-      canvas.style.height = `${display_height}px`
-      ctx.setTransform(
-        device_pixel_ratio,
-        0,
-        0,
-        device_pixel_ratio,
-        0,
-        0,
-      )
-      ctx.imageSmoothingEnabled = false
-      ctx.fillStyle = "#252420"
-      ctx.fillRect(0, 0, display_width, display_height)
-      const colors = [
-        "#d0d0d0",
-        "#a0c4ff",
-        "#ffadad",
-        "#c9f0c9",
-        "#ffe4b3",
-      ]
+    }
+    set_room_positions(initial_positions)
+  }, [rooms])
+  useEffect(() => {
+    const canvas = canvas_ref.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d", {
+      alpha: false,
+    })
+    if (!ctx) return
+    const device_pixel_ratio = window.devicePixelRatio || 1
+    const padding = PADDING
+    const room_data = rooms.map((r) => ({
+      id: r.id,
+      type: r.type,
+      width: Number.parseFloat(r.width),
+      length: Number.parseFloat(r.length),
+    }))
+    const total_width = room_data.reduce(
+      (sum, room) => sum + room.width,
+      0,
+    )
+    const max_length = Math.max(
+      ...room_data.map((r) => r.length),
+    )
+    const default_available_width = 600 - padding * 2
+    const default_available_height = 300 - padding * 2
+    const scale_x = default_available_width / total_width
+    const scale_y = default_available_height / max_length
+    const scale = Math.min(scale_x, scale_y)
+    let max_x = 0
+    let max_y = 0
+    let x_offset_calc = 0
+    for (const room of room_data) {
+      const w = room.width * scale
+      const h = room.length * scale
+      const position = room_positions.get(room.id) || {
+        x: x_offset_calc,
+        y: 0,
+      }
+      const right_edge = position.x + w
+      const bottom_edge = position.y + h
+      if (right_edge > max_x) max_x = right_edge
+      if (bottom_edge > max_y) max_y = bottom_edge
+      if (!room_positions.has(room.id)) {
+        x_offset_calc += w + 10
+      }
+    }
+    const display_width = Math.ceil(max_x + padding * 2)
+    const display_height = Math.ceil(max_y + padding * 2)
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    canvas.width = display_width * device_pixel_ratio
+    canvas.height = display_height * device_pixel_ratio
+    canvas.style.width = `${display_width}px`
+    canvas.style.height = `${display_height}px`
+    ctx.setTransform(
+      device_pixel_ratio,
+      0,
+      0,
+      device_pixel_ratio,
+      0,
+      0,
+    )
+    ctx.imageSmoothingEnabled = false
+    ctx.fillStyle = "#252420"
+    ctx.fillRect(0, 0, display_width, display_height)
+    const colors = [
+      "#d0d0d0",
+      "#a0c4ff",
+      "#ffadad",
+      "#c9f0c9",
+      "#ffe4b3",
+    ]
+    ctx.save()
+    ctx.translate(padding, padding)
+    const current_room_bounds: RoomBounds[] = []
+    let x_offset = 0
+    for (const room of room_data) {
+      const w = room.width * scale
+      const h = room.length * scale
+      const position = room_positions.get(room.id) || {
+        x: x_offset,
+        y: 0,
+      }
+      const x = Math.round(position.x)
+      const y = Math.round(position.y)
+      current_room_bounds.push({
+        id: room.id,
+        x: position.x,
+        y: position.y,
+        w: w,
+        h: h,
+      })
+      ctx.fillStyle = colors[room.type] ?? "#cccccc"
+      ctx.fillRect(x, y, w, h)
+      ctx.strokeStyle = "#333"
+      ctx.lineWidth = ROOM_STROKE_WIDTH
+      ctx.strokeRect(x, y, w, h)
+      ctx.fillStyle = "#000"
+      ctx.font = "16px Arial, sans-serif"
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      const type_label = display_room_type(room.type)
+      ctx.fillText(type_label, x + w / 2, y + h / 2)
+      ctx.fillStyle = "#000"
+      ctx.font = "14px Arial, sans-serif"
+      ctx.textAlign = "center"
+      ctx.textBaseline = "bottom"
+      ctx.fillText(`${room.width}m`, x + w / 2, y + h - 4)
       ctx.save()
-      ctx.translate(padding, padding)
-      const current_room_bounds: RoomBounds[] = []
-      let x_offset = 0
-      for (const room of room_data) {
-        const w = room.width * scale
-        const h = room.length * scale
-        const position = room_positions.get(room.id) || {
-          x: x_offset,
-          y: 0,
-        }
-        const x = Math.round(position.x)
-        const y = Math.round(position.y)
-        current_room_bounds.push({
-          id: room.id,
-          x: position.x,
-          y: position.y,
-          w: w,
-          h: h,
-        })
-        ctx.fillStyle = colors[room.type] ?? "#cccccc"
-        ctx.fillRect(x, y, w, h)
-        ctx.strokeStyle = "#333"
-        ctx.lineWidth = ROOM_STROKE_WIDTH
-        ctx.strokeRect(x, y, w, h)
-        ctx.fillStyle = "#000"
-        ctx.font = "16px Arial, sans-serif"
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        const type_label = display_room_type(room.type)
-        ctx.fillText(type_label, x + w / 2, y + h / 2)
-        ctx.fillStyle = "#000"
-        ctx.font = "14px Arial, sans-serif"
-        ctx.textAlign = "center"
-        ctx.textBaseline = "bottom"
-        ctx.fillText(`${room.width}m`, x + w / 2, y + h - 4)
-        ctx.save()
-        ctx.translate(x + w - 8, y + h / 2)
-        ctx.rotate(-Math.PI / 2)
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.fillText(`${room.length}m`, 0, 0)
-        ctx.restore()
-        if (!room_positions.has(room.id)) {
-          x_offset += w + 10
-        }
-      }
-      set_room_bounds(current_room_bounds)
+      ctx.translate(x + w - 8, y + h / 2)
+      ctx.rotate(-Math.PI / 2)
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      ctx.fillText(`${room.length}m`, 0, 0)
       ctx.restore()
-    },
-    [rooms, room_positions],
-  )
-  useEffect(
-    function () {
-      if (is_readonly) return
-      const canvas = canvas_ref.current
-      if (!canvas) return
-      const handle_pointer_down =
-        create_pointer_down_handler({
-          canvas: canvas,
-          room_bounds: room_bounds,
-          set_dragging_state: set_dragging_state,
-        })
-      const handle_pointer_move =
-        create_pointer_move_handler({
-          canvas: canvas,
-          dragging_state: dragging_state,
-          room_bounds: room_bounds,
-          update_room_position: update_room_position,
-        })
-      const handle_pointer_up = create_pointer_up_handler({
+      if (!room_positions.has(room.id)) {
+        x_offset += w + 10
+      }
+    }
+    set_room_bounds(current_room_bounds)
+    ctx.restore()
+  }, [rooms, room_positions])
+  useEffect(() => {
+    if (is_readonly) return
+    const canvas = canvas_ref.current
+    if (!canvas) return
+    const handle_pointer_down = create_pointer_down_handler(
+      {
+        canvas: canvas,
+        room_bounds: room_bounds,
+        set_dragging_state: set_dragging_state,
+      },
+    )
+    const handle_pointer_move = create_pointer_move_handler(
+      {
         canvas: canvas,
         dragging_state: dragging_state,
-        set_dragging_state: set_dragging_state,
-      })
-      canvas.addEventListener(
+        room_bounds: room_bounds,
+        update_room_position: update_room_position,
+      },
+    )
+    const handle_pointer_up = create_pointer_up_handler({
+      canvas: canvas,
+      dragging_state: dragging_state,
+      set_dragging_state: set_dragging_state,
+    })
+    canvas.addEventListener(
+      "pointerdown",
+      handle_pointer_down,
+    )
+    canvas.addEventListener(
+      "pointermove",
+      handle_pointer_move,
+    )
+    canvas.addEventListener("pointerup", handle_pointer_up)
+    canvas.addEventListener(
+      "pointercancel",
+      handle_pointer_up,
+    )
+    canvas.style.cursor = "grab"
+    return () => {
+      canvas.removeEventListener(
         "pointerdown",
         handle_pointer_down,
       )
-      canvas.addEventListener(
+      canvas.removeEventListener(
         "pointermove",
         handle_pointer_move,
       )
-      canvas.addEventListener(
+      canvas.removeEventListener(
         "pointerup",
         handle_pointer_up,
       )
-      canvas.addEventListener(
+      canvas.removeEventListener(
         "pointercancel",
         handle_pointer_up,
       )
-      canvas.style.cursor = "grab"
-      return function () {
-        canvas.removeEventListener(
-          "pointerdown",
-          handle_pointer_down,
-        )
-        canvas.removeEventListener(
-          "pointermove",
-          handle_pointer_move,
-        )
-        canvas.removeEventListener(
-          "pointerup",
-          handle_pointer_up,
-        )
-        canvas.removeEventListener(
-          "pointercancel",
-          handle_pointer_up,
-        )
-      }
-    },
-    [
-      is_readonly,
-      dragging_state,
-      room_bounds,
-      update_room_position,
-    ],
-  )
+    }
+  }, [
+    is_readonly,
+    dragging_state,
+    room_bounds,
+    update_room_position,
+  ])
   return (
     <div
       style={{

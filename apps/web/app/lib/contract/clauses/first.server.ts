@@ -1,1 +1,1 @@
-export function render_first(props: any) {}
+export function render_first(_props: any) {}

@@ -8,18 +8,18 @@ import { Section } from "~/components/section"
 import { require_auth } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
 import { has_edit_access } from "~/lib/property_access.server"
-import type { Route } from "./+types/new"
-import {
-  get_property_type_label,
-  PROPERTY_TYPE,
-  type PropertyType,
-} from "~/lib/property_type"
-import { get_property_types } from "~/lib/property_type"
 import {
   get_property_destinies,
   get_property_destiny_label,
 } from "~/lib/property_destiny"
+import {
+  get_property_type_label,
+  get_property_types,
+  PROPERTY_TYPE,
+  type PropertyType,
+} from "~/lib/property_type"
 import * as actions from "~/routes/properties+/actions/index.server"
+import type { Route } from "./+types/new"
 
 const INTENT = {
   CREATE_PROPERTY: "create_property",

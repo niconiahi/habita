@@ -1,10 +1,10 @@
 import {
   Children,
   isValidElement,
+  type ReactNode,
   useEffect,
   useRef,
   useState,
-  type ReactNode,
 } from "react"
 import "~/components/carousel.css"
 
@@ -40,10 +40,10 @@ export function Root({
     }
     const handler = () => handle_scroll(images)
     images.addEventListener("scroll", handler)
-    return function () {
+    return () => {
       images.removeEventListener("scroll", handler)
     }
-  }, [children])
+  }, [])
   return (
     <section
       className="carousel"

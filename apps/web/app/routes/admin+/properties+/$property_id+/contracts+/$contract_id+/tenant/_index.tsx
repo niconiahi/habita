@@ -1,27 +1,28 @@
+import { startOfMonth, subMonths } from "date-fns"
 import { Form } from "react-router"
 import * as v from "valibot"
-import { subMonths, startOfMonth, format } from "date-fns"
 import { Button } from "~/components/button"
 import { Content } from "~/components/content"
 import { Section } from "~/components/section"
+import { ACCESS_TYPE } from "~/lib/access_type"
 import { require_auth } from "~/lib/auth.server"
+import { display_date } from "~/lib/display_date"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
-import { ACCESS_TYPE } from "~/lib/access_type"
-import { fetch_property } from "~/routes/properties+/fetchers/property.server"
-import { fetch_contract } from "../edit/fetchers/contract.server"
-import { query_builder } from "~/lib/query_builder.server"
-import {
-  RECEIPT_TYPE,
-  get_receipt_type_label,
-  get_receipt_types,
-} from "~/lib/receipt_type"
-import type { Route } from "./+types/_index"
-import * as actions from "./actions/index.server"
 import {
   get_property_accesses,
   has_tenant_access,
 } from "~/lib/property_access.server"
+import { query_builder } from "~/lib/query_builder.server"
+import {
+  get_receipt_type_label,
+  get_receipt_types,
+  RECEIPT_TYPE,
+} from "~/lib/receipt_type"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
+import { fetch_contract } from "../edit/fetchers/contract.server"
+import type { Route } from "./+types/_index"
+import * as actions from "./actions/index.server"
 
 const INTENT = {
   UPLOAD_RECEIPT: "upload_receipt",
@@ -166,14 +167,21 @@ export default function ({
       <Content.Title>Comprobantes de pago</Content.Title>
       <Content.Section>
         <Section.Header>
-          <Section.Title>Precio de alquiler actual</Section.Title>
+          <Section.Title>
+            Precio de alquiler actual
+          </Section.Title>
         </Section.Header>
         <p>${current_rent_price}</p>
       </Content.Section>
       {dates.map((date) => (
         <Content.Section key={date.toISOString()}>
           <Section.Header>
-            <Section.Title>{format(date, "MMMM yyyy")}</Section.Title>
+            <Section.Title>
+              {display_date(date, {
+                month: "long",
+                year: "numeric",
+              })}
+            </Section.Title>
           </Section.Header>
           <ul>
             {receipt_types.map((type) => {

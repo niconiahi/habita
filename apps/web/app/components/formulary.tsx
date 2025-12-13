@@ -1,7 +1,7 @@
 import {
-  useId,
-  type ReactNode,
   type ComponentPropsWithoutRef,
+  type ReactNode,
+  useId,
 } from "react"
 import { Form } from "react-router"
 import "~/components/formulary.css"
@@ -82,7 +82,9 @@ function Field({ children }: { children: ReactNode }) {
 function Error({ children }: { children: ReactNode }) {
   return <span className="error">{children}</span>
 }
-function Textarea(props: ComponentPropsWithoutRef<"textarea">) {
+function Textarea(
+  props: ComponentPropsWithoutRef<"textarea">,
+) {
   return <textarea {...props} />
 }
 

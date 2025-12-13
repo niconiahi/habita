@@ -1,10 +1,11 @@
-import * as v from "valibot"
+import type * as v from "valibot"
 
 export function normalize_input(
   form_data: FormData,
   schema: v.ObjectSchema<any, any>,
 ) {
-  const form_object: { [k: string]: unknown | undefined } = {}
+  const form_object: { [k: string]: unknown | undefined } =
+    {}
   const schema_keys = Object.keys(schema.entries)
 
   for (const key of schema_keys) {

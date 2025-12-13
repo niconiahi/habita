@@ -1,5 +1,5 @@
-import { process_jobs } from "./process_jobs.server"
 import { logger } from "~/lib/telemetry/logger.server"
+import { process_jobs } from "./process_jobs.server"
 
 async function main() {
   try {
@@ -11,7 +11,9 @@ async function main() {
     logger.error(
       "fatal error during job processing",
       {},
-      error instanceof Error ? error : new Error(String(error)),
+      error instanceof Error
+        ? error
+        : new Error(String(error)),
     )
     process.exit(1)
   }

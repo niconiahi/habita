@@ -1,3 +1,4 @@
+import { query_builder } from "db/query_builder"
 import { Form, useLoaderData } from "react-router"
 import * as v from "valibot"
 import { Button } from "~/components/button"
@@ -7,15 +8,14 @@ import {
   require_auth,
 } from "~/lib/auth.server"
 import { error } from "~/lib/error.server"
-import {
-  get_rate_label,
-  type RateType,
-} from "~/lib/rate_type"
-import { get_rate_types } from "~/lib/rate_type"
-import { RateTypeSchema } from "~/lib/rate_type"
-import { query_builder } from "db/query_builder"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { now } from "~/lib/now.server"
+import {
+  get_rate_label,
+  get_rate_types,
+  type RateType,
+  RateTypeSchema,
+} from "~/lib/rate_type"
 import type { Route } from "./+types/_index"
 
 export async function loader({
@@ -138,15 +138,15 @@ export default function AdminRates() {
                     id="value"
                     name="value"
                     step="0.01"
-                    defaultValue={existing_rate?.value || ""}
+                    defaultValue={
+                      existing_rate?.value || ""
+                    }
                     placeholder="Valor"
                     className="border rounded px-3 py-2 w-48"
                     required
                   />
                 </p>
-                <Button type="submit">
-                  Guardar
-                </Button>
+                <Button type="submit">Guardar</Button>
               </Form>
             )
           })}

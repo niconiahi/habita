@@ -1,8 +1,17 @@
 import { createHash } from "node:crypto"
+import { query_builder } from "db/query_builder"
 import { renderToString } from "react-dom/server"
 import * as v from "valibot"
-import { generate_pdf_with_playwright } from "~/lib/pdf_generator.server"
-import { DEFAULT_TYPE, DefaultTypeSchema } from "~/lib/default_type"
+import {
+  Pdf,
+  type Props,
+  SignatorySchema,
+} from "~/lib/contract/pdf.server"
+import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type"
+import {
+  DEFAULT_TYPE,
+  DefaultTypeSchema,
+} from "~/lib/default_type"
 import {
   DurationSchema,
   get_duration_label,
@@ -12,20 +21,14 @@ import {
   get_escalation_label,
 } from "~/lib/escalation_type"
 import { FINE_TYPE, FineTypeSchema } from "~/lib/fine_type"
-import { ForceNumberSchema } from "~/lib/force_number"
-import { fetch_owner } from "~/lib/owner.server"
-import { fetch_tenant } from "~/lib/tenant.server"
 import { ForceDateSchema } from "~/lib/force_date.server"
-import { fetch_property } from "~/routes/properties+/fetchers/property.server"
-import { query_builder } from "db/query_builder"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { now } from "~/lib/now.server"
-import { CONTRACT_FILE_TYPE } from "~/lib/contract_file_type"
+import { fetch_owner } from "~/lib/owner.server"
+import { generate_pdf_with_playwright } from "~/lib/pdf_generator.server"
+import { fetch_tenant } from "~/lib/tenant.server"
+import { fetch_property } from "~/routes/properties+/fetchers/property.server"
 import { fetch_contract } from "../fetchers/contract.server"
-import {
-  Pdf,
-  SignatorySchema,
-  type Props,
-} from "~/lib/contract/pdf.server"
 
 export async function create_pdf(
   form_data: FormData,
@@ -84,7 +87,7 @@ export async function create_pdf(
     const DEFAULT_AMOUNT = 3
     const default_amount = v.parse(
       ForceNumberSchema,
-      DEFAULT_AMOUNT
+      DEFAULT_AMOUNT,
     )
     const unit = v.parse(v.string(), property.unit)
     const owner_location: {
@@ -152,7 +155,9 @@ export async function create_pdf(
             .where("id", "=", contract_file_.file_id)
             .executeTakeFirstOrThrow()
         }
-        const hash = createHash("sha256").update(content).digest("hex")
+        const hash = createHash("sha256")
+          .update(content)
+          .digest("hex")
         const file = await tx
           .insertInto("file")
           .values({

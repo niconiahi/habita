@@ -1,8 +1,11 @@
-import { useId, type ReactNode } from "react"
+import { type ReactNode, useId } from "react"
 import { NavLink } from "react-router"
 import "~/components/dashboard.css"
 
-function Root({ children, label }: {
+function Root({
+  children,
+  label,
+}: {
   children: ReactNode
   label: string
 }) {
@@ -13,7 +16,10 @@ function Root({ children, label }: {
   )
 }
 
-function Section({ children, label }: {
+function Section({
+  children,
+  label,
+}: {
   children: ReactNode
   label?: string
 }) {
@@ -25,12 +31,15 @@ function Section({ children, label }: {
           {label}
         </h2>
       ) : null}
-      <ul role="list">{children}</ul>
+      <ul>{children}</ul>
     </section>
   )
 }
 
-function Link({ children, to }: {
+function Link({
+  children,
+  to,
+}: {
   children: ReactNode
   to: string
 }) {

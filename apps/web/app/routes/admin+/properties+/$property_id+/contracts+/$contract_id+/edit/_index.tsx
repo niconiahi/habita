@@ -5,13 +5,14 @@ import { Button } from "~/components/button"
 import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
 import { Section } from "~/components/section"
-import { format_date_for_input } from "~/lib/date"
 import { require_auth } from "~/lib/auth.server"
 import {
   ContractFileTypeSchema,
+  get_contract_file_type_label,
   get_contract_file_types,
 } from "~/lib/contract_file_type"
-import { get_contract_file_type_label } from "~/lib/contract_file_type"
+import { get_tribunal_label, TRIBUNAL } from "~/lib/court"
+import { format_date_for_input } from "~/lib/date"
 import {
   DURATIONS,
   get_duration_label,
@@ -22,21 +23,20 @@ import {
   get_escalation_label,
 } from "~/lib/escalation_type"
 import { ForceNumberSchema } from "~/lib/force_number"
-import { has_edit_access } from "~/lib/property_access.server"
-import type { Route } from "./+types/_index"
-import * as actions from "./actions/index.server"
-import {
-  fetch_contract,
-  type Contract,
-} from "./fetchers/contract.server"
 import { fetch_owner } from "~/lib/owner.server"
-import { fetch_tenant } from "~/lib/tenant.server"
-import { get_tribunal_label, TRIBUNAL } from "~/lib/court"
+import { has_edit_access } from "~/lib/property_access.server"
 import { get_property_destiny_label } from "~/lib/property_destiny"
+import { fetch_tenant } from "~/lib/tenant.server"
 import {
   fetch_property,
   type Property,
 } from "~/routes/properties+/fetchers/property.server"
+import type { Route } from "./+types/_index"
+import * as actions from "./actions/index.server"
+import {
+  type Contract,
+  fetch_contract,
+} from "./fetchers/contract.server"
 
 const INTENT = {
   UPDATE_CONTRACT: "update_contract",
@@ -137,7 +137,7 @@ export async function loader({
   }
 }
 
-export default function({
+export default function ({
   loaderData,
 }: Route.ComponentProps) {
   const { contract, property, contract_file_types } =
@@ -291,8 +291,8 @@ function SectionSix({ contract }: { contract: Contract }) {
               defaultValue={
                 contract.start_date
                   ? format_date_for_input(
-                    contract.start_date,
-                  )
+                      contract.start_date,
+                    )
                   : undefined
               }
             />
@@ -689,7 +689,11 @@ function DocumentsSection({
             agregar documento
           </Button>
           <Form method="POST">
-            <input type="hidden" value={contract.id} name="id" />
+            <input
+              type="hidden"
+              value={contract.id}
+              name="id"
+            />
             <Button
               type="submit"
               name="intent"

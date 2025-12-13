@@ -1,7 +1,7 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import {
-  get_contract_states,
   type ContractState,
+  get_contract_states,
 } from "~/lib/contract_state"
 import { query_builder } from "~/lib/query_builder.server"
 

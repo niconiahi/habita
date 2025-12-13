@@ -1,3 +1,8 @@
+import {
+  context,
+  type Span,
+  trace,
+} from "@opentelemetry/api"
 import type {
   KyselyPlugin,
   PluginTransformQueryArgs,
@@ -6,11 +11,6 @@ import type {
   RootOperationNode,
   UnknownRow,
 } from "kysely"
-import {
-  trace,
-  context,
-  type Span,
-} from "@opentelemetry/api"
 
 interface QueryMetadata {
   span: Span

@@ -1,8 +1,8 @@
-import { trace, SpanStatusCode } from "@opentelemetry/api"
+import { SpanStatusCode, trace } from "@opentelemetry/api"
 import {
-  SeverityNumber,
-  logs,
   type LogAttributes,
+  logs,
+  SeverityNumber,
 } from "@opentelemetry/api-logs"
 
 function get_otel_logger() {

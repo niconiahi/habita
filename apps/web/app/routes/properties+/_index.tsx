@@ -1,11 +1,11 @@
 import { Link } from "react-router"
+import { Button } from "~/components/button"
+import { Card } from "~/components/card"
+import { Content } from "~/components/content"
 import { display_location } from "~/lib/display_location"
 import { get_img_props } from "~/lib/image.server"
-import { Card } from "~/components/card"
-import { Button } from "~/components/button"
-import { Content } from "~/components/content"
-import { fetch_properties } from "./fetchers/properties.server"
 import type { Route } from "./+types/_index"
+import { fetch_properties } from "./fetchers/properties.server"
 
 export async function loader() {
   const properties = await fetch_properties()

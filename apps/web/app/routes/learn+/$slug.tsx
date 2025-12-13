@@ -10,7 +10,9 @@ export function loader({ params }: Route.LoaderArgs) {
   return { slug: params.slug }
 }
 
-export default function ({ loaderData }: Route.ComponentProps) {
+export default function ({
+  loaderData,
+}: Route.ComponentProps) {
   const Article = get_article(loaderData.slug)!
   return (
     <Content.Root>

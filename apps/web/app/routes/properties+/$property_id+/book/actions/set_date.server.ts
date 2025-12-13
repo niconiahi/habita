@@ -2,8 +2,8 @@ import * as v from "valibot"
 import { get_date } from "~/lib/date"
 import { ForceDateSchema } from "~/lib/force_date.server"
 import {
-  normalize_input,
   get_errors,
+  normalize_input,
 } from "~/lib/form.server"
 
 export const InputSchema = v.object({

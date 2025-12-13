@@ -11,9 +11,7 @@ export function Header({ auth }: { auth: Auth }) {
           <>
             <span>{auth.user.email}</span>
             <Form method="post" action="/auth/logout">
-              <Button type="submit">
-                Logout
-              </Button>
+              <Button type="submit">Logout</Button>
             </Form>
           </>
         ) : (

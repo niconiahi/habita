@@ -10,8 +10,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("room_id", "integer", (col) =>
       col.notNull().unique(),
     )
-    .addColumn("position_x", "numeric", (col) => col.notNull())
-    .addColumn("position_y", "numeric", (col) => col.notNull())
+    .addColumn("position_x", "numeric", (col) =>
+      col.notNull(),
+    )
+    .addColumn("position_y", "numeric", (col) =>
+      col.notNull(),
+    )
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

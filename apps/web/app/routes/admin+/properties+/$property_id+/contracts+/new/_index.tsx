@@ -5,15 +5,15 @@ import { Content } from "~/components/content"
 import { Formulary } from "~/components/formulary"
 import { Section } from "~/components/section"
 import { require_auth } from "~/lib/auth.server"
+import {
+  CONTRACT_TYPE,
+  type ContractType,
+  get_contract_type_label,
+  get_contract_types,
+} from "~/lib/contract_type"
 import { error } from "~/lib/error.server"
 import { ForceNumberSchema } from "~/lib/force_number"
 import { has_edit_access } from "~/lib/property_access.server"
-import {
-  CONTRACT_TYPE,
-  get_contract_type_label,
-  type ContractType,
-} from "~/lib/contract_type"
-import { get_contract_types } from "~/lib/contract_type"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/index.server"
 

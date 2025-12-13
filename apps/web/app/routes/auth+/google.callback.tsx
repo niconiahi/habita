@@ -1,8 +1,8 @@
 import { OAuth2RequestError } from "arctic"
+import { query_builder } from "db/query_builder"
 import type { LoaderFunctionArgs } from "react-router"
 import { redirect } from "react-router"
 import * as v from "valibot"
-import { query_builder } from "db/query_builder"
 import {
   create_session,
   generate_session_token,
@@ -83,6 +83,8 @@ export async function loader({
       .insertInto("user")
       .values({
         email: google_user.email,
+        name: google_user.given_name,
+        surname: google_user.family_name,
         created_at: new Date(),
         updated_at: new Date(),
       })

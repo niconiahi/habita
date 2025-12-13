@@ -1,29 +1,27 @@
 import { Link, redirect, useFetcher } from "react-router"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
 import * as v from "valibot"
-import { require_auth } from "~/lib/auth.server"
+import { Button } from "~/components/button"
+import { Content } from "~/components/content"
+import { Formulary } from "~/components/formulary"
+import { Section } from "~/components/section"
+import { Table } from "~/components/table"
 import { ACCESS_TYPE } from "~/lib/access_type"
+import { require_auth } from "~/lib/auth.server"
 import {
   CONTRACT_STATE,
   ContractStateSchema,
   get_contract_state_label,
   get_contract_states,
 } from "~/lib/contract_state"
+import { display_date } from "~/lib/display_date"
 import { display_location } from "~/lib/display_location"
-import {
-  fetch_contracts,
-  type Contract,
-} from "./fetchers/contracts.server"
-import { Content } from "~/components/content"
-import { Section } from "~/components/section"
-import { Table } from "~/components/table"
-import { Button } from "~/components/button"
-import { Formulary } from "~/components/formulary"
 import { error } from "~/lib/error.server"
-import * as actions from "./actions/index.server"
 import type { Route } from "./+types/_index"
-import type { Header } from "~/components/header"
+import * as actions from "./actions/index.server"
+import {
+  type Contract,
+  fetch_contracts,
+} from "./fetchers/contracts.server"
 
 const INTENT = {
   SET_STATE: "set_state",
@@ -120,11 +118,7 @@ function format_end_date(end_date: Date | null) {
   if (!end_date) {
     return "Sin fecha de fin"
   }
-  return format(
-    new Date(end_date),
-    "d 'de' MMMM 'de' yyyy",
-    { locale: es },
-  )
+  return display_date(end_date, { year: "numeric" })
 }
 
 function ContractsTable({

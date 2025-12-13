@@ -1,15 +1,15 @@
 import * as v from "valibot"
 import { LocationSchema } from "~/components/location_input"
+import { ACCESS_TYPE } from "~/lib/access_type"
+import { ForceNumberSchema } from "~/lib/force_number"
 import { compose_point } from "~/lib/point.server"
-import { query_builder } from "~/lib/query_builder.server"
+import { PropertyDestinySchema } from "~/lib/property_destiny"
+import { PROPERTY_STATE } from "~/lib/property_state"
 import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
 } from "~/lib/property_type"
-import { PROPERTY_STATE } from "~/lib/property_state"
-import { ACCESS_TYPE } from "~/lib/access_type"
-import { ForceNumberSchema } from "~/lib/force_number"
-import { PropertyDestinySchema } from "~/lib/property_destiny"
+import { query_builder } from "~/lib/query_builder.server"
 
 export async function create_property(form_data: FormData) {
   const location_ = v.parse(

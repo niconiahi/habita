@@ -1,13 +1,19 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "~/lib/query_builder.server"
 
-export async function fetch_properties(admin_property_ids: number[]) {
+export async function fetch_properties(
+  admin_property_ids: number[],
+) {
   if (admin_property_ids.length === 0) {
     return []
   }
   return query_builder
     .selectFrom("property")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("property.id", "in", admin_property_ids)
     .select((eb) => [
       "property.id",
@@ -29,7 +35,11 @@ export async function fetch_properties(admin_property_ids: number[]) {
             "location.town",
             "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id"),
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),

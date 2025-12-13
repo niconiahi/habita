@@ -8,12 +8,22 @@ import { LocationInput } from "~/components/location_input"
 import { RoomMap } from "~/components/room_map"
 import { Section } from "~/components/section"
 import {
+  ACCESS_TYPE,
+  get_access_type_label,
+} from "~/lib/access_type"
+import { require_auth } from "~/lib/auth.server"
+import { display_name } from "~/lib/display_name"
+import { error } from "~/lib/error.server"
+import { ForceNumberSchema } from "~/lib/force_number"
+import { has_edit_access } from "~/lib/property_access.server"
+import {
+  get_property_destinies,
+  get_property_destiny_label,
+} from "~/lib/property_destiny"
+import {
   display_room_type,
   ROOM_TYPE,
 } from "~/lib/room_type"
-import { require_auth } from "~/lib/auth.server"
-import { error } from "~/lib/error.server"
-import { ForceNumberSchema } from "~/lib/force_number"
 import {
   get_service_type_label,
   SERVICE_TYPE,
@@ -24,15 +34,6 @@ import {
 } from "~/routes/properties+/fetchers/property.server"
 import type { Route } from "./+types/_index"
 import * as actions from "./actions/index.server"
-import {
-  ACCESS_TYPE,
-  get_access_type_label,
-} from "~/lib/access_type"
-import { has_edit_access } from "~/lib/property_access.server"
-import {
-  get_property_destinies,
-  get_property_destiny_label,
-} from "~/lib/property_destiny"
 
 const INTENT = {
   UPDATE_LOCATION: "update_location",
@@ -243,9 +244,7 @@ function Members({ property }: { property: Property }) {
                 value={member.id}
                 name="id"
               />
-              <p>
-                {member.name} {member.surname}
-              </p>
+              <p>{display_name(member)}</p>
               <p>{get_access_type_label(member.type)}</p>
             </li>
           )
