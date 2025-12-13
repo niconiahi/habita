@@ -1,0 +1,30 @@
+ul,
+ol {
+  list-style-type: none;
+}
+
+body {
+  color: var(--gray-100);
+  font-family: "Geist Mono";
+  background-color: var(--gray-900);
+}
+
+input:not([type="radio"]):not([type="checkbox"]),
+select,
+textarea {
+  height: var(--spacing-12);
+  padding-inline: var(--spacing-2);
+  border: 1px solid var(--gray-400);
+  background-color: var(--gray-700);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+td a {
+  margin-right: 0;
+}
