@@ -1,34 +1,26 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "include": [
-    ".react-router/types/**/*",
-    "app/**/*",
-    "app/**/.server/**/*",
-    "app/**/.client/**/*",
-    "types/**/*",
-    "react-router.config.ts",
-    "vite.config.ts",
-    "db/seeds/*",
-    "mdx/**/*"
-  ],
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["bun", "node", "vite/client"],
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "rootDirs": [".", "./.react-router/types"],
-    "baseUrl": ".",
-    "allowImportingTsExtensions": true,
-    "paths": {
-      "~/*": ["./app/*"]
-    },
+    "rewriteRelativeImportExtensions": true,
+    "allowJs": true,
+    "checkJs": true,
     "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
-  }
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "bundler"
+  },
+  "include": [
+    ".svelte-kit/ambient.d.ts",
+    ".svelte-kit/non-ambient.d.ts",
+    ".svelte-kit/types/**/$types.d.ts",
+    "vite.config.js",
+    "vite.config.ts",
+    "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.svelte",
+    "src/**/*.svx"
+  ]
 }

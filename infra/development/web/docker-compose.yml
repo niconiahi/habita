@@ -23,7 +23,7 @@ services:
   web:
     build:
       context: ../../../apps/web
-      dockerfile: ../../infra/development/web/Dockerfile
+      dockerfile: ../../infra/development/wev/Dockerfile
       pull: false
       x-bake:
         provenance: false
@@ -34,49 +34,15 @@ services:
     env_file:
       - ../.env
     ports:
-      - "5173:5173"
-    environment:
-      PORT: 5173
-      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
-      REDIS_URL: redis://valkey:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
-      OTEL_SERVICE_NAME: web
-      OTEL_ENVIRONMENT: development
-    depends_on:
-      db:
-        condition: service_healthy
-      valkey:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-    networks:
-      - web
-      - observability
-
-  wev:
-    build:
-      context: ../../../apps/wev
-      dockerfile: ../../infra/development/wev/Dockerfile
-      pull: false
-      x-bake:
-        provenance: false
-    restart: unless-stopped
-    volumes:
-      - ../../../apps/wev:/apps/wev:delegated
-      - wev_deps:/apps/wev/node_modules
-    env_file:
-      - ../.env
-    ports:
       - "5174:5174"
     environment:
       PORT: 5174
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
       REDIS_URL: redis://valkey:6379
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
-      OTEL_SERVICE_NAME: wev
+      OTEL_SERVICE_NAME: web
       OTEL_ENVIRONMENT: development
+      NODE_OPTIONS: --max-old-space-size=4096
     depends_on:
       db:
         condition: service_healthy
@@ -182,7 +148,7 @@ services:
         condition: service_healthy
       image:
         condition: service_healthy
-      wev:
+      web:
         condition: service_started
     ports:
       - "80:80"
@@ -245,6 +211,5 @@ networks:
 volumes:
   web_data:
   web_deps:
-  wev_deps:
   nominatim_data:
   valkey_data:
