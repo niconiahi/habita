@@ -11,13 +11,6 @@ dev.habita.rent {
     reverse_proxy nominatim:8080
   }
 
-  # SvelteKit app (wev) - all /wev/* routes and assets
-  handle /wev/* {
-    reverse_proxy wev:5174
-  }
-  handle /wev {
-    reverse_proxy wev:5174
-  }
-
-  reverse_proxy web:5173
+  # SvelteKit app (web) - primary, catches all other routes
+  reverse_proxy web:5174
 }

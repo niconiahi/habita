@@ -12,32 +12,32 @@ import * as v from "valibot"
 import {
   ACCESS_TYPE,
   type AccessType,
-} from "../../app/lib/access_type.ts"
+} from "../../src/lib/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
-} from "../../app/lib/contract_file_type.ts"
-import { CONTRACT_STATE } from "../../app/lib/contract_state.ts"
-import { CONTRACT_TYPE } from "../../app/lib/contract_type"
-import { get_month, get_year } from "../../app/lib/date.ts"
-import { compose_point } from "../../app/lib/point.server"
-import { PROPERTY_DESTINY } from "../../app/lib/property_destiny.ts"
-import { PROPERTY_FILE_TYPE } from "../../app/lib/property_file_type.ts"
-import { PROPERTY_STATE } from "../../app/lib/property_state.ts"
-import { PROPERTY_TYPE } from "../../app/lib/property_type.ts"
+} from "../../src/lib/contract_file_type.ts"
+import { CONTRACT_STATE } from "../../src/lib/contract_state.ts"
+import { CONTRACT_TYPE } from "../../src/lib/contract_type"
+import { get_month, get_year } from "../../src/lib/date.ts"
+import { compose_point } from "../../src/lib/server/point.ts"
+import { PROPERTY_DESTINY } from "../../src/lib/property_destiny.ts"
+import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type.ts"
+import { PROPERTY_STATE } from "../../src/lib/property_state.ts"
+import { PROPERTY_TYPE } from "../../src/lib/property_type.ts"
 import {
   RATE_TYPE,
   type RateType,
-} from "../../app/lib/rate_type.ts"
+} from "../../src/lib/rate_type.ts"
 import {
   ROOM_TYPE,
   type RoomType,
-} from "../../app/lib/room_type.ts"
+} from "../../src/lib/room_type.ts"
 import {
   SERVICE_TYPE,
   type ServiceType,
-} from "../../app/lib/service.ts"
-import { SLOT_STATE } from "../../app/lib/slot_state.ts"
+} from "../../src/lib/service.ts"
+import { SLOT_STATE } from "../../src/lib/slot_state.ts"
 import { query_builder } from "../query_builder"
 
 const __filename = fileURLToPath(import.meta.url)

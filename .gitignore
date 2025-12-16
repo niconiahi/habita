@@ -6,3 +6,4 @@ build
 infra/*/.env
 temp
 plans
+apps/legacy

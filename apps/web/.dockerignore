@@ -1,8 +1,0 @@
-node_modules
-.bun
-.react-router
-build
-.DS_Store
-.env
-.git
-.gitignore
