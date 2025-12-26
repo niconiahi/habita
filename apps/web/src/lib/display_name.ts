@@ -1,5 +1,7 @@
-import type { User } from "$lib/server/db/types";
+import type { User } from "db/types"
 
-export function display_name(user: Pick<User, "name" | "surname">) {
-  return [user.name, user.surname].join(" ");
+export function display_name(
+  user: Pick<User, "name" | "surname">,
+) {
+  return [user.name, user.surname].join(" ")
 }

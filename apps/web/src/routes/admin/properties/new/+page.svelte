@@ -1,35 +1,37 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Section from "$lib/components/Section";
-  import * as Formulary from "$lib/components/Formulary";
-  import Button from "$lib/components/Button.svelte";
-  import LocationInput from "$lib/components/LocationInput.svelte";
+  import * as Content from "$lib/components/Content"
+  import * as Section from "$lib/components/Section"
+  import * as Formulary from "$lib/components/Formulary"
+  import Button from "$lib/components/Button.svelte"
+  import LocationInput from "$lib/components/LocationInput.svelte"
   import {
     get_property_type_label,
     PROPERTY_TYPE,
-    type PropertyType
-  } from "$lib/property_type";
-  import { get_property_destiny_label } from "$lib/property_destiny";
-  import { compose_action } from "$lib/compose_action";
-  import { ACTION } from "./actions/action";
-  import type { PageData } from "./$types";
+    type PropertyType,
+  } from "$lib/property_type"
+  import { get_property_destiny_label } from "$lib/property_destiny"
+  import { compose_action } from "$lib/compose_action"
+  import { ACTION } from "./actions/action"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 
-  let disabled = $state(true);
-  let property_type = $state<PropertyType>(PROPERTY_TYPE.DEPARTMENT);
+  let disabled = $state(true)
+  let property_type = $state<PropertyType>(
+    PROPERTY_TYPE.DEPARTMENT,
+  )
 
   function handle_selection() {
-    disabled = false;
+    disabled = false
   }
 
   function handle_clear() {
-    disabled = true;
+    disabled = true
   }
 
   function handle_type_change(event: Event) {
-    const target = event.currentTarget as HTMLSelectElement;
-    property_type = Number(target.value) as PropertyType;
+    const target = event.currentTarget as HTMLSelectElement
+    property_type = Number(target.value) as PropertyType
   }
 </script>
 
@@ -38,7 +40,10 @@
     <Section.Header>
       <Section.Title>ubicación</Section.Title>
     </Section.Header>
-    <LocationInput onselection={handle_selection} onclear={handle_clear} />
+    <LocationInput
+      onselection={handle_selection}
+      onclear={handle_clear}
+    />
   </section>
 {/snippet}
 
@@ -57,13 +62,17 @@
           onchange={handle_type_change}
         >
           {#each data.property_types as type}
-            <option value={type}>{get_property_type_label(type)}</option>
+            <option value={type}
+              >{get_property_type_label(type)}</option
+            >
           {/each}
         </Formulary.Select>
       </Formulary.Field>
       {#if property_type === PROPERTY_TYPE.DEPARTMENT}
         <Formulary.Field>
-          <Formulary.Label for="unit">unidad</Formulary.Label>
+          <Formulary.Label for="unit"
+            >unidad</Formulary.Label
+          >
           <input
             placeholder="ej. 9A o 4011"
             required
@@ -85,7 +94,11 @@
     <fieldset class="flex flex-col gap-2">
       {#each data.property_destinies as destiny}
         <label class="flex items-center gap-2">
-          <input type="checkbox" name="destiny" value={destiny} />
+          <input
+            type="checkbox"
+            name="destiny"
+            value={destiny}
+          />
           {get_property_destiny_label(destiny)}
         </label>
       {/each}
@@ -106,7 +119,9 @@
         {@render Destiny()}
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button {disabled} type="submit">Crear propiedad</Button>
+        <Button {disabled} type="submit"
+          >Crear propiedad</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Content.Section>

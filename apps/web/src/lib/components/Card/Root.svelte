@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLAttributes } from "svelte/elements";
+  import type { Snippet } from "svelte"
+  import type { HTMLAttributes } from "svelte/elements"
 
   interface Props extends HTMLAttributes<HTMLElement> {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, ...rest }: Props = $props();
+  let { children, ...rest }: Props = $props()
 </script>
 
 <article {...rest}>
@@ -24,7 +24,9 @@
     padding: var(--spacing-2);
   }
 
-  article:not(:has(> :global(img))):not(:has(> :global(section))) {
+  article:not(:has(> :global(img))):not(
+      :has(> :global(section))
+    ) {
     grid-template-columns: 1fr;
   }
 
@@ -52,7 +54,9 @@
     grid-row: 1 / -1;
   }
 
-  article:not(:has(> :global(img))):not(:has(> :global(section)))
+  article:not(:has(> :global(img))):not(
+      :has(> :global(section))
+    )
     > :global(article-body) {
     grid-column: 1;
   }

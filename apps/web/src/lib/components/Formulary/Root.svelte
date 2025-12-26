@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLFormAttributes } from "svelte/elements";
+  import { enhance } from "$app/forms"
+  import type { Snippet } from "svelte"
+  import type { HTMLFormAttributes } from "svelte/elements"
 
   interface Props extends HTMLFormAttributes {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, ...rest }: Props = $props();
+  let { children, ...rest }: Props = $props()
 </script>
 
-<form class="formulary" {...rest}>
+<form class="formulary" use:enhance {...rest}>
   {@render children()}
 </form>
 

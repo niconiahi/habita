@@ -1,10 +1,14 @@
-import { jsonObjectFrom } from "kysely/helpers/postgres";
-import { query_builder } from "$lib/server/db/query_builder";
+import { jsonObjectFrom } from "kysely/helpers/postgres"
+import { query_builder } from "db/query_builder"
 
 export function fetch_property(id: number) {
   return query_builder
     .selectFrom("property")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .select((eb) => [
       "property.id",
       jsonObjectFrom(
@@ -20,14 +24,20 @@ export function fetch_property(id: number) {
             "location.suburb",
             "location.city",
             "location.town",
-            "location.state"
+            "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id")
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
-        .as("location")
+        .as("location"),
     ])
     .where("property.id", "=", id)
-    .executeTakeFirst();
+    .executeTakeFirst()
 }
-export type Property = NonNullable<Awaited<ReturnType<typeof fetch_property>>>;
+export type Property = NonNullable<
+  Awaited<ReturnType<typeof fetch_property>>
+>

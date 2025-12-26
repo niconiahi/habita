@@ -25,6 +25,8 @@ export interface Access {
 }
 
 export interface Contract {
+  cbu: string | null;
+  court_id: number | null;
   created_at: Timestamp;
   default_amount: Numeric | null;
   default_duration: string | null;
@@ -37,9 +39,13 @@ export interface Contract {
   fine_amount: Numeric | null;
   fine_type: number | null;
   id: Generated<number>;
+  owner_location_id: number | null;
+  percentage_return: number | null;
   property_id: number;
+  showroom_hours: number | null;
   start_date: Timestamp | null;
   state: number;
+  tenant_location_id: number | null;
   type: number;
   updated_at: Timestamp;
 }
@@ -124,7 +130,7 @@ export interface Location {
   address: string;
   city: string | null;
   created_at: Timestamp;
-  house_number: number;
+  house_number: string;
   id: Generated<number>;
   latitude: Numeric;
   longitude: Numeric;

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLLabelAttributes } from "svelte/elements";
+  import type { Snippet } from "svelte"
+  import type { HTMLLabelAttributes } from "svelte/elements"
 
   interface Props extends HTMLLabelAttributes {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, ...rest }: Props = $props();
+  let { children, ...rest }: Props = $props()
 </script>
 
 <label class="label" {...rest}>

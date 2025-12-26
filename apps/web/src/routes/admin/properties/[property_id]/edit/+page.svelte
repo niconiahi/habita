@@ -1,54 +1,68 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Section from "$lib/components/Section";
-  import * as Formulary from "$lib/components/Formulary";
-  import Button from "$lib/components/Button.svelte";
-  import LocationInput from "$lib/components/LocationInput.svelte";
-  import RoomMap from "$lib/components/RoomMap.svelte";
-  import { ACCESS_TYPE, get_access_type_label } from "$lib/access_type";
-  import { display_name } from "$lib/display_name";
+  import * as Content from "$lib/components/Content"
+  import * as Section from "$lib/components/Section"
+  import * as Formulary from "$lib/components/Formulary"
+  import Button from "$lib/components/Button.svelte"
+  import LocationInput from "$lib/components/LocationInput.svelte"
+  import RoomMap from "$lib/components/RoomMap.svelte"
+  import {
+    ACCESS_TYPE,
+    get_access_type_label,
+  } from "$lib/access_type"
+  import { display_name } from "$lib/display_name"
   import {
     get_property_destinies,
-    get_property_destiny_label
-  } from "$lib/property_destiny";
-  import { display_room_type, ROOM_TYPE } from "$lib/room_type";
-  import { get_service_type_label, SERVICE_TYPE } from "$lib/service";
-  import { compose_action } from "$lib/compose_action";
-  import { ACTION } from "./actions/action";
-  import type { PageData, ActionData } from "./$types";
+    get_property_destiny_label,
+  } from "$lib/property_destiny"
+  import {
+    display_room_type,
+    ROOM_TYPE,
+  } from "$lib/room_type"
+  import {
+    get_service_type_label,
+    SERVICE_TYPE,
+  } from "$lib/service"
+  import { compose_action } from "$lib/compose_action"
+  import { ACTION } from "./actions/action"
+  import type { PageData, ActionData } from "./$types"
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
 
-  let location_disabled = $state(true);
-  let file_input: HTMLInputElement | undefined = $state();
-  let photo_form: HTMLFormElement | undefined = $state();
-  let room_positions = $state<Map<number, { x: number; y: number }>>(new Map());
+  let location_disabled = $state(true)
+  let file_input: HTMLInputElement | undefined = $state()
+  let photo_form: HTMLFormElement | undefined = $state()
+  let room_positions = $state<
+    Map<number, { x: number; y: number }>
+  >(new Map())
 
-  const property_destinies = get_property_destinies();
+  const property_destinies = get_property_destinies()
   const has_owner = $derived(
-    data.property.members.some((member) => member.type === ACCESS_TYPE.OWNER)
-  );
+    data.property.members.some(
+      (member) => member.type === ACCESS_TYPE.OWNER,
+    ),
+  )
 
   function handle_location_selection() {
-    location_disabled = false;
+    location_disabled = false
   }
 
   function handle_location_clear() {
-    location_disabled = true;
+    location_disabled = true
   }
 
   function handle_add_photo_click() {
-    file_input?.click();
+    file_input?.click()
   }
 
   function handle_photo_change() {
-    photo_form?.requestSubmit();
+    photo_form?.requestSubmit()
   }
 
   function handle_positions_change(
-    positions: Map<number, { x: number; y: number }>
+    positions: Map<number, { x: number; y: number }>,
   ) {
-    room_positions = positions;
+    room_positions = positions
   }
 </script>
 
@@ -62,11 +76,19 @@
       action={compose_action(ACTION.UPDATE_LOCATION)}
     >
       <Formulary.Fields>
-        <input type="hidden" value={data.property.location.id} name="id" />
+        <input
+          type="hidden"
+          value={data.property.location.id}
+          name="id"
+        />
         <LocationInput
           default_value={data.property.location.address}
-          default_lon={String(data.property.location.longitude)}
-          default_lat={String(data.property.location.latitude)}
+          default_lon={String(
+            data.property.location.longitude,
+          )}
+          default_lat={String(
+            data.property.location.latitude,
+          )}
           onselection={handle_location_selection}
           onclear={handle_location_clear}
         />
@@ -91,10 +113,13 @@
     >
       <Formulary.Fields>
         <Formulary.Field>
-          <Formulary.Label for="destiny">tipos</Formulary.Label>
+          <Formulary.Label for="destiny"
+            >tipos</Formulary.Label
+          >
           <fieldset class="flex flex-col gap-2">
             {#each property_destinies as destiny}
-              {@const is_checked = data.property.destinies.includes(destiny)}
+              {@const is_checked =
+                data.property.destinies.includes(destiny)}
               <label class="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -120,7 +145,10 @@
     <Section.Header>
       <Section.Title>ambientes</Section.Title>
       <Section.Actions>
-        <form method="POST" action={compose_action(ACTION.CREATE_ROOM)}>
+        <form
+          method="POST"
+          action={compose_action(ACTION.CREATE_ROOM)}
+        >
           <Button type="submit">Agregar ambiente</Button>
         </form>
       </Section.Actions>
@@ -130,16 +158,24 @@
         <li>
           <Formulary.Root method="POST">
             <Formulary.Fields>
-              <input type="hidden" value={room.id} name="id" />
+              <input
+                type="hidden"
+                value={room.id}
+                name="id"
+              />
               <Formulary.Field>
-                <Formulary.Label for={`type_${room.id}`}>tipo</Formulary.Label>
+                <Formulary.Label for={`type_${room.id}`}
+                  >tipo</Formulary.Label
+                >
                 <Formulary.Select
                   name="type"
                   id={`type_${room.id}`}
                   value={room.type}
                 >
                   {#each Object.values(ROOM_TYPE) as type}
-                    <option value={type}>{display_room_type(type)}</option>
+                    <option value={type}
+                      >{display_room_type(type)}</option
+                    >
                   {/each}
                 </Formulary.Select>
               </Formulary.Field>
@@ -156,7 +192,8 @@
                 />
               </Formulary.Field>
               <Formulary.Field>
-                <Formulary.Label for={`width_${room.id}`}>ancho</Formulary.Label
+                <Formulary.Label for={`width_${room.id}`}
+                  >ancho</Formulary.Label
                 >
                 <input
                   id={`width_${room.id}`}
@@ -169,13 +206,15 @@
             <Formulary.Actions>
               <Button
                 type="submit"
-                formaction={compose_action(ACTION.UPDATE_ROOM)}
-                >Guardar ambiente</Button
+                formaction={compose_action(
+                  ACTION.UPDATE_ROOM,
+                )}>Guardar ambiente</Button
               >
               <Button
                 type="submit"
-                formaction={compose_action(ACTION.DESTROY_ROOM)}
-                >Eliminar ambiente</Button
+                formaction={compose_action(
+                  ACTION.DESTROY_ROOM,
+                )}>Eliminar ambiente</Button
               >
             </Formulary.Actions>
           </Formulary.Root>
@@ -199,11 +238,13 @@
           type="hidden"
           name="positions"
           value={JSON.stringify(
-            Array.from(room_positions.entries()).map(([room_id, pos]) => ({
-              room_id,
-              position_x: pos.x,
-              position_y: pos.y
-            }))
+            Array.from(room_positions.entries()).map(
+              ([room_id, pos]) => ({
+                room_id,
+                position_x: pos.x,
+                position_y: pos.y,
+              }),
+            ),
           )}
         />
         <RoomMap
@@ -212,7 +253,9 @@
         />
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button type="submit" disabled={room_positions.size === 0}
+        <Button
+          type="submit"
+          disabled={room_positions.size === 0}
           >Guardar mapa</Button
         >
       </Formulary.Actions>
@@ -228,7 +271,11 @@
     <ul class="flex flex-col gap-4 mb-4">
       {#each data.property.members as member, index (`member-${member.id}-${index}`)}
         <li class="flex gap-4">
-          <input type="hidden" value={member.id} name="id" />
+          <input
+            type="hidden"
+            value={member.id}
+            name="id"
+          />
           <p>{display_name(member)}</p>
           <p>{get_access_type_label(member.type)}</p>
         </li>
@@ -241,7 +288,9 @@
       >
         <Formulary.Fields>
           <Formulary.Field>
-            <Formulary.Label for="email">email</Formulary.Label>
+            <Formulary.Label for="email"
+              >email</Formulary.Label
+            >
             <input id="email" name="email" type="email" />
           </Formulary.Field>
         </Formulary.Fields>
@@ -258,7 +307,9 @@
     <Section.Header>
       <Section.Title>fotos</Section.Title>
       <Section.Actions>
-        <Button type="button" onclick={handle_add_photo_click}
+        <Button
+          type="button"
+          onclick={handle_add_photo_click}
           >Agregar foto</Button
         >
       </Section.Actions>
@@ -284,7 +335,12 @@
       class="contents"
       onchange={handle_photo_change}
     >
-      <input bind:this={file_input} type="file" name="file" class="sr-only" />
+      <input
+        bind:this={file_input}
+        type="file"
+        name="file"
+        class="sr-only"
+      />
     </form>
   </Content.Section>
 {/snippet}
@@ -294,7 +350,10 @@
     <Section.Header>
       <Section.Title>servicios</Section.Title>
       <Section.Actions>
-        <form method="POST" action={compose_action(ACTION.CREATE_SERVICE)}>
+        <form
+          method="POST"
+          action={compose_action(ACTION.CREATE_SERVICE)}
+        >
           <Button type="submit">Agregar servicio</Button>
         </form>
       </Section.Actions>
@@ -304,7 +363,11 @@
         <li>
           <Formulary.Root method="POST">
             <Formulary.Fields>
-              <input type="hidden" value={service.id} name="id" />
+              <input
+                type="hidden"
+                value={service.id}
+                name="id"
+              />
               <Formulary.Field>
                 <Formulary.Label for={`type_${service.id}`}
                   >tipo</Formulary.Label
@@ -315,7 +378,11 @@
                   value={service.type}
                 >
                   {#each Object.values(SERVICE_TYPE) as type}
-                    <option value={type}>{get_service_type_label(type)}</option>
+                    <option value={type}
+                      >{get_service_type_label(
+                        type,
+                      )}</option
+                    >
                   {/each}
                 </Formulary.Select>
               </Formulary.Field>
@@ -334,13 +401,15 @@
             <Formulary.Actions>
               <Button
                 type="submit"
-                formaction={compose_action(ACTION.UPDATE_SERVICE)}
-                >Guardar servicio</Button
+                formaction={compose_action(
+                  ACTION.UPDATE_SERVICE,
+                )}>Guardar servicio</Button
               >
               <Button
                 type="submit"
-                formaction={compose_action(ACTION.DESTROY_SERVICE)}
-                >Eliminar servicio</Button
+                formaction={compose_action(
+                  ACTION.DESTROY_SERVICE,
+                )}>Eliminar servicio</Button
               >
             </Formulary.Actions>
           </Formulary.Root>

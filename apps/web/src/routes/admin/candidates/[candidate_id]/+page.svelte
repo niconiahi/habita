@@ -1,14 +1,16 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Section from "$lib/components/Section";
-  import { display_name } from "$lib/display_name";
-  import type { PageData } from "./$types";
+  import * as Content from "$lib/components/Content"
+  import * as Section from "$lib/components/Section"
+  import { display_name } from "$lib/display_name"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>
-  <Content.Title>{display_name(data.candidate)}</Content.Title>
+  <Content.Title
+    >{display_name(data.candidate)}</Content.Title
+  >
   <Content.Section>
     <Section.Header>
       <Section.Title>Información de contacto</Section.Title>

@@ -1,16 +1,16 @@
-import * as v from "valibot";
-import { query_builder } from "$lib/server/db/query_builder";
-import { LocationSchema } from "$lib/components/LocationInput.schemas";
-import { ForceNumberSchema } from "$lib/force_number";
-import { now } from "$lib/server/now";
-import { compose_point } from "$lib/server/point";
+import * as v from "valibot"
+import { query_builder } from "db/query_builder"
+import { LocationSchema } from "$lib/components/LocationInput.schemas"
+import { ForceNumberSchema } from "$lib/force_number"
+import { now } from "$lib/server/now"
+import { compose_point } from "$lib/server/point"
 
 export async function update_location(form_data: FormData) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"));
+  const id = v.parse(ForceNumberSchema, form_data.get("id"))
   const location = v.parse(
     LocationSchema,
-    JSON.parse(form_data.get("location") as string)
-  );
+    JSON.parse(form_data.get("location") as string),
+  )
   await query_builder
     .updateTable("location")
     .set({
@@ -25,8 +25,8 @@ export async function update_location(form_data: FormData) {
       town: location.address.town,
       state: location.address.state,
       suburb: location.address.suburb,
-      updated_at: now
+      updated_at: now,
     })
     .where("location.id", "=", id)
-    .execute();
+    .execute()
 }

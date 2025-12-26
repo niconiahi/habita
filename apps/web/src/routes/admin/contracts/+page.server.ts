@@ -1,46 +1,54 @@
-import { redirect } from "@sveltejs/kit";
-import * as v from "valibot";
-import { ACCESS_TYPE } from "$lib/access_type";
-import { ContractStateSchema } from "$lib/contract_state";
-import { fetch_contracts } from "./fetchers/contracts.server";
-import { set_state } from "./actions/set_state.server";
-import { ACTION } from "./actions/action";
-import type { Actions, PageServerLoad } from "./$types";
+import { redirect } from "@sveltejs/kit"
+import * as v from "valibot"
+import { ACCESS_TYPE } from "$lib/access_type"
+import { ContractStateSchema } from "$lib/contract_state"
+import { fetch_contracts } from "./fetchers/contracts.server"
+import { set_state } from "./actions/set_state.server"
+import { ACTION } from "./actions/action"
+import type { Actions, PageServerLoad } from "./$types"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   if (!locals.user) {
-    redirect(302, "/auth/google");
+    redirect(302, "/auth/google")
   }
   const state = v.parse(
     ContractStateSchema,
-    Number(url.searchParams.get("state"))
-  );
+    Number(url.searchParams.get("state")),
+  )
   const property_ids = locals.user.accesses
     .filter(
       (access) =>
         access.type === ACCESS_TYPE.OWNER ||
-        access.type === ACCESS_TYPE.ADMINISTRATOR
+        access.type === ACCESS_TYPE.ADMINISTRATOR,
     )
-    .map((access) => access.property_id);
-  const contracts = await fetch_contracts(property_ids, [state]);
-  return { contracts, state };
-};
+    .map((access) => access.property_id)
+  const contracts = await fetch_contracts(property_ids, [
+    state,
+  ])
+  return { contracts, state }
+}
 
 export const actions: Actions = {
   [ACTION.SET_STATE]: async ({ request }) => {
-    const form_data = await request.formData();
+    const form_data = await request.formData()
     try {
-      const { redirect_to } = await set_state.execute(request, form_data);
-      redirect(303, redirect_to);
+      const { redirect_to } = await set_state.execute(
+        request,
+        form_data,
+      )
+      redirect(303, redirect_to)
     } catch (err) {
       if (err instanceof v.ValiError) {
         return {
           errors: {
-            set_state: set_state.get_errors(err)
-          }
-        };
+            set_state: set_state.get_errors(err),
+          },
+        }
       }
-      throw err;
+      throw err
     }
-  }
-};
+  },
+}

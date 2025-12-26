@@ -1,6 +1,6 @@
-import { query_builder } from "$lib/server/db/query_builder";
-import { now } from "$lib/server/now";
-import { ROOM_TYPE } from "$lib/room_type";
+import { query_builder } from "db/query_builder"
+import { now } from "$lib/server/now"
+import { ROOM_TYPE } from "$lib/room_type"
 
 export async function create_room(property_id: number) {
   await query_builder
@@ -11,7 +11,7 @@ export async function create_room(property_id: number) {
       type: ROOM_TYPE.BEDROOM,
       updated_at: now,
       created_at: now,
-      property_id
+      property_id,
     })
-    .execute();
+    .execute()
 }

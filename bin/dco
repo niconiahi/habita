@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+stack="$1"
+shift
+env="development"
+
+case "$stack" in
+  web)
+    docker compose -p "$env" -f "$REPO_ROOT/infra/development/web/docker-compose.yml" "$@"
+    ;;
+  observability|obs)
+    docker compose -p "$env" -f "$REPO_ROOT/infra/development/observability/docker-compose.yml" "$@"
+    ;;
+  *)
+    echo "Unknown stack: $stack"
+    echo "Available: web, observability (obs)"
+    exit 1
+    ;;
+esac

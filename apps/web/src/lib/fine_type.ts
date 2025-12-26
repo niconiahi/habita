@@ -1,45 +1,47 @@
-import * as v from "valibot";
+import * as v from "valibot"
 
-export type ObjectValues<T> = T[keyof T];
+export type ObjectValues<T> = T[keyof T]
 export const FINE_TYPE = {
   FIXED: 0,
-  PORCENTUAL: 1
-} as const;
-export const FineTypeSchema = v.picklist(Object.values(FINE_TYPE));
-export type FineType = ObjectValues<typeof FINE_TYPE>;
+  PORCENTUAL: 1,
+} as const
+export const FineTypeSchema = v.picklist(
+  Object.values(FINE_TYPE),
+)
+export type FineType = ObjectValues<typeof FINE_TYPE>
 
 export function get_fine_formula(type: number | FineType) {
-  const fine_type = v.parse(FineTypeSchema, type);
+  const fine_type = v.parse(FineTypeSchema, type)
   switch (fine_type) {
     case FINE_TYPE.FIXED: {
-      return "fine + fixed_amount";
+      return "fine + fixed_amount"
     }
     case FINE_TYPE.PORCENTUAL: {
-      return "fine + (price * percentage)";
+      return "fine + (price * percentage)"
     }
     default: {
-      const _exhaustive: never = fine_type;
-      return _exhaustive;
+      const _exhaustive: never = fine_type
+      return _exhaustive
     }
   }
 }
 
 export function get_fine_label(type: number | FineType) {
-  const fine_type = v.parse(FineTypeSchema, type);
+  const fine_type = v.parse(FineTypeSchema, type)
   switch (fine_type) {
     case FINE_TYPE.FIXED: {
-      return "Fijo";
+      return "Fijo"
     }
     case FINE_TYPE.PORCENTUAL: {
-      return "Porcentual";
+      return "Porcentual"
     }
     default: {
-      const _exhaustive: never = fine_type;
-      return _exhaustive;
+      const _exhaustive: never = fine_type
+      return _exhaustive
     }
   }
 }
 
 export function get_fine_types() {
-  return Object.values(FINE_TYPE);
+  return Object.values(FINE_TYPE)
 }

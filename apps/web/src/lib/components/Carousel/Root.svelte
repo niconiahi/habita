@@ -1,41 +1,45 @@
 <script lang="ts">
   interface CarouselImage {
-    src: string;
-    srcSet?: string;
-    sizes?: string;
-    alt: string;
+    src: string
+    srcSet?: string
+    sizes?: string
+    alt: string
   }
 
   interface Props {
-    images: CarouselImage[];
-    label: string;
+    images: CarouselImage[]
+    label: string
   }
 
-  let { images, label }: Props = $props();
+  let { images, label }: Props = $props()
 
-  let images_el: HTMLDivElement | undefined = $state();
-  let current_index = $state(0);
-  const images_count = $derived(images.length);
+  let images_el: HTMLDivElement | undefined = $state()
+  let current_index = $state(0)
+  const images_count = $derived(images.length)
 
   function scroll_to_slide(index: number) {
-    if (!images_el) return;
-    const item_width = images_el.clientWidth;
+    if (!images_el) return
+    const item_width = images_el.clientWidth
     images_el.scrollTo({
       left: index * item_width,
-      behavior: "smooth"
-    });
+      behavior: "smooth",
+    })
   }
 
   function handle_scroll() {
-    if (!images_el) return;
-    const scroll_left = images_el.scrollLeft;
-    const item_width = images_el.clientWidth;
-    const next_index = Math.round(scroll_left / item_width);
-    current_index = next_index;
+    if (!images_el) return
+    const scroll_left = images_el.scrollLeft
+    const item_width = images_el.clientWidth
+    const next_index = Math.round(scroll_left / item_width)
+    current_index = next_index
   }
 </script>
 
-<section class="carousel" aria-roledescription="carousel" aria-label={label}>
+<section
+  class="carousel"
+  aria-roledescription="carousel"
+  aria-label={label}
+>
   <div
     class="images"
     bind:this={images_el}
@@ -61,14 +65,22 @@
       </figure>
     {/each}
   </div>
-  <div role="group" aria-label="Slide navigation" class="dots">
+  <div
+    role="group"
+    aria-label="Slide navigation"
+    class="dots"
+  >
     {#each images as _, index}
       {@const image_number = index + 1}
       <button
         type="button"
-        class={index === current_index ? "dot active" : "dot"}
+        class={index === current_index
+          ? "dot active"
+          : "dot"}
         aria-label={`Go to slide ${image_number} of ${images_count}`}
-        aria-current={index === current_index ? "true" : undefined}
+        aria-current={index === current_index
+          ? "true"
+          : undefined}
         onclick={() => scroll_to_slide(index)}
       ></button>
     {/each}

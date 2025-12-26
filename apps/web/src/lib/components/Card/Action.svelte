@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLLiAttributes } from "svelte/elements";
+  import type { Snippet } from "svelte"
+  import type { HTMLLiAttributes } from "svelte/elements"
 
   interface Props extends HTMLLiAttributes {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, ...rest }: Props = $props();
+  let { children, ...rest }: Props = $props()
 </script>
 
 <li {...rest}>

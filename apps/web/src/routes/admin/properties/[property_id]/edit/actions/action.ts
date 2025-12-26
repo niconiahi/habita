@@ -9,5 +9,5 @@ export const ACTION = {
   DESTROY_SERVICE: "destroy_service",
   CREATE_PROPERTY_FILE: "create_property_file",
   INVITE_OWNER: "invite_owner",
-  UPDATE_DESTINIES: "update_destinies"
-} as const;
+  UPDATE_DESTINIES: "update_destinies",
+} as const

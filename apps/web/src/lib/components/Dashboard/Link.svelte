@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { page } from "$app/state";
-  import type { Snippet } from "svelte";
+  import { page } from "$app/state"
+  import type { Snippet } from "svelte"
 
   interface Props {
-    children: Snippet;
-    href: string;
+    children: Snippet
+    href: string
   }
 
-  let { children, href }: Props = $props();
-  let is_active = $derived(page.url.pathname.startsWith(href));
+  let { children, href }: Props = $props()
+  let is_active = $derived(
+    page.url.pathname.startsWith(href),
+  )
 </script>
 
 <li>

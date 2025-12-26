@@ -1,11 +1,11 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Section from "$lib/components/Section";
-  import Button from "$lib/components/Button.svelte";
-  import RoomMap from "$lib/components/RoomMap.svelte";
-  import type { PageData } from "./$types";
+  import * as Content from "$lib/components/Content"
+  import * as Section from "$lib/components/Section"
+  import Button from "$lib/components/Button.svelte"
+  import RoomMap from "$lib/components/RoomMap.svelte"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>
@@ -27,6 +27,9 @@
     <Section.Header>
       <Section.Title>Mapa de ambientes</Section.Title>
     </Section.Header>
-    <RoomMap rooms={data.property.rooms} is_readonly={true} />
+    <RoomMap
+      rooms={data.property.rooms}
+      is_readonly={true}
+    />
   </Content.Section>
 </Content.Root>

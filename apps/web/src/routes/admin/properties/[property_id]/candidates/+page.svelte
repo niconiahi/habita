@@ -1,10 +1,10 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import { display_location } from "$lib/display_location";
-  import { display_name } from "$lib/display_name";
-  import type { PageData } from "./$types";
+  import * as Content from "$lib/components/Content"
+  import { display_location } from "$lib/display_location"
+  import { display_name } from "$lib/display_name"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>

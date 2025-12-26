@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import type { Snippet } from "svelte"
 
   interface Props {
-    children: Snippet;
-    label: string;
+    children: Snippet
+    label: string
   }
 
-  let { children, label }: Props = $props();
+  let { children, label }: Props = $props()
 </script>
 
 <nav class="dashboard" aria-label={label}>

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Card from "$lib/components/Card";
-  import Button from "$lib/components/Button.svelte";
-  import { display_location } from "$lib/display_location";
-  import type { PageData } from "./$types";
+  import * as Content from "$lib/components/Content"
+  import * as Card from "$lib/components/Card"
+  import Button from "$lib/components/Button.svelte"
+  import { display_location } from "$lib/display_location"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>
@@ -19,7 +19,7 @@
           src: image.props.src,
           srcSet: image.props.srcSet,
           sizes: image.props.sizes,
-          alt: image.alt
+          alt: image.alt,
         }))}
         <li>
           <Card.Root>

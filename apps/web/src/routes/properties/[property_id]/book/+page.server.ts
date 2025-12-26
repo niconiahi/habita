@@ -1,114 +1,149 @@
-import { trace } from "@opentelemetry/api";
-import { sql } from "kysely";
-import { redirect } from "@sveltejs/kit";
-import * as v from "valibot";
-import { ForceDateSchema } from "$lib/server/force_date";
-import { ForceNumberSchema } from "$lib/force_number";
-import { SLOT_STATE } from "$lib/slot_state";
-import { logger } from "$lib/server/telemetry/logger";
-import { query_builder } from "$lib/server/db/query_builder";
-import { set_date } from "./actions/set_date.server";
-import { update_slot } from "./actions/update_slot.server";
-import { ACTION } from "./actions/action";
-import type { PageServerLoad, Actions } from "./$types";
+import { trace } from "@opentelemetry/api"
+import { sql } from "kysely"
+import { redirect } from "@sveltejs/kit"
+import * as v from "valibot"
+import { ForceDateSchema } from "$lib/server/force_date"
+import { ForceNumberSchema } from "$lib/force_number"
+import { SLOT_STATE } from "$lib/slot_state"
+import { logger } from "$lib/server/telemetry/logger"
+import { query_builder } from "db/query_builder"
+import { set_date } from "./actions/set_date.server"
+import { update_slot } from "./actions/update_slot.server"
+import { ACTION } from "./actions/action"
+import type { PageServerLoad, Actions } from "./$types"
 
-export const load: PageServerLoad = async ({ params, locals, url }) => {
+export const load: PageServerLoad = async ({
+  params,
+  locals,
+  url,
+}) => {
   if (!locals.user) {
-    redirect(302, "/auth/google");
+    redirect(302, "/auth/google")
   }
-  const property_id = v.parse(ForceNumberSchema, params.property_id);
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
   const date = v.parse(
     v.union([ForceDateSchema, v.null()]),
-    url.searchParams.get("date")
-  );
-  const dates = await fetch_dates(property_id);
-  const times = date ? await fetch_times(property_id, date) : [];
-  return { dates, times, user: locals.user };
-};
+    url.searchParams.get("date"),
+  )
+  const dates = await fetch_dates(property_id)
+  const times = date
+    ? await fetch_times(property_id, date)
+    : []
+  return { dates, times, user: locals.user }
+}
 
 export const actions: Actions = {
   [ACTION.SET_DATE]: async ({ request, params, url }) => {
-    const tracer = trace.getTracer("web.action");
+    const tracer = trace.getTracer("web.action")
     return tracer.startActiveSpan(
       "/properties/:id/book/set_date",
       async (span) => {
-        const form_data = await request.formData();
-        const property_id = v.parse(ForceNumberSchema, params.property_id);
-        form_data.set("property_id", String(property_id));
-        span.setAttribute("property.id", property_id);
+        const form_data = await request.formData()
+        const property_id = v.parse(
+          ForceNumberSchema,
+          params.property_id,
+        )
+        form_data.set("property_id", String(property_id))
+        span.setAttribute("property.id", property_id)
         try {
-          const { redirect_to } = await set_date.execute(url, form_data);
-          logger.info("date set successfully");
-          span.end();
-          redirect(302, redirect_to);
+          const { redirect_to } = await set_date.execute(
+            url,
+            form_data,
+          )
+          logger.info("date set successfully")
+          span.end()
+          redirect(302, redirect_to)
         } catch (err) {
           if (err instanceof v.ValiError) {
-            span.end();
+            span.end()
             return {
-              errors: { set_date: set_date.get_errors(err) }
-            };
+              errors: {
+                set_date: set_date.get_errors(err),
+              },
+            }
           }
-          throw err;
+          throw err
         }
-      }
-    );
+      },
+    )
   },
   [ACTION.UPDATE_SLOT]: async ({ request, params }) => {
-    const tracer = trace.getTracer("web.action");
+    const tracer = trace.getTracer("web.action")
     return tracer.startActiveSpan(
       "/properties/:id/book/update_slot",
       async (span) => {
-        const form_data = await request.formData();
-        const property_id = v.parse(ForceNumberSchema, params.property_id);
-        form_data.set("property_id", String(property_id));
-        span.setAttribute("property.id", property_id);
+        const form_data = await request.formData()
+        const property_id = v.parse(
+          ForceNumberSchema,
+          params.property_id,
+        )
+        form_data.set("property_id", String(property_id))
+        span.setAttribute("property.id", property_id)
         try {
-          await update_slot.execute(form_data, span);
-          logger.info("slot updated successfully");
-          span.end();
-          redirect(302, "..");
+          await update_slot.execute(form_data, span)
+          logger.info("slot updated successfully")
+          span.end()
+          redirect(302, "..")
         } catch (err) {
           if (err instanceof v.ValiError) {
-            span.end();
+            span.end()
             return {
-              errors: { update_slot: update_slot.get_errors(err) }
-            };
+              errors: {
+                update_slot: update_slot.get_errors(err),
+              },
+            }
           }
-          throw err;
+          throw err
         }
-      }
-    );
-  }
-};
+      },
+    )
+  },
+}
 
 function fetch_dates(property_id: number) {
   return query_builder
     .selectFrom("slot")
-    .innerJoin("property", "property.id", "slot.property_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "slot.property_id",
+    )
     .where((eb) =>
       eb.and([
         eb("property.id", "=", property_id),
-        eb("slot.state", "=", SLOT_STATE.FREE)
-      ])
+        eb("slot.state", "=", SLOT_STATE.FREE),
+      ]),
     )
     .select([sql<Date>`start_date::date`.as("date")])
     .groupBy("date")
     .orderBy("date")
-    .execute();
+    .execute()
 }
 
 function fetch_times(property_id: number, date: Date) {
   return query_builder
     .selectFrom("slot")
-    .innerJoin("property", "property.id", "slot.property_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "slot.property_id",
+    )
     .where((eb) =>
       eb.and([
         eb("property.id", "=", property_id),
         eb(sql<Date>`start_date::date`, "=", date),
-        eb("slot.state", "=", SLOT_STATE.FREE)
-      ])
+        eb("slot.state", "=", SLOT_STATE.FREE),
+      ]),
     )
-    .select(["slot.id", "slot.start_date", "slot.end_date", "slot.state"])
+    .select([
+      "slot.id",
+      "slot.start_date",
+      "slot.end_date",
+      "slot.state",
+    ])
     .orderBy("slot.start_date")
-    .execute();
+    .execute()
 }
