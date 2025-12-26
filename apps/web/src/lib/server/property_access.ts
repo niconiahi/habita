@@ -1,63 +1,74 @@
-import { error } from "@sveltejs/kit";
-import * as v from "valibot";
+import { error } from "@sveltejs/kit"
+import * as v from "valibot"
 import {
   ACCESS_TYPE,
   type AccessType,
-  AccessTypeSchema
-} from "$lib/access_type";
+  AccessTypeSchema,
+} from "$lib/access_type"
 
 // TODO: Update this type when auth is fully migrated with accesses
 type UserWithAccesses = {
-  id: number;
-  accesses: Array<{ property_id: number; type: number | AccessType }>;
-};
+  id: number
+  accesses: Array<{
+    property_id: number
+    type: number | AccessType
+  }>
+}
 
 export function get_property_accesses(
   user: UserWithAccesses,
-  property_id: number
+  property_id: number,
 ) {
-  return user.accesses.filter((access) => access.property_id === property_id);
+  return user.accesses.filter(
+    (access) => access.property_id === property_id,
+  )
 }
 
 export function has_view_access(
-  property_accesses: Array<{ type: number | AccessType }>
+  property_accesses: Array<{ type: number | AccessType }>,
 ): boolean {
-  return property_accesses.length > 0;
+  return property_accesses.length > 0
 }
 
 export function has_tenant_access(
-  property_accesses: Array<{ type: number | AccessType }>
+  property_accesses: Array<{ type: number | AccessType }>,
 ): boolean {
   return property_accesses.some((access) => {
-    const access_type = v.parse(AccessTypeSchema, access.type);
-    return access_type === ACCESS_TYPE.TENANT;
-  });
+    const access_type = v.parse(
+      AccessTypeSchema,
+      access.type,
+    )
+    return access_type === ACCESS_TYPE.TENANT
+  })
 }
 
 export function has_edit_access(
-  property_accesses: Array<{ type: number | AccessType }>
+  property_accesses: Array<{ type: number | AccessType }>,
 ): boolean {
   return property_accesses.some((access) => {
-    const access_type = v.parse(AccessTypeSchema, access.type);
+    const access_type = v.parse(
+      AccessTypeSchema,
+      access.type,
+    )
     return (
       access_type === ACCESS_TYPE.OWNER ||
       access_type === ACCESS_TYPE.ADMINISTRATOR
-    );
-  });
+    )
+  })
 }
 
 export function require_view_access(
-  property_accesses: Array<{ type: number | AccessType }>
+  property_accesses: Array<{ type: number | AccessType }>,
 ): void {
   if (!has_view_access(property_accesses)) {
-    throw error(403, "not authorized");
+    throw error(403, "not authorized")
   }
 }
 
 export function require_edit_access(
-  property_accesses: Array<{ type: number | AccessType }>
+  property_accesses: Array<{ type: number | AccessType }>,
 ): void {
   if (!has_edit_access(property_accesses)) {
-    throw error(403, "not authorized");
+    throw error(403, "not authorized")
   }
 }

@@ -1,11 +1,18 @@
-import { sql } from "kysely";
-import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
-import { query_builder } from "$lib/server/db/query_builder";
+import { sql } from "kysely"
+import {
+  jsonArrayFrom,
+  jsonObjectFrom,
+} from "kysely/helpers/postgres"
+import { query_builder } from "db/query_builder"
 
 export function fetch_property(id: number) {
   return query_builder
     .selectFrom("property")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .select((eb) => [
       "property.id",
       "property.created_at",
@@ -14,16 +21,20 @@ export function fetch_property(id: number) {
       jsonArrayFrom(
         eb
           .selectFrom("room")
-          .leftJoin("room_map", "room_map.room_id", "room.id")
+          .leftJoin(
+            "room_map",
+            "room_map.room_id",
+            "room.id",
+          )
           .select([
             "room.id",
             "room.type",
             "room.width",
             "room.length",
             "room_map.position_x",
-            "room_map.position_y"
+            "room_map.position_y",
           ])
-          .whereRef("room.property_id", "=", "property.id")
+          .whereRef("room.property_id", "=", "property.id"),
       ).as("rooms"),
       jsonObjectFrom(
         eb
@@ -38,9 +49,13 @@ export function fetch_property(id: number) {
             "location.state",
             "location.suburb",
             "location.city",
-            "location.town"
+            "location.town",
           ])
-          .whereRef("location.id", "=", "property.location_id")
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),
@@ -55,67 +70,119 @@ export function fetch_property(id: number) {
             jsonArrayFrom(
               eb
                 .selectFrom("period")
-                .innerJoin("contract", "contract.id", "period.contract_id")
+                .innerJoin(
+                  "contract",
+                  "contract.id",
+                  "period.contract_id",
+                )
                 .select([
                   "period.id",
                   "period.price",
                   "period.start_date",
-                  "period.end_date"
+                  "period.end_date",
                 ])
-                .whereRef("period.contract_id", "=", "contract.id")
+                .whereRef(
+                  "period.contract_id",
+                  "=",
+                  "contract.id",
+                ),
             ).as("periods"),
             eb
               .selectFrom("period")
               .select("period.price")
-              .whereRef("period.contract_id", "=", "contract.id")
+              .whereRef(
+                "period.contract_id",
+                "=",
+                "contract.id",
+              )
               .orderBy("period.created_at", "asc")
               .limit(1)
               .as("initial_price"),
             jsonArrayFrom(
               eb
                 .selectFrom("contract_file")
-                .innerJoin("file", "file.id", "contract_file.file_id")
-                .select(["file.basename", "file.id", "contract_file.type"])
-                .whereRef("contract_file.contract_id", "=", "contract.id")
-            ).as("files")
+                .innerJoin(
+                  "file",
+                  "file.id",
+                  "contract_file.file_id",
+                )
+                .select([
+                  "file.basename",
+                  "file.id",
+                  "contract_file.type",
+                ])
+                .whereRef(
+                  "contract_file.contract_id",
+                  "=",
+                  "contract.id",
+                ),
+            ).as("files"),
           ])
-          .whereRef("contract.property_id", "=", "property.id")
+          .whereRef(
+            "contract.property_id",
+            "=",
+            "property.id",
+          ),
       ).as("contracts"),
       jsonArrayFrom(
         eb
           .selectFrom("service")
-          .select(["service.id", "service.code", "service.type"])
-          .whereRef("service.property_id", "=", "property.id")
+          .select([
+            "service.id",
+            "service.code",
+            "service.type",
+          ])
+          .whereRef(
+            "service.property_id",
+            "=",
+            "property.id",
+          ),
       ).as("services"),
       jsonArrayFrom(
         eb
           .selectFrom("user")
           .innerJoin("access", "access.user_id", "user.id")
-          .whereRef("access.property_id", "=", "property.id")
+          .whereRef(
+            "access.property_id",
+            "=",
+            "property.id",
+          )
           .select([
             "user.id",
             "user.name",
             "user.surname",
             "user.phone_number",
             "user.document_number",
-            "access.type"
-          ])
+            "access.type",
+          ]),
       ).as("members"),
       jsonArrayFrom(
         eb
           .selectFrom("property_file")
-          .innerJoin("file", "file.id", "property_file.file_id")
+          .innerJoin(
+            "file",
+            "file.id",
+            "property_file.file_id",
+          )
           .select([
             "file.basename",
             "file.id",
-            sql<string>`encode(file.content, 'base64')`.as("content"),
-            "property_file.type"
+            sql<string>`encode(file.content, 'base64')`.as(
+              "content",
+            ),
+            "property_file.type",
           ])
-          .whereRef("property_file.property_id", "=", "property.id")
-      ).as("images")
+          .whereRef(
+            "property_file.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("images"),
     ])
     .where("property.id", "=", id)
-    .executeTakeFirst();
+    .executeTakeFirst()
 }
 
-export type Property = NonNullable<Awaited<ReturnType<typeof fetch_property>>>;
+export type Property = NonNullable<
+  Awaited<ReturnType<typeof fetch_property>>
+>

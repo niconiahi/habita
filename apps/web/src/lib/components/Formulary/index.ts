@@ -1,6 +1,6 @@
-export { default as Root } from "./Root.svelte";
-export { default as Fields } from "./Fields.svelte";
-export { default as Actions } from "./Actions.svelte";
-export { default as Field } from "./Field.svelte";
-export { default as Label } from "./Label.svelte";
-export { default as Select } from "./Select.svelte";
+export { default as Root } from "./Root.svelte"
+export { default as Fields } from "./Fields.svelte"
+export { default as Actions } from "./Actions.svelte"
+export { default as Field } from "./Field.svelte"
+export { default as Label } from "./Label.svelte"
+export { default as Select } from "./Select.svelte"

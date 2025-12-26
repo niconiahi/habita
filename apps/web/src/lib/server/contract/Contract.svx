@@ -1,0 +1,111 @@
+<script lang="ts">
+  import type { Contract } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
+  import type { Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
+  import type { Owner } from "../owner"
+  import type { Tenant } from "../tenant"
+  import * as sections from "./sections"
+  interface Props {
+    contract: Contract
+    property: Property
+    owner: Owner
+    tenant: Tenant
+  }
+  let { contract, property, owner, tenant }: Props =
+    $props()
+</script>
+
+# Contrato de locación
+
+<!---->
+## Preámbulo
+
+<sections.Preface {contract} {tenant} {owner} />
+
+## Primera: Objeto
+
+<sections.SectionOne {property} />
+
+## Segunda: Estado del inmueble e inventario
+
+<sections.SectionTwo />
+
+## Tercera: Destino
+
+<sections.SectionThree />
+
+## Cuarta: Uso
+
+<sections.SectionFour />
+
+## Quinta: Entrega y conservación del bien arrendado
+
+<sections.SectionFive />
+
+## Sexta: Plazo del contrato
+
+<sections.SectionSix {contract} />
+
+## Séptima: Canon
+
+<sections.SectionSeven {contract} />
+
+## Octava: Forma y lugar de pago
+
+<sections.SectionEight {contract} />
+
+## Novena: Pago de servicios e impuestos
+
+<sections.SectionNine {property} />
+
+## Décima: Intransferibilidad del contrato
+
+<sections.SectionTen />
+
+## Décima primera: Modificaciones y mejoras
+
+<sections.SectionEleven />
+
+## Décima segunda: Reparaciones
+
+<sections.SectionTwelve />
+
+## Décima tercera: Exención de responsabilidad
+
+<sections.SectionThirteen />
+
+## Décima cuarta: Incumplimientos
+
+<sections.SectionFourteen />
+
+## Décima quinta: Falta de devoluciones. Abandono
+
+<sections.SectionFifteen />
+
+## Décima sexta: Rescisión anticipada
+
+<sections.SectionSixteen {contract} {tenant} {owner} />
+
+## Décima séptima: Muestra de la propiedad
+
+<sections.SectionSeventeen />
+
+## Décima octava: Fiadores
+
+<sections.SectionEighteen />
+
+## Décima novena: Título ejecutivo
+
+<sections.SectionNineteen />
+
+## Vigésima: Domicilios
+
+<sections.SectionTwenty
+  {owner}
+  {tenant}
+  {contract}
+  {property}
+/>
+
+## Vigésima primera: Jurisdicción
+
+<sections.SectionTwentyOne />

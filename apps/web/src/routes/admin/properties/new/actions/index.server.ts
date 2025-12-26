@@ -1,1 +1,1 @@
-export * from "./create_property.server";
+export * from "./create_property.server"

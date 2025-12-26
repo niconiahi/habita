@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLAttributes } from "svelte/elements";
+  import type { Snippet } from "svelte"
+  import type { HTMLAttributes } from "svelte/elements"
 
   interface Props extends HTMLAttributes<HTMLHeadingElement> {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, ...rest }: Props = $props();
+  let { children, ...rest }: Props = $props()
 </script>
 
 <h4 {...rest}>

@@ -1,9 +1,9 @@
-import * as v from "valibot";
-import { DateSchema } from "$lib/date";
-import { ForceNumberSchema } from "$lib/force_number";
-import { normalize_input } from "$lib/server/form";
-import { now } from "$lib/server/now";
-import { query_builder } from "$lib/server/db/query_builder";
+import * as v from "valibot"
+import { DateSchema } from "$lib/date"
+import { ForceNumberSchema } from "$lib/force_number"
+import { normalize_input } from "$lib/server/form"
+import { now } from "$lib/server/now"
+import { query_builder } from "db/query_builder"
 
 export const InputSchema = v.object({
   id: ForceNumberSchema,
@@ -16,14 +16,14 @@ export const InputSchema = v.object({
   early_termination: v.optional(v.string()),
   property_type: v.optional(ForceNumberSchema),
   cbu: v.optional(v.string()),
-  devoluciones_percentage: v.optional(ForceNumberSchema),
-  muestra_horas: v.optional(ForceNumberSchema),
-  tribunal: v.optional(ForceNumberSchema)
-});
+  percentage_return: v.optional(ForceNumberSchema),
+  showroom_hours: v.optional(ForceNumberSchema),
+  court_id: v.optional(ForceNumberSchema),
+})
 
 export async function update_contract(
   form_data: FormData,
-  property_id: number
+  property_id: number,
 ) {
   const {
     id,
@@ -33,8 +33,15 @@ export async function update_contract(
     escalation_duration,
     fine_percentage,
     early_termination,
-    destiny
-  } = v.parse(InputSchema, normalize_input(form_data, InputSchema));
+    destiny,
+    cbu,
+    percentage_return,
+    showroom_hours,
+    court_id,
+  } = v.parse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
+  )
   await query_builder
     .updateTable("contract")
     .set({
@@ -48,8 +55,12 @@ export async function update_contract(
       fine_amount: fine_percentage,
       early_termination: early_termination
         ? Number(early_termination)
-        : undefined
+        : undefined,
+      cbu,
+      percentage_return,
+      showroom_hours,
+      court_id,
     })
     .where("contract.id", "=", id)
-    .execute();
+    .execute()
 }

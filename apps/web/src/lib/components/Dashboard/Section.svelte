@@ -1,15 +1,17 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import type { Snippet } from "svelte"
 
   interface Props {
-    children: Snippet;
-    label?: string;
+    children: Snippet
+    label?: string
   }
 
-  let { children, label }: Props = $props();
+  let { children, label }: Props = $props()
 </script>
 
-<section aria-labelledby={label ? "section-label" : undefined}>
+<section
+  aria-labelledby={label ? "section-label" : undefined}
+>
   {#if label}
     <h2 id="section-label">{label}</h2>
   {/if}

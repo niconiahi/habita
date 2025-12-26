@@ -1,11 +1,11 @@
-import { error } from "@sveltejs/kit";
-import { get_article } from "$lib/learn";
-import type { PageServerLoad } from "./$types";
+import { error } from "@sveltejs/kit"
+import { fetch_article } from "./fetchers"
+import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({ params }) => {
-  const article = get_article(params.slug);
+  const article = fetch_article(params.slug)
   if (!article) {
-    error(404, "Article not found");
+    error(404, "Article not found")
   }
-  return { article };
-};
+  return { article }
+}

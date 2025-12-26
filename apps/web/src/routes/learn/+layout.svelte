@@ -1,9 +1,11 @@
 <script lang="ts">
-  import * as Dashboard from "$lib/components/Dashboard";
-  import { articles } from "$lib/learn";
-  import type { Snippet } from "svelte";
+  import * as Dashboard from "$lib/components/Dashboard"
+  import { fetch_articles } from "./[slug]/fetchers"
+  import type { Snippet } from "svelte"
 
-  let { children }: { children: Snippet } = $props();
+  let { children }: { children: Snippet } = $props()
+
+  const articles = fetch_articles()
 </script>
 
 <div class="learn-layout">

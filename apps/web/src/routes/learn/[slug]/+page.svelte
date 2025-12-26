@@ -1,8 +1,8 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import type { PageData } from "./$types";
+  import * as Content from "$lib/components/Content"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
+  let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>

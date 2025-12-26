@@ -1,14 +1,14 @@
 <script lang="ts">
-  import Button from "$lib/components/Button.svelte";
+  import Button from "$lib/components/Button.svelte"
 
   interface Props {
     user: {
-      id: number;
-      email: string;
-    } | null;
+      id: number
+      email: string
+    } | null
   }
 
-  let { user }: Props = $props();
+  let { user }: Props = $props()
 </script>
 
 <header class="header">

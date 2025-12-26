@@ -1,17 +1,32 @@
-import { jsonObjectFrom } from "kysely/helpers/postgres";
-import { type ContractState, get_contract_states } from "$lib/contract_state";
-import { query_builder } from "$lib/server/db/query_builder";
+import { jsonObjectFrom } from "kysely/helpers/postgres"
+import {
+  type ContractState,
+  get_contract_states,
+} from "$lib/contract_state"
+import { query_builder } from "db/query_builder"
 
 export function fetch_contracts(
   property_ids: number[],
-  states?: ContractState[]
+  states?: ContractState[],
 ) {
   return query_builder
     .selectFrom("contract")
-    .innerJoin("property", "property.id", "contract.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "contract.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("contract.property_id", "in", property_ids)
-    .where("contract.state", "in", states ? states : get_contract_states())
+    .where(
+      "contract.state",
+      "in",
+      states ? states : get_contract_states(),
+    )
     .select((eb) => [
       "contract.id",
       "contract.state",
@@ -30,16 +45,20 @@ export function fetch_contracts(
             "location.suburb",
             "location.city",
             "location.town",
-            "location.state"
+            "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id")
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
-        .as("location")
+        .as("location"),
     ])
-    .execute();
+    .execute()
 }
 
 export type Contract = NonNullable<
   Awaited<ReturnType<typeof fetch_contracts>>[0]
->;
+>

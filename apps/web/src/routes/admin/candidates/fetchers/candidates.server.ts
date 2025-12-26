@@ -1,13 +1,21 @@
-import { jsonObjectFrom } from "kysely/helpers/postgres";
-import { query_builder } from "$lib/server/db/query_builder";
-import { SLOT_STATE } from "$lib/slot_state";
+import { jsonObjectFrom } from "kysely/helpers/postgres"
+import { query_builder } from "db/query_builder"
+import { SLOT_STATE } from "$lib/slot_state"
 
 export function fetch_candidates(property_ids: number[]) {
   return query_builder
     .selectFrom("slot")
     .innerJoin("user", "user.id", "slot.visitant_id")
-    .innerJoin("property", "property.id", "slot.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "slot.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("slot.property_id", "in", property_ids)
     .where("slot.state", "=", SLOT_STATE.RESERVED)
     .select((eb) => [
@@ -29,16 +37,20 @@ export function fetch_candidates(property_ids: number[]) {
             "location.suburb",
             "location.city",
             "location.town",
-            "location.state"
+            "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id")
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
-        .as("location")
+        .as("location"),
     ])
-    .execute();
+    .execute()
 }
 
 export type Candidate = NonNullable<
   Awaited<ReturnType<typeof fetch_candidates>>[0]
->;
+>

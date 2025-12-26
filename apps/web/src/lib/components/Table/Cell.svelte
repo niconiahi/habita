@@ -1,8 +1,10 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import type { Snippet } from "svelte"
 
-  let { children, header = false }: { children: Snippet; header?: boolean } =
-    $props();
+  let {
+    children,
+    header = false,
+  }: { children: Snippet; header?: boolean } = $props()
 </script>
 
 {#if header}

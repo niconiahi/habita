@@ -1,3 +1,3 @@
 export const ACTION = {
-  UPLOAD_RECEIPT: "upload_receipt"
-} as const;
+  UPLOAD_RECEIPT: "upload_receipt",
+} as const

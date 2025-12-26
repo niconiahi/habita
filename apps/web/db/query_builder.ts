@@ -1,5 +1,5 @@
 import { Kysely, ParseJSONResultsPlugin } from "kysely"
-import { DIALECT } from "../src/lib/server/db/dialect"
+import { DIALECT } from "./dialect"
 import { TelemetryPlugin } from "./telemetry_plugin"
 import type { DB } from "./types"
 

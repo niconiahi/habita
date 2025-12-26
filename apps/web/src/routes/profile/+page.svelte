@@ -1,33 +1,35 @@
 <script lang="ts">
-  import * as Content from "$lib/components/Content";
-  import * as Section from "$lib/components/Section";
-  import * as Formulary from "$lib/components/Formulary";
-  import Button from "$lib/components/Button.svelte";
-  import { get_access_type_label } from "$lib/access_type";
+  import * as Content from "$lib/components/Content"
+  import * as Section from "$lib/components/Section"
+  import * as Formulary from "$lib/components/Formulary"
+  import Button from "$lib/components/Button.svelte"
+  import { get_access_type_label } from "$lib/access_type"
   import {
     get_user_file_type_label,
-    USER_FILE_TYPE
-  } from "$lib/user_file_type";
-  import { compose_action } from "$lib/compose_action";
-  import { ACTION } from "./actions/action";
-  import type { PageData } from "./$types";
+    USER_FILE_TYPE,
+  } from "$lib/user_file_type"
+  import { compose_action } from "$lib/compose_action"
+  import { ACTION } from "./actions/action"
+  import type { PageData } from "./$types"
 
-  let { data }: { data: PageData } = $props();
-  let file_input: HTMLInputElement | undefined = $state();
-  let form_el: HTMLFormElement | undefined = $state();
+  let { data }: { data: PageData } = $props()
+  let file_input: HTMLInputElement | undefined = $state()
+  let form_el: HTMLFormElement | undefined = $state()
 
   function handle_add_click() {
-    file_input?.click();
+    file_input?.click()
   }
 
   function handle_file_change() {
-    form_el?.requestSubmit();
+    form_el?.requestSubmit()
   }
 
   function get_property(id: number) {
-    const property = data.properties.find((p) => p.id === id);
-    if (!property) throw new Error("property should exist");
-    return property;
+    const property = data.properties.find(
+      (p) => p.id === id,
+    )
+    if (!property) throw new Error("property should exist")
+    return property
   }
 </script>
 
@@ -47,7 +49,9 @@
       </thead>
       <tbody>
         {#each data.user.accesses as access}
-          {@const property = get_property(access.property_id)}
+          {@const property = get_property(
+            access.property_id,
+          )}
           <tr>
             <td>{get_access_type_label(access.type)}</td>
             <td>
@@ -90,7 +94,9 @@
         <Formulary.Label for="type">tipo</Formulary.Label>
         <Formulary.Select name="type" id="type">
           {#each Object.values(USER_FILE_TYPE) as type}
-            <option value={type}>{get_user_file_type_label(type)}</option>
+            <option value={type}
+              >{get_user_file_type_label(type)}</option
+            >
           {/each}
         </Formulary.Select>
       </Formulary.Field>

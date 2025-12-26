@@ -1,15 +1,24 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  import type { HTMLAttributes } from "svelte/elements";
+  import type { Snippet } from "svelte"
+  import type { HTMLAttributes } from "svelte/elements"
 
   interface Props extends HTMLAttributes<HTMLUListElement> {
-    children: Snippet;
+    children: Snippet
   }
 
-  let { children, class: className, ...rest }: Props = $props();
+  let {
+    children,
+    class: className,
+    ...rest
+  }: Props = $props()
 </script>
 
-<ul role="group" aria-label="card actions" class="actions" {...rest}>
+<ul
+  role="group"
+  aria-label="card actions"
+  class="actions"
+  {...rest}
+>
   {@render children()}
 </ul>
 

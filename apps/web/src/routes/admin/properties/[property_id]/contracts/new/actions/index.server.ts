@@ -1,1 +1,1 @@
-export * from "./create_contract.server";
+export * from "./create_contract.server"
