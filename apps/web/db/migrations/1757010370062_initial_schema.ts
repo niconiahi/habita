@@ -123,7 +123,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("road", "text", (col) => col.notNull())
-    .addColumn("house_number", "text", (col) =>
+    .addColumn("house_number", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("suburb", "text")

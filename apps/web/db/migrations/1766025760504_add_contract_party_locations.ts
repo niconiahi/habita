@@ -3,12 +3,8 @@ import type { Kysely } from "kysely"
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("contract")
-    .addColumn("owner_location_id", "integer", (col) =>
-      col.references("location.id"),
-    )
-    .addColumn("tenant_location_id", "integer", (col) =>
-      col.references("location.id"),
-    )
+    .addColumn("owner_location_id", "text")
+    .addColumn("tenant_location_id", "text")
     .execute()
 }
 

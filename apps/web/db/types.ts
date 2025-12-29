@@ -39,13 +39,13 @@ export interface Contract {
   fine_amount: Numeric | null;
   fine_type: number | null;
   id: Generated<number>;
-  owner_location_id: number | null;
+  owner_location_id: string | null;
   percentage_return: number | null;
   property_id: number;
   showroom_hours: number | null;
   start_date: Timestamp | null;
   state: number;
-  tenant_location_id: number | null;
+  tenant_location_id: string | null;
   type: number;
   updated_at: Timestamp;
 }
@@ -130,7 +130,7 @@ export interface Location {
   address: string;
   city: string | null;
   created_at: Timestamp;
-  house_number: string;
+  house_number: number;
   id: Generated<number>;
   latitude: Numeric;
   longitude: Numeric;
@@ -139,6 +139,23 @@ export interface Location {
   state: string | null;
   suburb: string | null;
   town: string | null;
+  updated_at: Timestamp;
+}
+
+export interface Payment {
+  created_at: Timestamp;
+  id: Generated<number>;
+  payment_method_id: number;
+  updated_at: Timestamp;
+}
+
+export interface PaymentMercadoPago {
+  created_at: Timestamp;
+  id: Generated<number>;
+  operation_id: string | null;
+  payment_id: number;
+  preference_id: string;
+  status: number;
   updated_at: Timestamp;
 }
 
@@ -844,6 +861,8 @@ export interface DB {
   invitation_token: InvitationToken;
   job: Job;
   location: Location;
+  payment: Payment;
+  payment_mercado_pago: PaymentMercadoPago;
   period: Period;
   property: Property;
   property_file: PropertyFile;
