@@ -7,11 +7,8 @@ import {
 } from "$lib/rate_type"
 import { query_builder } from "db/query_builder"
 import { now } from "$lib/server/now"
+import { is_webmaster } from "$lib/server/is_webmaster"
 import type { Actions, PageServerLoad } from "./$types"
-
-function is_webmaster(user: { email: string }): boolean {
-  return user.email === "nicolas.accetta@gmail.com"
-}
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

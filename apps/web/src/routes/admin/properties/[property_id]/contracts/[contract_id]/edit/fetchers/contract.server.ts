@@ -1,7 +1,4 @@
-import {
-  jsonArrayFrom,
-  jsonObjectFrom,
-} from "kysely/helpers/postgres"
+import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
 
@@ -59,64 +56,42 @@ export async function fetch_contract(id: number) {
           ])
           .where("contract_file.contract_id", "=", id),
       ).as("files"),
-      jsonObjectFrom(
-        eb
-          .selectFrom("location")
-          .select([
-            "location.address",
-            "location.id",
-            "location.latitude",
-            "location.longitude",
-            "location.road",
-            "location.house_number",
-            "location.state",
-            "location.suburb",
-            "location.city",
-            "location.town",
-          ])
-          .whereRef(
-            "location.id",
-            "=",
-            "contract.owner_location_id",
-          ),
-      ).as("owner_location"),
-      jsonObjectFrom(
-        eb
-          .selectFrom("location")
-          .select([
-            "location.address",
-            "location.id",
-            "location.latitude",
-            "location.longitude",
-            "location.road",
-            "location.house_number",
-            "location.state",
-            "location.suburb",
-            "location.city",
-            "location.town",
-          ])
-          .whereRef(
-            "location.id",
-            "=",
-            "contract.tenant_location_id",
-          ),
-      ).as("tenant_location"),
     ])
     .where("contract.id", "=", id)
     .executeTakeFirst()
   if (!contract) return contract
-  console.log('contract.tenant_location', contract.tenant_location)
-  if (contract.tenant_location) {
-    contract.tenant_location.road = decrypt(contract.tenant_location.road)
-    contract.tenant_location.house_number = Number(decrypt(String(contract.tenant_location.house_number)))
+  const tenant_location = contract.tenant_location_id
+    ? await fetch_location(Number(decrypt(contract.tenant_location_id)))
+    : null
+  const owner_location = contract.owner_location_id
+    ? await fetch_location(Number(decrypt(contract.owner_location_id)))
+    : null
+  return {
+    ...contract,
+    tenant_location,
+    owner_location,
   }
-  console.log('contract.owner_location', contract.owner_location)
-  if (contract.owner_location) {
-    contract.owner_location.road = decrypt(contract.owner_location.road)
-    contract.owner_location.house_number = Number(decrypt(String(contract.owner_location.house_number)))
-  }
-  return contract
 }
+
+async function fetch_location(id: number) {
+  return query_builder
+    .selectFrom("location")
+    .select([
+      "location.address",
+      "location.id",
+      "location.latitude",
+      "location.longitude",
+      "location.road",
+      "location.house_number",
+      "location.state",
+      "location.suburb",
+      "location.city",
+      "location.town",
+    ])
+    .where("location.id", "=", id)
+    .executeTakeFirst()
+}
+
 export type Contract = NonNullable<
   Awaited<ReturnType<typeof fetch_contract>>
 >

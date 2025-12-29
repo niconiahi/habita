@@ -24,8 +24,8 @@ export async function update_tenant_location(
       .values({
         latitude: location_.lat,
         longitude: location_.lon,
-        road: encrypt(location_.address.road),
-        house_number: encrypt(String(location_.address.house_number)),
+        road: location_.address.road,
+        house_number: location_.address.house_number,
         suburb: location_.address.suburb,
         town: location_.address.town,
         city: location_.address.city,
@@ -41,7 +41,7 @@ export async function update_tenant_location(
     await tx
       .updateTable("contract")
       .set({
-        tenant_location_id: location.id,
+        tenant_location_id: encrypt(String(location.id)),
         updated_at: now,
       })
       .where("contract.id", "=", contract_id)
