@@ -483,6 +483,7 @@
             )}</span
           >
           <a
+            target="_blank"
             href="/files/{file.id}"
             class="text-blue-500 underline"
             >{file.basename}</a
