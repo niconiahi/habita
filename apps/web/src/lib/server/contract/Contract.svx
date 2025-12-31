@@ -17,9 +17,10 @@
 # Contrato de locación
 
 <!---->
+<!---->
 ## Preámbulo
 
-<sections.Preface {contract} {tenant} {owner} />
+<sections.Preface {tenant} {owner} />
 
 ## Primera: Objeto
 
@@ -99,12 +100,7 @@
 
 ## Vigésima: Domicilios
 
-<sections.SectionTwenty
-  {owner}
-  {tenant}
-  {contract}
-  {property}
-/>
+<sections.SectionTwenty {owner} {tenant} {property} />
 
 ## Vigésima primera: Jurisdicción
 

@@ -1,5 +1,5 @@
 <p>
-  "EL LOCATARIO" deberá acatar todas las normas de
+  <strong>"EL LOCATARIO"</strong> deberá acatar todas las normas de
   convivencia contenidas en el reglamento de copropiedad del
   edificio y en el reglamento interno, evitando producir
   disturbios, ni realizar reuniones tumultuosas, ni actos

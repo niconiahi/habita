@@ -23,14 +23,14 @@
 </script>
 
 <p>
-  Son a cargo exclusivo de "EL LOCADOR" el pago de todos los
+  Son a cargo exclusivo de <strong>"EL LOCADOR"</strong> el pago de todos los
   impuestos que graven el inmueble locado; sean nacionales,
   provinciales y/o municipales, con sus respectivos
-  reajustes y adicionales. Son cargo exclusivo de "EL
-  LOCATARIO" la totalidad de los servicios correspondientes
-  tales como: {concatenate_services(property.services)},
+  reajustes y adicionales. Son cargo exclusivo de <strong>"EL
+  LOCATARIO"</strong> la totalidad de los servicios correspondientes
+  tales como: <strong>{concatenate_services(property.services)}</strong>,
   expensas ordinarias y cualquier servicio que en el futuro
   se creare o instalare, y que gravare al inmueble y/o a los
-  servicios de los que se sirve. "EL LOCADOR" abonará las
+  servicios de los que se sirve. <strong>"EL LOCADOR"</strong> abonará las
   expensas extraordinarias.
 </p>

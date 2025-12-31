@@ -1,5 +1,5 @@
 <p>
-  "EL LOCATARIO" declara que ha visitado el inmueble y
+  <strong>"EL LOCATARIO"</strong> declara que ha visitado el inmueble y
   comprobado que el mismo se encuentra desocupado, y en el
   siguiente estado de conservación: PINTURA: todos los
   ambientes recién pintados; PUERTAS, VENTANAS Y OTRAS
@@ -15,7 +15,7 @@
   forma correcta y eficiente; ARTEFACTOS SANITARIOS: el
   inmueble cuenta con los artefactos sanitarios necesarios,
   todos en perfecto estado y funcionando de forma correcta.
-  "EL LOCATARIO" se obliga a preservar el inmueble y a
+  <strong>"EL LOCATARIO"</strong> se obliga a preservar el inmueble y a
   restituirlo en iguales condiciones a las de recepción,
   salvo por el normal desgaste propio del tiempo y el uso
   adecuado de la cosa.
