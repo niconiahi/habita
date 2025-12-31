@@ -5,8 +5,9 @@
   import { display_date } from "$lib/display_date"
   import { display_location } from "$lib/display_location"
   import { display_name } from "$lib/display_name"
+  import { compose_action } from "$lib/compose_action"
+  import { ACTION } from "./actions/action"
   import type { PageData } from "./$types"
-
   let { data }: { data: PageData } = $props()
 </script>
 
@@ -31,15 +32,37 @@
                 candidate.start_date,
               )}</Table.Cell
             >
-            <Table.Cell
-              >{display_location(
-                candidate.location,
-              )}</Table.Cell
-            >
             <Table.Cell>
-              <a href={`/admin/candidates/${candidate.id}`}>
-                <Button>Ver perfil</Button>
+              <a href={`/admin/properties/${candidate.property_id}/edit`}>
+                {display_location(candidate.location)}
               </a>
+            </Table.Cell>
+            <Table.Cell>
+              <div class="flex gap-2">
+                <a
+                  href={`/admin/candidates/${candidate.id}`}
+                >
+                  <Button>Ver perfil</Button>
+                </a>
+                <form
+                  method="POST"
+                  action={compose_action(ACTION.SET_TENANT)}
+                >
+                  <input
+                    type="hidden"
+                    name="candidate_id"
+                    value={candidate.id}
+                  />
+                  <input
+                    type="hidden"
+                    name="property_id"
+                    value={candidate.property_id}
+                  />
+                  <Button type="submit"
+                    >Asignar inquilino</Button
+                  >
+                </form>
+              </div>
             </Table.Cell>
           </Table.Row>
         {/each}
