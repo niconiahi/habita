@@ -1,9 +1,8 @@
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
-import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_contract(id: number) {
-  const contract = await query_builder
+  return query_builder
     .selectFrom("contract")
     .select((eb) => [
       "contract.id",
@@ -19,8 +18,6 @@ export async function fetch_contract(id: number) {
       "contract.early_termination",
       "contract.fine_type",
       "contract.fine_amount",
-      "contract.owner_location_id",
-      "contract.tenant_location_id",
       "contract.cbu",
       "contract.percentage_return",
       "contract.showroom_hours",
@@ -58,41 +55,6 @@ export async function fetch_contract(id: number) {
       ).as("files"),
     ])
     .where("contract.id", "=", id)
-    .executeTakeFirst()
-  if (!contract) return contract
-  const tenant_location = contract.tenant_location_id
-    ? await fetch_location(
-        Number(decrypt(contract.tenant_location_id)),
-      )
-    : null
-  const owner_location = contract.owner_location_id
-    ? await fetch_location(
-        Number(decrypt(contract.owner_location_id)),
-      )
-    : null
-  return {
-    ...contract,
-    tenant_location,
-    owner_location,
-  }
-}
-
-async function fetch_location(id: number) {
-  return query_builder
-    .selectFrom("location")
-    .select([
-      "location.address",
-      "location.id",
-      "location.latitude",
-      "location.longitude",
-      "location.road",
-      "location.house_number",
-      "location.state",
-      "location.suburb",
-      "location.city",
-      "location.town",
-    ])
-    .where("location.id", "=", id)
     .executeTakeFirst()
 }
 

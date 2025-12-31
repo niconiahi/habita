@@ -12,8 +12,6 @@ import { update_contract } from "./actions/update_contract.server"
 import { create_file } from "./actions/create_file.server"
 import { destroy_file } from "./actions/destroy_file.server"
 import { create_pdf } from "./actions/create_pdf.server"
-import { update_owner_location } from "./actions/update_owner_location.server"
-import { update_tenant_location } from "./actions/update_tenant_location.server"
 import { ACTION } from "./actions/action"
 
 export const load: PageServerLoad = async ({
@@ -135,34 +133,6 @@ export const actions: Actions = {
       },
     )
     await create_pdf(form_data, property_id)
-    return null
-  },
-  [ACTION.UPDATE_OWNER_LOCATION]: async ({
-    request,
-    locals,
-  }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
-    await update_owner_location(form_data)
-    return null
-  },
-  [ACTION.UPDATE_TENANT_LOCATION]: async ({
-    request,
-    locals,
-  }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
-    await update_tenant_location(form_data)
     return null
   },
 }

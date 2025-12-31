@@ -4,7 +4,6 @@
   import * as Section from "$lib/components/Section"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
-  import LocationInput from "$lib/components/LocationInput.svelte"
   import {
     ContractFileTypeSchema,
     get_contract_file_type_label,
@@ -29,9 +28,6 @@
   let file_input: HTMLInputElement
   let file_form: HTMLFormElement
 
-  let owner_location_disabled = $state(true)
-  let tenant_location_disabled = $state(true)
-
   function handle_add_click() {
     file_input?.click()
   }
@@ -39,154 +35,7 @@
   function handle_file_change() {
     file_form?.requestSubmit()
   }
-
-  function handle_owner_location_selection() {
-    owner_location_disabled = false
-  }
-
-  function handle_owner_location_clear() {
-    owner_location_disabled = true
-  }
-
-  function handle_tenant_location_selection() {
-    tenant_location_disabled = false
-  }
-
-  function handle_tenant_location_clear() {
-    tenant_location_disabled = true
-  }
 </script>
-
-{#snippet OwnerSection()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>dueño</Section.Title>
-    </Section.Header>
-    <Formulary.Root
-      method="POST"
-      action={compose_action(ACTION.UPDATE_OWNER_LOCATION)}
-    >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="contract_id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="owner_name"
-            >nombre</Formulary.Label
-          >
-          <span id="owner_name"
-            >{data.owner?.name} {data.owner?.surname}</span
-          >
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="owner_document"
-            >documento</Formulary.Label
-          >
-          <span id="owner_document"
-            >{data.owner?.document_number}</span
-          >
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="owner_location"
-            >domicilio legal</Formulary.Label
-          >
-          <LocationInput
-            default_value={data.contract.owner_location
-              ?.address}
-            default_lon={data.contract.owner_location
-              ?.longitude
-              ? String(
-                  data.contract.owner_location.longitude,
-                )
-              : undefined}
-            default_lat={data.contract.owner_location
-              ?.latitude
-              ? String(
-                  data.contract.owner_location.latitude,
-                )
-              : undefined}
-            onselection={handle_owner_location_selection}
-            onclear={handle_owner_location_clear}
-          />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button
-          disabled={owner_location_disabled}
-          type="submit">Guardar domicilio</Button
-        >
-      </Formulary.Actions>
-    </Formulary.Root>
-  </Content.Section>
-{/snippet}
-
-{#snippet TenantSection()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>inquilino</Section.Title>
-    </Section.Header>
-    <Formulary.Root
-      method="POST"
-      action={compose_action(ACTION.UPDATE_TENANT_LOCATION)}
-    >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="contract_id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="tenant_name"
-            >nombre</Formulary.Label
-          >
-          <span id="tenant_name"
-            >{data.tenant?.name}
-            {data.tenant?.surname}</span
-          >
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="tenant_document"
-            >documento</Formulary.Label
-          >
-          <span id="tenant_document"
-            >{data.tenant?.document_number}</span
-          >
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="tenant_location"
-            >domicilio legal</Formulary.Label
-          >
-          <LocationInput
-            default_value={data.contract.tenant_location
-              ?.address}
-            default_lon={data.contract.tenant_location
-              ?.longitude
-              ? String(
-                  data.contract.tenant_location.longitude,
-                )
-              : undefined}
-            default_lat={data.contract.tenant_location
-              ?.latitude
-              ? String(
-                  data.contract.tenant_location.latitude,
-                )
-              : undefined}
-            onselection={handle_tenant_location_selection}
-            onclear={handle_tenant_location_clear}
-          />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button
-          disabled={tenant_location_disabled}
-          type="submit">Guardar domicilio</Button
-        >
-      </Formulary.Actions>
-    </Formulary.Root>
-  </Content.Section>
-{/snippet}
 
 {#snippet SectionTwo()}
   <Content.Section>
@@ -680,8 +529,6 @@
 
 <Content.Root>
   <Content.Title>Edición de contrato</Content.Title>
-  {@render OwnerSection()}
-  {@render TenantSection()}
   {@render SectionTwo()}
   {@render SectionThree()}
   {@render SectionSix()}

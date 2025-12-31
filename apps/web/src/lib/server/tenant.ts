@@ -22,6 +22,7 @@ export async function fetch_tenant(property_id: number) {
       "user.surname",
       "user.phone_number",
       "user.document_number",
+      "user.email",
     ])
     .executeTakeFirst()
 }
