@@ -1,11 +1,15 @@
 import { get_origin } from "./origin"
 
-if (!process.env.NODE_ENV) throw new Error("NODE_ENV is not set")
+if (!process.env.NODE_ENV)
+  throw new Error("NODE_ENV is not set")
 if (!process.env.MERCADO_PAGO_TEST_ACCESS_TOKEN)
-  throw new Error("MERCADO_PAGO_TEST_ACCESS_TOKEN is not set")
+  throw new Error(
+    "MERCADO_PAGO_TEST_ACCESS_TOKEN is not set",
+  )
 if (!process.env.MERCADO_PAGO_ACCESS_TOKEN)
   throw new Error("MERCADO_PAGO_ACCESS_TOKEN is not set")
-const is_development = process.env.NODE_ENV === "development"
+const is_development =
+  process.env.NODE_ENV === "development"
 const access_token = is_development
   ? process.env.MERCADO_PAGO_TEST_ACCESS_TOKEN!
   : process.env.MERCADO_PAGO_ACCESS_TOKEN!
@@ -53,6 +57,8 @@ export async function create_preference(
   const data = await response.json()
   return {
     id: data.id,
-    init_point: is_development ? data.sandbox_init_point : data.init_point,
+    init_point: is_development
+      ? data.sandbox_init_point
+      : data.init_point,
   }
 }

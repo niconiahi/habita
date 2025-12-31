@@ -61,10 +61,14 @@ export async function fetch_contract(id: number) {
     .executeTakeFirst()
   if (!contract) return contract
   const tenant_location = contract.tenant_location_id
-    ? await fetch_location(Number(decrypt(contract.tenant_location_id)))
+    ? await fetch_location(
+        Number(decrypt(contract.tenant_location_id)),
+      )
     : null
   const owner_location = contract.owner_location_id
-    ? await fetch_location(Number(decrypt(contract.owner_location_id)))
+    ? await fetch_location(
+        Number(decrypt(contract.owner_location_id)),
+      )
     : null
   return {
     ...contract,
