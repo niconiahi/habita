@@ -38,6 +38,8 @@ import {
   type ServiceType,
 } from "../../src/lib/service.ts"
 import { SLOT_STATE } from "../../src/lib/slot_state.ts"
+import { USER_FILE_TYPE } from "../../src/lib/user_file_type.ts"
+import { COURT } from "../../src/lib/court.ts"
 import { query_builder } from "../query_builder"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -186,6 +188,7 @@ async function make_editing_contract(
   property_id: number,
   now: string,
   admin_id: number,
+  candidate_id: number,
 ) {
   const date = new Date()
   const contract_start_date = addMonths(date, 3)
@@ -201,6 +204,15 @@ async function make_editing_contract(
       state: CONTRACT_STATE.EDITING,
       start_date: contract_start_date,
       end_date: contract_end_date,
+      destiny: PROPERTY_DESTINY.RESIDENTIAL,
+      escalation_type: RATE_TYPE.IPC,
+      escalation_duration: "P3M",
+      cbu: "0000003100010000000001",
+      fine_amount: 5,
+      percentage_return: 100,
+      early_termination: 4,
+      showroom_hours: 2,
+      court_id: COURT.CIUDAD_DE_BUENOS_AIRES,
       created_at: now,
       updated_at: now,
     })
@@ -226,19 +238,20 @@ async function make_editing_contract(
     start_date: Date
     end_date: Date
   }[] = [
-    {
-      start_date: new Date(2024, 9, 25, 15, 15),
-      end_date: new Date(2024, 9, 25, 15, 45),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 15, 45),
-      end_date: new Date(2024, 9, 25, 16, 15),
-    },
-    {
-      start_date: new Date(2024, 9, 25, 16, 15),
-      end_date: new Date(2024, 9, 25, 16, 45),
-    },
-  ]
+      {
+        start_date: new Date(2024, 9, 25, 15, 15),
+        end_date: new Date(2024, 9, 25, 15, 45),
+      },
+      {
+        start_date: new Date(2024, 9, 25, 15, 45),
+        end_date: new Date(2024, 9, 25, 16, 15),
+      },
+      {
+        start_date: new Date(2024, 9, 25, 16, 15),
+        end_date: new Date(2024, 9, 25, 16, 45),
+      },
+    ]
+  let first_slot_id: number | null = null
   for (const slot_ of SLOTS) {
     const slot = await query_builder
       .insertInto("slot")
@@ -255,8 +268,22 @@ async function make_editing_contract(
       })
       .returning("id")
       .executeTakeFirstOrThrow()
+    if (first_slot_id === null) {
+      first_slot_id = slot.id
+    }
     console.log("slot created", slot.id)
   }
+
+  await query_builder
+    .updateTable("slot")
+    .set({
+      visitant_id: candidate_id,
+      state: SLOT_STATE.RESERVED,
+      updated_at: now,
+    })
+    .where("id", "=", first_slot_id!)
+    .execute()
+  console.log("assigned candidate to first slot")
   console.log("created period", period.id)
   return contract
 }
@@ -288,6 +315,14 @@ async function run() {
     document_number: 30019119,
     now,
     // email: "mario.luis@gmail.com",
+    email: "nicolas.accetta@gmail.com",
+  })
+  const candidate_id = await upsert_user({
+    surname: "Candidato",
+    name: "Juan",
+    phone_number: "+5491155667788",
+    document_number: 40123456,
+    now,
     email: "nicolas.accetta@gmail.com",
   })
   const latitude = -34.595834
@@ -330,22 +365,22 @@ async function run() {
     width: string
     length: string
   }[] = [
-    {
-      type: ROOM_TYPE.BEDROOM,
-      width: "4.5",
-      length: "3.2",
-    },
-    {
-      type: ROOM_TYPE.BATHROOM,
-      width: "2.1",
-      length: "1.8",
-    },
-    {
-      type: ROOM_TYPE.KITCHEN,
-      width: "3.5",
-      length: "2.8",
-    },
-  ]
+      {
+        type: ROOM_TYPE.BEDROOM,
+        width: "4.5",
+        length: "3.2",
+      },
+      {
+        type: ROOM_TYPE.BATHROOM,
+        width: "2.1",
+        length: "1.8",
+      },
+      {
+        type: ROOM_TYPE.KITCHEN,
+        width: "3.5",
+        length: "2.8",
+      },
+    ]
 
   for (const room_ of rooms) {
     const room = await query_builder
@@ -367,19 +402,19 @@ async function run() {
     type: ServiceType
     code: string
   }[] = [
-    {
-      type: SERVICE_TYPE.MUNICIPAL_FEE,
-      code: "0070039841684",
-    },
-    {
-      type: SERVICE_TYPE.LIGHT,
-      code: "004660340",
-    },
-    {
-      type: SERVICE_TYPE.GAS,
-      code: "030010294440",
-    },
-  ]
+      {
+        type: SERVICE_TYPE.MUNICIPAL_FEE,
+        code: "0070039841684",
+      },
+      {
+        type: SERVICE_TYPE.LIGHT,
+        code: "004660340",
+      },
+      {
+        type: SERVICE_TYPE.GAS,
+        code: "030010294440",
+      },
+    ]
   for (const service of services) {
     await query_builder
       .insertInto("service")
@@ -398,13 +433,13 @@ async function run() {
     user_id: number
     type: AccessType
   }[] = [
-    { user_id: owner_id, type: ACCESS_TYPE.OWNER },
-    {
-      user_id: admin_id,
-      type: ACCESS_TYPE.ADMINISTRATOR,
-    },
-    { user_id: tenant_id, type: ACCESS_TYPE.TENANT },
-  ]
+      { user_id: owner_id, type: ACCESS_TYPE.OWNER },
+      {
+        user_id: admin_id,
+        type: ACCESS_TYPE.ADMINISTRATOR,
+      },
+      { user_id: tenant_id, type: ACCESS_TYPE.TENANT },
+    ]
   for (const access_ of accesses) {
     const access = await query_builder
       .insertInto("access")
@@ -428,20 +463,17 @@ async function run() {
     property.id,
     now,
     admin_id,
+    candidate_id,
   )
   const CONTRACT_FILES: {
     type: ContractFileType
     path: string
   }[] = [
-    {
-      type: CONTRACT_FILE_TYPE.CONTRACT,
-      path: compose_file_path("contract.pdf"),
-    },
-    {
-      type: CONTRACT_FILE_TYPE.INSURANCE,
-      path: compose_file_path("insurance.pdf"),
-    },
-  ]
+      {
+        type: CONTRACT_FILE_TYPE.INSURANCE,
+        path: compose_file_path("insurance.pdf"),
+      },
+    ]
   for (const contract_file of CONTRACT_FILES) {
     const file_id = await upsert_file(contract_file.path)
     await query_builder
@@ -494,6 +526,22 @@ async function run() {
     console.log("created property file")
   }
 
+  console.log("creating user file for credit report")
+  const credit_report_file_id = await upsert_file(
+    compose_file_path("credit_report.pdf"),
+  )
+  await query_builder
+    .insertInto("user_file")
+    .values({
+      file_id: credit_report_file_id,
+      user_id: candidate_id,
+      created_at: now,
+      updated_at: now,
+      type: USER_FILE_TYPE.CREDIT_REPORT,
+    })
+    .execute()
+  console.log("created user file")
+
   console.log("creating test rate data for escalation")
   const date = new Date()
 
@@ -503,19 +551,19 @@ async function run() {
     year: number
     value: string
   }[] = [
-    {
-      type: RATE_TYPE.IPC,
-      month: get_month(date),
-      year: get_year(date),
-      value: "1.21",
-    },
-    {
-      type: RATE_TYPE.IPC,
-      month: get_month(subMonths(date, 3)),
-      year: get_year(subMonths(date, 3)),
-      value: "1.1",
-    },
-  ]
+      {
+        type: RATE_TYPE.IPC,
+        month: get_month(date),
+        year: get_year(date),
+        value: "1.21",
+      },
+      {
+        type: RATE_TYPE.IPC,
+        month: get_month(subMonths(date, 3)),
+        year: get_year(subMonths(date, 3)),
+        value: "1.1",
+      },
+    ]
   for (const rate of RATES) {
     await query_builder
       .insertInto("rate")
@@ -556,19 +604,19 @@ async function run() {
     start_date: Date
     end_date: Date
   }[] = [
-    {
-      contract_id: contract.id,
-      start_date: subMonths(date, 6),
-      end_date: subMonths(date, 3),
-      price: 600000,
-    },
-    {
-      contract_id: contract.id,
-      start_date: addDays(subMonths(date, 3), 1),
-      end_date: subDays(date, 1),
-      price: 600000,
-    },
-  ]
+      {
+        contract_id: contract.id,
+        start_date: subMonths(date, 6),
+        end_date: subMonths(date, 3),
+        price: 600000,
+      },
+      {
+        contract_id: contract.id,
+        start_date: addDays(subMonths(date, 3), 1),
+        end_date: subDays(date, 1),
+        price: 600000,
+      },
+    ]
   for (const period of PERIODS) {
     await query_builder
       .insertInto("period")
