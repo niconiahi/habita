@@ -33,7 +33,9 @@
               )}</Table.Cell
             >
             <Table.Cell>
-              <a href={`/admin/properties/${candidate.property_id}/edit`}>
+              <a
+                href={`/admin/properties/${candidate.property_id}/edit`}
+              >
                 {display_location(candidate.location)}
               </a>
             </Table.Cell>
