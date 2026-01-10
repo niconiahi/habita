@@ -17,6 +17,7 @@ export const POST: RequestHandler = async ({ cookies }) => {
     code_verifier,
     ["openid", "profile", "email"],
   )
+  url.searchParams.set("prompt", "select_account")
 
   cookies.set(
     GOOGLE_STATE_COOKIE_NAME,
