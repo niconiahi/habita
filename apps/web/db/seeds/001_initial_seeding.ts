@@ -314,7 +314,6 @@ async function run() {
     phone_number: "+5491188310588",
     document_number: 30019119,
     now,
-    // email: "mario.luis@gmail.com",
     email: "nicolas.accetta@gmail.com",
   })
   const candidate_id = await upsert_user({
@@ -502,15 +501,15 @@ async function run() {
     type: ContractFileType
     path: string
   }[] = [
-    {
-      type: PROPERTY_FILE_TYPE.PHOTO,
-      path: compose_file_path("property_image_1.webp"),
-    },
-    {
-      type: PROPERTY_FILE_TYPE.PHOTO,
-      path: compose_file_path("property_image_2.webp"),
-    },
-  ]
+      {
+        type: PROPERTY_FILE_TYPE.PHOTO,
+        path: compose_file_path("property_image_1.webp"),
+      },
+      {
+        type: PROPERTY_FILE_TYPE.PHOTO,
+        path: compose_file_path("property_image_2.webp"),
+      },
+    ]
   for (const property_file of PROPERTY_FILES) {
     const file_id = await upsert_file(property_file.path)
     await query_builder

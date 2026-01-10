@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte"
   import * as v from "valibot"
   import {
     LocationSchema,
@@ -21,7 +22,7 @@
     onclear,
   }: Props = $props()
 
-  let query = $state(default_value)
+  let query = $state(untrack(() => default_value))
   let locations = $state<Location[]>([])
   let selected = $state<Location | null>(null)
 
