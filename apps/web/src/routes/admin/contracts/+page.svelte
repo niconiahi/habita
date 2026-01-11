@@ -76,6 +76,7 @@
     <Table.Root>
       <Table.Header>
         <Table.Cell header>Propiedad</Table.Cell>
+        <Table.Cell header>Inquilino</Table.Cell>
         <Table.Cell header>Fecha de fin</Table.Cell>
         {#if has_editable}
           <Table.Cell header>Acciones</Table.Cell>
@@ -90,6 +91,11 @@
               >{display_location(
                 contract.location,
               )}</Table.Cell
+            >
+            <Table.Cell
+              >{contract.tenant
+                ? `${contract.tenant.name} ${contract.tenant.surname}`
+                : "Sin inquilino"}</Table.Cell
             >
             <Table.Cell
               >{format_end_date(

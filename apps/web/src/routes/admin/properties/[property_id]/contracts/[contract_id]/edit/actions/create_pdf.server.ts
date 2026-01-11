@@ -2,11 +2,11 @@ import { createHash } from "node:crypto"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { compose_html } from "$lib/server/contract/compose_html"
+import { compose_html, fetch_contract_data } from "$lib/server/contract/compose_html"
+import { validate_contract_requirements } from "$lib/server/contract/validate_contract"
 import { now } from "$lib/server/now"
 import { generate_pdf_with_playwright } from "$lib/server/pdf_generator"
 import { query_builder } from "db/query_builder"
-
 export async function create_pdf(
   form_data: FormData,
   property_id: number,
@@ -15,7 +15,22 @@ export async function create_pdf(
     ForceNumberSchema,
     form_data.get("id"),
   )
-  const html = await compose_html(property_id, contract_id)
+  const data = await fetch_contract_data(property_id, contract_id)
+  const validation = validate_contract_requirements(
+    data.contract,
+    data.property,
+    data.owner,
+    data.tenant,
+  )
+  if (!validation.success) {
+    return { errors: { create_pdf: validation.errors } }
+  }
+  const html = compose_html(
+    validation.contract,
+    validation.property,
+    validation.owner,
+    validation.tenant,
+  )
   const content = await generate_pdf_with_playwright(html)
   await query_builder.transaction().execute(async (tx) => {
     const contract_file = await tx
@@ -62,4 +77,5 @@ export async function create_pdf(
       .returning("id")
       .executeTakeFirstOrThrow()
   })
+  return null
 }

@@ -3,6 +3,7 @@ import {
   type ContractState,
   get_contract_states,
 } from "$lib/contract_state"
+import { ACCESS_TYPE } from "$lib/access_type"
 import { query_builder } from "db/query_builder"
 
 export function fetch_contracts(
@@ -55,6 +56,18 @@ export function fetch_contracts(
       )
         .$notNull()
         .as("location"),
+      jsonObjectFrom(
+        eb
+          .selectFrom("user")
+          .innerJoin("access", "access.user_id", "user.id")
+          .select(["user.name", "user.surname"])
+          .whereRef(
+            "access.property_id",
+            "=",
+            "contract.property_id",
+          )
+          .where("access.type", "=", ACCESS_TYPE.TENANT),
+      ).as("tenant"),
     ])
     .execute()
 }

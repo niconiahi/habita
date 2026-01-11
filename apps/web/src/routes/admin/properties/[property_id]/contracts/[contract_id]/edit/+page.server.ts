@@ -132,7 +132,6 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
-    await create_pdf(form_data, property_id)
-    return null
+    return await create_pdf(form_data, property_id)
   },
 }

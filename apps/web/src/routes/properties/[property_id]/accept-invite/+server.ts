@@ -9,6 +9,15 @@ import type { RequestHandler } from "./$types"
 
 const ERROR_MESSAGE = "not found"
 
+function strip_email_subaddress(email: string): string {
+  const plus_index = email.indexOf("+")
+  const at_index = email.indexOf("@")
+  if (plus_index === -1 || plus_index > at_index) {
+    return email
+  }
+  return email.slice(0, plus_index) + email.slice(at_index)
+}
+
 export const GET: RequestHandler = async ({
   url,
   params,
@@ -48,6 +57,7 @@ export const GET: RequestHandler = async ({
   if (invitation.used_at) {
     return new Response(ERROR_MESSAGE, { status: 400 })
   }
+  invitation.email = strip_email_subaddress(invitation.email)
   if (locals.user.email !== invitation.email) {
     return new Response(ERROR_MESSAGE, { status: 400 })
   }
