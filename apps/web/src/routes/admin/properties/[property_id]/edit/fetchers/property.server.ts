@@ -17,7 +17,9 @@ export function fetch_property(id: number) {
       "property.id",
       "property.created_at",
       "property.unit",
+      "property.type",
       "property.destinies",
+      "property.state",
       jsonArrayFrom(
         eb
           .selectFrom("room")

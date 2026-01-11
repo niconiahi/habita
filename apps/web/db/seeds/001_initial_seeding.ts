@@ -298,7 +298,7 @@ async function run() {
     phone_number: "+5491125597648",
     document_number: 36829114,
     now,
-    email: "nicolas.accetta@gmail.com",
+    email: "nicolas.accetta+owner@gmail.com",
   })
   const admin_id = await upsert_user({
     surname: "Accetta",
@@ -314,7 +314,7 @@ async function run() {
     phone_number: "+5491188310588",
     document_number: 30019119,
     now,
-    email: "nicolas.accetta@gmail.com",
+    email: "nicolas.accetta+tenant@gmail.com",
   })
   const candidate_id = await upsert_user({
     surname: "Candidato",
@@ -322,7 +322,7 @@ async function run() {
     phone_number: "+5491155667788",
     document_number: 40123456,
     now,
-    email: "nicolas.accetta@gmail.com",
+    email: "nicolas.accetta+candidate@gmail.com",
   })
   const latitude = -34.595834
   const longitude = -58.447219
@@ -432,12 +432,10 @@ async function run() {
     user_id: number
     type: AccessType
   }[] = [
-      { user_id: owner_id, type: ACCESS_TYPE.OWNER },
       {
         user_id: admin_id,
         type: ACCESS_TYPE.ADMINISTRATOR,
       },
-      { user_id: tenant_id, type: ACCESS_TYPE.TENANT },
     ]
   for (const access_ of accesses) {
     const access = await query_builder

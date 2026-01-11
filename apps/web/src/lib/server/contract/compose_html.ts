@@ -1,45 +1,27 @@
 import { render } from "svelte/server"
 import Contract from "./Contract.svx"
-import { fetch_owner } from "$lib/server/owner"
-import { fetch_tenant } from "$lib/server/tenant"
-
-import { fetch_contract } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-import { fetch_property } from "../../../routes/properties/fetchers/property.server"
-
-export async function compose_html(
+import { fetch_owner, type Owner } from "$lib/server/owner"
+import { fetch_tenant, type Tenant } from "$lib/server/tenant"
+import { fetch_contract, type Contract as ContractType } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
+import { fetch_property, type Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
+export async function fetch_contract_data(
   property_id: number,
   contract_id: number,
-): Promise<string> {
-  const [contract, property, owner, tenant] =
-    await Promise.all([
-      fetch_contract(contract_id),
-      fetch_property(property_id),
-      fetch_owner(property_id),
-      fetch_tenant(property_id),
-    ])
-  if (!contract) {
-    throw new Error(
-      "contract should exist when creating pdf",
-    )
-  }
-  if (!property) {
-    throw new Error(
-      "property should exist when creating pdf",
-    )
-  }
-  if (!owner) {
-    throw new Error("owner should exist when creating pdf")
-  }
-  if (!tenant) {
-    throw new Error("tenant should exist when creating pdf")
-  }
-  const first_period = contract.periods[0]
-  if (!first_period) {
-    throw new Error(
-      "contract should have at least one period when creating contract to know initial price",
-    )
-  }
-
+) {
+  const [contract, property, owner, tenant] = await Promise.all([
+    fetch_contract(contract_id),
+    fetch_property(property_id),
+    fetch_owner(property_id),
+    fetch_tenant(property_id),
+  ])
+  return { contract, property, owner, tenant }
+}
+export function compose_html(
+  contract: ContractType,
+  property: Property,
+  owner: NonNullable<Owner>,
+  tenant: NonNullable<Tenant>,
+): string {
   const { body, head } = render(Contract, {
     props: { contract, property, owner, tenant },
   })

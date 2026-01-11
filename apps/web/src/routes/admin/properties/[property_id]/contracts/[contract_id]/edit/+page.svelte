@@ -4,6 +4,7 @@
   import * as Section from "$lib/components/Section"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
+  import { display_name } from "$lib/display_name"
   import {
     ContractFileTypeSchema,
     get_contract_file_type_label,
@@ -19,11 +20,11 @@
     get_escalation_label,
   } from "$lib/escalation_type"
   import { get_property_destiny_label } from "$lib/property_destiny"
-  import type { PageData } from "./$types"
+  import type { ActionData, PageData } from "./$types"
   import { ACTION } from "./actions/action"
   import { compose_action } from "$lib/compose_action"
-
-  let { data }: { data: PageData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } = $props()
+  let errors = $derived(form?.errors?.create_pdf ?? {})
 
   let file_input: HTMLInputElement
   let file_form: HTMLFormElement
@@ -115,6 +116,9 @@
                 )
               : ""}
           />
+          {#if errors.start_date}
+            <span class="text-red-500">{errors.start_date}</span>
+          {/if}
         </Formulary.Field>
         <Formulary.Field>
           <Formulary.Label for="end_date"
@@ -130,6 +134,9 @@
                 )
               : ""}
           />
+          {#if errors.end_date}
+            <span class="text-red-500">{errors.end_date}</span>
+          {/if}
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
@@ -171,6 +178,9 @@
               >
             {/each}
           </Formulary.Select>
+          {#if errors.escalation_type}
+            <span class="text-red-500">{errors.escalation_type}</span>
+          {/if}
         </Formulary.Field>
         <Formulary.Field>
           <Formulary.Label for="escalation_duration"
@@ -187,6 +197,9 @@
               >
             {/each}
           </Formulary.Select>
+          {#if errors.escalation_duration}
+            <span class="text-red-500">{errors.escalation_duration}</span>
+          {/if}
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
@@ -254,6 +267,9 @@
             type="number"
             value={data.contract.fine_amount ?? ""}
           />
+          {#if errors.fine_amount}
+            <span class="text-red-500">{errors.fine_amount}</span>
+          {/if}
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
@@ -434,6 +450,23 @@
         </form>
       </Section.Actions>
     </Section.Header>
+    {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
+      <div class="mb-4 space-y-1">
+        <p class="text-sm font-medium text-red-500">Errores de propiedad:</p>
+        {#if errors.property_road}
+          <span class="text-red-500 block">{errors.property_road}</span>
+        {/if}
+        {#if errors.property_house_number}
+          <span class="text-red-500 block">{errors.property_house_number}</span>
+        {/if}
+        {#if errors.property_state}
+          <span class="text-red-500 block">{errors.property_state}</span>
+        {/if}
+        {#if errors.property_unit}
+          <span class="text-red-500 block">{errors.property_unit}</span>
+        {/if}
+      </div>
+    {/if}
     <form
       bind:this={file_form}
       method="POST"
@@ -515,6 +548,9 @@
     <Section.Header>
       <Section.Title>períodos</Section.Title>
     </Section.Header>
+    {#if errors.periods}
+      <span class="text-red-500">{errors.periods}</span>
+    {/if}
     <ul class="flex flex-col gap-2">
       {#each data.contract.periods as period, index (period.id)}
         <li class="flex items-center gap-4">
@@ -528,8 +564,108 @@
   </Content.Section>
 {/snippet}
 
+{#snippet TenantSection()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>inquilino</Section.Title>
+    </Section.Header>
+    {#if errors.tenant}
+      <span class="text-red-500">{errors.tenant}</span>
+    {/if}
+    {#if data.tenant}
+      <div class="space-y-2">
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Nombre</p>
+          <p>{display_name(data.tenant)}</p>
+          {#if errors.tenant_name}
+            <span class="text-red-500">{errors.tenant_name}</span>
+          {/if}
+          {#if errors.tenant_surname}
+            <span class="text-red-500">{errors.tenant_surname}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Email</p>
+          <p>{data.tenant.email}</p>
+          {#if errors.tenant_email}
+            <span class="text-red-500">{errors.tenant_email}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Teléfono</p>
+          <p>{data.tenant.phone_number ?? "-"}</p>
+          {#if errors.tenant_phone_number}
+            <span class="text-red-500">{errors.tenant_phone_number}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">DNI</p>
+          <p>{data.tenant.document_number ?? "-"}</p>
+          {#if errors.tenant_document_number}
+            <span class="text-red-500">{errors.tenant_document_number}</span>
+          {/if}
+        </div>
+      </div>
+    {:else}
+      <p class="text-gray-500 text-sm">
+        Sin inquilino asignado
+      </p>
+    {/if}
+  </Content.Section>
+{/snippet}
+{#snippet OwnerSection()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>propietario</Section.Title>
+    </Section.Header>
+    {#if errors.owner}
+      <span class="text-red-500">{errors.owner}</span>
+    {/if}
+    {#if data.owner}
+      <div class="space-y-2">
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Nombre</p>
+          <p>{display_name(data.owner)}</p>
+          {#if errors.owner_name}
+            <span class="text-red-500">{errors.owner_name}</span>
+          {/if}
+          {#if errors.owner_surname}
+            <span class="text-red-500">{errors.owner_surname}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Email</p>
+          <p>{data.owner.email}</p>
+          {#if errors.owner_email}
+            <span class="text-red-500">{errors.owner_email}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">Teléfono</p>
+          <p>{data.owner.phone_number ?? "-"}</p>
+          {#if errors.owner_phone_number}
+            <span class="text-red-500">{errors.owner_phone_number}</span>
+          {/if}
+        </div>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-500">DNI</p>
+          <p>{data.owner.document_number ?? "-"}</p>
+          {#if errors.owner_document_number}
+            <span class="text-red-500">{errors.owner_document_number}</span>
+          {/if}
+        </div>
+      </div>
+    {:else}
+      <p class="text-gray-500 text-sm">
+        Sin propietario asignado
+      </p>
+    {/if}
+  </Content.Section>
+{/snippet}
 <Content.Root>
   <Content.Title>Edición de contrato</Content.Title>
+  {@render OwnerSection()}
+  {@render TenantSection()}
   {@render SectionTwo()}
   {@render SectionThree()}
   {@render SectionSix()}

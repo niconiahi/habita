@@ -5,7 +5,11 @@
   import Button from "$lib/components/Button.svelte"
   import { display_location } from "$lib/display_location"
   import { get_property_type_label } from "$lib/property_type"
-  import { get_property_state_label } from "$lib/property_state"
+  import {
+    get_property_state_label,
+    PROPERTY_STATE,
+  } from "$lib/property_state"
+  import { ACTION } from "./actions/action"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
@@ -47,11 +51,39 @@
               )}</Table.Cell
             >
             <Table.Cell>
-              <a
-                href={`/admin/properties/${property.id}/edit`}
-              >
-                <Button>Editar</Button>
-              </a>
+              {#if property.state === PROPERTY_STATE.EDITING}
+                <a
+                  href={`/admin/properties/${property.id}/edit`}
+                >
+                  <Button>Editar</Button>
+                </a>
+                <form
+                  method="POST"
+                  action={`?/${ACTION.PUBLISH_PROPERTY}`}
+                  style="display: inline;"
+                >
+                  <input
+                    type="hidden"
+                    name="property_id"
+                    value={property.id}
+                  />
+                  <Button type="submit">Publicar</Button>
+                </form>
+              {/if}
+              {#if property.state === PROPERTY_STATE.PUBLISHED}
+                <form
+                  method="POST"
+                  action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
+                  style="display: inline;"
+                >
+                  <input
+                    type="hidden"
+                    name="property_id"
+                    value={property.id}
+                  />
+                  <Button type="submit">Despublicar</Button>
+                </form>
+              {/if}
             </Table.Cell>
           </Table.Row>
         {/each}

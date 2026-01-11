@@ -281,7 +281,7 @@
         </li>
       {/each}
     </ul>
-    {#if has_owner}
+    {#if !has_owner}
       <Formulary.Root
         method="POST"
         action={compose_action(ACTION.INVITE_OWNER)}

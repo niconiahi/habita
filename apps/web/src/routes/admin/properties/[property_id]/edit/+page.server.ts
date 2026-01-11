@@ -2,6 +2,7 @@ import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { has_edit_access } from "$lib/server/property_access"
+import { PROPERTY_STATE } from "$lib/property_state"
 import { fetch_property } from "./fetchers/property.server"
 import { update_location } from "./actions/update_location.server"
 import { create_room } from "./actions/create_room.server"
@@ -40,6 +41,9 @@ export const load: PageServerLoad = async ({
       404,
       `property does not exist for id ${property_id}`,
     )
+  }
+  if (property.state !== PROPERTY_STATE.EDITING) {
+    redirect(302, "/admin/properties")
   }
   return { property }
 }

@@ -26,23 +26,34 @@ export async function create_file(form_data: FormData) {
     const hash = Array.from(new Uint8Array(hash_buffer))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("")
-    const file = await tx
-      .insertInto("file")
-      .values({
-        mime: file_.type,
-        basename: file_.name,
-        content,
-        created_at: now,
-        updated_at: now,
-        hash,
-        size: file_.size,
-      })
-      .returning("id")
-      .executeTakeFirstOrThrow()
+    const existing_file = await tx
+      .selectFrom("file")
+      .select("id")
+      .where("hash", "=", hash)
+      .executeTakeFirst()
+    let file_id: number
+    if (existing_file) {
+      file_id = existing_file.id
+    } else {
+      const file = await tx
+        .insertInto("file")
+        .values({
+          mime: file_.type,
+          basename: file_.name,
+          content,
+          created_at: now,
+          updated_at: now,
+          hash,
+          size: file_.size,
+        })
+        .returning("id")
+        .executeTakeFirstOrThrow()
+      file_id = file.id
+    }
     await tx
       .insertInto("contract_file")
       .values({
-        file_id: file.id,
+        file_id,
         contract_id,
         type: file_type,
         created_at: now,
