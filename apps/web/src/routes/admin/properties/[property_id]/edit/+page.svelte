@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import * as Formulary from "$lib/components/Formulary"
@@ -148,6 +149,7 @@
         <form
           method="POST"
           action={compose_action(ACTION.CREATE_ROOM)}
+          use:enhance
         >
           <Button type="submit">Agregar ambiente</Button>
         </form>
@@ -334,6 +336,7 @@
       enctype="multipart/form-data"
       class="contents"
       onchange={handle_photo_change}
+      use:enhance
     >
       <input
         bind:this={file_input}
@@ -353,6 +356,7 @@
         <form
           method="POST"
           action={compose_action(ACTION.CREATE_SERVICE)}
+          use:enhance
         >
           <Button type="submit">Agregar servicio</Button>
         </form>

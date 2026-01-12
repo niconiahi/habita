@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms"
   import * as Content from "$lib/components/Content"
   import * as Table from "$lib/components/Table"
   import Button from "$lib/components/Button.svelte"
@@ -49,6 +50,7 @@
                 <form
                   method="POST"
                   action={compose_action(ACTION.SET_TENANT)}
+                  use:enhance
                 >
                   <input
                     type="hidden"

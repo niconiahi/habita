@@ -57,6 +57,23 @@ export interface ContractFile {
   updated_at: Timestamp;
 }
 
+export interface ContractItem {
+  contract_id: number;
+  created_at: Timestamp;
+  id: Generated<number>;
+  name: string;
+  state: number;
+  updated_at: Timestamp;
+}
+
+export interface ContractItemFile {
+  contract_item_id: number;
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  updated_at: Timestamp;
+}
+
 export interface FailedJob {
   attempt_count: Generated<number>;
   created_at: Timestamp;
@@ -851,6 +868,8 @@ export interface DB {
   access: Access;
   contract: Contract;
   contract_file: ContractFile;
+  contract_item: ContractItem;
+  contract_item_file: ContractItemFile;
   failed_job: FailedJob;
   file: File;
   formula_parameter: FormulaParameter;

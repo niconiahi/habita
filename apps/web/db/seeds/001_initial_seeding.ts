@@ -539,6 +539,19 @@ async function run() {
     .execute()
   console.log("created user file")
 
+  console.log("creating nicolas accetta file for credit report")
+  await query_builder
+    .insertInto("user_file")
+    .values({
+      file_id: credit_report_file_id,
+      user_id: admin_id,
+      created_at: now,
+      updated_at: now,
+      type: USER_FILE_TYPE.CREDIT_REPORT,
+    })
+    .execute()
+  console.log("created user file")
+
   console.log("creating test rate data for escalation")
   const date = new Date()
 

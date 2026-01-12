@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({
       `property does not exist for id ${property_id}`,
     )
   }
-  if (property.state !== PROPERTY_STATE.EDITING) {
+  if (property.state === PROPERTY_STATE.RENTED) {
     redirect(302, "/admin/properties")
   }
   return { property }
