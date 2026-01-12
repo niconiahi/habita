@@ -266,7 +266,7 @@
 {/snippet}
 
 {#snippet Members()}
-  <Content.Section>
+  <Content.Section id="members">
     <Section.Header>
       <Section.Title>miembros</Section.Title>
     </Section.Header>
