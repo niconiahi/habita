@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms"
   import * as v from "valibot"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
@@ -9,6 +10,10 @@
     ContractFileTypeSchema,
     get_contract_file_type_label,
   } from "$lib/contract_file_type"
+  import {
+    CONTRACT_ITEM_STATE,
+    get_contract_item_state_label,
+  } from "$lib/contract_item_state"
   import { COURT, get_court_label } from "$lib/court"
   import { format_date_for_input } from "$lib/date"
   import {
@@ -23,7 +28,8 @@
   import type { ActionData, PageData } from "./$types"
   import { ACTION } from "./actions/action"
   import { compose_action } from "$lib/compose_action"
-  let { data, form }: { data: PageData; form: ActionData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
   let errors = $derived(form?.errors?.create_pdf ?? {})
 
   let file_input: HTMLInputElement
@@ -36,16 +42,187 @@
   function handle_file_change() {
     file_form?.requestSubmit()
   }
+
+  let contract_item_file_inputs: Record<
+    number,
+    HTMLInputElement
+  > = $state({})
+  let contract_item_file_forms: Record<
+    number,
+    HTMLFormElement
+  > = $state({})
+
+  function handle_contract_item_file_click(
+    contract_item_id: number,
+  ) {
+    contract_item_file_inputs[contract_item_id]?.click()
+  }
+
+  function handle_contract_item_file_change(
+    contract_item_id: number,
+  ) {
+    contract_item_file_forms[
+      contract_item_id
+    ]?.requestSubmit()
+  }
 </script>
 
 {#snippet SectionTwo()}
   <Content.Section>
     <Section.Header>
       <Section.Title>sección 2: estado</Section.Title>
+      <Section.Actions>
+        <form
+          method="POST"
+          action={compose_action(
+            ACTION.CREATE_CONTRACT_ITEM,
+          )}
+          use:enhance
+        >
+          <Button type="submit">Agregar item</Button>
+        </form>
+      </Section.Actions>
     </Section.Header>
-    <p class="text-gray-500 text-sm">
-      Inventario pendiente de implementación
-    </p>
+    <ul class="flex flex-col gap-6">
+      {#each data.contract.contract_items as contract_item (contract_item.id)}
+        <li class="border border-gray-700 p-4 rounded">
+          <Formulary.Root method="POST">
+            <Formulary.Fields>
+              <input
+                type="hidden"
+                value={contract_item.id}
+                name="id"
+              />
+              <Formulary.Field>
+                <Formulary.Label
+                  for={`name_${contract_item.id}`}
+                  >nombre</Formulary.Label
+                >
+                <input
+                  id={`name_${contract_item.id}`}
+                  type="text"
+                  name="name"
+                  value={contract_item.name}
+                />
+              </Formulary.Field>
+              <Formulary.Field>
+                <Formulary.Label
+                  for={`state_${contract_item.id}`}
+                  >estado</Formulary.Label
+                >
+                <Formulary.Select
+                  name="state"
+                  id={`state_${contract_item.id}`}
+                  value={contract_item.state}
+                >
+                  {#each Object.values(CONTRACT_ITEM_STATE) as state}
+                    <option value={state}
+                      >{get_contract_item_state_label(
+                        state,
+                      )}</option
+                    >
+                  {/each}
+                </Formulary.Select>
+              </Formulary.Field>
+            </Formulary.Fields>
+            <Formulary.Actions>
+              <Button
+                type="submit"
+                formaction={compose_action(
+                  ACTION.UPDATE_CONTRACT_ITEM,
+                )}>Guardar item</Button
+              >
+              <Button
+                type="submit"
+                formaction={compose_action(
+                  ACTION.DESTROY_CONTRACT_ITEM,
+                )}>Eliminar item</Button
+              >
+            </Formulary.Actions>
+          </Formulary.Root>
+          <div class="mt-4">
+            <div
+              class="flex items-center justify-between mb-2"
+            >
+              <span class="text-sm text-gray-400"
+                >Fotos</span
+              >
+              <Button
+                type="button"
+                onclick={() =>
+                  handle_contract_item_file_click(
+                    contract_item.id,
+                  )}>Agregar foto</Button
+              >
+            </div>
+            <ul class="grid grid-cols-2 gap-2">
+              {#each contract_item.files as file (`contract_item_file_${file.id}`)}
+                <li class="relative">
+                  <img
+                    class="w-sm aspect-video object-cover block rounded"
+                    alt="Foto del item"
+                    src={`data:image/webp;base64,${file.content}`}
+                  />
+                  <form
+                    method="POST"
+                    action={compose_action(
+                      ACTION.DESTROY_CONTRACT_ITEM_FILE,
+                    )}
+                    class="absolute top-1 left-1 bg-gray-300"
+                    use:enhance
+                  >
+                    <input
+                      type="hidden"
+                      value={file.id}
+                      name="id"
+                    />
+                    <input
+                      type="hidden"
+                      value={contract_item.id}
+                      name="contract_item_id"
+                    />
+                    <Button type="submit">X</Button>
+                  </form>
+                </li>
+              {/each}
+            </ul>
+            <form
+              bind:this={
+                contract_item_file_forms[contract_item.id]
+              }
+              method="POST"
+              action={compose_action(
+                ACTION.CREATE_CONTRACT_ITEM_FILE,
+              )}
+              enctype="multipart/form-data"
+              class="contents"
+              use:enhance
+            >
+              <input
+                type="hidden"
+                value={contract_item.id}
+                name="contract_item_id"
+              />
+              <input
+                bind:this={
+                  contract_item_file_inputs[
+                    contract_item.id
+                  ]
+                }
+                type="file"
+                name="file"
+                accept="image/*"
+                class="sr-only"
+                onchange={() =>
+                  handle_contract_item_file_change(
+                    contract_item.id,
+                  )}
+              />
+            </form>
+          </div>
+        </li>
+      {/each}
+    </ul>
   </Content.Section>
 {/snippet}
 
@@ -117,7 +294,9 @@
               : ""}
           />
           {#if errors.start_date}
-            <span class="text-red-500">{errors.start_date}</span>
+            <span class="text-red-500"
+              >{errors.start_date}</span
+            >
           {/if}
         </Formulary.Field>
         <Formulary.Field>
@@ -135,7 +314,9 @@
               : ""}
           />
           {#if errors.end_date}
-            <span class="text-red-500">{errors.end_date}</span>
+            <span class="text-red-500"
+              >{errors.end_date}</span
+            >
           {/if}
         </Formulary.Field>
       </Formulary.Fields>
@@ -179,7 +360,9 @@
             {/each}
           </Formulary.Select>
           {#if errors.escalation_type}
-            <span class="text-red-500">{errors.escalation_type}</span>
+            <span class="text-red-500"
+              >{errors.escalation_type}</span
+            >
           {/if}
         </Formulary.Field>
         <Formulary.Field>
@@ -198,7 +381,9 @@
             {/each}
           </Formulary.Select>
           {#if errors.escalation_duration}
-            <span class="text-red-500">{errors.escalation_duration}</span>
+            <span class="text-red-500"
+              >{errors.escalation_duration}</span
+            >
           {/if}
         </Formulary.Field>
       </Formulary.Fields>
@@ -268,7 +453,9 @@
             value={data.contract.fine_amount ?? ""}
           />
           {#if errors.fine_amount}
-            <span class="text-red-500">{errors.fine_amount}</span>
+            <span class="text-red-500"
+              >{errors.fine_amount}</span
+            >
           {/if}
         </Formulary.Field>
       </Formulary.Fields>
@@ -440,6 +627,7 @@
         <form
           method="POST"
           action={compose_action(ACTION.CREATE_PDF)}
+          use:enhance
         >
           <input
             type="hidden"
@@ -452,18 +640,28 @@
     </Section.Header>
     {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
       <div class="mb-4 space-y-1">
-        <p class="text-sm font-medium text-red-500">Errores de propiedad:</p>
+        <p class="text-sm font-medium text-red-500">
+          Errores de propiedad:
+        </p>
         {#if errors.property_road}
-          <span class="text-red-500 block">{errors.property_road}</span>
+          <span class="text-red-500 block"
+            >{errors.property_road}</span
+          >
         {/if}
         {#if errors.property_house_number}
-          <span class="text-red-500 block">{errors.property_house_number}</span>
+          <span class="text-red-500 block"
+            >{errors.property_house_number}</span
+          >
         {/if}
         {#if errors.property_state}
-          <span class="text-red-500 block">{errors.property_state}</span>
+          <span class="text-red-500 block"
+            >{errors.property_state}</span
+          >
         {/if}
         {#if errors.property_unit}
-          <span class="text-red-500 block">{errors.property_unit}</span>
+          <span class="text-red-500 block"
+            >{errors.property_unit}</span
+          >
         {/if}
       </div>
     {/if}
@@ -473,6 +671,7 @@
       action={compose_action(ACTION.CREATE_FILE)}
       enctype="multipart/form-data"
       class="mb-4"
+      use:enhance
     >
       <input
         type="hidden"
@@ -524,6 +723,7 @@
           <form
             method="POST"
             action={compose_action(ACTION.DESTROY_FILE)}
+            use:enhance
           >
             <input
               type="hidden"
@@ -578,31 +778,41 @@
           <p class="text-sm text-gray-500">Nombre</p>
           <p>{display_name(data.tenant)}</p>
           {#if errors.tenant_name}
-            <span class="text-red-500">{errors.tenant_name}</span>
+            <span class="text-red-500"
+              >{errors.tenant_name}</span
+            >
           {/if}
           {#if errors.tenant_surname}
-            <span class="text-red-500">{errors.tenant_surname}</span>
+            <span class="text-red-500"
+              >{errors.tenant_surname}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Email</p>
           <p>{data.tenant.email}</p>
           {#if errors.tenant_email}
-            <span class="text-red-500">{errors.tenant_email}</span>
+            <span class="text-red-500"
+              >{errors.tenant_email}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Teléfono</p>
           <p>{data.tenant.phone_number ?? "-"}</p>
           {#if errors.tenant_phone_number}
-            <span class="text-red-500">{errors.tenant_phone_number}</span>
+            <span class="text-red-500"
+              >{errors.tenant_phone_number}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">DNI</p>
           <p>{data.tenant.document_number ?? "-"}</p>
           {#if errors.tenant_document_number}
-            <span class="text-red-500">{errors.tenant_document_number}</span>
+            <span class="text-red-500"
+              >{errors.tenant_document_number}</span
+            >
           {/if}
         </div>
       </div>
@@ -627,31 +837,41 @@
           <p class="text-sm text-gray-500">Nombre</p>
           <p>{display_name(data.owner)}</p>
           {#if errors.owner_name}
-            <span class="text-red-500">{errors.owner_name}</span>
+            <span class="text-red-500"
+              >{errors.owner_name}</span
+            >
           {/if}
           {#if errors.owner_surname}
-            <span class="text-red-500">{errors.owner_surname}</span>
+            <span class="text-red-500"
+              >{errors.owner_surname}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Email</p>
           <p>{data.owner.email}</p>
           {#if errors.owner_email}
-            <span class="text-red-500">{errors.owner_email}</span>
+            <span class="text-red-500"
+              >{errors.owner_email}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Teléfono</p>
           <p>{data.owner.phone_number ?? "-"}</p>
           {#if errors.owner_phone_number}
-            <span class="text-red-500">{errors.owner_phone_number}</span>
+            <span class="text-red-500"
+              >{errors.owner_phone_number}</span
+            >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">DNI</p>
           <p>{data.owner.document_number ?? "-"}</p>
           {#if errors.owner_document_number}
-            <span class="text-red-500">{errors.owner_document_number}</span>
+            <span class="text-red-500"
+              >{errors.owner_document_number}</span
+            >
           {/if}
         </div>
       </div>
@@ -664,6 +884,16 @@
 {/snippet}
 <Content.Root>
   <Content.Title>Edición de contrato</Content.Title>
+  <p class="text-sm text-gray-400">
+    Propiedad:
+    <a
+      href="/admin/properties/{data.property.id}/edit"
+      class="text-blue-500 underline"
+    >
+      {data.property.location?.road ?? "Sin calle"}
+      {data.property.location?.house_number ?? ""}
+    </a>
+  </p>
   {@render OwnerSection()}
   {@render TenantSection()}
   {@render SectionTwo()}

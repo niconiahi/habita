@@ -1,3 +1,4 @@
+import { sql } from "kysely"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 
@@ -53,6 +54,37 @@ export async function fetch_contract(id: number) {
           ])
           .where("contract_file.contract_id", "=", id),
       ).as("files"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("contract_item")
+          .select((eb2) => [
+            "contract_item.id",
+            "contract_item.name",
+            "contract_item.state",
+            jsonArrayFrom(
+              eb2
+                .selectFrom("contract_item_file")
+                .innerJoin(
+                  "file",
+                  "file.id",
+                  "contract_item_file.file_id",
+                )
+                .select([
+                  "file.id",
+                  "file.basename",
+                  sql<string>`encode(file.content, 'base64')`.as(
+                    "content",
+                  ),
+                ])
+                .whereRef(
+                  "contract_item_file.contract_item_id",
+                  "=",
+                  "contract_item.id",
+                ),
+            ).as("files"),
+          ])
+          .where("contract_item.contract_id", "=", id),
+      ).as("contract_items"),
     ])
     .where("contract.id", "=", id)
     .executeTakeFirst()

@@ -12,6 +12,11 @@ import { update_contract } from "./actions/update_contract.server"
 import { create_file } from "./actions/create_file.server"
 import { destroy_file } from "./actions/destroy_file.server"
 import { create_pdf } from "./actions/create_pdf.server"
+import { create_contract_item } from "./actions/create_contract_item.server"
+import { update_contract_item } from "./actions/update_contract_item.server"
+import { destroy_contract_item } from "./actions/destroy_contract_item.server"
+import { create_contract_item_file } from "./actions/create_contract_item_file.server"
+import { destroy_contract_item_file } from "./actions/destroy_contract_item_file.server"
 import { ACTION } from "./actions/action"
 
 export const load: PageServerLoad = async ({
@@ -133,5 +138,81 @@ export const actions: Actions = {
       },
     )
     return await create_pdf(form_data, property_id)
+  },
+  [ACTION.CREATE_CONTRACT_ITEM]: async ({
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const contract_id = v.parse(
+      ForceNumberSchema,
+      params.contract_id,
+      {
+        message: "contract id should be a number",
+      },
+    )
+    await create_contract_item(contract_id)
+    return null
+  },
+  [ACTION.UPDATE_CONTRACT_ITEM]: async ({
+    request,
+    locals,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const form_data = await request.formData()
+    await update_contract_item(form_data)
+    return null
+  },
+  [ACTION.DESTROY_CONTRACT_ITEM]: async ({
+    request,
+    locals,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const form_data = await request.formData()
+    await destroy_contract_item(form_data)
+    return null
+  },
+  [ACTION.CREATE_CONTRACT_ITEM_FILE]: async ({
+    request,
+    locals,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const form_data = await request.formData()
+    await create_contract_item_file(form_data)
+    return null
+  },
+  [ACTION.DESTROY_CONTRACT_ITEM_FILE]: async ({
+    request,
+    locals,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const form_data = await request.formData()
+    await destroy_contract_item_file(form_data)
+    return null
   },
 }

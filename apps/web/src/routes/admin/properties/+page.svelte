@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import * as Table from "$lib/components/Table"
@@ -61,6 +62,7 @@
                   method="POST"
                   action={`?/${ACTION.PUBLISH_PROPERTY}`}
                   style="display: inline;"
+                  use:enhance
                 >
                   <input
                     type="hidden"
@@ -75,6 +77,7 @@
                   method="POST"
                   action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
                   style="display: inline;"
+                  use:enhance
                 >
                   <input
                     type="hidden"

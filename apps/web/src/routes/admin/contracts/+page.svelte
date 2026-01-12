@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from "$app/forms"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import * as Table from "$lib/components/Table"
@@ -51,6 +52,7 @@
       onchange={(event) => {
         event.currentTarget.requestSubmit()
       }}
+      use:enhance
     >
       <Content.Section>
         <Formulary.Field>
