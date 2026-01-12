@@ -817,9 +817,10 @@
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">
-        Sin inquilino asignado
-      </p>
+      <p class="text-gray-500 text-sm">Sin inquilino asignado</p>
+      <a href="/admin/candidates" class="inline-block mt-2">
+        <Button>Agregar inquilino</Button>
+      </a>
     {/if}
   </Content.Section>
 {/snippet}
@@ -876,9 +877,10 @@
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">
-        Sin propietario asignado
-      </p>
+      <p class="text-gray-500 text-sm">Sin propietario asignado</p>
+      <a href="/admin/properties/{data.property.id}/edit#members" class="inline-block mt-2">
+        <Button>Agregar propietario</Button>
+      </a>
     {/if}
   </Content.Section>
 {/snippet}
