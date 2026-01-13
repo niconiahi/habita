@@ -1,20 +1,35 @@
 <script lang="ts">
+  import { ACCESS_TYPE } from "$lib/access_type"
   import Button from "$lib/components/Button.svelte"
+  import Notifications from "$lib/components/Notifications.svelte"
+  import type { Notification } from "$lib/fetchers/notifications.server"
 
   interface Props {
     user: {
       id: number
       email: string
+      accesses: Array<{
+        id: number
+        type: number
+        property_id: number
+      }>
     } | null
+    notifications: Notification[]
   }
 
-  let { user }: Props = $props()
+  let { user, notifications }: Props = $props()
+
+  let is_administrator = $derived(
+    user?.accesses.some(
+      (a) => a.type === ACCESS_TYPE.ADMINISTRATOR,
+    ) ?? false,
+  )
 </script>
 
-<header class="header">
-  <nav class="header__nav">
+<header>
+  <nav>
     {#if user}
-      <span class="header__email">{user.email}</span>
+      <span class="email">{user.email}</span>
       <form method="POST" action="/auth/logout">
         <Button type="submit">Logout</Button>
       </form>
@@ -23,11 +38,19 @@
         <Button type="submit">Login</Button>
       </form>
     {/if}
+    <a
+      class="button"
+      aria-label="Profile page"
+      href="/profile">Profile</a
+    >
+    {#if is_administrator}
+      <Notifications {notifications} />
+    {/if}
   </nav>
 </header>
 
 <style>
-  .header {
+  header {
     position: sticky;
     top: 0;
     z-index: 10;
@@ -39,13 +62,13 @@
     background-color: var(--gray-700);
   }
 
-  .header__nav {
+  nav {
     display: flex;
     align-items: center;
     gap: var(--spacing-4);
   }
 
-  .header__email {
+  .email {
     color: var(--gray-100);
     font-size: 0.875rem;
   }

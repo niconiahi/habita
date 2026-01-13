@@ -157,6 +157,15 @@ export interface Location {
   updated_at: Timestamp;
 }
 
+export interface Notification {
+  created_at: Timestamp;
+  href: string;
+  id: Generated<number>;
+  property_id: number;
+  type: number;
+  updated_at: Timestamp;
+}
+
 export interface Payment {
   created_at: Timestamp;
   id: Generated<number>;
@@ -846,7 +855,7 @@ export interface TopologyTopology {
 
 export interface User {
   created_at: Timestamp;
-  document_number: number | null;
+  document_number: string | null;
   email: string;
   id: Generated<number>;
   name: string;
@@ -878,6 +887,7 @@ export interface DB {
   invitation_token: InvitationToken;
   job: Job;
   location: Location;
+  notification: Notification;
   payment: Payment;
   payment_mercado_pago: PaymentMercadoPago;
   period: Period;

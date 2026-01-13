@@ -1,2 +1,2 @@
-- Read every rule at `rules` folder and respect it
 - Do not read `plans` folder unless specifically told to do so
+- Before creating a new migration, read the `database` skill

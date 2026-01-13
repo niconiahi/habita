@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto"
+import { encrypt } from "../../src/lib/server/encryption"
 import { readFile } from "node:fs/promises"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -133,8 +134,8 @@ async function upsert_user({
       email,
       name,
       surname,
-      phone_number,
-      document_number,
+      phone_number: encrypt(phone_number),
+      document_number: encrypt(String(document_number)),
       created_at: now,
       updated_at: now,
     })
