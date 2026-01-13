@@ -14,6 +14,7 @@ import {
   escape_ics_text,
   format_ics_date,
 } from "$lib/server/ics"
+import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { SLOT_STATE } from "$lib/slot_state"
 import { logger } from "$lib/server/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
@@ -64,6 +65,18 @@ async function execute(form_data: FormData, span: Span) {
       "slot.visitant_id",
     ])
     .executeTakeFirstOrThrow()
+  const now = new Date()
+  await query_builder
+    .insertInto("notification")
+    .values({
+      type: NOTIFICATION_TYPE.PROPERTY_VISIT,
+      href: "/admin/candidates",
+      property_id: slot.property_id,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute()
+  logger.info("notification created")
   span.setAttribute(
     "slot.start_date",
     slot.start_date.toISOString(),

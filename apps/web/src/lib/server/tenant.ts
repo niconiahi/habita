@@ -1,8 +1,9 @@
 import { query_builder } from "db/query_builder"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_tenant(property_id: number) {
-  return query_builder
+  const tenant = await query_builder
     .selectFrom("user")
     .innerJoin("access", "access.user_id", "user.id")
     .innerJoin(
@@ -25,7 +26,13 @@ export async function fetch_tenant(property_id: number) {
       "user.email",
     ])
     .executeTakeFirst()
+  if (!tenant) return undefined
+  return {
+    ...tenant,
+    phone_number: tenant.phone_number ? decrypt(tenant.phone_number) : null,
+    document_number: tenant.document_number
+      ? decrypt(tenant.document_number)
+      : null,
+  }
 }
-export type Tenant = Awaited<
-  ReturnType<typeof fetch_tenant>
->
+export type Tenant = Awaited<ReturnType<typeof fetch_tenant>>

@@ -23,6 +23,7 @@ export function fetch_candidates(property_ids: number[]) {
       "user.name",
       "user.surname",
       "slot.start_date",
+      "slot.end_date",
       "property.id as property_id",
       jsonObjectFrom(
         eb

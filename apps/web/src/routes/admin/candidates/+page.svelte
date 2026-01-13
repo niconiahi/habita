@@ -28,11 +28,15 @@
             <Table.Cell
               >{display_name(candidate)}</Table.Cell
             >
-            <Table.Cell
-              >{display_date(
-                candidate.start_date,
-              )}</Table.Cell
-            >
+            <Table.Cell>
+              {display_date(candidate.start_date)} - {display_date(
+                candidate.end_date,
+                {
+                  day: undefined,
+                  month: undefined,
+                },
+              )}
+            </Table.Cell>
             <Table.Cell>
               <a
                 href={`/admin/properties/${candidate.property_id}/edit`}
