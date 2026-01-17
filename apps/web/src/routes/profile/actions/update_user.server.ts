@@ -28,6 +28,8 @@ const InputSchema = v.object({
 
 async function execute(form_data: FormData, user_id: number) {
   const input = v.parse(InputSchema, normalize_input(form_data, InputSchema))
+  const name = encrypt(input.name)
+  const surname = encrypt(input.surname)
   const phone_number =
     input.phone_number === "" ? null : encrypt(input.phone_number)
   const document_number =
@@ -35,8 +37,8 @@ async function execute(form_data: FormData, user_id: number) {
   await query_builder
     .updateTable("user")
     .set({
-      name: input.name,
-      surname: input.surname,
+      name,
+      surname,
       phone_number,
       document_number,
       updated_at: new Date(),

@@ -132,8 +132,8 @@ async function upsert_user({
     .insertInto("user")
     .values({
       email,
-      name,
-      surname,
+      name: encrypt(name),
+      surname: encrypt(surname),
       phone_number: encrypt(phone_number),
       document_number: encrypt(String(document_number)),
       created_at: now,

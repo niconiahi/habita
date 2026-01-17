@@ -4,6 +4,7 @@ import {
   encodeHexLowerCase,
 } from "@oslojs/encoding"
 import { query_builder } from "db/query_builder"
+import { decrypt } from "$lib/server/encryption"
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24
 
@@ -82,8 +83,8 @@ export async function validate_session_token(
   const user = {
     id: result.user_id,
     email: result.email,
-    name: result.name,
-    surname: result.surname,
+    name: decrypt(result.name),
+    surname: decrypt(result.surname),
     accesses,
   }
 

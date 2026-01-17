@@ -73,6 +73,11 @@
                 </form>
               {/if}
               {#if property.state === PROPERTY_STATE.PUBLISHED}
+                <a
+                  href={`/admin/properties/${property.id}/calendar`}
+                >
+                  <Button>Calendario de visitas</Button>
+                </a>
                 <form
                   method="POST"
                   action={`?/${ACTION.UNPUBLISH_PROPERTY}`}

@@ -29,6 +29,8 @@ export async function fetch_owner(property_id: number) {
   if (!owner) return undefined
   return {
     ...owner,
+    name: decrypt(owner.name),
+    surname: decrypt(owner.surname),
     phone_number: owner.phone_number ? decrypt(owner.phone_number) : null,
     document_number: owner.document_number
       ? decrypt(owner.document_number)

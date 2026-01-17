@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({
     property_id,
   )
   if (!has_tenant_access(property_accesses)) {
-    error(403, "not found")
+    error(404, "not found")
   }
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),

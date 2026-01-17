@@ -8,4 +8,5 @@ export const ACTION = {
   DESTROY_CONTRACT_ITEM: "destroy_contract_item",
   CREATE_CONTRACT_ITEM_FILE: "create_contract_item_file",
   DESTROY_CONTRACT_ITEM_FILE: "destroy_contract_item_file",
+  UPDATE_PERIOD: "update_period",
 } as const

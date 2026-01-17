@@ -2,13 +2,23 @@
   import type { Snippet } from "svelte"
   import type { HTMLSelectAttributes } from "svelte/elements"
 
-  interface Props extends HTMLSelectAttributes {
+  type Props = HTMLSelectAttributes & {
     children: Snippet
+    value?: string | number
   }
 
-  let { children, ...rest }: Props = $props()
+  let { children, value = $bindable<string | number>(""), ...rest }: Props = $props()
 </script>
 
-<select {...rest}>
+<select bind:value {...rest}>
   {@render children()}
 </select>
+
+<style>
+  select {
+    color: var(--gray-100);
+  }
+  select::placeholder {
+    color: var(--gray-100);
+  }
+</style>

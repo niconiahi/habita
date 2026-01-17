@@ -16,6 +16,7 @@ import {
   GOOGLE_CODE_VERIFIER_COOKIE_NAME,
   GOOGLE_CODE_VERIFIER_COOKIE_OPTIONS,
 } from "$lib/server/cookies"
+import { encrypt } from "$lib/server/encryption"
 
 const GoogleUserSchema = v.object({
   sub: v.string(),
@@ -85,8 +86,8 @@ export const GET: RequestHandler = async ({
       .insertInto("user")
       .values({
         email: google_user.email,
-        name: google_user.given_name,
-        surname: google_user.family_name,
+        name: encrypt(google_user.given_name),
+        surname: encrypt(google_user.family_name),
         created_at: new Date(),
         updated_at: new Date(),
       })

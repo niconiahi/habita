@@ -1,9 +1,10 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 import { SLOT_STATE } from "$lib/slot_state"
+import { decrypt } from "$lib/server/encryption"
 
-export function fetch_candidates(property_ids: number[]) {
-  return query_builder
+export async function fetch_candidates(property_ids: number[]) {
+  const candidates = await query_builder
     .selectFrom("slot")
     .innerJoin("user", "user.id", "slot.visitant_id")
     .innerJoin(
@@ -50,6 +51,11 @@ export function fetch_candidates(property_ids: number[]) {
         .as("location"),
     ])
     .execute()
+  return candidates.map((candidate) => ({
+    ...candidate,
+    name: decrypt(candidate.name),
+    surname: decrypt(candidate.surname),
+  }))
 }
 
 export type Candidate = NonNullable<

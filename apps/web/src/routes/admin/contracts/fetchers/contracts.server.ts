@@ -5,12 +5,13 @@ import {
 } from "$lib/contract_state"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { query_builder } from "db/query_builder"
+import { decrypt } from "$lib/server/encryption"
 
-export function fetch_contracts(
+export async function fetch_contracts(
   property_ids: number[],
   states?: ContractState[],
 ) {
-  return query_builder
+  const contracts = await query_builder
     .selectFrom("contract")
     .innerJoin(
       "property",
@@ -70,6 +71,15 @@ export function fetch_contracts(
       ).as("tenant"),
     ])
     .execute()
+  return contracts.map((contract) => ({
+    ...contract,
+    tenant: contract.tenant
+      ? {
+          name: decrypt(contract.tenant.name),
+          surname: decrypt(contract.tenant.surname),
+        }
+      : null,
+  }))
 }
 
 export type Contract = NonNullable<

@@ -17,6 +17,7 @@ import { update_contract_item } from "./actions/update_contract_item.server"
 import { destroy_contract_item } from "./actions/destroy_contract_item.server"
 import { create_contract_item_file } from "./actions/create_contract_item_file.server"
 import { destroy_contract_item_file } from "./actions/destroy_contract_item_file.server"
+import { update_period } from "./actions/update_period.server"
 import { ACTION } from "./actions/action"
 
 export const load: PageServerLoad = async ({
@@ -213,6 +214,17 @@ export const actions: Actions = {
     }
     const form_data = await request.formData()
     await destroy_contract_item_file(form_data)
+    return null
+  },
+  [ACTION.UPDATE_PERIOD]: async ({ request, locals }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    if (!has_edit_access(locals.user.accesses)) {
+      error(400, "not found")
+    }
+    const form_data = await request.formData()
+    await update_period(form_data)
     return null
   },
 }

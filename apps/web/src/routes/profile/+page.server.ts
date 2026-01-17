@@ -118,6 +118,8 @@ async function fetch_user_profile(user_id: number) {
     .executeTakeFirstOrThrow()
   return {
     ...user,
+    name: decrypt(user.name),
+    surname: decrypt(user.surname),
     phone_number: user.phone_number ? decrypt(user.phone_number) : null,
     document_number: user.document_number ? decrypt(user.document_number) : null,
   }

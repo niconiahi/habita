@@ -15,6 +15,7 @@
 
 <style>
   .label {
+    color: var(--gray-100);
     display: block;
   }
 

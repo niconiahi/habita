@@ -3,6 +3,7 @@
   import * as Section from "$lib/components/Section"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
+  import TypedFileUploadButton from "$lib/components/TypedFileUploadButton.svelte"
   import {
     get_user_file_type_label,
     USER_FILE_TYPE,
@@ -14,16 +15,13 @@
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
   let errors = $derived(form?.errors?.update_user ?? {})
-  let file_input: HTMLInputElement | undefined = $state()
-  let form_el: HTMLFormElement | undefined = $state()
 
-  function handle_add_click() {
-    file_input?.click()
-  }
-
-  function handle_file_change() {
-    form_el?.requestSubmit()
-  }
+  const document_types = Object.values(USER_FILE_TYPE).map(
+    (type) => ({
+      value: type,
+      label: get_user_file_type_label(type),
+    }),
+  )
 </script>
 
 {#snippet PersonalInfo()}
@@ -133,36 +131,13 @@
     <Section.Header>
       <Section.Title>documentos</Section.Title>
       <Section.Actions>
-        <Button type="button" onclick={handle_add_click}
-          >Agregar documento</Button
-        >
+        <TypedFileUploadButton
+          types={document_types}
+          label="Agregar documento"
+          action={compose_action(ACTION.CREATE_FILE)}
+        />
       </Section.Actions>
     </Section.Header>
-    <form
-      bind:this={form_el}
-      method="POST"
-      action={compose_action(ACTION.CREATE_FILE)}
-      enctype="multipart/form-data"
-      class="flex gap-4 items-end"
-    >
-      <input
-        bind:this={file_input}
-        type="file"
-        name="file"
-        class="sr-only"
-        onchange={handle_file_change}
-      />
-      <Formulary.Field>
-        <Formulary.Label for="type">tipo</Formulary.Label>
-        <Formulary.Select name="type" id="type">
-          {#each Object.values(USER_FILE_TYPE) as type}
-            <option value={type}
-              >{get_user_file_type_label(type)}</option
-            >
-          {/each}
-        </Formulary.Select>
-      </Formulary.Field>
-    </form>
     <table class="w-full mt-4">
       <thead>
         <tr>
