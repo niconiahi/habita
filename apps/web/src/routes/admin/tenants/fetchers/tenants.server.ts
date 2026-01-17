@@ -1,14 +1,15 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { decrypt } from "$lib/server/encryption"
 
-export function fetch_tenants(
+export async function fetch_tenants(
   admin_property_ids: number[],
 ) {
   if (admin_property_ids.length === 0) {
-    return Promise.resolve([])
+    return []
   }
-  return query_builder
+  const tenants = await query_builder
     .selectFrom("user")
     .innerJoin("access", "access.user_id", "user.id")
     .innerJoin(
@@ -54,6 +55,11 @@ export function fetch_tenants(
         .as("location"),
     ])
     .execute()
+  return tenants.map((tenant) => ({
+    ...tenant,
+    name: decrypt(tenant.name),
+    surname: decrypt(tenant.surname),
+  }))
 }
 
 export type Tenant = NonNullable<

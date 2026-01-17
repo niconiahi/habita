@@ -4,9 +4,10 @@ import {
   jsonObjectFrom,
 } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
+import { decrypt } from "$lib/server/encryption"
 
-export function fetch_property(id: number) {
-  return query_builder
+export async function fetch_property(id: number) {
+  const property = await query_builder
     .selectFrom("property")
     .innerJoin(
       "location",
@@ -183,6 +184,21 @@ export function fetch_property(id: number) {
     ])
     .where("property.id", "=", id)
     .executeTakeFirst()
+  if (!property) return undefined
+  return {
+    ...property,
+    members: property.members.map((member) => ({
+      ...member,
+      name: decrypt(member.name),
+      surname: decrypt(member.surname),
+      phone_number: member.phone_number
+        ? decrypt(member.phone_number)
+        : null,
+      document_number: member.document_number
+        ? decrypt(member.document_number)
+        : null,
+    })),
+  }
 }
 
 export type Property = NonNullable<

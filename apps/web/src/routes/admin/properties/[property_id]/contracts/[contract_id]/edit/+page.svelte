@@ -5,6 +5,7 @@
   import * as Section from "$lib/components/Section"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
+  import TypedFileUploadButton from "$lib/components/TypedFileUploadButton.svelte"
   import { display_name } from "$lib/display_name"
   import {
     ContractFileTypeSchema,
@@ -32,16 +33,12 @@
     $props()
   let errors = $derived(form?.errors?.create_pdf ?? {})
 
-  let file_input: HTMLInputElement
-  let file_form: HTMLFormElement
-
-  function handle_add_click() {
-    file_input?.click()
-  }
-
-  function handle_file_change() {
-    file_form?.requestSubmit()
-  }
+  const document_types = $derived(
+    data.contract_file_types.map((type) => ({
+      value: type,
+      label: get_contract_file_type_label(type),
+    })),
+  )
 
   let contract_item_file_inputs: Record<
     number,
@@ -616,14 +613,11 @@
   </Content.Section>
 {/snippet}
 
-{#snippet DocumentsSection()}
+{#snippet ActionsSection()}
   <Content.Section>
     <Section.Header>
-      <Section.Title>documentos</Section.Title>
+      <Section.Title>acciones</Section.Title>
       <Section.Actions>
-        <Button type="button" onclick={handle_add_click}>
-          Agregar documento
-        </Button>
         <form
           method="POST"
           action={compose_action(ACTION.CREATE_PDF)}
@@ -636,6 +630,23 @@
           />
           <Button type="submit">Generar contrato</Button>
         </form>
+      </Section.Actions>
+    </Section.Header>
+  </Content.Section>
+{/snippet}
+
+{#snippet DocumentsSection()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>documentos</Section.Title>
+      <Section.Actions>
+        <TypedFileUploadButton
+          types={document_types}
+          label="Agregar documento"
+          action={compose_action(ACTION.CREATE_FILE)}
+          type_name="file_type"
+          data={{ contract_id: data.contract.id }}
+        />
       </Section.Actions>
     </Section.Header>
     {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
@@ -665,43 +676,6 @@
         {/if}
       </div>
     {/if}
-    <form
-      bind:this={file_form}
-      method="POST"
-      action={compose_action(ACTION.CREATE_FILE)}
-      enctype="multipart/form-data"
-      class="mb-4"
-      use:enhance
-    >
-      <input
-        type="hidden"
-        value={data.contract.id}
-        name="contract_id"
-      />
-      <input
-        bind:this={file_input}
-        type="file"
-        name="file"
-        class="sr-only"
-        onchange={handle_file_change}
-      />
-      <Formulary.Field>
-        <Formulary.Label for="file_type"
-          >tipo</Formulary.Label
-        >
-        <Formulary.Select
-          name="file_type"
-          id="file_type"
-          required
-        >
-          {#each data.contract_file_types as type}
-            <option value={type}
-              >{get_contract_file_type_label(type)}</option
-            >
-          {/each}
-        </Formulary.Select>
-      </Formulary.Field>
-    </form>
     <ul class="flex flex-col gap-2">
       {#each data.contract.files as file (file.id)}
         {@const contract_type = v.parse(
@@ -751,14 +725,36 @@
     {#if errors.periods}
       <span class="text-red-500">{errors.periods}</span>
     {/if}
-    <ul class="flex flex-col gap-2">
+    <ul class="flex flex-col gap-4">
       {#each data.contract.periods as period, index (period.id)}
-        <li class="flex items-center gap-4">
-          {#if index === 0}
-            <span class="font-bold">inicial</span>
-          {/if}
-          <span>${period.price}</span>
-        </li>
+        {#if index === 0}
+          <li>
+            <Formulary.Root
+              method="POST"
+              action={compose_action(ACTION.UPDATE_PERIOD)}
+            >
+              <Formulary.Fields>
+                <input type="hidden" value={period.id} name="id" />
+                <Formulary.Field>
+                  <Formulary.Label for="price">inicial</Formulary.Label>
+                  <input
+                    id="price"
+                    name="price"
+                    type="number"
+                    value={period.price}
+                  />
+                </Formulary.Field>
+              </Formulary.Fields>
+              <Formulary.Actions>
+                <Button type="submit">Guardar precio</Button>
+              </Formulary.Actions>
+            </Formulary.Root>
+          </li>
+        {:else}
+          <li class="flex items-center gap-4">
+            <span>${period.price}</span>
+          </li>
+        {/if}
       {/each}
     </ul>
   </Content.Section>
@@ -817,7 +813,9 @@
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">Sin inquilino asignado</p>
+      <p class="text-gray-500 text-sm">
+        Sin inquilino asignado
+      </p>
       <a href="/admin/candidates" class="inline-block mt-2">
         <Button>Agregar inquilino</Button>
       </a>
@@ -877,8 +875,14 @@
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">Sin propietario asignado</p>
-      <a href="/admin/properties/{data.property.id}/edit#members" class="inline-block mt-2">
+      <p class="text-gray-500 text-sm">
+        Sin propietario asignado
+      </p>
+      <a
+        href="/admin/properties/{data.property
+          .id}/edit#members"
+        class="inline-block mt-2"
+      >
         <Button>Agregar propietario</Button>
       </a>
     {/if}
@@ -908,6 +912,7 @@
   {@render SectionFifteen()}
   {@render SectionSixteen()}
   {@render SectionTwentyOne()}
+  {@render ActionsSection()}
   {@render DocumentsSection()}
   {@render PeriodsSection()}
 </Content.Root>

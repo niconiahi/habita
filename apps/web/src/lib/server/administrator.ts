@@ -28,6 +28,8 @@ export async function fetch_administrator(property_id: number) {
   if (!administrator) return undefined
   return {
     ...administrator,
+    name: decrypt(administrator.name),
+    surname: decrypt(administrator.surname),
     phone_number: administrator.phone_number
       ? decrypt(administrator.phone_number)
       : null,

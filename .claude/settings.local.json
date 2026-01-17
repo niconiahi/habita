@@ -36,7 +36,9 @@
       "WebFetch(domain:www.mercadopago.com.ar)",
       "WebFetch(domain:www.mercadopago.com.mx)",
       "Bash(pnpm tsc:*)",
-      "Bash(dco web run:*)"
+      "Bash(dco web run:*)",
+      "Skill(styling)",
+      "Bash(xargs ls:*)"
     ],
     "deny": [],
     "ask": []

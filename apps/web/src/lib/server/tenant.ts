@@ -29,6 +29,8 @@ export async function fetch_tenant(property_id: number) {
   if (!tenant) return undefined
   return {
     ...tenant,
+    name: decrypt(tenant.name),
+    surname: decrypt(tenant.surname),
     phone_number: tenant.phone_number ? decrypt(tenant.phone_number) : null,
     document_number: tenant.document_number
       ? decrypt(tenant.document_number)

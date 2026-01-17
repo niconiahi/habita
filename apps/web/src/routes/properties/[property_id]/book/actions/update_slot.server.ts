@@ -19,6 +19,7 @@ import { SLOT_STATE } from "$lib/slot_state"
 import { logger } from "$lib/server/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
 import { query_builder } from "db/query_builder"
+import { decrypt } from "$lib/server/encryption"
 import { fetch_property } from "../../../fetchers/property.server"
 import { fetch_user_files } from "../../../fetchers/user_files.server"
 
@@ -87,24 +88,26 @@ async function execute(form_data: FormData, span: Span) {
   )
   span.setAttribute("host.id", slot.host_id)
   logger.info("slot updated")
-  const host = v.parse(
-    InviteeSchema,
-    await query_builder
-      .selectFrom("user")
-      .select(["email", "name"])
-      .where("id", "=", slot.host_id)
-      .executeTakeFirstOrThrow(),
-  )
+  const host_row = await query_builder
+    .selectFrom("user")
+    .select(["email", "name"])
+    .where("id", "=", slot.host_id)
+    .executeTakeFirstOrThrow()
+  const host = v.parse(InviteeSchema, {
+    email: host_row.email,
+    name: decrypt(host_row.name),
+  })
   span.setAttribute("host.email", host.email)
   span.setAttribute("host.name", host.name)
-  const visitant = v.parse(
-    InviteeSchema,
-    await query_builder
-      .selectFrom("user")
-      .select(["email", "name"])
-      .where("id", "=", slot.visitant_id)
-      .executeTakeFirstOrThrow(),
-  )
+  const visitant_row = await query_builder
+    .selectFrom("user")
+    .select(["email", "name"])
+    .where("id", "=", slot.visitant_id)
+    .executeTakeFirstOrThrow()
+  const visitant = v.parse(InviteeSchema, {
+    email: visitant_row.email,
+    name: decrypt(visitant_row.name),
+  })
   span.setAttribute("visitant.email", visitant.email)
   span.setAttribute("visitant.name", visitant.name)
   const property = await fetch_property(property_id)
