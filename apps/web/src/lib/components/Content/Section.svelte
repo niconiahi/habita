@@ -14,15 +14,15 @@
 </section>
 
 <style>
-  /* section :global(ul) { */
-  /*   display: flex; */
-  /*   flex-direction: column; */
-  /*   gap: var(--spacing-4); */
-  /*   width: 100%; */
-  /* } */
-
-  section :global(li) {
+  section > :global(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
     width: 100%;
+
+    & :global(li) {
+      width: 100%;
+    }
   }
 
   section :global(article) {

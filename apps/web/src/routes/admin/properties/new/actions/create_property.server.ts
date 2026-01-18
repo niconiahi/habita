@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import { LocationSchema } from "$lib/components/LocationInput.schemas"
+import { LocationSchema } from "$lib/components/LocationInput.svelte"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
 import { compose_point } from "$lib/server/point"

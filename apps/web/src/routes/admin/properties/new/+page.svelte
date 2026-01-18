@@ -16,18 +16,9 @@
 
   let { data }: { data: PageData } = $props()
 
-  let disabled = $state(true)
   let property_type = $state<PropertyType>(
     PROPERTY_TYPE.DEPARTMENT,
   )
-
-  function handle_selection() {
-    disabled = false
-  }
-
-  function handle_clear() {
-    disabled = true
-  }
 
   function handle_type_change(event: Event) {
     const target = event.currentTarget as HTMLSelectElement
@@ -40,10 +31,7 @@
     <Section.Header>
       <Section.Title>ubicación</Section.Title>
     </Section.Header>
-    <LocationInput
-      onselection={handle_selection}
-      onclear={handle_clear}
-    />
+    <LocationInput />
   </section>
 {/snippet}
 
@@ -119,9 +107,7 @@
         {@render Destiny()}
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button {disabled} type="submit"
-          >Crear propiedad</Button
-        >
+        <Button type="submit">Crear propiedad</Button>
       </Formulary.Actions>
     </Formulary.Root>
   </Content.Section>

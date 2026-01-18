@@ -10,7 +10,15 @@
   let { children, ...rest }: Props = $props()
 </script>
 
-<form class="formulary" use:enhance {...rest}>
+<form
+  class="formulary"
+  use:enhance={() => {
+    return async ({ update }) => {
+      await update({ reset: false })
+    }
+  }}
+  {...rest}
+>
   {@render children()}
 </form>
 
