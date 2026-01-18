@@ -30,7 +30,6 @@
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
 
-  let location_disabled = $state(true)
   let file_input: HTMLInputElement | undefined = $state()
   let photo_form: HTMLFormElement | undefined = $state()
   let room_positions = $state<
@@ -43,14 +42,13 @@
       (member) => member.type === ACCESS_TYPE.OWNER,
     ),
   )
-
-  function handle_location_selection() {
-    location_disabled = false
-  }
-
-  function handle_location_clear() {
-    location_disabled = true
-  }
+  const all_services_added = $derived(
+    data.property.services.length ===
+      Object.keys(SERVICE_TYPE).length,
+  )
+  const used_service_types = $derived(
+    new Set(data.property.services.map((s) => s.type)),
+  )
 
   function handle_add_photo_click() {
     file_input?.click()
@@ -90,14 +88,10 @@
           default_lat={String(
             data.property.location.latitude,
           )}
-          onselection={handle_location_selection}
-          onclear={handle_location_clear}
         />
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button disabled={location_disabled} type="submit"
-          >Guardar ubicación</Button
-        >
+        <Button type="submit">Guardar ubicación</Button>
       </Formulary.Actions>
     </Formulary.Root>
   </Content.Section>
@@ -358,7 +352,9 @@
           action={compose_action(ACTION.CREATE_SERVICE)}
           use:enhance
         >
-          <Button type="submit">Agregar servicio</Button>
+          <Button type="submit" disabled={all_services_added}
+            >Agregar servicio</Button
+          >
         </form>
       </Section.Actions>
     </Section.Header>
@@ -382,11 +378,13 @@
                   value={service.type}
                 >
                   {#each Object.values(SERVICE_TYPE) as type}
-                    <option value={type}
-                      >{get_service_type_label(
-                        type,
-                      )}</option
-                    >
+                    {#if type === service.type || !used_service_types.has(type)}
+                      <option value={type}
+                        >{get_service_type_label(
+                          type,
+                        )}</option
+                      >
+                    {/if}
                   {/each}
                 </Formulary.Select>
               </Formulary.Field>

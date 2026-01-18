@@ -1,6 +1,6 @@
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
-import { LocationSchema } from "$lib/components/LocationInput.schemas"
+import { LocationSchema } from "$lib/components/LocationInput.svelte"
 import { ForceNumberSchema } from "$lib/force_number"
 import { now } from "$lib/server/now"
 import { compose_point } from "$lib/server/point"

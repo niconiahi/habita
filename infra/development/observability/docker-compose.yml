@@ -41,6 +41,7 @@ services:
       - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
       - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
       - clickhouse_data:/var/lib/clickhouse/
+      - clickhouse_logs:/var/log/clickhouse-server/
     logging:
       options:
         max-size: 50m
@@ -169,5 +170,6 @@ networks:
 
 volumes:
   clickhouse_data:
+  clickhouse_logs:
   signoz_data:
   zookeeper_data:
