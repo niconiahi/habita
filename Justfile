@@ -246,14 +246,8 @@ deploy +services:
   echo "=== Pulling latest code ==="
   git fetch origin main && git reset --hard origin/main
 
-  echo ""
-  echo "=== Docker login ==="
-  if [[ -f ~/.docker-credentials ]]; then
-    source ~/.docker-credentials
-    echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-  else
-    echo "No ~/.docker-credentials found, skipping login (assuming public images)"
-  fi
+  # Docker login is handled once during server provisioning via `docker login`
+  # Credentials persist in ~/.docker/config.json
 
   # Check if we need to decrypt secrets
   needs_decrypt=false
