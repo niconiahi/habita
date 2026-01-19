@@ -8,9 +8,9 @@ dev.habita.rent {
 
   handle /nominatim/* {
     uri strip_prefix /nominatim
-    reverse_proxy nominatim:8080
+    reverse_proxy nominatim:8090
   }
 
-  # SvelteKit app (web) - primary, catches all other routes
-  reverse_proxy web:5174
+  # SvelteKit app - primary, catches all other routes
+  reverse_proxy svelte:5174
 }

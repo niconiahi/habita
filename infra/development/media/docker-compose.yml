@@ -1,0 +1,31 @@
+services:
+  image:
+    image: darthsim/imgproxy:latest
+    restart: unless-stopped
+    user: "0"
+    env_file:
+      - ../.env
+    environment:
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_AUTO_WEBP: "true"
+      IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "true"
+    extra_hosts:
+      - "dev.habita.rent:host-gateway"
+    volumes:
+      - ./certs/habita.pem:/usr/local/share/ca-certificates/habita.crt:ro
+    command: sh -c "update-ca-certificates && imgproxy"
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

@@ -1,0 +1,18 @@
+services:
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini:ro
+    command: daemon --config /etc/ofelia/config.ini
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

@@ -1,6 +1,5 @@
 habita.rent {
   # Caddy automatically gets Let's Encrypt certificates
-  # No TLS configuration needed - it just works!
 
   # Security headers
   header {
@@ -20,11 +19,11 @@ habita.rent {
   # Nominatim geocoding API
   handle /nominatim/* {
     uri strip_prefix /nominatim
-    reverse_proxy nominatim:8080
+    reverse_proxy nominatim:8090
   }
 
   # Main application
-  reverse_proxy web:3000
+  reverse_proxy svelte:3000
 
   # Enable compression
   encode gzip

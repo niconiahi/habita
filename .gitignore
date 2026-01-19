@@ -2,8 +2,13 @@
 node_modules
 .react-router
 build
-.env
-infra/*/.env
 temp
 plans
 apps/legacy
+
+# Secrets: plaintext files are IGNORED
+.env
+infra/*/.env
+infra/*/scheduler/rclone.conf
+
+# Encrypted secrets (.enc) are TRACKED - do not add to gitignore

@@ -3,7 +3,7 @@ FROM oven/bun AS builder
 WORKDIR /apps/web
 
 COPY package.json bun.lock ./
-RUN bun install
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 # Install Playwright browsers in the builder stage
 RUN bunx playwright install chromium
 
@@ -29,10 +29,18 @@ RUN apt-get update && \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
+# Create non-root user
+RUN useradd -m -u 10001 appuser
+
 COPY --from=builder /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY --from=builder /apps/web/node_modules ./node_modules
 # Copy the Playwright browsers from builder
-COPY --from=builder /root/.cache/ms-playwright /root/.cache/ms-playwright
+COPY --from=builder /root/.cache/ms-playwright /home/appuser/.cache/ms-playwright
+
+# Change ownership to appuser
+RUN chown -R appuser:appuser /apps/web /home/appuser/.cache
+
+USER appuser
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5174"]

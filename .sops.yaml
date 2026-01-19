@@ -1,0 +1,7 @@
+creation_rules:
+  - path_regex: infra/development/\.env(\.enc)?$
+    age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
+  - path_regex: infra/production/\.env(\.enc)?$
+    age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
+  - path_regex: infra/production/scheduler/rclone\.conf(\.enc)?$
+    age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc

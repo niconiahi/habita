@@ -1,0 +1,22 @@
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs/dev.habita.rent.pem:/etc/ssl/certs/dev.habita.rent.pem:ro
+      - ./certs/dev.habita.rent-key.pem:/etc/ssl/private/dev.habita.rent-key.pem:ro
+      - ./certs/habita.pem:/etc/ssl/certs/habita.pem:ro
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

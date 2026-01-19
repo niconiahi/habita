@@ -1,0 +1,26 @@
+services:
+  go:
+    image: niconiahi/habita:go-latest
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      PORT: 8081
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: go
+      OTEL_ENVIRONMENT: production
+    healthcheck:
+      test: ["CMD", "sh", "-lc", "curl -fsS http://localhost:8081/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
