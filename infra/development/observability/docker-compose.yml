@@ -1,7 +1,7 @@
 services:
   zookeeper-1:
     image: signoz/zookeeper:3.7.1
-    container_name: habita-zookeeper-1
+    container_name: zookeeper-1
     hostname: zookeeper-1
     user: root
     ports:
@@ -24,7 +24,7 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.1.2-alpine
-    container_name: habita-clickhouse
+    container_name: clickhouse
     hostname: clickhouse
     restart: on-failure
     tty: true
@@ -65,7 +65,7 @@ services:
 
   otel-migrator-sync:
     image: signoz/signoz-schema-migrator:0.111.16
-    container_name: habita-otel-migrator-sync
+    container_name: otel-migrator-sync
     command: ["sync", "--dsn=tcp://clickhouse:9000", "--up="]
     depends_on:
       clickhouse:
@@ -75,7 +75,7 @@ services:
 
   otel-migrator-async:
     image: signoz/signoz-schema-migrator:0.111.16
-    container_name: habita-otel-migrator-async
+    container_name: otel-migrator-async
     command: ["async", "--dsn=tcp://clickhouse:9000", "--up="]
     depends_on:
       clickhouse:
@@ -87,7 +87,7 @@ services:
 
   query-service:
     image: signoz/query-service:0.69.0
-    container_name: habita-query-service
+    container_name: query-service
     restart: on-failure
     command: ["-config=/root/config/prometheus.yml", "--use-logs-new-schema=true", "--use-trace-new-schema=true"]
     volumes:
@@ -121,7 +121,7 @@ services:
 
   otel-collector:
     image: signoz/signoz-otel-collector:0.111.16
-    container_name: habita-otel-collector
+    container_name: otel-collector
     restart: on-failure
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
@@ -145,10 +145,11 @@ services:
           memory: 512M
     networks:
       - observability
+      - internal
 
   frontend:
     image: signoz/frontend:0.69.0
-    container_name: habita-frontend
+    container_name: frontend
     restart: on-failure
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
@@ -167,6 +168,8 @@ services:
 networks:
   observability:
     driver: bridge
+  internal:
+    external: true
 
 volumes:
   clickhouse_data:

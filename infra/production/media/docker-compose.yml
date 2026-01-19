@@ -1,0 +1,25 @@
+services:
+  image:
+    image: darthsim/imgproxy:latest
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      IMGPROXY_BIND: ":8080"
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_AUTO_WEBP: "true"
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

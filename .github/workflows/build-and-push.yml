@@ -1,0 +1,86 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'apps/go/**'
+      - '.github/workflows/build-and-push.yml'
+
+env:
+  REGISTRY: docker.io
+  IMAGE_PREFIX: niconiahi/habita
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.changes.outputs.web }}
+      go: ${{ steps.changes.outputs.go }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+            go:
+              - 'apps/go/**'
+
+  build-svelte:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./infra/development/app/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}:svelte-${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}:svelte-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-go:
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/go
+          file: ./apps/go/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}:go-${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}:go-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

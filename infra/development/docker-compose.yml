@@ -1,3 +1,0 @@
-include:
-  - path: ./web/docker-compose.yml
-  - path: ./observability/docker-compose.yml

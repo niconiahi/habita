@@ -2,21 +2,21 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+INFRA_DIR="$REPO_ROOT/infra/development"
 
 stack="$1"
 shift
-env="development"
 
 case "$stack" in
-  web)
-    docker compose -p "$env" -f "$REPO_ROOT/infra/development/web/docker-compose.yml" "$@"
+  app|gateway|api|media|geo|scheduler)
+    docker compose -p "$stack" -f "$INFRA_DIR/$stack/docker-compose.yml" "$@"
     ;;
-  observability|obs)
-    docker compose -p "$env" -f "$REPO_ROOT/infra/development/observability/docker-compose.yml" "$@"
+  obs|observability)
+    docker compose -p observability -f "$INFRA_DIR/observability/docker-compose.yml" "$@"
     ;;
   *)
     echo "Unknown stack: $stack"
-    echo "Available: web, observability (obs)"
+    echo "Available: app, gateway, api, media, geo, scheduler, obs"
     exit 1
     ;;
 esac

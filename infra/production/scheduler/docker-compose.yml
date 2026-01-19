@@ -1,0 +1,36 @@
+services:
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia.ini:/etc/ofelia/config.ini:ro
+    command: daemon --config /etc/ofelia/config.ini
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - internal
+
+  backup-uploader:
+    image: rclone/rclone:latest
+    restart: unless-stopped
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - app_backups:/backups:ro
+      - ./rclone.conf:/config/rclone/rclone.conf:ro
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+
+volumes:
+  app_backups:
+    external: true
