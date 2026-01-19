@@ -159,4 +159,5 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /opt/habita
+            git fetch origin main && git reset --hard origin/main
             just --set env production deploy ${{ needs.changes.outputs.services }}
