@@ -1,5 +1,5 @@
 {
-	"data": "ENC[AES256_GCM,data:52FR1GpwdlibscmCDk9vQe3VbKWjBKnUEeu7fJj10zeRh7o0e2BtKY7piySfMDrHvuH1rg+yp7wNaaBnN7HYpkiZyn3YC3S6hlfCpDcTH/9skS3IfyAEHY9inDbsNKkZzxLnX3k4v0Ga4kE5UIBNwlfYo7lEflehCOJaExuhlY/r2TrJBnFhd63+PYOwcgdngsfrEtaBNYlmjZJN0xPbur41FGa9k5EVTWFR/wbaoeuN23nwmIYn7ay9jsxDF4EJMIQa,iv:8O3RNw7oNGwvnO5/ReseA3kMbTAVajmmJzI1WHfoZZE=,tag:ksaHQnWcrDxflJcxduKscg==,type:str]",
+	"data": "ENC[AES256_GCM,data:bBC6PD92XKbpNV/iOJdrSvsAeBTMlQlmoa7i4lK4mSeaOm2qD0UYFHMqfyqeVX0svx0D7qWxGNcXnkJlCXnW+oLI4FR+DME8MhY9fnJOwBKFxGqLVSRsky/HiQImgsenaQsKpeAplOOt4sZSKveigZ9gQPoms9NyU0hAa6emfYMk64QyiXWuFO1qSq4mDd/7r6vPhtGwlsaPFz6h1RzO2qxSs65JX1UoJogMlOl6T0dMMMAXz+BbqAkblM6aTrwcKaGPDtKHIoL1JArwrP5jOgKagj1LmyPLUc6RUyjfn8OmKOxpas+hwM6bsjhYMkE9Ky4ql/BdYH9S9/Gbbd4q1gpCW8XXxEBsfw==,iv:LKg8EGbylu1FyDOxE89vpwo7QXFGVKMQkH69mwBrdIQ=,tag:gVZXAjCUjr+2hT+OLk4azQ==,type:str]",
 	"sops": {
 		"age": [
 			{
@@ -7,8 +7,9 @@
 				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBBZ01hU0FsQlZqVEpGR0VG\nK0dIREJkQ0ZJSUp2MmlpVmEyem5lZEk1NHhBCjFZRktPNEpiNjlPeEVrVWFqUUZ1\nTGdMc0lMTzVqM0tpbW93NEFzNjl2eHMKLS0tIEN6Yy9qOEdjbk1SVklINHR1TFJv\ncGNjbWxXSGVYTU9yNm5nOGhIeWFGUm8K5/MYpAZYQjWZCGu5VKc/FVQ9ObtL/G6o\n+MScKjzEOQ96ARWkjJEjF6z9XW8mCEf5mE/Adm97BIn3+IeCTX0Orw==\n-----END AGE ENCRYPTED FILE-----\n"
 			}
 		],
-		"lastmodified": "2026-01-19T04:40:09Z",
-		"mac": "ENC[AES256_GCM,data:RGWV7MhsEKOIiuFDvKsMR3WuBvv6LYrcHFN6RBjTtIkSwufFv1tQQAXuIv0S4UnvYqB13k5+tLU9N2JWu57OMjztcSa8KMIAsULPu4xMA2oT69e6Ts/ffqBTLEslT/3T1xIcVHuhso667hDjdC0PtPWONdeeXBC02sXrk4gxDNo=,iv:8ivGevio8uZwAAuaH9efHI3bxtvwPfdza18kZ/76ZQw=,tag:jiHTb/UWLf8CcJmOjC3b3g==,type:str]",
+		"lastmodified": "2026-01-19T21:52:26Z",
+		"mac": "ENC[AES256_GCM,data:NsTHI9R3kmKB5m+K1tt/YBtvne9PSYyiqy8yAMd6TavXagSpSGh5lDaDuukPkp+NPini41s3M2fuBXk4TG5fqnR5QmvADl6KiLivQPw/d5+lGSQ1rcO9157d87XclhpuvF7/k/dvKVSdX4VwAUgmYlItyuCiStOwvjxDlRr5O5s=,iv:wkEYiN5/Pj8qpHJTx5VmANjllgxqNrIKtHxqlJ7XerY=,tag:wrgnSbGj4D6sHFJb++xCPA==,type:str]",
+		"unencrypted_suffix": "_unencrypted",
 		"version": "3.11.0"
 	}
 }
