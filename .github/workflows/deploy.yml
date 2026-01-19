@@ -158,5 +158,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            source ~/.bashrc || source ~/.profile || true
             cd /opt/habita
             just --set env production deploy ${{ needs.changes.outputs.services }}
