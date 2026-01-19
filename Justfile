@@ -17,7 +17,7 @@ up: network
   @echo "Starting app (db + valkey + svelte)..."
   docker compose -p app -f {{infra}}/app/docker-compose.yml up -d
   @echo "Waiting for db to be healthy..."
-  @until docker inspect --format='{{{{.State.Health.Status}}}}' app-db-1 2>/dev/null | grep -q healthy; do sleep 2; done
+  @until docker inspect --format='{{{{.State.Health.Status}}}}' $(docker ps -qf "label=habita.role=database" | head -1) 2>/dev/null | grep -q healthy; do sleep 2; done
   @echo "Starting api..."
   docker compose -p api -f {{infra}}/api/docker-compose.yml up -d
   @echo "Starting media..."
@@ -68,11 +68,72 @@ status:
 
 # Database shell
 db:
-  docker exec -it app-db-1 psql -U postgres -d habita
+  docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
 
 # Manual backup (saves to current directory)
 backup:
-  docker exec app-db-1 sh -c 'pg_dump -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
+  docker exec $(docker ps -qf "label=habita.role=database" | head -1) sh -c 'pg_dump -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
+
+# Restore test: verify backup integrity by restoring to test database
+# Requires: age CLI installed locally, private key in ~/.config/sops/age/keys.txt
+restore-test backup_file="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
+  UPLOADER_CONTAINER=$(docker ps -qf "label=habita.role=backup-uploader" | head -1)
+
+  # Find latest backup if not specified
+  if [[ -z "{{backup_file}}" ]]; then
+    BACKUP=$(docker exec "$UPLOADER_CONTAINER" \
+      sh -c 'ls -t /backups/*.sql.gz.age 2>/dev/null | head -1')
+    if [[ -z "$BACKUP" ]]; then
+      echo "❌ No encrypted backup found in /backups"
+      exit 1
+    fi
+    echo "Using latest backup: $BACKUP"
+  else
+    BACKUP="{{backup_file}}"
+  fi
+
+  echo ""
+  echo "=== Restore Test ==="
+  echo "Backup: $BACKUP"
+
+  # Create temporary test database
+  TEST_DB="habita_restore_test_$(date +%s)"
+  echo ""
+  echo "1. Creating test database: $TEST_DB"
+  docker exec "$DB_CONTAINER" createdb -U postgres "$TEST_DB"
+
+  # Decrypt and restore
+  # Flow: container cat → local age decrypt → local gunzip → container psql
+  echo ""
+  echo "2. Decrypting and restoring backup..."
+  docker exec "$UPLOADER_CONTAINER" cat "$BACKUP" | \
+    age -d -i ~/.config/sops/age/keys.txt | \
+    gunzip | \
+    docker exec -i "$DB_CONTAINER" psql -U postgres -d "$TEST_DB" -q
+
+  # Run sanity checks
+  echo ""
+  echo "3. Running sanity checks..."
+  TABLES=$(docker exec "$DB_CONTAINER" \
+    psql -U postgres -d "$TEST_DB" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
+  echo "   Tables found: $TABLES"
+
+  # TODO(human): Add domain-specific sanity queries here
+  # Example: Check that critical tables have data
+  # USERS=$(docker exec "$DB_CONTAINER" psql -U postgres -d "$TEST_DB" -t -c "SELECT COUNT(*) FROM users;")
+  # echo "   Users: $USERS"
+
+  # Cleanup
+  echo ""
+  echo "4. Cleaning up test database..."
+  docker exec "$DB_CONTAINER" dropdb -U postgres "$TEST_DB"
+
+  echo ""
+  echo "✅ Restore test completed successfully!"
 
 # Clean up unused Docker resources
 prune:
@@ -80,10 +141,27 @@ prune:
   docker volume prune -f
 
 # Deploy specific version (production only)
-deploy tag:
+deploy-tag tag:
   IMAGE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
   docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
   @echo "Deployed svelte with tag: {{tag}}"
+
+# Rollback to previous commit(s) and redeploy
+rollback commits="1" +services="app api":
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  echo "=== Rolling back {{commits}} commit(s) ==="
+  git revert --no-commit HEAD~{{commits}}..HEAD
+
+  echo ""
+  echo "=== Redeploying services: {{services}} ==="
+  just --set env {{env}} deploy {{services}}
+
+  echo ""
+  echo "⚠ Rollback applied but NOT committed. Review changes with 'git diff'"
+  echo "  To finalize: git commit -m 'Rollback: revert {{commits}} commits'"
+  echo "  To abort: git revert --abort"
 
 # ============================================================================
 # Secrets Management (sops + age)
@@ -129,3 +207,120 @@ secrets-edit:
 # Show current public key
 secrets-pubkey:
   @grep "public key:" ~/.config/sops/age/keys.txt 2>/dev/null | cut -d: -f2 | tr -d ' ' || echo "No key found. Run: just secrets-keygen"
+
+# ============================================================================
+# CI/CD Deployment (called by GitHub Actions)
+# ============================================================================
+
+# Deploy specific services: just --set env production deploy app api scheduler
+deploy +services:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  # Deploy locking - prevent concurrent deploys
+  exec 200>/tmp/habita-deploy.lock
+  if ! flock -n 200; then
+    echo "❌ Deploy already in progress (locked by another process)"
+    exit 1
+  fi
+  echo "🔒 Deploy lock acquired"
+
+  # Cleanup function for notifications and lock release
+  cleanup() {
+    local exit_code=$?
+    if [[ -n "${DEPLOY_WEBHOOK_URL:-}" ]]; then
+      if [[ $exit_code -eq 0 ]]; then
+        curl -s -X POST "$DEPLOY_WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d "{\"content\": \"✅ **Deploy succeeded** on habita.rent\n\nServices: {{services}}\"}" || true
+      else
+        curl -s -X POST "$DEPLOY_WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d "{\"content\": \"❌ **Deploy failed** on habita.rent\n\nServices: {{services}}\n\nCheck logs: \`just --set env {{env}} logs app\`\"}" || true
+      fi
+    fi
+    # Lock is released automatically when the script exits
+  }
+  trap cleanup EXIT
+
+  echo "=== Pulling latest code ==="
+  git fetch origin main && git reset --hard origin/main
+
+  echo ""
+  echo "=== Docker login ==="
+  if [[ -f ~/.docker-credentials ]]; then
+    source ~/.docker-credentials
+    echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+  else
+    echo "No ~/.docker-credentials found, skipping login (assuming public images)"
+  fi
+
+  # Check if we need to decrypt secrets
+  needs_decrypt=false
+  for svc in {{services}}; do
+    if [[ "$svc" == "scheduler" || "$svc" == "secrets" ]]; then
+      needs_decrypt=true
+      break
+    fi
+  done
+
+  if $needs_decrypt; then
+    echo ""
+    echo "=== Decrypting secrets ==="
+    just --set env {{env}} secrets-decrypt
+  fi
+
+  echo ""
+  echo "=== Deploying services: {{services}} ==="
+
+  for svc in {{services}}; do
+    case $svc in
+      app)
+        echo "→ Deploying app (pull, migrate, restart)..."
+        docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
+        docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+        ;;
+      api)
+        echo "→ Deploying api (pull, restart)..."
+        docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+        ;;
+      scheduler)
+        echo "→ Deploying scheduler..."
+        docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d --force-recreate
+        ;;
+      gateway)
+        echo "→ Deploying gateway..."
+        docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d --force-recreate
+        ;;
+      media)
+        echo "→ Deploying media..."
+        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate
+        ;;
+      secrets)
+        # Already handled above, just restart services that use .env
+        echo "→ Restarting services that use .env..."
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d
+        ;;
+      *)
+        echo "⚠ Unknown service: $svc"
+        ;;
+    esac
+  done
+
+  echo ""
+  echo "=== Verifying health checks ==="
+  sleep 10
+  unhealthy=$(docker ps --filter "health=unhealthy" --format "{{{{.Names}}}}" 2>/dev/null || true)
+  if [[ -n "$unhealthy" ]]; then
+    echo "❌ UNHEALTHY containers detected: $unhealthy"
+    exit 1
+  fi
+  echo "✅ All containers healthy"
+
+  echo ""
+  echo "=== Deploy complete ==="
+  just --set env {{env}} status

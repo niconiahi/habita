@@ -2,6 +2,8 @@ services:
   ofelia:
     image: mcuadros/ofelia:latest
     restart: unless-stopped
+    labels:
+      - "habita.role=scheduler"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ofelia.ini:/etc/ofelia/config.ini:ro
@@ -13,12 +15,38 @@ services:
     networks:
       - internal
 
+  # Dedicated backup container with pg_dump and age encryption
+  backup-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+    restart: unless-stopped
+    labels:
+      - "habita.role=backup-worker"
+    env_file:
+      - ../.env
+    environment:
+      # Age public key for encryption (from .sops.yaml)
+      AGE_PUBLIC_KEY: ${AGE_PUBLIC_KEY:-age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc}
+      PGHOST: db
+      PGPORT: 5432
+    volumes:
+      - app_backups:/backups
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - internal
+
   backup-uploader:
     image: rclone/rclone:latest
     restart: unless-stopped
+    labels:
+      - "habita.role=backup-uploader"
     entrypoint: ["tail", "-f", "/dev/null"]
     volumes:
-      - app_backups:/backups:ro
+      - app_backups:/backups
       - ./rclone.conf:/config/rclone/rclone.conf:ro
     deploy:
       resources:

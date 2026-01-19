@@ -3,41 +3,153 @@ name: Deploy to Production
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'apps/go/**'
+      - 'infra/production/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  REGISTRY: docker.io
+  IMAGE_PREFIX: niconiahi/habita
 
 jobs:
-  build-and-deploy:
+  # Detect what changed to deploy only affected services
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      api: ${{ steps.filter.outputs.api }}
+      scheduler: ${{ steps.filter.outputs.scheduler }}
+      gateway: ${{ steps.filter.outputs.gateway }}
+      media: ${{ steps.filter.outputs.media }}
+      secrets: ${{ steps.filter.outputs.secrets }}
+      services: ${{ steps.services.outputs.list }}
+      any: ${{ steps.services.outputs.any }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'apps/web/**'
+              - 'infra/production/app/**'
+            api:
+              - 'apps/go/**'
+              - 'infra/production/api/**'
+            scheduler:
+              - 'infra/production/scheduler/**'
+            gateway:
+              - 'infra/production/gateway/**'
+            media:
+              - 'infra/production/media/**'
+            secrets:
+              - 'infra/production/.env.enc'
+
+      - name: Build services list
+        id: services
+        run: |
+          services=""
+          any="false"
+
+          if [[ "${{ steps.filter.outputs.app }}" == "true" ]]; then
+            services="$services app"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then
+            services="$services api"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.scheduler }}" == "true" ]]; then
+            services="$services scheduler"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.gateway }}" == "true" ]]; then
+            services="$services gateway"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.media }}" == "true" ]]; then
+            services="$services media"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.secrets }}" == "true" ]]; then
+            services="$services secrets"
+            any="true"
+          fi
+
+          # Trim leading space
+          services="${services# }"
+
+          echo "list=$services" >> $GITHUB_OUTPUT
+          echo "any=$any" >> $GITHUB_OUTPUT
+          echo "Services to deploy: $services"
+
+  # Build svelte image if app changed
+  build-svelte:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Build and push web app image
-        run: |
-          docker build \
-            -f infra/production/web/Dockerfile \
-            -t niconiahi/habita:web-latest \
-            -t niconiahi/habita:web-${{ github.sha }} \
-            apps/web
-          docker push niconiahi/habita:web-latest
-          docker push niconiahi/habita:web-${{ github.sha }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./infra/development/app/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}:svelte-${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}:svelte-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build and push Go service image
-        run: |
-          docker build \
-            -f apps/go/Dockerfile \
-            -t niconiahi/habita:go-latest \
-            -t niconiahi/habita:go-${{ github.sha }} \
-            apps/go
-          docker push niconiahi/habita:go-latest
-          docker push niconiahi/habita:go-${{ github.sha }}
+  # Build go image if api changed
+  build-go:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/go
+          file: ./apps/go/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}:go-${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}:go-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy changed services to VPS
+  deploy:
+    needs: [changes, build-svelte, build-go]
+    if: always() && !failure() && !cancelled() && needs.changes.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -47,28 +159,4 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /opt/habita
-
-            echo "=== Pulling latest code ==="
-            git fetch origin main
-            git reset --hard origin/main
-
-            echo ""
-            echo "=== Logging into Docker Hub ==="
-            echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-            echo ""
-            echo "=== Pulling latest images ==="
-            docker compose -f infra/production/docker-compose.yml pull web go
-
-            echo ""
-            echo "=== Running migrations ==="
-            docker compose -f infra/production/docker-compose.yml run --rm web npx kysely migrate:latest
-
-            echo ""
-            echo "=== Restarting containers ==="
-            docker compose -f infra/production/docker-compose.yml up -d --force-recreate caddy
-            docker compose -f infra/production/docker-compose.yml up -d
-
-            echo ""
-            echo "=== Deployment complete ==="
-            docker compose -f infra/production/docker-compose.yml ps
+            just --set env production deploy ${{ needs.changes.outputs.services }}
