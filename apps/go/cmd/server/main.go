@@ -26,7 +26,6 @@ func main() {
 		}
 	}()
 
-	// Create logger
 	logger := observability.NewLogger()
 
 	// Health check (no tracing needed)
