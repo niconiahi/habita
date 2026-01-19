@@ -4,6 +4,8 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
+    labels:
+      - "habita.role=database"
     volumes:
       - db:/var/lib/postgresql/data
       - backups:/backups
@@ -22,6 +24,8 @@ services:
   valkey:
     image: valkey/valkey:7
     restart: unless-stopped
+    labels:
+      - "habita.role=cache"
     volumes:
       - kv:/data
     healthcheck:
@@ -41,6 +45,8 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
+    labels:
+      - "habita.role=app"
     environment:
       PORT: 3000
       NODE_ENV: production

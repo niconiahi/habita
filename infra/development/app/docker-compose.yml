@@ -4,6 +4,8 @@ services:
     restart: unless-stopped
     env_file:
       - ../.env
+    labels:
+      - "habita.role=database"
     ports:
       - "5432:5432"
     volumes:
@@ -24,6 +26,8 @@ services:
   valkey:
     image: valkey/valkey:7
     restart: unless-stopped
+    labels:
+      - "habita.role=cache"
     ports:
       - "6379:6379"
     volumes:
@@ -48,6 +52,8 @@ services:
       x-bake:
         provenance: false
     restart: unless-stopped
+    labels:
+      - "habita.role=app"
     volumes:
       - ../../../apps/web:/apps/web:delegated
       - deps:/apps/web/node_modules
