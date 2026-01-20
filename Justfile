@@ -265,12 +265,12 @@ deploy +services:
         echo "→ Deploying app (pull, migrate, restart)..."
         docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
         docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
         ;;
       api)
         echo "→ Deploying api (pull, restart)..."
         docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
         ;;
       scheduler)
         echo "→ Deploying scheduler..."
