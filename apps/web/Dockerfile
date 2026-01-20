@@ -42,6 +42,8 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5174"]
 FROM deps AS build
 
 ARG COMMIT_SHA
+# Using COMMIT_SHA busts cache when it changes - ensures fresh build per commit
+RUN echo "Building commit: $COMMIT_SHA"
 COPY . .
 RUN bun run build
 
