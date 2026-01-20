@@ -107,7 +107,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./apps/web
-          file: ./infra/development/app/Dockerfile
+          file: ./apps/web/Dockerfile
+          target: prod
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}:svelte-${{ github.sha }}
