@@ -1,9 +1,10 @@
 import Redis from "ioredis"
+import { lazy } from "$lib/server/lazy"
 
-if (!process.env.REDIS_URL)
-  throw new Error("REDIS_URL is not set")
-
-const client = new Redis(process.env.REDIS_URL)
+const client = lazy<Redis>(() => {
+  if (!process.env.REDIS_URL) throw new Error("REDIS_URL is not set")
+  return new Redis(process.env.REDIS_URL)
+})
 
 export const kv = {
   async del(key: string): Promise<number> {
