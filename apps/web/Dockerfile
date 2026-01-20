@@ -41,6 +41,7 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5174"]
 # -----------------------------------------------------------------------------
 FROM deps AS build
 
+ARG COMMIT_SHA
 COPY . .
 RUN bun run build
 
