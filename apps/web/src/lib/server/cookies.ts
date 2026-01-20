@@ -1,6 +1,3 @@
-if (!process.env.NODE_ENV)
-  throw new Error("NODE_ENV is not set")
-
 const SECURE = process.env.NODE_ENV === "production"
 
 export const SESSION_COOKIE_NAME = "auth-session"
