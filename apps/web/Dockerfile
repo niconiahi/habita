@@ -69,6 +69,7 @@ COPY --from=build /app/build ./build
 # Copy database migrations and config (needed for kysely migrate)
 COPY --from=build /app/db ./db
 COPY --from=build /app/kysely.config.ts ./
+COPY --from=build /app/src/lib/server/lazy.ts ./src/lib/server/lazy.ts
 
 RUN chown -R appuser:appuser /app
 
