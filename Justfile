@@ -249,18 +249,10 @@ deploy +services:
   # Docker login is handled once during server provisioning via `docker login`
   # Credentials persist in ~/.docker/config.json
 
-  # Check if we need to decrypt secrets
-  needs_decrypt=false
-  for svc in {{services}}; do
-    if [[ "$svc" == "scheduler" || "$svc" == "secrets" ]]; then
-      needs_decrypt=true
-      break
-    fi
-  done
-
-  if $needs_decrypt; then
+  # Decrypt secrets if .env doesn't exist
+  if [[ ! -f "{{infra}}/.env" ]]; then
     echo ""
-    echo "=== Decrypting secrets ==="
+    echo "=== Decrypting secrets (no .env found) ==="
     just --set env {{env}} secrets-decrypt
   fi
 
