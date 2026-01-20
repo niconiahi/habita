@@ -34,7 +34,7 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 
-	// Wrap handlers with otelhttp to extract trace context
+	// Wrap handlers with otelhttpp to extract trace context
 	http.Handle("/send-email",
 		otelhttp.NewHandler(
 			http.HandlerFunc(smtp.Handler(logger)),

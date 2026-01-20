@@ -3,5 +3,5 @@
 <p>
   Visit <a href="https://svelte.dev/docs/kit"
     >svelte.dev/docs/kit</a
-  > to read the documentatiiooon
+  > to read the documentatiioon
 </p>
