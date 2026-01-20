@@ -265,31 +265,31 @@ deploy +services:
         echo "→ Deploying app (pull, migrate, restart)..."
         docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
         docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
         ;;
       api)
         echo "→ Deploying api (pull, restart)..."
         docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
         ;;
       scheduler)
         echo "→ Deploying scheduler..."
-        docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d --force-recreate
+        docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d --force-recreate --pull always
         ;;
       gateway)
         echo "→ Deploying gateway..."
-        docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d --force-recreate
+        docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d --force-recreate --pull always
         ;;
       media)
         echo "→ Deploying media..."
-        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate
+        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate --pull always
         ;;
       secrets)
         # Already handled above, just restart services that use .env
         echo "→ Restarting services that use .env..."
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
-        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --pull always svelte
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --pull always go
+        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --pull always
         ;;
       *)
         echo "⚠ Unknown service: $svc"
