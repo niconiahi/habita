@@ -2,7 +2,7 @@ import { Kysely, ParseJSONResultsPlugin, PostgresDialect } from "kysely"
 import pg from "pg"
 import { TelemetryPlugin } from "./telemetry_plugin"
 import type { DB } from "./types"
-import { lazy } from "$lib/server/lazy"
+import { lazy } from "../src/lib/server/lazy"
 
 export const query_builder = lazy<Kysely<DB>>(() => {
   if (!process.env.POSTGRES_USER) throw new Error("POSTGRES_USER is not set")
