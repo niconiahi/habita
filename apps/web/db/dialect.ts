@@ -1,6 +1,6 @@
 import { PostgresDialect } from "kysely"
 import pg from "pg"
-import { lazy } from "$lib/server/lazy"
+import { lazy } from "../src/lib/server/lazy"
 
 export const DIALECT = lazy<PostgresDialect>(() => {
   if (!process.env.POSTGRES_USER) throw new Error("POSTGRES_USER is not set")
