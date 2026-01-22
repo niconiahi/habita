@@ -262,13 +262,17 @@ deploy +services:
   for svc in {{services}}; do
     case $svc in
       app)
-        echo "→ Deploying app (pull, migrate, restart)..."
+        echo "→ Deploying app (remove old images, pull, migrate, restart)..."
+        docker image rm niconiahi/habita:svelte-latest 2>/dev/null || true
+        docker image rm niconiahi/habita:svelte-${IMAGE_TAG:-latest} 2>/dev/null || true
         docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
         docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
         docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
         ;;
       api)
-        echo "→ Deploying api (pull, restart)..."
+        echo "→ Deploying api (remove old images, pull, restart)..."
+        docker image rm niconiahi/habita:go-latest 2>/dev/null || true
+        docker image rm niconiahi/habita:go-${IMAGE_TAG:-latest} 2>/dev/null || true
         docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
         docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
         ;;
