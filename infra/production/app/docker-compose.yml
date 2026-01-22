@@ -76,3 +76,5 @@ volumes:
   db:
   kv:
   backups:
+    external: true
+    name: backups
