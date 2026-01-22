@@ -70,6 +70,46 @@ status:
 db:
   docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
 
+# Reset database: tear down app, remove volumes, restart fresh with migrations and seeds
+db-reset:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  echo "⚠️  This will DELETE ALL DATA (database + cache)!"
+  read -p "Are you sure? (y/N) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Aborted."
+    exit 1
+  fi
+
+  APP_COMPOSE="docker compose -p app -f {{infra}}/app/docker-compose.yml"
+
+  echo ""
+  echo "=== Tearing down app and removing volumes ==="
+  $APP_COMPOSE down -v
+
+  echo ""
+  echo "=== Starting fresh containers ==="
+  $APP_COMPOSE up -d
+
+  echo ""
+  echo "=== Waiting for database to be healthy ==="
+  until $APP_COMPOSE exec db pg_isready -U postgres > /dev/null 2>&1; do
+    sleep 1
+  done
+
+  echo ""
+  echo "=== Running migrations ==="
+  $APP_COMPOSE run --rm svelte npx kysely migrate:latest
+
+  echo ""
+  echo "=== Running seeds ==="
+  $APP_COMPOSE run --rm svelte bun run db:seed
+
+  echo ""
+  echo "✅ Database reset complete!"
+
 # Manual backup (saves to current directory)
 backup:
   docker exec $(docker ps -qf "label=habita.role=database" | head -1) sh -c 'pg_dump -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
