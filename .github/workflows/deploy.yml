@@ -115,7 +115,8 @@ jobs:
             ${{ env.IMAGE_PREFIX }}:svelte-latest
           build-args: |
             COMMIT_SHA=${{ github.sha }}
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # Build go image if api changed
   build-go:
@@ -143,7 +144,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_PREFIX }}:go-${{ github.sha }}
             ${{ env.IMAGE_PREFIX }}:go-latest
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # Deploy changed services to VPS
   deploy:
