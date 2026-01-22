@@ -8,9 +8,15 @@ infra := "infra/" + env
 default:
   @just --list
 
-# Create the internal network (one-time setup)
-network:
+# Create shared infrastructure (one-time setup)
+# Run this once on a fresh server before deploying
+infra-setup:
   docker network create internal 2>/dev/null || true
+  docker volume create backups 2>/dev/null || true
+  @echo "✅ Created network 'internal' and volume 'backups'"
+
+# Alias for backwards compatibility
+network: infra-setup
 
 # Start all services in correct order
 up: network
@@ -71,10 +77,12 @@ db:
   docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
 
 # Reset database: tear down app, remove volumes, restart fresh with migrations and seeds
+# Usage: just --set env production db-reset
 db-reset:
   #!/usr/bin/env bash
   set -euo pipefail
 
+  echo "Environment: {{env}}"
   echo "⚠️  This will DELETE ALL DATA (database + cache)!"
   read -p "Are you sure? (y/N) " -n 1 -r
   echo

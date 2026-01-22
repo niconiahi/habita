@@ -31,7 +31,7 @@ services:
       PGHOST: db
       PGPORT: 5432
     volumes:
-      - app_backups:/backups
+      - backups:/backups
     deploy:
       resources:
         limits:
@@ -46,7 +46,7 @@ services:
       - "habita.role=backup-uploader"
     entrypoint: ["tail", "-f", "/dev/null"]
     volumes:
-      - app_backups:/backups
+      - backups:/backups
       - ./rclone.conf:/config/rclone/rclone.conf:ro
     deploy:
       resources:
@@ -60,5 +60,5 @@ networks:
     external: true
 
 volumes:
-  app_backups:
+  backups:
     external: true
