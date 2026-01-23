@@ -17,5 +17,8 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<Header user={data.user} notifications={data.notifications} />
+<Header
+  notifications={data.notifications}
+  is_administrator={data.is_administrator}
+/>
 {@render children()}

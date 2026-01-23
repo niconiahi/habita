@@ -1,7 +1,9 @@
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
 
-export async function fetch_tenant_by_id(tenant_id: number) {
+export async function fetch_tenant_by_id(
+  tenant_id: number,
+) {
   const tenant = await query_builder
     .selectFrom("user")
     .where("user.id", "=", tenant_id)

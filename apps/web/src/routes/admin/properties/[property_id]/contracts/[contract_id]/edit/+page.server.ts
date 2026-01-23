@@ -2,7 +2,7 @@ import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { get_contract_file_types } from "$lib/contract_file_type"
-import { has_edit_access } from "$lib/server/property_access"
+import { require_edit_access } from "$lib/server/property_access"
 import { fetch_owner } from "$lib/server/owner"
 import { fetch_tenant } from "$lib/server/tenant"
 import { fetch_contract } from "./fetchers/contract.server"
@@ -27,9 +27,6 @@ export const load: PageServerLoad = async ({
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  if (!has_edit_access(locals.user.accesses)) {
-    error(400, "not found")
-  }
   const contract_id = v.parse(
     ForceNumberSchema,
     params.contract_id,
@@ -44,6 +41,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
+  await require_edit_access(locals.user.id, property_id)
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
     fetch_property(property_id),
@@ -83,10 +81,6 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -94,27 +88,41 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     await update_contract(form_data, property_id)
     return null
   },
-  [ACTION.CREATE_FILE]: async ({ request, locals }) => {
+  [ACTION.CREATE_FILE]: async ({
+    request,
+    locals,
+    params,
+  }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await create_file(form_data)
     return null
   },
-  [ACTION.DESTROY_FILE]: async ({ request, locals }) => {
+  [ACTION.DESTROY_FILE]: async ({
+    request,
+    locals,
+    params,
+  }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_file(form_data)
     return null
@@ -127,10 +135,6 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -138,6 +142,8 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     return await create_pdf(form_data, property_id)
   },
   [ACTION.CREATE_CONTRACT_ITEM]: async ({
@@ -147,9 +153,11 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const contract_id = v.parse(
       ForceNumberSchema,
       params.contract_id,
@@ -163,13 +171,16 @@ export const actions: Actions = {
   [ACTION.UPDATE_CONTRACT_ITEM]: async ({
     request,
     locals,
+    params,
   }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await update_contract_item(form_data)
     return null
@@ -177,13 +188,16 @@ export const actions: Actions = {
   [ACTION.DESTROY_CONTRACT_ITEM]: async ({
     request,
     locals,
+    params,
   }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_contract_item(form_data)
     return null
@@ -191,13 +205,16 @@ export const actions: Actions = {
   [ACTION.CREATE_CONTRACT_ITEM_FILE]: async ({
     request,
     locals,
+    params,
   }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await create_contract_item_file(form_data)
     return null
@@ -205,24 +222,33 @@ export const actions: Actions = {
   [ACTION.DESTROY_CONTRACT_ITEM_FILE]: async ({
     request,
     locals,
+    params,
   }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_contract_item_file(form_data)
     return null
   },
-  [ACTION.UPDATE_PERIOD]: async ({ request, locals }) => {
+  [ACTION.UPDATE_PERIOD]: async ({
+    request,
+    locals,
+    params,
+  }) => {
     if (!locals.user) {
       redirect(302, "/properties")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(locals.user.id, property_id)
     const form_data = await request.formData()
     await update_period(form_data)
     return null

@@ -12,5 +12,9 @@ dev.habita.rent {
   }
 
   # SvelteKit app - primary, catches all other routes
-  reverse_proxy svelte:5174
+  reverse_proxy https://svelte:5174 {
+    transport http {
+      tls_insecure_skip_verify
+    }
+  }
 }

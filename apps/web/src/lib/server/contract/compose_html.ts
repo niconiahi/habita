@@ -1,19 +1,29 @@
 import { render } from "svelte/server"
 import Contract from "./Contract.svx"
 import { fetch_owner, type Owner } from "$lib/server/owner"
-import { fetch_tenant, type Tenant } from "$lib/server/tenant"
-import { fetch_contract, type Contract as ContractType } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-import { fetch_property, type Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
+import {
+  fetch_tenant,
+  type Tenant,
+} from "$lib/server/tenant"
+import {
+  fetch_contract,
+  type Contract as ContractType,
+} from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
+import {
+  fetch_property,
+  type Property,
+} from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
 export async function fetch_contract_data(
   property_id: number,
   contract_id: number,
 ) {
-  const [contract, property, owner, tenant] = await Promise.all([
-    fetch_contract(contract_id),
-    fetch_property(property_id),
-    fetch_owner(property_id),
-    fetch_tenant(property_id),
-  ])
+  const [contract, property, owner, tenant] =
+    await Promise.all([
+      fetch_contract(contract_id),
+      fetch_property(property_id),
+      fetch_owner(property_id),
+      fetch_tenant(property_id),
+    ])
   return { contract, property, owner, tenant }
 }
 export function compose_html(

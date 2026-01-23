@@ -7,7 +7,11 @@
     value?: string | number
   }
 
-  let { children, value = $bindable<string | number>(""), ...rest }: Props = $props()
+  let {
+    children,
+    value = $bindable<string | number>(""),
+    ...rest
+  }: Props = $props()
 </script>
 
 <select bind:value {...rest}>

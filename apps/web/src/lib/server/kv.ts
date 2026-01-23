@@ -2,7 +2,8 @@ import Redis from "ioredis"
 import { lazy } from "$lib/server/lazy"
 
 const client = lazy<Redis>(() => {
-  if (!process.env.REDIS_URL) throw new Error("REDIS_URL is not set")
+  if (!process.env.REDIS_URL)
+    throw new Error("REDIS_URL is not set")
   return new Redis(process.env.REDIS_URL)
 })
 

@@ -58,6 +58,7 @@ services:
     volumes:
       - ../../../apps/web:/app:delegated
       - deps:/app/node_modules
+      - ../gateway/certs:/certs:ro
     env_file:
       - ../.env
     ports:

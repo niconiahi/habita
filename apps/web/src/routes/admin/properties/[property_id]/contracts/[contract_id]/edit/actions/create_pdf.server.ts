@@ -2,7 +2,10 @@ import { createHash } from "node:crypto"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { compose_html, fetch_contract_data } from "$lib/server/contract/compose_html"
+import {
+  compose_html,
+  fetch_contract_data,
+} from "$lib/server/contract/compose_html"
 import { validate_contract_requirements } from "$lib/server/contract/validate_contract"
 import { now } from "$lib/server/now"
 import { generate_pdf_with_playwright } from "$lib/server/pdf_generator"
@@ -15,7 +18,10 @@ export async function create_pdf(
     ForceNumberSchema,
     form_data.get("id"),
   )
-  const data = await fetch_contract_data(property_id, contract_id)
+  const data = await fetch_contract_data(
+    property_id,
+    contract_id,
+  )
   const validation = validate_contract_requirements(
     data.contract,
     data.property,

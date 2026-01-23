@@ -15,4 +15,6 @@ export function fetch_slots(property_id: number) {
     .execute()
 }
 
-export type Slot = Awaited<ReturnType<typeof fetch_slots>>[number]
+export type Slot = Awaited<
+  ReturnType<typeof fetch_slots>
+>[number]

@@ -1,8 +1,10 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { query_builder } from "db/query_builder"
+import {
+  get_edit_property_ids,
+  is_tenant_in_admin_properties,
+} from "$lib/server/organizations"
 import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 import type { PageServerLoad } from "./$types"
 
@@ -20,21 +22,14 @@ export const load: PageServerLoad = async ({
       message: "tenant id should be a number",
     },
   )
-  const admin_property_ids = locals.user.accesses
-    .filter(
-      (access) =>
-        access.type === ACCESS_TYPE.OWNER ||
-        access.type === ACCESS_TYPE.ADMINISTRATOR,
-    )
-    .map((access) => access.property_id)
-  const tenant_access = await query_builder
-    .selectFrom("access")
-    .where("access.user_id", "=", tenant_id)
-    .where("access.type", "=", ACCESS_TYPE.TENANT)
-    .where("access.property_id", "in", admin_property_ids)
-    .select(["access.id"])
-    .executeTakeFirst()
-  if (!tenant_access) {
+  const admin_property_ids = await get_edit_property_ids(
+    locals.user.id,
+  )
+  const has_access = await is_tenant_in_admin_properties(
+    tenant_id,
+    admin_property_ids,
+  )
+  if (!has_access) {
     error(403, "not authorized")
   }
   const tenant = await fetch_tenant_by_id(tenant_id)

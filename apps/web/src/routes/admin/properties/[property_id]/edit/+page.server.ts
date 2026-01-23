@@ -1,7 +1,7 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { has_edit_access } from "$lib/server/property_access"
+import { require_edit_access } from "$lib/server/property_access"
 import { PROPERTY_STATE } from "$lib/property_state"
 import { fetch_property } from "./fetchers/property.server"
 import { update_location } from "./actions/update_location.server"
@@ -25,9 +25,6 @@ export const load: PageServerLoad = async ({
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  if (!has_edit_access(locals.user.accesses)) {
-    error(400, "not found")
-  }
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,
@@ -35,6 +32,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
+  await require_edit_access(locals.user.id, property_id)
   const property = await fetch_property(property_id)
   if (!property) {
     error(
@@ -57,14 +55,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     update_location(form_data)
     return null
@@ -73,13 +69,11 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
     create_room(property_id)
     return null
   },
@@ -91,14 +85,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     update_room(form_data)
     return null
@@ -111,14 +103,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     await update_room_positions(form_data)
     return null
@@ -131,14 +121,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     destroy_room(form_data)
     return null
@@ -147,13 +135,11 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
     create_service(property_id)
     return null
   },
@@ -165,14 +151,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     try {
       await update_service(form_data, property_id)
@@ -191,14 +175,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     destroy_service(form_data)
     return null
@@ -211,14 +193,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     create_property_file(form_data, property_id)
     return null
@@ -231,14 +211,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     invite_owner(form_data)
     return null
@@ -251,14 +229,12 @@ export const actions: Actions = {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
-    const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
     )
+    await require_edit_access(locals.user.id, property_id)
+    const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     await update_destinies(form_data, property_id)
     return null

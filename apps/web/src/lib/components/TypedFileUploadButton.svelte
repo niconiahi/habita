@@ -142,7 +142,11 @@
     use:enhance
   >
     {#each Object.entries(data) as [field_name, field_value] (field_name)}
-      <input type="hidden" name={field_name} value={field_value} />
+      <input
+        type="hidden"
+        name={field_name}
+        value={field_value}
+      />
     {/each}
     <input
       type="hidden"

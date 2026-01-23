@@ -1,24 +1,11 @@
-import { sha256 } from "@oslojs/crypto/sha2"
-import {
-  encodeBase64url,
-  encodeHexLowerCase,
-} from "@oslojs/encoding"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
-
-export function make_token() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32))
-  const token = encodeBase64url(bytes)
-  return token
-}
-
-export function compose_token_hash(token: string) {
-  return encodeHexLowerCase(
-    sha256(new TextEncoder().encode(token)),
-  )
-}
+import {
+  make_token,
+  compose_token_hash,
+} from "$lib/server/token"
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 

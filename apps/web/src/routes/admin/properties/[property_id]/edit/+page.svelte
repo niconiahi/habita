@@ -6,10 +6,7 @@
   import Button from "$lib/components/Button.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
-  import {
-    ACCESS_TYPE,
-    get_access_type_label,
-  } from "$lib/access_type"
+  import { get_role_label } from "$lib/organization_role"
   import { display_name } from "$lib/display_name"
   import {
     get_property_destinies,
@@ -39,7 +36,7 @@
   const property_destinies = get_property_destinies()
   const has_owner = $derived(
     data.property.members.some(
-      (member) => member.type === ACCESS_TYPE.OWNER,
+      (member) => member.role === "owner",
     ),
   )
   const all_services_added = $derived(
@@ -273,7 +270,7 @@
             name="id"
           />
           <p>{display_name(member)}</p>
-          <p>{get_access_type_label(member.type)}</p>
+          <p>{get_role_label(member.role)}</p>
         </li>
       {/each}
     </ul>
@@ -352,7 +349,9 @@
           action={compose_action(ACTION.CREATE_SERVICE)}
           use:enhance
         >
-          <Button type="submit" disabled={all_services_added}
+          <Button
+            type="submit"
+            disabled={all_services_added}
             >Agregar servicio</Button
           >
         </form>

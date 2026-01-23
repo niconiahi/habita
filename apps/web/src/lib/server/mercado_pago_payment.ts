@@ -1,11 +1,17 @@
 import { get_origin } from "./origin"
 
 function get_config() {
-  if (!process.env.NODE_ENV) throw new Error("NODE_ENV is not set")
-  if (!process.env.MERCADO_PAGO_TEST_ACCESS_TOKEN) throw new Error("MERCADO_PAGO_TEST_ACCESS_TOKEN is not set")
-  if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) throw new Error("MERCADO_PAGO_ACCESS_TOKEN is not set")
+  if (!process.env.NODE_ENV)
+    throw new Error("NODE_ENV is not set")
+  if (!process.env.MERCADO_PAGO_TEST_ACCESS_TOKEN)
+    throw new Error(
+      "MERCADO_PAGO_TEST_ACCESS_TOKEN is not set",
+    )
+  if (!process.env.MERCADO_PAGO_ACCESS_TOKEN)
+    throw new Error("MERCADO_PAGO_ACCESS_TOKEN is not set")
 
-  const is_development = process.env.NODE_ENV === "development"
+  const is_development =
+    process.env.NODE_ENV === "development"
   return {
     is_development,
     access_token: is_development

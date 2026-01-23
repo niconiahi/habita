@@ -51,13 +51,26 @@ geo: network
 geo-down:
   docker compose -p geo -f {{infra}}/geo/docker-compose.yml down
 
-# View logs for a service (e.g., just logs app)
-logs service:
-  docker compose -p {{service}} -f {{infra}}/{{service}}/docker-compose.yml logs -f
+# View logs for a project or specific service (e.g., just logs app, just logs app svelte)
+logs project service="":
+  #!/usr/bin/env bash
+  if [[ -z "{{service}}" ]]; then
+    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml logs -f
+  else
+    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml logs -f {{service}}
+  fi
 
 # Restart a specific service
 restart service:
   docker compose -p {{service}} -f {{infra}}/{{service}}/docker-compose.yml restart
+
+# Reload a service (recreates container to pick up new env vars)
+reload service:
+  docker compose -p {{service}} -f {{infra}}/{{service}}/docker-compose.yml up -d --force-recreate
+
+# Run production build locally (for testing auth flows that need ORIGIN)
+preview:
+  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "bun run build && bun run preview --host 0.0.0.0 --port 5174"
 
 # Pull latest images (for production deploys)
 pull:
@@ -75,6 +88,10 @@ status:
 # Database shell
 db:
   docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
+
+# Refresh node_modules in the svelte container (after adding/removing packages)
+deps:
+  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte bun install
 
 # Reset database: tear down app, remove volumes, restart fresh with migrations and seeds
 # Usage: just --set env production db-reset
@@ -102,6 +119,10 @@ db-reset:
   $APP_COMPOSE up -d
 
   echo ""
+  echo "=== Installing dependencies ==="
+  $APP_COMPOSE run --rm svelte bun install
+
+  echo ""
   echo "=== Waiting for database to be healthy ==="
   until $APP_COMPOSE exec db pg_isready -U postgres > /dev/null 2>&1; do
     sleep 1
@@ -114,6 +135,10 @@ db-reset:
   echo ""
   echo "=== Running seeds ==="
   $APP_COMPOSE run --rm svelte bun run db:seed
+
+  echo ""
+  echo "=== Generating database types ==="
+  $APP_COMPOSE run --rm svelte bun run db:types
 
   echo ""
   echo "✅ Database reset complete!"

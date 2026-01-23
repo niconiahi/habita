@@ -11,11 +11,11 @@
   accesorios de la propiedad, salvo los que resultaran del
   buen uso y acción del tiempo. Asimismo, permitirá a
   <strong>"EL LOCADOR"</strong>
-  y/o a sus representantes designados, el libre acceso a
-  cualquier dependencia del inmueble, cuando éste lo juzgue
-  necesario para su inspección, y permitirá la ejecución de
-  todo trabajo que sea necesario para su conservación. En
-  caso de negativa o silencio de
+  y/o a sus representantes designados, el libre acceso a cualquier
+  dependencia del inmueble, cuando éste lo juzgue necesario para
+  su inspección, y permitirá la ejecución de todo trabajo que
+  sea necesario para su conservación. En caso de negativa o silencio
+  de
   <strong>"EL LOCADOR"</strong>
   ante el reclamo de <strong>"EL LOCATARIO"</strong>, el
   cual fuera debidamente notificado para que efectúe alguna

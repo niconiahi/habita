@@ -7,7 +7,9 @@ function compose_file_cache_key(id: number) {
   return `file:${id}`
 }
 
-export async function destroy_contract_item(form_data: FormData) {
+export async function destroy_contract_item(
+  form_data: FormData,
+) {
   const id = v.parse(ForceNumberSchema, form_data.get("id"))
   await query_builder.transaction().execute(async (tx) => {
     const contract_item_files = await tx
@@ -26,7 +28,9 @@ export async function destroy_contract_item(form_data: FormData) {
         .deleteFrom("file")
         .where("id", "=", contract_item_file.file_id)
         .execute()
-      await kv.del(compose_file_cache_key(contract_item_file.file_id))
+      await kv.del(
+        compose_file_cache_key(contract_item_file.file_id),
+      )
     }
 
     await tx

@@ -7,12 +7,17 @@ export const NOTIFICATION_TYPE = {
 export const NotificationTypeSchema = v.picklist(
   Object.values(NOTIFICATION_TYPE),
 )
-export type NotificationType = ObjectValues<typeof NOTIFICATION_TYPE>
+export type NotificationType = ObjectValues<
+  typeof NOTIFICATION_TYPE
+>
 
 export function get_notification_type_label(
   type: number | NotificationType,
 ) {
-  const notification_type = v.parse(NotificationTypeSchema, type)
+  const notification_type = v.parse(
+    NotificationTypeSchema,
+    type,
+  )
   switch (notification_type) {
     case NOTIFICATION_TYPE.PROPERTY_VISIT: {
       return "Visita a propiedad"

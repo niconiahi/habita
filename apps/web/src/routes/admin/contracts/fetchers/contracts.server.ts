@@ -3,7 +3,6 @@ import {
   type ContractState,
   get_contract_states,
 } from "$lib/contract_state"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
 
@@ -60,14 +59,19 @@ export async function fetch_contracts(
       jsonObjectFrom(
         eb
           .selectFrom("user")
-          .innerJoin("access", "access.user_id", "user.id")
+          .innerJoin("member", "member.user_id", "user.id")
+          .innerJoin(
+            "property_organization",
+            "property_organization.organization_id",
+            "member.organization_id",
+          )
           .select(["user.name", "user.surname"])
           .whereRef(
-            "access.property_id",
+            "property_organization.property_id",
             "=",
             "contract.property_id",
           )
-          .where("access.type", "=", ACCESS_TYPE.TENANT),
+          .where("member.role", "=", "tenant"),
       ).as("tenant"),
     ])
     .execute()

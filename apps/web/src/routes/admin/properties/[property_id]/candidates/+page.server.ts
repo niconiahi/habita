@@ -1,10 +1,7 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import {
-  get_property_accesses,
-  require_edit_access,
-} from "$lib/server/property_access"
+import { require_edit_access } from "$lib/server/property_access"
 import { fetch_candidates } from "./fetchers/candidates.server"
 import { fetch_property } from "./fetchers/property.server"
 import type { PageServerLoad } from "./$types"
@@ -23,11 +20,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
-  const property_accesses = get_property_accesses(
-    locals.user,
-    property_id,
-  )
-  require_edit_access(property_accesses)
+  await require_edit_access(locals.user.id, property_id)
   const [candidates, property] = await Promise.all([
     fetch_candidates(property_id),
     fetch_property(property_id),

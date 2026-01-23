@@ -38,7 +38,10 @@
       "Bash(pnpm tsc:*)",
       "Bash(dco web run:*)",
       "Skill(styling)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "WebFetch(domain:www.better-auth.com)",
+      "WebFetch(domain:github.com)",
+      "mcp__better-auth__search"
     ],
     "deny": [],
     "ask": []

@@ -7,10 +7,7 @@ import {
   get_receipt_types,
 } from "$lib/receipt_type"
 import { query_builder } from "db/query_builder"
-import {
-  get_property_accesses,
-  has_tenant_access,
-} from "$lib/server/property_access"
+import { require_property_role } from "$lib/server/property_access"
 import { fetch_contract } from "../edit/fetchers/contract.server"
 import { fetch_property } from "../../../../../../properties/fetchers/property.server"
 import type { PageServerLoad, Actions } from "./$types"
@@ -38,13 +35,9 @@ export const load: PageServerLoad = async ({
       message: "contract id should be a number",
     },
   )
-  const property_accesses = get_property_accesses(
-    locals.user,
-    property_id,
-  )
-  if (!has_tenant_access(property_accesses)) {
-    error(404, "not found")
-  }
+  await require_property_role(locals.user.id, property_id, [
+    "tenant",
+  ])
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
     fetch_property(property_id),
@@ -121,13 +114,11 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
-    const property_accesses = get_property_accesses(
-      locals.user,
+    await require_property_role(
+      locals.user.id,
       property_id,
+      ["tenant"],
     )
-    if (!has_tenant_access(property_accesses)) {
-      error(403, "not found")
-    }
     const form_data = await request.formData()
     await upload_receipt(form_data)
     return null

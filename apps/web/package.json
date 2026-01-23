@@ -55,17 +55,15 @@
     "@opentelemetry/sdk-logs": "^0.208.0",
     "@opentelemetry/sdk-node": "^0.208.0",
     "@opentelemetry/semantic-conventions": "^1.38.0",
-    "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
-    "arctic": "^3.7.0",
+    "@xstate/svelte": "^3.0.5",
+    "better-auth": "^1.4.17",
     "date-fns": "^4.1.0",
     "ioredis": "^5.8.2",
     "kysely": "^0.28.8",
     "marked": "^17.0.1",
     "n2words": "^1.23.1",
     "pg": "^8.16.3",
-    "xstate": "^5.19.0",
-    "@xstate/svelte": "^3.0.5",
-    "valibot": "^1.2.0"
+    "valibot": "^1.2.0",
+    "xstate": "^5.19.0"
   }
 }

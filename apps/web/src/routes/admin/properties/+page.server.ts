@@ -1,6 +1,8 @@
 import { redirect, error } from "@sveltejs/kit"
-import { ACCESS_TYPE } from "$lib/access_type"
-import { has_edit_access } from "$lib/server/property_access"
+import * as v from "valibot"
+import { ForceNumberSchema } from "$lib/force_number"
+import { get_edit_property_ids } from "$lib/server/organizations"
+import { require_edit_access } from "$lib/server/property_access"
 import { fetch_properties } from "./fetchers/properties.server"
 import { publish_property } from "./actions/publish_property.server"
 import { unpublish_property } from "./actions/unpublish_property.server"
@@ -11,37 +13,43 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = locals.user.accesses
-    .filter(
-      (access) =>
-        access.type === ACCESS_TYPE.OWNER ||
-        access.type === ACCESS_TYPE.ADMINISTRATOR,
-    )
-    .map((access) => access.property_id)
+  const property_ids = await get_edit_property_ids(
+    locals.user.id,
+  )
   const properties = await fetch_properties(property_ids)
   return { properties }
 }
 
 export const actions: Actions = {
-  [ACTION.PUBLISH_PROPERTY]: async ({ request, locals }) => {
+  [ACTION.PUBLISH_PROPERTY]: async ({
+    request,
+    locals,
+  }) => {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
     const form_data = await request.formData()
+    const property_id = v.parse(
+      ForceNumberSchema,
+      form_data.get("property_id"),
+    )
+    await require_edit_access(locals.user.id, property_id)
     await publish_property(form_data)
     return null
   },
-  [ACTION.UNPUBLISH_PROPERTY]: async ({ request, locals }) => {
+  [ACTION.UNPUBLISH_PROPERTY]: async ({
+    request,
+    locals,
+  }) => {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
-    }
     const form_data = await request.formData()
+    const property_id = v.parse(
+      ForceNumberSchema,
+      form_data.get("property_id"),
+    )
+    await require_edit_access(locals.user.id, property_id)
     await unpublish_property(form_data)
     return null
   },

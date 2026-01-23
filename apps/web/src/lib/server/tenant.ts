@@ -1,20 +1,23 @@
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_tenant(property_id: number) {
   const tenant = await query_builder
     .selectFrom("user")
-    .innerJoin("access", "access.user_id", "user.id")
+    .innerJoin("member", "member.user_id", "user.id")
     .innerJoin(
-      "property",
-      "property.id",
-      "access.property_id",
+      "property_organization",
+      "property_organization.organization_id",
+      "member.organization_id",
     )
     .where((eb) =>
       eb.and([
-        eb("access.type", "=", ACCESS_TYPE.TENANT),
-        eb("property.id", "=", property_id),
+        eb("member.role", "=", "tenant"),
+        eb(
+          "property_organization.property_id",
+          "=",
+          property_id,
+        ),
       ]),
     )
     .select([
@@ -31,10 +34,14 @@ export async function fetch_tenant(property_id: number) {
     ...tenant,
     name: decrypt(tenant.name),
     surname: decrypt(tenant.surname),
-    phone_number: tenant.phone_number ? decrypt(tenant.phone_number) : null,
+    phone_number: tenant.phone_number
+      ? decrypt(tenant.phone_number)
+      : null,
     document_number: tenant.document_number
       ? decrypt(tenant.document_number)
       : null,
   }
 }
-export type Tenant = Awaited<ReturnType<typeof fetch_tenant>>
+export type Tenant = Awaited<
+  ReturnType<typeof fetch_tenant>
+>

@@ -1,6 +1,5 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_tenants(
@@ -11,19 +10,28 @@ export async function fetch_tenants(
   }
   const tenants = await query_builder
     .selectFrom("user")
-    .innerJoin("access", "access.user_id", "user.id")
+    .innerJoin("member", "member.user_id", "user.id")
+    .innerJoin(
+      "property_organization",
+      "property_organization.organization_id",
+      "member.organization_id",
+    )
     .innerJoin(
       "property",
       "property.id",
-      "access.property_id",
+      "property_organization.property_id",
     )
     .innerJoin(
       "location",
       "location.id",
       "property.location_id",
     )
-    .where("access.type", "=", ACCESS_TYPE.TENANT)
-    .where("access.property_id", "in", admin_property_ids)
+    .where("member.role", "=", "tenant")
+    .where(
+      "property_organization.property_id",
+      "in",
+      admin_property_ids,
+    )
     .select((eb) => [
       "user.id",
       "user.name",

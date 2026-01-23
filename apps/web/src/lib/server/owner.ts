@@ -1,20 +1,23 @@
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_owner(property_id: number) {
   const owner = await query_builder
     .selectFrom("user")
-    .innerJoin("access", "access.user_id", "user.id")
+    .innerJoin("member", "member.user_id", "user.id")
     .innerJoin(
-      "property",
-      "property.id",
-      "access.property_id",
+      "property_organization",
+      "property_organization.organization_id",
+      "member.organization_id",
     )
     .where((eb) =>
       eb.and([
-        eb("access.type", "=", ACCESS_TYPE.OWNER),
-        eb("property.id", "=", property_id),
+        eb("member.role", "=", "owner"),
+        eb(
+          "property_organization.property_id",
+          "=",
+          property_id,
+        ),
       ]),
     )
     .select([
@@ -31,7 +34,9 @@ export async function fetch_owner(property_id: number) {
     ...owner,
     name: decrypt(owner.name),
     surname: decrypt(owner.surname),
-    phone_number: owner.phone_number ? decrypt(owner.phone_number) : null,
+    phone_number: owner.phone_number
+      ? decrypt(owner.phone_number)
+      : null,
     document_number: owner.document_number
       ? decrypt(owner.document_number)
       : null,
