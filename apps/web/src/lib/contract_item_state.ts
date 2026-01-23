@@ -15,7 +15,10 @@ export type ContractItemState = ObjectValues<
 export function get_contract_item_state_label(
   type: number | ContractItemState,
 ) {
-  const contract_item_state = v.parse(ContractItemStateSchema, type)
+  const contract_item_state = v.parse(
+    ContractItemStateSchema,
+    type,
+  )
   switch (contract_item_state) {
     case CONTRACT_ITEM_STATE.GOOD: {
       return "Bueno"

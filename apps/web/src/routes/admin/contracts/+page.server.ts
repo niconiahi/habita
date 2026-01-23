@@ -1,7 +1,7 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { ContractStateSchema } from "$lib/contract_state"
+import { get_edit_property_ids } from "$lib/server/organizations"
 import { fetch_contracts } from "./fetchers/contracts.server"
 import { set_state } from "./actions/set_state.server"
 import { ACTION } from "./actions/action"
@@ -18,13 +18,9 @@ export const load: PageServerLoad = async ({
     ContractStateSchema,
     Number(url.searchParams.get("state")),
   )
-  const property_ids = locals.user.accesses
-    .filter(
-      (access) =>
-        access.type === ACCESS_TYPE.OWNER ||
-        access.type === ACCESS_TYPE.ADMINISTRATOR,
-    )
-    .map((access) => access.property_id)
+  const property_ids = await get_edit_property_ids(
+    locals.user.id,
+  )
   const contracts = await fetch_contracts(property_ids, [
     state,
   ])

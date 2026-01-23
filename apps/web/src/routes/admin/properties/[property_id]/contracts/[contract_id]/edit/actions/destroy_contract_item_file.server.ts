@@ -7,7 +7,9 @@ function compose_file_cache_key(id: number) {
   return `file:${id}`
 }
 
-export async function destroy_contract_item_file(form_data: FormData) {
+export async function destroy_contract_item_file(
+  form_data: FormData,
+) {
   const id = v.parse(ForceNumberSchema, form_data.get("id"))
   const contract_item_id = v.parse(
     ForceNumberSchema,
@@ -19,7 +21,11 @@ export async function destroy_contract_item_file(form_data: FormData) {
       .where((eb) =>
         eb.and([
           eb("contract_item_file.file_id", "=", id),
-          eb("contract_item_file.contract_item_id", "=", contract_item_id),
+          eb(
+            "contract_item_file.contract_item_id",
+            "=",
+            contract_item_id,
+          ),
         ]),
       )
       .execute()

@@ -15,11 +15,11 @@ Los numeros de telefono argentinos siguen el estandar internacional **E.164** re
 
 ## Estructura
 
-| Componente | Descripcion | Ejemplo |
-|------------|-------------|---------|
-| Codigo pais | Siempre `+54` | +54 |
-| Codigo de area | 2-4 digitos segun region | 11 (Buenos Aires) |
-| Numero de abonado | 6-8 digitos | 12345678 |
+| Componente        | Descripcion              | Ejemplo           |
+| ----------------- | ------------------------ | ----------------- |
+| Codigo pais       | Siempre `+54`            | +54               |
+| Codigo de area    | 2-4 digitos segun region | 11 (Buenos Aires) |
+| Numero de abonado | 6-8 digitos              | 12345678          |
 
 **Regla clave:** El codigo de area + numero de abonado siempre suman **10 digitos**.
 
@@ -31,6 +31,7 @@ Los numeros de telefono argentinos siguen el estandar internacional **E.164** re
 - Total: **13 digitos**
 
 Ejemplos:
+
 - `+5491112345678` - Buenos Aires (area 11)
 - `+5493515123456` - Cordoba (area 351)
 - `+5492614567890` - Mendoza (area 261)

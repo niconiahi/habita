@@ -2,7 +2,9 @@ import { query_builder } from "db/query_builder"
 import { SLOT_STATE } from "$lib/slot_state"
 import { decrypt } from "$lib/server/encryption"
 
-export async function fetch_candidates(property_id: number) {
+export async function fetch_candidates(
+  property_id: number,
+) {
   const candidates = await query_builder
     .selectFrom("slot")
     .innerJoin("user", "user.id", "slot.visitant_id")

@@ -1,37 +1,42 @@
 import type { Handle } from "@sveltejs/kit"
-import { validate_session_token } from "$lib/server/auth"
-import {
-  SESSION_COOKIE_NAME,
-  SESSION_COOKIE_OPTIONS,
-} from "$lib/server/cookies"
+import { auth } from "$lib/server/auth"
+import { svelteKitHandler } from "better-auth/svelte-kit"
+import { building } from "$app/environment"
+import { decrypt } from "$lib/server/encryption"
 
 export const handle: Handle = async ({
   event,
   resolve,
 }) => {
-  const session_token = event.cookies.get(
-    SESSION_COOKIE_NAME,
-  )
-
-  if (!session_token) {
+  const session = await auth.api.getSession({
+    headers: event.request.headers,
+  })
+  if (session) {
+    event.locals.user = {
+      id: Number(session.user.id),
+      email: session.user.email,
+      name: session.user.name
+        ? decrypt(session.user.name)
+        : null,
+      surname: session.user.surname
+        ? decrypt(session.user.surname)
+        : null,
+    }
+    event.locals.session = {
+      id: session.session.id,
+      userId: Number(session.session.userId),
+      expiresAt: session.session.expiresAt,
+      createdAt: session.session.createdAt,
+      updatedAt: session.session.updatedAt,
+    }
+  } else {
     event.locals.user = null
     event.locals.session = null
-    return resolve(event)
   }
-
-  const { session, user } =
-    await validate_session_token(session_token)
-
-  if (session) {
-    event.cookies.set(
-      SESSION_COOKIE_NAME,
-      session_token,
-      SESSION_COOKIE_OPTIONS,
-    )
-  }
-
-  event.locals.user = user
-  event.locals.session = session
-
-  return resolve(event)
+  return svelteKitHandler({
+    event,
+    resolve,
+    auth,
+    building,
+  })
 }

@@ -1,12 +1,15 @@
 import * as v from "valibot"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { now } from "$lib/server/now"
-import { query_builder } from "db/query_builder"
+import {
+  add_user_to_property,
+  remove_user_role_from_property,
+} from "$lib/server/organizations"
+
 export const InputSchema = v.object({
   candidate_id: ForceNumberSchema,
   property_id: ForceNumberSchema,
 })
+
 export async function set_tenant(form_data: FormData) {
   const { candidate_id, property_id } = v.parse(
     InputSchema,
@@ -15,22 +18,14 @@ export async function set_tenant(form_data: FormData) {
       property_id: form_data.get("property_id"),
     },
   )
-  await query_builder.transaction().execute(async (tx) => {
-    await tx
-      .deleteFrom("access")
-      .where("property_id", "=", property_id)
-      .where("type", "=", ACCESS_TYPE.TENANT)
-      .execute()
-    await tx
-      .insertInto("access")
-      .values({
-        user_id: candidate_id,
-        property_id,
-        type: ACCESS_TYPE.TENANT,
-        created_at: now,
-        updated_at: now,
-      })
-      .execute()
-  })
+  await remove_user_role_from_property(
+    property_id,
+    "tenant",
+  )
+  await add_user_to_property(
+    property_id,
+    candidate_id,
+    "tenant",
+  )
   return { redirect_to: "/admin/candidates" }
 }

@@ -15,33 +15,33 @@
   desalojo de este o quienes ocupen el inmueble. En ambos
   casos y para el evento de que
   <strong>"EL LOCATARIO"</strong>
-  dejare abandonada la unidad o depositare judicialmente las
-  llaves, deberá abonar a <strong>"EL LOCADOR"</strong> una
-  multa equivalente al alquiler pactado, hasta el día en que
+  dejare abandonada la unidad o depositare judicialmente las llaves,
+  deberá abonar a <strong>"EL LOCADOR"</strong> una multa
+  equivalente al alquiler pactado, hasta el día en que
   <strong>"EL LOCADOR"</strong>
-  recupere la libre y efectiva tenencia definitiva de la
-  propiedad, debiendo indemnizarlo también por los
-  eventuales daños y perjuicios sufridos. Se establece este
-  derecho para <strong>"EL LOCADOR"</strong> en forma
-  especial en el caso de la falta de pago de dos (2)
-  mensualidades de alquiler. FALTA DE PAGO: a) El simple
+  recupere la libre y efectiva tenencia definitiva de la propiedad,
+  debiendo indemnizarlo también por los eventuales daños y perjuicios
+  sufridos. Se establece este derecho para
+  <strong>"EL LOCADOR"</strong>
+  en forma especial en el caso de la falta de pago de dos
+  (2) mensualidades de alquiler. FALTA DE PAGO: a) El simple
   vencimiento del plazo pactado para el pago de los
   alquileres y/o servicios constituirá en mora a
   <strong>"EL LOCATARIO"</strong>
-  de pleno derecho, sin necesidad de interpelación judicial
-  o extrajudicial alguna y dará origen a la multa a favor de
+  de pleno derecho, sin necesidad de interpelación judicial o
+  extrajudicial alguna y dará origen a la multa a favor de
   <strong>"EL LOCADOR"</strong>
-  por cada día transcurrido desde el día siguiente al del
-  vencimiento de la obligación incumplida y hasta el día de
-  su efectivo pago, sin perjuicio del interés compensatorio
-  que corresponda y otras acciones legales contra
+  por cada día transcurrido desde el día siguiente al del vencimiento
+  de la obligación incumplida y hasta el día de su efectivo pago,
+  sin perjuicio del interés compensatorio que corresponda y otras
+  acciones legales contra
   <strong>"EL LOCATARIO"</strong>
   que pudieran corresponder, b) Si
   <strong>"EL LOCATARIO"</strong>
-  dejara de abonar el alquiler, y/o servicios en la forma
-  prevista o faltara a cualquiera de las obligaciones que le
-  impone el presente contrato sin causa alguna, sin
-  perjuicio de la intimación que al efecto pueda formularle
+  dejara de abonar el alquiler, y/o servicios en la forma prevista
+  o faltara a cualquiera de las obligaciones que le impone el
+  presente contrato sin causa alguna, sin perjuicio de la intimación
+  que al efecto pueda formularle
   <strong>"EL LOCADOR"</strong>, este podrá reclamar el
   desalojo con más los daños y perjuicios correspondientes.
 </p>

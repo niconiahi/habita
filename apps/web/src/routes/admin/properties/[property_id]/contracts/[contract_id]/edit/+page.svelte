@@ -734,9 +734,15 @@
               action={compose_action(ACTION.UPDATE_PERIOD)}
             >
               <Formulary.Fields>
-                <input type="hidden" value={period.id} name="id" />
+                <input
+                  type="hidden"
+                  value={period.id}
+                  name="id"
+                />
                 <Formulary.Field>
-                  <Formulary.Label for="price">inicial</Formulary.Label>
+                  <Formulary.Label for="price"
+                    >inicial</Formulary.Label
+                  >
                   <input
                     id="price"
                     name="price"
@@ -746,7 +752,8 @@
                 </Formulary.Field>
               </Formulary.Fields>
               <Formulary.Actions>
-                <Button type="submit">Guardar precio</Button>
+                <Button type="submit">Guardar precio</Button
+                >
               </Formulary.Actions>
             </Formulary.Root>
           </li>

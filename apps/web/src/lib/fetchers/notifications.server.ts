@@ -1,7 +1,9 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 
-export function fetch_notifications(property_ids: number[]) {
+export function fetch_notifications(
+  property_ids: number[],
+) {
   return query_builder
     .selectFrom("notification")
     .innerJoin(

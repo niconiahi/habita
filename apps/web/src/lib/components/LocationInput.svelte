@@ -29,6 +29,7 @@
 </script>
 
 <script lang="ts">
+  import { untrack } from "svelte"
   import { safeParse } from "valibot"
   import { setup, assign } from "xstate"
   import { useMachine } from "@xstate/svelte"
@@ -261,7 +262,7 @@
     },
   })
   const { snapshot, send } = useMachine(locationMachine, {
-    input: { default_value },
+    input: { default_value: untrack(() => default_value) },
   })
   let abort_controller: AbortController | null = null
   async function handle_input(event: Event) {
@@ -374,7 +375,9 @@
               id={`${list_id}_option_${index}`}
               role="option"
               class="option"
-              class:highlighted={$snapshot.matches("navigating") &&
+              class:highlighted={$snapshot.matches(
+                "navigating",
+              ) &&
                 index ===
                   $snapshot.context.highlighted_index}
               aria-selected={index ===

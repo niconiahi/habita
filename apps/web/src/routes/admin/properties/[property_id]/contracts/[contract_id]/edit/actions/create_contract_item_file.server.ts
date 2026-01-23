@@ -3,7 +3,9 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
 
-export async function create_contract_item_file(form_data: FormData) {
+export async function create_contract_item_file(
+  form_data: FormData,
+) {
   const contract_item_id = v.parse(
     ForceNumberSchema,
     form_data.get("contract_item_id"),

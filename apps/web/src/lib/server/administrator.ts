@@ -1,20 +1,25 @@
 import { query_builder } from "db/query_builder"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { decrypt } from "$lib/server/encryption"
 
-export async function fetch_administrator(property_id: number) {
+export async function fetch_administrator(
+  property_id: number,
+) {
   const administrator = await query_builder
     .selectFrom("user")
-    .innerJoin("access", "access.user_id", "user.id")
+    .innerJoin("member", "member.user_id", "user.id")
     .innerJoin(
-      "property",
-      "property.id",
-      "access.property_id",
+      "property_organization",
+      "property_organization.organization_id",
+      "member.organization_id",
     )
     .where((eb) =>
       eb.and([
-        eb("access.type", "=", ACCESS_TYPE.ADMINISTRATOR),
-        eb("property.id", "=", property_id),
+        eb("member.role", "=", "admin"),
+        eb(
+          "property_organization.property_id",
+          "=",
+          property_id,
+        ),
       ]),
     )
     .select([
@@ -38,4 +43,6 @@ export async function fetch_administrator(property_id: number) {
       : null,
   }
 }
-export type Administrator = Awaited<ReturnType<typeof fetch_administrator>>
+export type Administrator = Awaited<
+  ReturnType<typeof fetch_administrator>
+>

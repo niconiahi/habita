@@ -1,14 +1,22 @@
-import { Kysely, ParseJSONResultsPlugin, PostgresDialect } from "kysely"
+import {
+  Kysely,
+  ParseJSONResultsPlugin,
+  PostgresDialect,
+} from "kysely"
 import pg from "pg"
 import { TelemetryPlugin } from "./telemetry_plugin"
 import type { DB } from "./types"
 import { lazy } from "../src/lib/server/lazy"
 
 export const query_builder = lazy<Kysely<DB>>(() => {
-  if (!process.env.POSTGRES_USER) throw new Error("POSTGRES_USER is not set")
-  if (!process.env.POSTGRES_PASSWORD) throw new Error("POSTGRES_PASSWORD is not set")
-  if (!process.env.POSTGRES_DB) throw new Error("POSTGRES_DB is not set")
-  if (!process.env.POSTGRES_HOST) throw new Error("POSTGRES_HOST is not set")
+  if (!process.env.POSTGRES_USER)
+    throw new Error("POSTGRES_USER is not set")
+  if (!process.env.POSTGRES_PASSWORD)
+    throw new Error("POSTGRES_PASSWORD is not set")
+  if (!process.env.POSTGRES_DB)
+    throw new Error("POSTGRES_DB is not set")
+  if (!process.env.POSTGRES_HOST)
+    throw new Error("POSTGRES_HOST is not set")
 
   const dialect = new PostgresDialect({
     pool: new pg.Pool({
@@ -21,7 +29,10 @@ export const query_builder = lazy<Kysely<DB>>(() => {
 
   return new Kysely<DB>({
     dialect,
-    plugins: [new ParseJSONResultsPlugin(), new TelemetryPlugin()],
+    plugins: [
+      new ParseJSONResultsPlugin(),
+      new TelemetryPlugin(),
+    ],
   })
 })
 

@@ -1,4 +1,4 @@
-import { ACCESS_TYPE } from "$lib/access_type"
+import { get_admin_property_ids } from "$lib/server/organizations"
 import {
   fetch_notifications,
   type Notification,
@@ -9,23 +9,21 @@ export const load: LayoutServerLoad = async ({
   locals,
 }) => {
   let notifications: Notification[] = []
-
+  let is_administrator = false
   if (locals.user) {
-    const admin_property_ids = locals.user.accesses
-      .filter(
-        (access) => access.type === ACCESS_TYPE.ADMINISTRATOR,
-      )
-      .map((access) => access.property_id)
-
-    if (admin_property_ids.length > 0) {
+    const admin_property_ids = await get_admin_property_ids(
+      locals.user.id,
+    )
+    is_administrator = admin_property_ids.length > 0
+    if (is_administrator) {
       notifications = await fetch_notifications(
         admin_property_ids,
       )
     }
   }
-
   return {
     user: locals.user,
     notifications,
+    is_administrator,
   }
 }

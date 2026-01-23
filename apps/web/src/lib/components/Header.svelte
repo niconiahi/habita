@@ -1,48 +1,53 @@
 <script lang="ts">
-  import { ACCESS_TYPE } from "$lib/access_type"
+  import { authClient } from "$lib/auth-client"
   import Button from "$lib/components/Button.svelte"
   import Notifications from "$lib/components/Notifications.svelte"
   import type { Notification } from "$lib/fetchers/notifications.server"
 
   interface Props {
-    user: {
-      id: number
-      email: string
-      accesses: Array<{
-        id: number
-        type: number
-        property_id: number
-      }>
-    } | null
     notifications: Notification[]
+    is_administrator: boolean
   }
 
-  let { user, notifications }: Props = $props()
+  let { notifications, is_administrator }: Props = $props()
 
-  let is_administrator = $derived(
-    user?.accesses.some(
-      (a) => a.type === ACCESS_TYPE.ADMINISTRATOR,
-    ) ?? false,
-  )
+  const session = authClient.useSession()
 </script>
 
 <header>
   <nav>
-    {#if user}
-      <span class="email">{user.email}</span>
-      <form method="POST" action="/auth/logout">
-        <Button type="submit">Logout</Button>
-      </form>
+    {#if $session.data}
+      <span class="email">{$session.data.user.email}</span>
+      <Button
+        onclick={async () => {
+          await authClient.signOut({
+            fetchOptions: {
+              onSuccess: () => {
+                window.location.href = "/"
+              },
+            },
+          })
+        }}
+      >
+        Logout
+      </Button>
+      <a
+        class="button"
+        aria-label="Profile page"
+        href="/profile">Profile</a
+      >
     {:else}
-      <form method="POST" action="/auth/google">
-        <Button type="submit">Login</Button>
-      </form>
+      <Button
+        onclick={async () => {
+          await authClient.signIn.social({
+            provider: "google",
+            callbackURL: "/properties",
+          })
+        }}
+      >
+        Login
+      </Button>
     {/if}
-    <a
-      class="button"
-      aria-label="Profile page"
-      href="/profile">Profile</a
-    >
     {#if is_administrator}
       <Notifications {notifications} />
     {/if}

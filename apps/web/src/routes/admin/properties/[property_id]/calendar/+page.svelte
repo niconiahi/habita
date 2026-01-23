@@ -4,7 +4,10 @@
   import * as Table from "$lib/components/Table"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
-  import { get_slot_state_label, SLOT_STATE } from "$lib/slot_state"
+  import {
+    get_slot_state_label,
+    SLOT_STATE,
+  } from "$lib/slot_state"
   import { ACTION } from "./actions/action"
   import type { PageData } from "./$types"
 
@@ -40,8 +43,14 @@
     >
       <Formulary.Fields>
         <Formulary.Field>
-          <Formulary.Label for="date">Fecha</Formulary.Label>
-          <input type="date" id="date" name="date" required />
+          <Formulary.Label for="date">Fecha</Formulary.Label
+          >
+          <input
+            type="date"
+            id="date"
+            name="date"
+            required
+          />
         </Formulary.Field>
         <Formulary.Field>
           <Formulary.Label for="start_time"
@@ -99,7 +108,9 @@
                 >{format_time(slot.end_date)}</Table.Cell
               >
               <Table.Cell
-                >{get_slot_state_label(slot.state)}</Table.Cell
+                >{get_slot_state_label(
+                  slot.state,
+                )}</Table.Cell
               >
               <Table.Cell>
                 {#if slot.state === SLOT_STATE.FREE}

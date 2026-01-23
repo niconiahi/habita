@@ -143,9 +143,14 @@ export async function fetch_property(id: number) {
       jsonArrayFrom(
         eb
           .selectFrom("user")
-          .innerJoin("access", "access.user_id", "user.id")
+          .innerJoin("member", "member.user_id", "user.id")
+          .innerJoin(
+            "property_organization",
+            "property_organization.organization_id",
+            "member.organization_id",
+          )
           .whereRef(
-            "access.property_id",
+            "property_organization.property_id",
             "=",
             "property.id",
           )
@@ -155,7 +160,7 @@ export async function fetch_property(id: number) {
             "user.surname",
             "user.phone_number",
             "user.document_number",
-            "access.type",
+            "member.role",
           ]),
       ).as("members"),
       jsonArrayFrom(

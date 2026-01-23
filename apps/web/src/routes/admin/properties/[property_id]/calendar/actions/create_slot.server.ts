@@ -23,7 +23,9 @@ export async function create_slot(form_data: FormData) {
   const [start_hours, start_minutes] = input.start_time
     .split(":")
     .map(Number)
-  const [end_hours, end_minutes] = input.end_time.split(":").map(Number)
+  const [end_hours, end_minutes] = input.end_time
+    .split(":")
+    .map(Number)
 
   const start_date = new Date(input.date)
   start_date.setHours(start_hours, start_minutes, 0, 0)

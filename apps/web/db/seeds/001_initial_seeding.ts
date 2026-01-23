@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto"
+import { createHash, randomUUID } from "node:crypto"
 import { encrypt } from "../../src/lib/server/encryption"
 import { readFile } from "node:fs/promises"
 import { dirname } from "node:path"
@@ -10,10 +10,6 @@ import {
   subMonths,
 } from "date-fns"
 import * as v from "valibot"
-import {
-  ACCESS_TYPE,
-  type AccessType,
-} from "../../src/lib/access_type.ts"
 import {
   CONTRACT_FILE_TYPE,
   type ContractFileType,
@@ -45,6 +41,8 @@ import { query_builder } from "../query_builder"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+type OrganizationRole = "owner" | "admin" | "tenant"
 
 function compose_file_path(basename: string) {
   return `${__dirname}/../files/${basename}`
@@ -145,6 +143,51 @@ async function upsert_user({
   return user.id
 }
 
+async function create_property_organization(
+  property_id: number,
+  address: string,
+  user_id: number,
+  role: OrganizationRole,
+  now: string,
+) {
+  const organization_id = randomUUID()
+  const member_id = randomUUID()
+  await query_builder
+    .insertInto("organization")
+    .values({
+      id: organization_id,
+      name: `Property: ${address}`,
+      slug: `property-${property_id}`,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute()
+  console.log("created organization", organization_id)
+  await query_builder
+    .insertInto("property_organization")
+    .values({
+      property_id,
+      organization_id,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute()
+  console.log("created property_organization")
+  await query_builder
+    .insertInto("member")
+    .values({
+      id: member_id,
+      organization_id,
+      user_id,
+      role,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute()
+  console.log("created member", member_id)
+  return organization_id
+}
+
 async function make_finished_contract(
   property_id: number,
   now: string,
@@ -166,7 +209,6 @@ async function make_finished_contract(
     .returning("id")
     .executeTakeFirstOrThrow()
   console.log("created contract", contract.id)
-
   const price = 600000
   const period_end_date = addMonths(contract_start_date, 3)
   const period = await query_builder
@@ -220,7 +262,6 @@ async function make_editing_contract(
     .returning("id")
     .executeTakeFirstOrThrow()
   console.log("created contract", contract.id)
-
   const price = 800000
   const period_end_date = addMonths(contract_start_date, 3)
   const period = await query_builder
@@ -235,23 +276,20 @@ async function make_editing_contract(
     })
     .returning("id")
     .executeTakeFirstOrThrow()
-  const SLOTS: {
-    start_date: Date
-    end_date: Date
-  }[] = [
-      {
-        start_date: new Date(2024, 9, 25, 15, 15),
-        end_date: new Date(2024, 9, 25, 15, 45),
-      },
-      {
-        start_date: new Date(2024, 9, 25, 15, 45),
-        end_date: new Date(2024, 9, 25, 16, 15),
-      },
-      {
-        start_date: new Date(2024, 9, 25, 16, 15),
-        end_date: new Date(2024, 9, 25, 16, 45),
-      },
-    ]
+  const SLOTS: { start_date: Date; end_date: Date }[] = [
+    {
+      start_date: new Date(2024, 9, 25, 15, 15),
+      end_date: new Date(2024, 9, 25, 15, 45),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 15, 45),
+      end_date: new Date(2024, 9, 25, 16, 15),
+    },
+    {
+      start_date: new Date(2024, 9, 25, 16, 15),
+      end_date: new Date(2024, 9, 25, 16, 45),
+    },
+  ]
   let first_slot_id: number | null = null
   for (const slot_ of SLOTS) {
     const slot = await query_builder
@@ -274,7 +312,6 @@ async function make_editing_contract(
     }
     console.log("slot created", slot.id)
   }
-
   await query_builder
     .updateTable("slot")
     .set({
@@ -327,11 +364,12 @@ async function run() {
   })
   const latitude = -34.595834
   const longitude = -58.447219
+  const address =
+    "1180, Padilla, Villa Crespo, Buenos Aires, Distrito Audiovisual, Comuna 15, Autonomous City of Buenos Aires, C1414CXE, Argentina"
   const location = await query_builder
     .insertInto("location")
     .values({
-      address:
-        "1180, Padilla, Villa Crespo, Buenos Aires, Distrito Audiovisual, Comuna 15, Autonomous City of Buenos Aires, C1414CXE, Argentina",
+      address,
       latitude,
       longitude,
       point: compose_point(latitude, longitude),
@@ -345,7 +383,6 @@ async function run() {
     .returning("id")
     .executeTakeFirstOrThrow()
   console.log("created location", location.id)
-
   const property = await query_builder
     .insertInto("property")
     .values({
@@ -359,29 +396,27 @@ async function run() {
     })
     .returning("id")
     .executeTakeFirstOrThrow()
-
   const rooms: {
     type: RoomType
     width: string
     length: string
   }[] = [
-      {
-        type: ROOM_TYPE.BEDROOM,
-        width: "4.5",
-        length: "3.2",
-      },
-      {
-        type: ROOM_TYPE.BATHROOM,
-        width: "2.1",
-        length: "1.8",
-      },
-      {
-        type: ROOM_TYPE.KITCHEN,
-        width: "3.5",
-        length: "2.8",
-      },
-    ]
-
+    {
+      type: ROOM_TYPE.BEDROOM,
+      width: "4.5",
+      length: "3.2",
+    },
+    {
+      type: ROOM_TYPE.BATHROOM,
+      width: "2.1",
+      length: "1.8",
+    },
+    {
+      type: ROOM_TYPE.KITCHEN,
+      width: "3.5",
+      length: "2.8",
+    },
+  ]
   for (const room_ of rooms) {
     const room = await query_builder
       .insertInto("room")
@@ -397,24 +432,14 @@ async function run() {
       .executeTakeFirstOrThrow()
     console.log("created room", room.id)
   }
-
-  const services: {
-    type: ServiceType
-    code: string
-  }[] = [
-      {
-        type: SERVICE_TYPE.MUNICIPAL_FEE,
-        code: "0070039841684",
-      },
-      {
-        type: SERVICE_TYPE.LIGHT,
-        code: "004660340",
-      },
-      {
-        type: SERVICE_TYPE.GAS,
-        code: "030010294440",
-      },
-    ]
+  const services: { type: ServiceType; code: string }[] = [
+    {
+      type: SERVICE_TYPE.MUNICIPAL_FEE,
+      code: "0070039841684",
+    },
+    { type: SERVICE_TYPE.LIGHT, code: "004660340" },
+    { type: SERVICE_TYPE.GAS, code: "030010294440" },
+  ]
   for (const service of services) {
     await query_builder
       .insertInto("service")
@@ -428,31 +453,13 @@ async function run() {
       .execute()
     console.log("created service")
   }
-
-  const accesses: {
-    user_id: number
-    type: AccessType
-  }[] = [
-      {
-        user_id: admin_id,
-        type: ACCESS_TYPE.ADMINISTRATOR,
-      },
-    ]
-  for (const access_ of accesses) {
-    const access = await query_builder
-      .insertInto("access")
-      .values({
-        user_id: access_.user_id,
-        property_id: property.id,
-        type: access_.type,
-        created_at: now,
-        updated_at: now,
-      })
-      .returning("id")
-      .executeTakeFirstOrThrow()
-    console.log("created access", access.id)
-  }
-
+  await create_property_organization(
+    property.id,
+    address,
+    admin_id,
+    "admin",
+    now,
+  )
   const finished_contract = await make_finished_contract(
     property.id,
     now,
@@ -467,11 +474,11 @@ async function run() {
     type: ContractFileType
     path: string
   }[] = [
-      {
-        type: CONTRACT_FILE_TYPE.INSURANCE,
-        path: compose_file_path("insurance.pdf"),
-      },
-    ]
+    {
+      type: CONTRACT_FILE_TYPE.INSURANCE,
+      path: compose_file_path("insurance.pdf"),
+    },
+  ]
   for (const contract_file of CONTRACT_FILES) {
     const file_id = await upsert_file(contract_file.path)
     await query_builder
@@ -500,15 +507,15 @@ async function run() {
     type: ContractFileType
     path: string
   }[] = [
-      {
-        type: PROPERTY_FILE_TYPE.PHOTO,
-        path: compose_file_path("property_image_1.webp"),
-      },
-      {
-        type: PROPERTY_FILE_TYPE.PHOTO,
-        path: compose_file_path("property_image_2.webp"),
-      },
-    ]
+    {
+      type: PROPERTY_FILE_TYPE.PHOTO,
+      path: compose_file_path("property_image_1.webp"),
+    },
+    {
+      type: PROPERTY_FILE_TYPE.PHOTO,
+      path: compose_file_path("property_image_2.webp"),
+    },
+  ]
   for (const property_file of PROPERTY_FILES) {
     const file_id = await upsert_file(property_file.path)
     await query_builder
@@ -523,7 +530,6 @@ async function run() {
       .execute()
     console.log("created property file")
   }
-
   console.log("creating user file for credit report")
   const credit_report_file_id = await upsert_file(
     compose_file_path("credit_report.pdf"),
@@ -539,8 +545,9 @@ async function run() {
     })
     .execute()
   console.log("created user file")
-
-  console.log("creating nicolas accetta file for credit report")
+  console.log(
+    "creating nicolas accetta file for credit report",
+  )
   await query_builder
     .insertInto("user_file")
     .values({
@@ -552,29 +559,27 @@ async function run() {
     })
     .execute()
   console.log("created user file")
-
   console.log("creating test rate data for escalation")
   const date = new Date()
-
   const RATES: {
     type: RateType
     month: number
     year: number
     value: string
   }[] = [
-      {
-        type: RATE_TYPE.IPC,
-        month: get_month(date),
-        year: get_year(date),
-        value: "1.21",
-      },
-      {
-        type: RATE_TYPE.IPC,
-        month: get_month(subMonths(date, 3)),
-        year: get_year(subMonths(date, 3)),
-        value: "1.1",
-      },
-    ]
+    {
+      type: RATE_TYPE.IPC,
+      month: get_month(date),
+      year: get_year(date),
+      value: "1.21",
+    },
+    {
+      type: RATE_TYPE.IPC,
+      month: get_month(subMonths(date, 3)),
+      year: get_year(subMonths(date, 3)),
+      value: "1.1",
+    },
+  ]
   for (const rate of RATES) {
     await query_builder
       .insertInto("rate")
@@ -608,26 +613,25 @@ async function run() {
     .returning("id")
     .executeTakeFirstOrThrow()
   console.log("created contract", contract.id)
-
   const PERIODS: {
     contract_id: number
     price: number
     start_date: Date
     end_date: Date
   }[] = [
-      {
-        contract_id: contract.id,
-        start_date: subMonths(date, 6),
-        end_date: subMonths(date, 3),
-        price: 600000,
-      },
-      {
-        contract_id: contract.id,
-        start_date: addDays(subMonths(date, 3), 1),
-        end_date: subDays(date, 1),
-        price: 600000,
-      },
-    ]
+    {
+      contract_id: contract.id,
+      start_date: subMonths(date, 6),
+      end_date: subMonths(date, 3),
+      price: 600000,
+    },
+    {
+      contract_id: contract.id,
+      start_date: addDays(subMonths(date, 3), 1),
+      end_date: subDays(date, 1),
+      price: 600000,
+    },
+  ]
   for (const period of PERIODS) {
     await query_builder
       .insertInto("period")
@@ -642,20 +646,17 @@ async function run() {
       .execute()
     console.log("created period")
   }
-
   console.log("creating receipts for previous month")
   const previous_month = subMonths(date, 1)
   const receipt_file_id = await upsert_file(
     compose_file_path("property_image_1.webp"),
   )
-
   const receipt_types = [
     SERVICE_TYPE.MUNICIPAL_FEE,
     SERVICE_TYPE.LIGHT,
     SERVICE_TYPE.GAS,
-    4, // RENT
+    4,
   ]
-
   for (const type of receipt_types) {
     await query_builder
       .insertInto("receipt")

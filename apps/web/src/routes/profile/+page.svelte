@@ -47,7 +47,9 @@
               required
             />
             {#if errors.name}
-              <Formulary.Error>{errors.name}</Formulary.Error>
+              <Formulary.Error
+                >{errors.name}</Formulary.Error
+              >
             {/if}
           </Formulary.Field>
           <Formulary.Field>
@@ -97,7 +99,8 @@
               id="document_number"
               name="document_number"
               type="number"
-              value={data.user_profile.document_number ?? ""}
+              value={data.user_profile.document_number ??
+                ""}
             />
             {#if errors.document_number}
               <Formulary.Error

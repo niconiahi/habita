@@ -1,8 +1,8 @@
 import * as v from "valibot"
-import { redirect, error } from "@sveltejs/kit"
+import { redirect } from "@sveltejs/kit"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
-import { has_edit_access } from "$lib/server/property_access"
+import { get_user_property_memberships } from "$lib/server/organizations"
 import { decrypt } from "$lib/server/encryption"
 import { create_file } from "./actions/create_file.server"
 import { update_user } from "./actions/update_user.server"
@@ -13,25 +13,30 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = locals.user.accesses.map(
-    (access) => access.property_id,
+  const memberships = await get_user_property_memberships(
+    locals.user.id,
   )
+  const property_ids = memberships.map((m) => m.property_id)
   const properties =
     property_ids.length > 0
       ? await fetch_properties(property_ids)
       : []
   const user_files = await fetch_user_files(locals.user.id)
-  const user_profile = await fetch_user_profile(locals.user.id)
-  return { user: locals.user, properties, user_files, user_profile }
+  const user_profile = await fetch_user_profile(
+    locals.user.id,
+  )
+  return {
+    user: locals.user,
+    properties,
+    user_files,
+    user_profile,
+  }
 }
 
 export const actions: Actions = {
   [ACTION.CREATE_FILE]: async ({ request, locals }) => {
     if (!locals.user) {
       redirect(302, "/auth/google")
-    }
-    if (!has_edit_access(locals.user.accesses)) {
-      error(400, "not found")
     }
     const form_data = await request.formData()
     await create_file(form_data, locals.user.id)
@@ -48,7 +53,9 @@ export const actions: Actions = {
     } catch (err) {
       if (err instanceof v.ValiError) {
         return {
-          errors: { update_user: update_user.get_errors(err) },
+          errors: {
+            update_user: update_user.get_errors(err),
+          },
         }
       }
       throw err
@@ -120,7 +127,11 @@ async function fetch_user_profile(user_id: number) {
     ...user,
     name: decrypt(user.name),
     surname: decrypt(user.surname),
-    phone_number: user.phone_number ? decrypt(user.phone_number) : null,
-    document_number: user.document_number ? decrypt(user.document_number) : null,
+    phone_number: user.phone_number
+      ? decrypt(user.phone_number)
+      : null,
+    document_number: user.document_number
+      ? decrypt(user.document_number)
+      : null,
   }
 }

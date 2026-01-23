@@ -9,8 +9,8 @@
 <p>
   <strong>"EL LOCADOR"</strong> da la locación a
   <strong>"EL LOCATARIO"</strong>
-  y este acepta de conformidad, un inmueble de su propiedad,
-  ubicado en la calle
+  y este acepta de conformidad, un inmueble de su propiedad, ubicado
+  en la calle
   <strong>{property.location.road}</strong>
   <strong>{property.location.house_number}</strong>, unidad
   <strong>{property.unit}</strong>, dentro de

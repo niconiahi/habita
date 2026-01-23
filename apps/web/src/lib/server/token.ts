@@ -1,17 +1,9 @@
-import { sha256 } from "@oslojs/crypto/sha2"
-import {
-  encodeBase64url,
-  encodeHexLowerCase,
-} from "@oslojs/encoding"
+import { createHash, randomBytes } from "crypto"
 
 export function make_token() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32))
-  const token = encodeBase64url(bytes)
-  return token
+  return randomBytes(32).toString("base64url")
 }
 
 export function compose_token_hash(token: string) {
-  return encodeHexLowerCase(
-    sha256(new TextEncoder().encode(token)),
-  )
+  return createHash("sha256").update(token).digest("hex")
 }

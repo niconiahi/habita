@@ -1,9 +1,9 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
 import { SLOT_STATE } from "$lib/slot_state"
+import { get_edit_property_ids } from "$lib/server/organizations"
 import { fetch_candidate } from "./fetchers/candidate.server"
 import type { PageServerLoad } from "./$types"
 
@@ -21,13 +21,9 @@ export const load: PageServerLoad = async ({
       message: "candidate id should be a number",
     },
   )
-  const property_ids = locals.user.accesses
-    .filter(
-      (access) =>
-        access.type === ACCESS_TYPE.OWNER ||
-        access.type === ACCESS_TYPE.ADMINISTRATOR,
-    )
-    .map((access) => access.property_id)
+  const property_ids = await get_edit_property_ids(
+    locals.user.id,
+  )
   const candidate_slot = await query_builder
     .selectFrom("slot")
     .where("slot.visitant_id", "=", candidate_id)

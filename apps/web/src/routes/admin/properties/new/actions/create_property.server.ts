@@ -1,6 +1,5 @@
 import * as v from "valibot"
 import { LocationSchema } from "$lib/components/LocationInput.svelte"
-import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
 import { compose_point } from "$lib/server/point"
 import { PropertyDestinySchema } from "$lib/property_destiny"
@@ -9,6 +8,7 @@ import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
 } from "$lib/property_type"
+import { create_property_organization } from "$lib/server/organizations"
 import { query_builder } from "db/query_builder"
 
 export async function create_property(form_data: FormData) {
@@ -25,6 +25,10 @@ export async function create_property(form_data: FormData) {
     form_data.getAll("destiny").map(Number),
   )
   const now = new Date().toISOString()
+  const user_id = v.parse(
+    ForceNumberSchema,
+    form_data.get("user_id"),
+  )
   const property = await query_builder
     .transaction()
     .execute(async (tx) => {
@@ -70,22 +74,17 @@ export async function create_property(form_data: FormData) {
         })
         .returning("property.id")
         .executeTakeFirstOrThrow()
-      const user_id = v.parse(
-        ForceNumberSchema,
-        form_data.get("user_id"),
-      )
-      await tx
-        .insertInto("access")
-        .values({
-          type: ACCESS_TYPE.ADMINISTRATOR,
-          created_at: now,
-          updated_at: now,
-          property_id: property.id,
-          user_id,
-        })
-        .executeTakeFirstOrThrow()
-      return property
+      return {
+        id: property.id,
+        address: location_.display_name,
+      }
     })
+  await create_property_organization(
+    property.id,
+    property.address,
+    user_id,
+    "admin",
+  )
   return {
     redirect_to: `/admin/properties/${property.id}/edit`,
   }

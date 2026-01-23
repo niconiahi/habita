@@ -1,22 +1,55 @@
 import devtoolsJson from "vite-plugin-devtools-json"
 import tailwindcss from "@tailwindcss/vite"
-import { defineConfig } from "vitest/config"
+import { defineConfig, type Plugin } from "vitest/config"
 import { playwright } from "@vitest/browser-playwright"
 import { sveltekit } from "@sveltejs/kit/vite"
+import fs from "fs"
+
+function fontCachePlugin(): Plugin {
+  return {
+    name: "font-cache",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (
+          req.url?.endsWith(".ttf") ||
+          req.url?.endsWith(".woff2")
+        ) {
+          res.setHeader(
+            "Cache-Control",
+            "public, max-age=31536000, immutable",
+          )
+        }
+        next()
+      })
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [sveltekit(), tailwindcss(), devtoolsJson()],
+  plugins: [
+    sveltekit(),
+    tailwindcss(),
+    devtoolsJson(),
+    fontCachePlugin(),
+  ],
   server: {
     host: "0.0.0.0",
     port: 5174,
     allowedHosts: ["dev.habita.rent", "app"],
+    https: fs.existsSync("/certs/dev.habita.rent.pem")
+      ? {
+          cert: fs.readFileSync(
+            "/certs/dev.habita.rent.pem",
+          ),
+          key: fs.readFileSync(
+            "/certs/dev.habita.rent-key.pem",
+          ),
+        }
+      : undefined,
     watch: {
       usePolling: true,
       interval: 1000,
     },
-  },
-  ssr: {
-    noExternal: ["@oslojs/crypto", "@oslojs/encoding"],
   },
   test: {
     expect: { requireAssertions: true },
