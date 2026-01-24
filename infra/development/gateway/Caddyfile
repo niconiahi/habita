@@ -18,3 +18,10 @@ dev.habita.rent {
     }
   }
 }
+
+status.dev.habita.rent {
+  tls /etc/ssl/certs/dev.habita.rent.pem /etc/ssl/private/dev.habita.rent-key.pem
+
+  # Gatus status page
+  reverse_proxy gatus:8080
+}

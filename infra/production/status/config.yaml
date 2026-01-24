@@ -1,0 +1,71 @@
+storage:
+  type: memory
+
+ui:
+  title: Habita Status
+  header: Habita Services
+
+endpoints:
+  - name: Website
+    group: Core
+    url: "http://app-svelte-1:3000/health"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+
+  - name: Database
+    group: Core
+    url: "tcp://app-db-1:5432"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Cache (Valkey)
+    group: Core
+    url: "tcp://app-valkey-1:6379"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: API (Go)
+    group: Services
+    url: "http://api-go-1:8081/health"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Image Proxy
+    group: Services
+    url: "http://media-image-1:8080/health"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Geocoding
+    group: Services
+    url: "http://geo-nominatim-1:8090/status"
+    interval: 60s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Gateway
+    group: Infrastructure
+    url: "http://gateway-caddy-1:80"
+    interval: 30s
+    ui:
+      hide-hostname: true
+    conditions:
+      - "[STATUS] < 500"

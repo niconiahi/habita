@@ -32,10 +32,13 @@ up: network
   docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d
   @echo "Starting scheduler..."
   docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d
+  @echo "Starting status page..."
+  docker compose -p status -f {{infra}}/status/docker-compose.yml up -d
   @echo "Done! (geo not started - run 'just geo' if needed)"
 
 # Stop all services
 down:
+  -docker compose -p status -f {{infra}}/status/docker-compose.yml down
   -docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml down
   -docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml down
   -docker compose -p media -f {{infra}}/media/docker-compose.yml down
@@ -84,6 +87,7 @@ status:
   @echo "\n=== Gateway ===" && docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml ps
   @echo "\n=== Scheduler ===" && docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml ps
   @echo "\n=== Media ===" && docker compose -p media -f {{infra}}/media/docker-compose.yml ps
+  @echo "\n=== Status ===" && docker compose -p status -f {{infra}}/status/docker-compose.yml ps
 
 # Database shell
 db:
@@ -356,6 +360,10 @@ deploy +services:
       media)
         echo "→ Deploying media..."
         docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate --pull always
+        ;;
+      status)
+        echo "→ Deploying status..."
+        docker compose -p status -f {{infra}}/status/docker-compose.yml up -d --force-recreate --pull always
         ;;
       secrets)
         # Already handled above, just restart services that use .env
