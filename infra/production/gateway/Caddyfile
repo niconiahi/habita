@@ -39,3 +39,20 @@ www.habita.rent {
   # Redirect www to non-www
   redir https://habita.rent{uri} permanent
 }
+
+status.habita.rent {
+  # Caddy automatically gets Let's Encrypt certificates
+
+  # Security headers
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+  }
+
+  # Gatus status page
+  reverse_proxy gatus:8080
+
+  # Enable compression
+  encode gzip
+}
