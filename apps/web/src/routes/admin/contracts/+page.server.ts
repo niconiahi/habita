@@ -1,7 +1,7 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ContractStateSchema } from "$lib/contract_state"
-import { get_edit_property_ids } from "$lib/server/organizations"
+import { get_edit_property_ids } from "$lib/server/organization"
 import { fetch_contracts } from "./fetchers/contracts.server"
 import { set_state } from "./actions/set_state.server"
 import { ACTION } from "./actions/action"

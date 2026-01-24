@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit"
-import { get_edit_property_ids } from "$lib/server/organizations"
+import { get_edit_property_ids } from "$lib/server/organization"
 import { require_edit_access } from "$lib/server/property_access"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"

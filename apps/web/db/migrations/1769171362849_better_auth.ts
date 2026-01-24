@@ -108,6 +108,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("organization_id", "text", (col) =>
       col.notNull(),
     )
+    .addColumn("assigned_admin_id", "integer", (col) =>
+      col.references("user.id").onDelete("set null"),
+    )
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

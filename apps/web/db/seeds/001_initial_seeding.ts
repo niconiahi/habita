@@ -164,15 +164,11 @@ async function create_property_organization(
     .execute()
   console.log("created organization", organization_id)
   await query_builder
-    .insertInto("property_organization")
-    .values({
-      property_id,
-      organization_id,
-      created_at: now,
-      updated_at: now,
-    })
+    .updateTable("property")
+    .set({ organization_id })
+    .where("id", "=", property_id)
     .execute()
-  console.log("created property_organization")
+  console.log("linked property to organization")
   await query_builder
     .insertInto("member")
     .values({

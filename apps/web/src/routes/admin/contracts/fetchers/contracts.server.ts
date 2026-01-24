@@ -10,6 +10,7 @@ export async function fetch_contracts(
   property_ids: number[],
   states?: ContractState[],
 ) {
+  if (property_ids.length === 0) return []
   const contracts = await query_builder
     .selectFrom("contract")
     .innerJoin(
@@ -60,16 +61,11 @@ export async function fetch_contracts(
         eb
           .selectFrom("user")
           .innerJoin("member", "member.user_id", "user.id")
-          .innerJoin(
-            "property_organization",
-            "property_organization.organization_id",
-            "member.organization_id",
-          )
           .select(["user.name", "user.surname"])
           .whereRef(
-            "property_organization.property_id",
+            "member.organization_id",
             "=",
-            "contract.property_id",
+            "property.organization_id",
           )
           .where("member.role", "=", "tenant"),
       ).as("tenant"),

@@ -3,7 +3,7 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
 import { SLOT_STATE } from "$lib/slot_state"
-import { get_edit_property_ids } from "$lib/server/organizations"
+import { get_edit_property_ids } from "$lib/server/organization"
 import { fetch_candidate } from "./fetchers/candidate.server"
 import type { PageServerLoad } from "./$types"
 

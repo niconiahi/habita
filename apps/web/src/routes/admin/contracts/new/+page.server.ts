@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit"
-import { get_edit_property_ids } from "$lib/server/organizations"
+import { get_edit_property_ids } from "$lib/server/organization"
 import { fetch_available_properties } from "./fetchers/available_properties.server"
 import type { Actions, PageServerLoad } from "./$types"
 
