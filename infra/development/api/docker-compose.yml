@@ -21,12 +21,21 @@ services:
     healthcheck:
       test: ["CMD", "sh", "-lc", "curl -fsS http://localhost:8081/health || exit 1"]
       interval: 10s
-      timeout: 2s
+      timeout: 3s
       retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 256M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
     networks:
       - internal
 

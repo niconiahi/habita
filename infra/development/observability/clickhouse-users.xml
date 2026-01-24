@@ -64,8 +64,11 @@
                  How to generate double SHA1:
                  Execute: PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWORD" | sha1sum | tr -d '-' | xxd -r -p | sha1sum | tr -d '-'
                  In first line will be password and in second - corresponding double SHA1.
+
+                 HABITA: Password is "signoz_clickhouse_secure_2024"
+                 To change, run: echo -n "YOUR_PASSWORD" | sha256sum
             -->
-            <password></password>
+            <password_sha256_hex>a5b2cf5d1c35377a1541a9c3aa42be3045abfb6199d7e17161730b7ede659fc7</password_sha256_hex>
 
             <!-- List of networks with open access.
 
@@ -88,7 +91,13 @@
                  All results of DNS requests are cached till server restart.
             -->
             <networks>
-                <ip>::/0</ip>
+                <!-- Restrict to Docker internal networks only -->
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+                <!-- Docker bridge networks (172.16.0.0/12) -->
+                <ip>172.16.0.0/12</ip>
+                <!-- Docker default bridge (172.17.0.0/16) -->
+                <ip>172.17.0.0/16</ip>
             </networks>
 
             <!-- Settings profile for user. -->
