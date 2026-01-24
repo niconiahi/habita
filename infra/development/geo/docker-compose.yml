@@ -1,8 +1,9 @@
 services:
   nominatim:
     image: mediagis/nominatim:4.4
+    restart: unless-stopped
     ports:
-      - "8090:8090"
+      - "8090:8090/tcp"
     environment:
       - PBF_URL=https://download.geofabrik.de/south-america/argentina-latest.osm.pbf
       - REPLICATION_URL=https://download.geofabrik.de/south-america/argentina-updates/
@@ -12,13 +13,26 @@ services:
       - NOMINATIM_LISTEN_PORT=8090
     volumes:
       - nominatim:/var/lib/postgresql/14/main
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8090/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     shm_size: 1gb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 8G
+          cpus: "4.0"
         reservations:
           memory: 4G
+          cpus: "1.0"
     networks:
       - internal
 

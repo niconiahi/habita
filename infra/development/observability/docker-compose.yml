@@ -3,11 +3,12 @@ services:
     image: signoz/zookeeper:3.7.1
     container_name: zookeeper-1
     hostname: zookeeper-1
+    # Note: ZooKeeper requires root for bitnami image
     user: root
     ports:
-      - "2181:2181"
-      - "2888:2888"
-      - "3888:3888"
+      - "2181:2181/tcp"
+      - "2888:2888/tcp"
+      - "3888:3888/tcp"
     volumes:
       - zookeeper_data:/bitnami/zookeeper
     environment:
@@ -19,6 +20,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.1"
     networks:
       - observability
 
@@ -36,10 +50,10 @@ services:
       - "8123:8123"
       - "9181:9181"
     volumes:
-      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
-      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
-      - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
-      - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
+      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml:ro
+      - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml:ro
+      - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml:ro
       - clickhouse_data:/var/lib/clickhouse/
       - clickhouse_logs:/var/log/clickhouse-server/
     logging:
@@ -91,7 +105,7 @@ services:
     restart: on-failure
     command: ["-config=/root/config/prometheus.yml", "--use-logs-new-schema=true", "--use-trace-new-schema=true"]
     volumes:
-      - ./prometheus.yml:/root/config/prometheus.yml
+      - ./prometheus.yml:/root/config/prometheus.yml:ro
       - signoz_data:/var/lib/signoz/
     environment:
       - ClickHouseUrl=tcp://clickhouse:9000
@@ -101,7 +115,7 @@ services:
       - DEPLOYMENT_TYPE=docker-standalone-amd
       - SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/signoz.db
     ports:
-      - "8080:8080"
+      - "8080:8080/tcp"
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -112,10 +126,19 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     networks:
       - observability
 
@@ -125,13 +148,13 @@ services:
     restart: on-failure
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
     environment:
       - OTEL_RESOURCE_ATTRIBUTES=host.name=signoz-host,os.type=linux
       - LOW_CARDINAL_EXCEPTION_GROUPING=false
     ports:
-      - "4317:4317"
-      - "4318:4318"
+      - "4317:4317/tcp"
+      - "4318:4318/tcp"
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -139,10 +162,24 @@ services:
         condition: service_completed_successfully
       query-service:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:13133/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     networks:
       - observability
       - internal
@@ -152,16 +189,30 @@ services:
     container_name: frontend
     restart: on-failure
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
-      - "3301:3301"
+      - "3301:3301/tcp"
     depends_on:
       query-service:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3301/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
     networks:
       - observability
 

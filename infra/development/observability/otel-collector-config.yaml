@@ -10,34 +10,52 @@ processors:
   batch:
     timeout: 10s
 
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 400
+    spike_limit_mib: 100
+
 exporters:
   logging:
-    loglevel: debug
+    loglevel: info
 
   clickhousetraces:
-    datasource: tcp://clickhouse:9000/signoz_traces
+    datasource: tcp://default:signoz_clickhouse_secure_2024@clickhouse:9000/signoz_traces
     low_cardinal_exception_grouping: false
 
   clickhousemetricswrite:
-    endpoint: tcp://clickhouse:9000/signoz_metrics
+    endpoint: tcp://default:signoz_clickhouse_secure_2024@clickhouse:9000/signoz_metrics
 
   clickhouselogsexporter:
-    dsn: tcp://clickhouse:9000/signoz_logs
+    dsn: tcp://default:signoz_clickhouse_secure_2024@clickhouse:9000/signoz_logs
     timeout: 10s
 
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
 service:
+  extensions: [health_check]
+
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [logging, clickhousetraces]
 
     metrics:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [logging, clickhousemetricswrite]
 
     logs:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [logging, clickhouselogsexporter]
+
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      address: 0.0.0.0:8888

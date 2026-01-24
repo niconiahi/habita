@@ -1,25 +1,48 @@
-# my global config
+# Prometheus configuration for Habita observability stack
 global:
-  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: development
+    project: habita
 
 # Alertmanager configuration
 alerting:
   alertmanagers:
-  - static_configs:
-    - targets:
-      - alertmanager:9093
+    - static_configs:
+        - targets: []
+          # Uncomment when alertmanager is deployed
+          # - alertmanager:9093
 
-# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+# Load alerting rules
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
-  - 'alerts.yml'
+  - '/root/config/alerts.yml'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
-scrape_configs: []
+# Scrape configurations
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
 
+  # Scrape ClickHouse metrics
+  - job_name: 'clickhouse'
+    static_configs:
+      - targets: ['clickhouse:9363']
+    metrics_path: /metrics
+
+  # Scrape OTel Collector metrics
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8888']
+    metrics_path: /metrics
+
+  # Scrape Query Service metrics
+  - job_name: 'query-service'
+    static_configs:
+      - targets: ['query-service:8080']
+    metrics_path: /metrics
+
+# Remote read from ClickHouse (SigNoz metrics storage)
 remote_read:
   - url: tcp://clickhouse:9000/signoz_metrics

@@ -13,18 +13,27 @@ services:
       - backups:/backups
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     networks:
       - internal
 
   valkey:
-    image: valkey/valkey:7
+    image: valkey/valkey:7.2
     restart: unless-stopped
     labels:
       - "habita.role=cache"
@@ -34,13 +43,22 @@ services:
       - kv:/data
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
-      interval: 5s
+      interval: 10s
       timeout: 3s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
     networks:
       - internal
 
@@ -72,15 +90,30 @@ services:
       OTEL_SERVICE_NAME: svelte
       OTEL_ENVIRONMENT: development
       NODE_OPTIONS: --max-old-space-size=4096
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5174/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     depends_on:
       db:
         condition: service_healthy
       valkey:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     deploy:
       resources:
         limits:
           memory: 1G
+          cpus: "2.0"
+        reservations:
+          memory: 512M
+          cpus: "0.5"
     networks:
       - internal
 
@@ -93,3 +126,5 @@ volumes:
   kv:
   deps:
   backups:
+    external: true
+    name: backups

@@ -1,6 +1,6 @@
 services:
   ofelia:
-    image: mcuadros/ofelia:latest
+    image: mcuadros/ofelia:v0.3.12
     restart: unless-stopped
     labels:
       - "habita.role=scheduler"
@@ -8,10 +8,24 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ofelia.ini:/etc/ofelia/config.ini:ro
     command: daemon --config /etc/ofelia/config.ini
+    healthcheck:
+      test: ["CMD", "pgrep", "-x", "ofelia"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 64M
+          cpus: "0.05"
     networks:
       - internal
 
@@ -32,15 +46,24 @@ services:
       PGPORT: 5432
     volumes:
       - backups:/backups
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
     networks:
       - internal
 
   backup-uploader:
-    image: rclone/rclone:latest
+    image: rclone/rclone:1.68
     restart: unless-stopped
     labels:
       - "habita.role=backup-uploader"
@@ -48,10 +71,19 @@ services:
     volumes:
       - backups:/backups
       - ./rclone.conf:/config/rclone/rclone.conf:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 64M
+          cpus: "0.05"
     networks:
       - internal
 
