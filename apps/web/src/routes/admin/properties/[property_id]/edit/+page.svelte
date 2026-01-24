@@ -34,9 +34,9 @@
   >(new Map())
 
   const property_destinies = get_property_destinies()
-  const has_owner = $derived(
+  const has_landlord = $derived(
     data.property.members.some(
-      (member) => member.role === "owner",
+      (member) => member.role === "landlord",
     ),
   )
   const all_services_added = $derived(
@@ -274,7 +274,7 @@
         </li>
       {/each}
     </ul>
-    {#if !has_owner}
+    {#if !has_landlord}
       <Formulary.Root
         method="POST"
         action={compose_action(ACTION.INVITE_OWNER)}

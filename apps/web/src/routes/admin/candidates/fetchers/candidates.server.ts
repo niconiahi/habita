@@ -6,6 +6,7 @@ import { decrypt } from "$lib/server/encryption"
 export async function fetch_candidates(
   property_ids: number[],
 ) {
+  if (property_ids.length === 0) return []
   const candidates = await query_builder
     .selectFrom("slot")
     .innerJoin("user", "user.id", "slot.visitant_id")

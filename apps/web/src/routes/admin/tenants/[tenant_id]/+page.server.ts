@@ -4,7 +4,7 @@ import { ForceNumberSchema } from "$lib/force_number"
 import {
   get_edit_property_ids,
   is_tenant_in_admin_properties,
-} from "$lib/server/organizations"
+} from "$lib/server/organization"
 import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 import type { PageServerLoad } from "./$types"
 

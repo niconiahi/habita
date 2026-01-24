@@ -6,7 +6,7 @@ import { compose_token_hash } from "$lib/server/token"
 import {
   add_user_to_property,
   get_property_organization,
-} from "$lib/server/organizations"
+} from "$lib/server/organization"
 import { query_builder } from "db/query_builder"
 import type { RequestHandler } from "./$types"
 
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({
   await add_user_to_property(
     property_id,
     locals.user.id,
-    "owner",
+    "landlord",
   )
   await query_builder
     .updateTable("invitation_token")

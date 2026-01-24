@@ -1,7 +1,7 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { get_edit_property_ids } from "$lib/server/organizations"
+import { get_edit_property_ids } from "$lib/server/organization"
 import { require_edit_access } from "$lib/server/property_access"
 import { fetch_properties } from "./fetchers/properties.server"
 import { publish_property } from "./actions/publish_property.server"

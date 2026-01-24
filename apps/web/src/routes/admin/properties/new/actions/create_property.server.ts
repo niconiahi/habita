@@ -8,7 +8,11 @@ import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
 } from "$lib/property_type"
-import { create_property_organization } from "$lib/server/organizations"
+import {
+  create_property_organization,
+  get_user_organization,
+  link_property_to_organization,
+} from "$lib/server/organization"
 import { query_builder } from "db/query_builder"
 
 export async function create_property(form_data: FormData) {
@@ -79,12 +83,20 @@ export async function create_property(form_data: FormData) {
         address: location_.display_name,
       }
     })
-  await create_property_organization(
-    property.id,
-    property.address,
-    user_id,
-    "admin",
-  )
+  // Check if user has an organization (as realtor or admin)
+  const user_org = await get_user_organization(user_id)
+
+  if (user_org) {
+    await link_property_to_organization(property.id, user_org.id)
+  } else {
+    await create_property_organization(
+      property.id,
+      property.address,
+      user_id,
+      "admin",
+    )
+  }
+
   return {
     redirect_to: `/admin/properties/${property.id}/edit`,
   }

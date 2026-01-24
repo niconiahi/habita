@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit"
 import {
   has_property_role,
   type OrganizationRole,
-} from "./organizations"
+} from "./organization"
 
 export async function require_property_role(
   user_id: number,
@@ -22,7 +22,7 @@ export async function require_view_access(
   property_id: number,
 ) {
   return require_property_role(user_id, property_id, [
-    "owner",
+    "landlord",
     "admin",
     "tenant",
   ])
@@ -33,16 +33,16 @@ export async function require_edit_access(
   property_id: number,
 ) {
   return require_property_role(user_id, property_id, [
-    "owner",
+    "landlord",
     "admin",
   ])
 }
 
-export async function require_owner_access(
+export async function require_landlord_access(
   user_id: number,
   property_id: number,
 ) {
   return require_property_role(user_id, property_id, [
-    "owner",
+    "landlord",
   ])
 }

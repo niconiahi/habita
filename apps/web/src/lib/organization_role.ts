@@ -2,7 +2,7 @@ import * as v from "valibot"
 
 export type ObjectValues<T> = T[keyof T]
 export const ORGANIZATION_ROLE = {
-  OWNER: "owner",
+  LANDLORD: "landlord",
   REALTOR: "realtor",
   ADMIN: "admin",
   TENANT: "tenant",
@@ -22,8 +22,8 @@ export function get_role_label(
     role,
   )
   switch (organization_role) {
-    case ORGANIZATION_ROLE.OWNER: {
-      return "Dueño"
+    case ORGANIZATION_ROLE.LANDLORD: {
+      return "Propietario"
     }
     case ORGANIZATION_ROLE.REALTOR: {
       return "Inmobiliaria"

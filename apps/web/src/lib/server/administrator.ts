@@ -8,18 +8,14 @@ export async function fetch_administrator(
     .selectFrom("user")
     .innerJoin("member", "member.user_id", "user.id")
     .innerJoin(
-      "property_organization",
-      "property_organization.organization_id",
+      "property",
+      "property.organization_id",
       "member.organization_id",
     )
     .where((eb) =>
       eb.and([
         eb("member.role", "=", "admin"),
-        eb(
-          "property_organization.property_id",
-          "=",
-          property_id,
-        ),
+        eb("property.id", "=", property_id),
       ]),
     )
     .select([

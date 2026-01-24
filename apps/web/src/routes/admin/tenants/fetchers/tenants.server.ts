@@ -12,14 +12,9 @@ export async function fetch_tenants(
     .selectFrom("user")
     .innerJoin("member", "member.user_id", "user.id")
     .innerJoin(
-      "property_organization",
-      "property_organization.organization_id",
-      "member.organization_id",
-    )
-    .innerJoin(
       "property",
-      "property.id",
-      "property_organization.property_id",
+      "property.organization_id",
+      "member.organization_id",
     )
     .innerJoin(
       "location",
@@ -27,11 +22,7 @@ export async function fetch_tenants(
       "property.location_id",
     )
     .where("member.role", "=", "tenant")
-    .where(
-      "property_organization.property_id",
-      "in",
-      admin_property_ids,
-    )
+    .where("property.id", "in", admin_property_ids)
     .select((eb) => [
       "user.id",
       "user.name",

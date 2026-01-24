@@ -3,7 +3,7 @@ import { ForceNumberSchema } from "$lib/force_number"
 import {
   add_user_to_property,
   remove_user_role_from_property,
-} from "$lib/server/organizations"
+} from "$lib/server/organization"
 
 export const InputSchema = v.object({
   candidate_id: ForceNumberSchema,

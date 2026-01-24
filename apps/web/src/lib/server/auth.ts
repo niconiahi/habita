@@ -18,7 +18,7 @@ const statement = {
 
 const ac = createAccessControl(statement)
 
-const owner = ac.newRole({
+const landlord = ac.newRole({
   ...ownerAc.statements,
   property: ["read", "write"],
   contract: ["read", "write"],
@@ -123,7 +123,7 @@ export const auth = betterAuth({
       allowUserToCreateOrganization: false,
       ac,
       roles: {
-        owner,
+        landlord,
         realtor,
         admin,
         tenant,

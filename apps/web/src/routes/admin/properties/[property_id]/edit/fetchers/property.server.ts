@@ -145,15 +145,10 @@ export async function fetch_property(id: number) {
         eb
           .selectFrom("user")
           .innerJoin("member", "member.user_id", "user.id")
-          .innerJoin(
-            "property_organization",
-            "property_organization.organization_id",
-            "member.organization_id",
-          )
           .whereRef(
-            "property_organization.property_id",
+            "member.organization_id",
             "=",
-            "property.id",
+            "property.organization_id",
           )
           .select([
             "user.id",

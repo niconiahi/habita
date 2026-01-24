@@ -1,4 +1,4 @@
-import { get_admin_property_ids } from "$lib/server/organizations"
+import { get_admin_property_ids } from "$lib/server/organization"
 import {
   fetch_notifications,
   type Notification,
