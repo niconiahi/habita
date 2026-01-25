@@ -6,7 +6,7 @@ services:
       - "habita.role=status"
     volumes:
       - ./config.yaml:/config/config.yaml:ro
-    # No healthcheck - scratch container has no tools, and gatus IS a monitoring tool
+    # No healthcheck - scratch container has no tools, and gatus IS a monitoring tool_
     logging:
       driver: "json-file"
       options:
