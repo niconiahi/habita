@@ -1,8 +1,8 @@
-import { query_builder } from "db/query_builder"
-import { JOB_STATUS } from "$lib/job_status"
-import { JOB_TYPE } from "$lib/job_type"
-import { now } from "$lib/server/now"
-import { logger } from "$lib/server/telemetry/logger"
+import { query_builder } from "../../../../db/query_builder"
+import { JOB_STATUS } from "../../job_status"
+import { JOB_TYPE } from "../../job_type"
+import { now } from "../now"
+import { logger } from "../telemetry/logger"
 import { calculate_all_due_escalations } from "../calculate_all_due_escalations"
 
 export async function process_jobs() {
