@@ -19,7 +19,7 @@ habita.rent {
   # Nominatim geocoding API
   handle /nominatim/* {
     uri strip_prefix /nominatim
-    reverse_proxy nominatim:8090
+    reverse_proxy nominatim:8080
   }
 
   # Main application
