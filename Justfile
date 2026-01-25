@@ -274,6 +274,7 @@ secrets-encrypt:
 secrets-decrypt:
   sops -d --input-type dotenv --output-type dotenv {{infra}}/.env.enc > {{infra}}/.env
   chmod 600 {{infra}}/.env
+  sha256sum {{infra}}/.env.enc | cut -d' ' -f1 > {{infra}}/.env.enc.sha256
   @echo "Decrypted: {{infra}}/.env"
   @if [ -f "{{infra}}/scheduler/rclone.conf.enc" ]; then \
     sops -d {{infra}}/scheduler/rclone.conf.enc > {{infra}}/scheduler/rclone.conf; \
@@ -330,8 +331,30 @@ deploy +services:
   # Docker login is handled once during server provisioning via `docker login`
   # Credentials persist in ~/.docker/config.json
 
-  # Decrypt secrets if .env doesn't exist OR if secrets is being deployed
-  if [[ ! -f "{{infra}}/.env" ]] || [[ " {{services}} " == *" secrets "* ]]; then
+  # Decrypt secrets if:
+  # 1. .env doesn't exist, OR
+  # 2. "secrets" is in services list, OR
+  # 3. .env.enc has changed (hash mismatch)
+  needs_decrypt=false
+  if [[ ! -f "{{infra}}/.env" ]]; then
+    needs_decrypt=true
+    echo "→ .env missing, will decrypt"
+  elif [[ " {{services}} " == *" secrets "* ]]; then
+    needs_decrypt=true
+    echo "→ secrets in deploy list, will decrypt"
+  elif [[ ! -f "{{infra}}/.env.enc.sha256" ]]; then
+    needs_decrypt=true
+    echo "→ .env.enc.sha256 missing, will decrypt"
+  else
+    current_hash=$(sha256sum {{infra}}/.env.enc | cut -d' ' -f1)
+    stored_hash=$(cat {{infra}}/.env.enc.sha256)
+    if [[ "$current_hash" != "$stored_hash" ]]; then
+      needs_decrypt=true
+      echo "→ .env.enc changed, will decrypt"
+    fi
+  fi
+
+  if [[ "$needs_decrypt" == "true" ]]; then
     echo ""
     echo "=== Decrypting secrets ==="
     just --set env {{env}} secrets-decrypt
