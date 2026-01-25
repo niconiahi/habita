@@ -397,11 +397,11 @@ deploy +services:
         docker compose -p status -f {{infra}}/status/docker-compose.yml up -d --force-recreate --pull always
         ;;
       secrets)
-        # Already handled above, just restart services that use .env
+        # Already handled above, just restart services that use .env (no pull - image unchanged)
         echo "→ Restarting services that use .env..."
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --pull always svelte
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --pull always go
-        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --pull always
+        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
+        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
+        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate
         ;;
       *)
         echo "⚠ Unknown service: $svc"
