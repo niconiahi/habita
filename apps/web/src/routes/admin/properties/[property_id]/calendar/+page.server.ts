@@ -11,6 +11,7 @@ import { ACTION } from "./actions/action"
 import type { PageServerLoad, Actions } from "./$types"
 
 export const load: PageServerLoad = async ({
+  request,
   locals,
   params,
 }) => {
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
-  await require_edit_access(locals.user.id, property_id)
+  await require_edit_access(request.headers, locals.user.id, property_id)
   const [slots, property] = await Promise.all([
     fetch_slots(property_id),
     fetch_property(property_id),
@@ -51,7 +52,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     form_data.set("host_id", String(locals.user.id))
@@ -70,7 +71,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_slot(form_data)
     return null

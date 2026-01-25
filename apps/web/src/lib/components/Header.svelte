@@ -6,10 +6,10 @@
 
   interface Props {
     notifications: Notification[]
-    is_administrator: boolean
+    is_manager: boolean
   }
 
-  let { notifications, is_administrator }: Props = $props()
+  let { notifications, is_manager }: Props = $props()
 
   const session = authClient.useSession()
 </script>
@@ -48,7 +48,7 @@
         Login
       </Button>
     {/if}
-    {#if is_administrator}
+    {#if is_manager}
       <Notifications {notifications} />
     {/if}
   </nav>

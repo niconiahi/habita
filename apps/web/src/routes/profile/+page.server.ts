@@ -2,7 +2,7 @@ import * as v from "valibot"
 import { redirect } from "@sveltejs/kit"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
-import { get_user_property_memberships } from "$lib/server/organization"
+import { get_accessible_property_ids } from "$lib/server/property_access"
 import { decrypt } from "$lib/server/encryption"
 import { create_file } from "./actions/create_file.server"
 import { update_user } from "./actions/update_user.server"
@@ -13,10 +13,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const memberships = await get_user_property_memberships(
-    locals.user.id,
-  )
-  const property_ids = memberships.map((m) => m.property_id)
+  const property_ids = await get_accessible_property_ids(locals.user.id)
   const properties =
     property_ids.length > 0
       ? await fetch_properties(property_ids)

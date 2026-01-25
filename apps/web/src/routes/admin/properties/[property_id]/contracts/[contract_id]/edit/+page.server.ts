@@ -3,7 +3,7 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { get_contract_file_types } from "$lib/contract_file_type"
 import { require_edit_access } from "$lib/server/property_access"
-import { fetch_owner } from "$lib/server/owner"
+import { fetch_landlord } from "$lib/server/landlord"
 import { fetch_tenant } from "$lib/server/tenant"
 import { fetch_contract } from "./fetchers/contract.server"
 import { fetch_property } from "./fetchers/property.server"
@@ -21,6 +21,7 @@ import { update_period } from "./actions/update_period.server"
 import { ACTION } from "./actions/action"
 
 export const load: PageServerLoad = async ({
+  request,
   locals,
   params,
 }) => {
@@ -41,7 +42,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
-  await require_edit_access(locals.user.id, property_id)
+  await require_edit_access(request.headers, locals.user.id, property_id)
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
     fetch_property(property_id),
@@ -58,15 +59,15 @@ export const load: PageServerLoad = async ({
       `property does not exist for id ${property_id}`,
     )
   }
-  const [owner, tenant] = await Promise.all([
-    fetch_owner(property_id),
+  const [landlord, tenant] = await Promise.all([
+    fetch_landlord(property_id),
     fetch_tenant(property_id),
   ])
   const contract_file_types = get_contract_file_types()
   return {
     contract,
     property,
-    owner,
+    landlord,
     tenant,
     contract_file_types,
   }
@@ -88,7 +89,7 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await update_contract(form_data, property_id)
     return null
@@ -105,7 +106,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await create_file(form_data)
     return null
@@ -122,7 +123,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_file(form_data)
     return null
@@ -142,11 +143,12 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     return await create_pdf(form_data, property_id)
   },
   [ACTION.CREATE_CONTRACT_ITEM]: async ({
+    request,
     locals,
     params,
   }) => {
@@ -157,7 +159,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const contract_id = v.parse(
       ForceNumberSchema,
       params.contract_id,
@@ -180,7 +182,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await update_contract_item(form_data)
     return null
@@ -197,7 +199,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_contract_item(form_data)
     return null
@@ -214,7 +216,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await create_contract_item_file(form_data)
     return null
@@ -231,7 +233,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await destroy_contract_item_file(form_data)
     return null
@@ -248,7 +250,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     await update_period(form_data)
     return null

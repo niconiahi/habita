@@ -1,18 +1,18 @@
 <script lang="ts">
-  import type { Owner } from "../../owner"
+  import type { Landlord } from "../../landlord"
   import type { Tenant } from "../../tenant"
   interface Props {
     tenant: NonNullable<Tenant>
-    owner: NonNullable<Owner>
+    landlord: NonNullable<Landlord>
   }
-  let { owner, tenant }: Props = $props()
+  let { landlord, tenant }: Props = $props()
 </script>
 
 <p>
-  Entre el Sr/a. <strong>{owner.name}</strong>
-  <strong>{owner.surname.toLocaleUpperCase()}</strong> con
-  DNI <strong>{owner.document_number}</strong>, con
-  domicilio electrónico <strong>{owner.email}</strong>, en
+  Entre el Sr/a. <strong>{landlord.name}</strong>
+  <strong>{landlord.surname.toLocaleUpperCase()}</strong> con
+  DNI <strong>{landlord.document_number}</strong>, con
+  domicilio electrónico <strong>{landlord.email}</strong>, en
   adelante llamado <strong>"EL LOCADOR"</strong>, por una
   parte, y el Sr/a. <strong>{tenant.name}</strong>
   <strong>{tenant.surname.toLocaleUpperCase()}</strong> con

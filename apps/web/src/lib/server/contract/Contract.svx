@@ -1,16 +1,16 @@
 <script lang="ts">
   import type { Contract } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
   import type { Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
-  import type { Owner } from "../owner"
+  import type { Landlord } from "../landlord"
   import type { Tenant } from "../tenant"
   import * as sections from "./sections"
   interface Props {
     contract: Contract
     property: Property
-    owner: Owner
+    landlord: Landlord
     tenant: Tenant
   }
-  let { contract, property, owner, tenant }: Props =
+  let { contract, property, landlord, tenant }: Props =
     $props()
 </script>
 
@@ -20,7 +20,7 @@
 <!---->
 ## Preámbulo
 
-<sections.Preface {tenant} {owner} />
+<sections.Preface {tenant} {landlord} />
 
 ## Primera: Objeto
 
@@ -84,7 +84,7 @@
 
 ## Décima sexta: Rescisión anticipada
 
-<sections.SectionSixteen {contract} {tenant} {owner} />
+<sections.SectionSixteen {contract} {tenant} {landlord} />
 
 ## Décima séptima: Muestra de la propiedad
 
@@ -100,7 +100,7 @@
 
 ## Vigésima: Domicilios
 
-<sections.SectionTwenty {owner} {tenant} {property} />
+<sections.SectionTwenty {landlord} {tenant} {property} />
 
 ## Vigésima primera: Jurisdicción
 

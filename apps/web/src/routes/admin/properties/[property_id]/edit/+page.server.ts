@@ -13,7 +13,7 @@ import { create_service } from "./actions/create_service.server"
 import { update_service } from "./actions/update_service.server"
 import { destroy_service } from "./actions/destroy_service.server"
 import { create_property_file } from "./actions/create_property_file.server"
-import { invite_owner } from "./actions/invite_owner.server"
+import { invite_landlord } from "./actions/invite_landlord.server"
 import { update_destinies } from "./actions/update_destinies.server"
 import { ACTION } from "./actions/action"
 import type { PageServerLoad, Actions } from "./$types"
@@ -21,6 +21,7 @@ import type { PageServerLoad, Actions } from "./$types"
 export const load: PageServerLoad = async ({
   locals,
   params,
+  request,
 }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
@@ -32,7 +33,7 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
-  await require_edit_access(locals.user.id, property_id)
+  await require_edit_access(request.headers, locals.user.id, property_id)
   const property = await fetch_property(property_id)
   if (!property) {
     error(
@@ -59,13 +60,13 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     update_location(form_data)
     return null
   },
-  [ACTION.CREATE_ROOM]: async ({ locals, params }) => {
+  [ACTION.CREATE_ROOM]: async ({ request, locals, params }) => {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
@@ -73,7 +74,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     create_room(property_id)
     return null
   },
@@ -89,7 +90,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     update_room(form_data)
@@ -107,7 +108,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     await update_room_positions(form_data)
@@ -125,13 +126,13 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     destroy_room(form_data)
     return null
   },
-  [ACTION.CREATE_SERVICE]: async ({ locals, params }) => {
+  [ACTION.CREATE_SERVICE]: async ({ request, locals, params }) => {
     if (!locals.user) {
       redirect(302, "/auth/google")
     }
@@ -139,7 +140,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     create_service(property_id)
     return null
   },
@@ -155,7 +156,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     try {
@@ -179,7 +180,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     destroy_service(form_data)
@@ -197,13 +198,13 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     create_property_file(form_data, property_id)
     return null
   },
-  [ACTION.INVITE_OWNER]: async ({
+  [ACTION.INVITE_LANDLORD]: async ({
     request,
     locals,
     params,
@@ -215,10 +216,10 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    invite_owner(form_data)
+    invite_landlord(form_data)
     return null
   },
   [ACTION.UPDATE_DESTINIES]: async ({
@@ -233,7 +234,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     await update_destinies(form_data, property_id)

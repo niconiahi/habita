@@ -3,9 +3,9 @@ import { CONTRACT_STATE } from "$lib/contract_state"
 import { query_builder } from "db/query_builder"
 
 export function fetch_available_properties(
-  admin_property_ids: number[],
+  manager_property_ids: number[],
 ) {
-  if (admin_property_ids.length === 0) {
+  if (manager_property_ids.length === 0) {
     return Promise.resolve([])
   }
   return query_builder
@@ -15,7 +15,7 @@ export function fetch_available_properties(
       "location.id",
       "property.location_id",
     )
-    .where("property.id", "in", admin_property_ids)
+    .where("property.id", "in", manager_property_ids)
     .where(({ not, exists, selectFrom }) =>
       not(
         exists(

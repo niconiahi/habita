@@ -1,5 +1,5 @@
 export const ACTION = {
-  INVITE_ADMIN: "invite_admin",
-  REMOVE_ADMIN: "remove_admin",
+  INVITE_MANAGER: "invite_manager",
+  REMOVE_MANAGER: "remove_manager",
   REASSIGN_PROPERTY: "reassign_property",
 } as const

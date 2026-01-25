@@ -3,7 +3,7 @@ import { query_builder } from "db/query_builder"
 export type OrganizationRole =
   | "landlord"
   | "realtor"
-  | "admin"
+  | "manager"
   | "tenant"
 
 export async function create_property_organization(
@@ -127,76 +127,6 @@ export async function get_user_property_memberships(
     .execute()
 }
 
-export async function get_admin_property_ids(user_id: number) {
-  const memberships = await query_builder
-    .selectFrom("member")
-    .innerJoin(
-      "property",
-      "member.organization_id",
-      "property.organization_id",
-    )
-    .where("member.user_id", "=", user_id)
-    .where("member.role", "=", "admin")
-    .select("property.id as property_id")
-    .execute()
-  return memberships.map((m) => m.property_id)
-}
-
-export async function get_edit_property_ids(user_id: number) {
-  const memberships = await query_builder
-    .selectFrom("member")
-    .innerJoin(
-      "property",
-      "member.organization_id",
-      "property.organization_id",
-    )
-    .where("member.user_id", "=", user_id)
-    .where("member.role", "in", ["realtor", "admin", "landlord"])
-    .select("property.id as property_id")
-    .execute()
-  return memberships.map((m) => m.property_id)
-}
-
-export async function is_tenant_in_admin_properties(
-  tenant_id: number,
-  admin_property_ids: number[],
-) {
-  if (admin_property_ids.length === 0) return false
-  const membership = await query_builder
-    .selectFrom("member")
-    .innerJoin(
-      "property",
-      "member.organization_id",
-      "property.organization_id",
-    )
-    .where("member.user_id", "=", tenant_id)
-    .where("member.role", "=", "tenant")
-    .where("property.id", "in", admin_property_ids)
-    .select("member.id")
-    .executeTakeFirst()
-  return !!membership
-}
-
-export async function has_property_role(
-  user_id: number,
-  property_id: number,
-  roles: OrganizationRole[],
-) {
-  const membership = await query_builder
-    .selectFrom("member")
-    .innerJoin(
-      "property",
-      "member.organization_id",
-      "property.organization_id",
-    )
-    .where("member.user_id", "=", user_id)
-    .where("property.id", "=", property_id)
-    .where("member.role", "in", roles)
-    .select("member.id")
-    .executeTakeFirst()
-  return !!membership
-}
-
 export async function get_user_realtor_organization(
   user_id: number,
 ) {
@@ -227,7 +157,7 @@ export async function get_user_organization(user_id: number) {
       "member.organization_id",
     )
     .where("member.user_id", "=", user_id)
-    .where("member.role", "in", ["realtor", "admin"])
+    .where("member.role", "in", ["realtor", "manager"])
     .select([
       "organization.id",
       "organization.name",
@@ -257,14 +187,14 @@ export async function is_realtor(user_id: number) {
   return !!membership
 }
 
-export async function get_organization_admins(
+export async function get_organization_managers(
   organization_id: string,
 ) {
   return query_builder
     .selectFrom("member")
     .innerJoin("user", "user.id", "member.user_id")
     .where("member.organization_id", "=", organization_id)
-    .where("member.role", "=", "admin")
+    .where("member.role", "=", "manager")
     .select([
       "user.id",
       "user.name",

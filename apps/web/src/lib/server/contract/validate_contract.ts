@@ -1,7 +1,7 @@
 import { PROPERTY_TYPE } from "$lib/property_type"
 import type { Contract } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
 import type { Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
-import type { Owner } from "../owner"
+import type { Landlord } from "../landlord"
 import type { Tenant } from "../tenant"
 type ValidationErrors = Record<string, string>
 type ValidationResult =
@@ -9,14 +9,14 @@ type ValidationResult =
       success: true
       contract: Contract
       property: Property
-      owner: NonNullable<Owner>
+      landlord: NonNullable<Landlord>
       tenant: NonNullable<Tenant>
     }
   | { success: false; errors: ValidationErrors }
 export function validate_contract_requirements(
   contract: Contract | undefined,
   property: Property | undefined,
-  owner: Owner | null,
+  landlord: Landlord | null,
   tenant: Tenant | null,
 ): ValidationResult {
   const errors: ValidationErrors = {}
@@ -28,21 +28,21 @@ export function validate_contract_requirements(
     errors.property = "La propiedad no existe"
     return { success: false, errors }
   }
-  if (!owner) {
-    errors.owner = "Falta asignar un propietario"
+  if (!landlord) {
+    errors.landlord = "Falta asignar un propietario"
   } else {
-    if (!owner.name)
-      errors.owner_name = "Falta el nombre del propietario"
-    if (!owner.surname)
-      errors.owner_surname =
+    if (!landlord.name)
+      errors.landlord_name = "Falta el nombre del propietario"
+    if (!landlord.surname)
+      errors.landlord_surname =
         "Falta el apellido del propietario"
-    if (!owner.document_number)
-      errors.owner_document_number =
+    if (!landlord.document_number)
+      errors.landlord_document_number =
         "Falta el DNI del propietario"
-    if (!owner.email)
-      errors.owner_email = "Falta el email del propietario"
-    if (!owner.phone_number)
-      errors.owner_phone_number =
+    if (!landlord.email)
+      errors.landlord_email = "Falta el email del propietario"
+    if (!landlord.phone_number)
+      errors.landlord_phone_number =
         "Falta el teléfono del propietario"
   }
   if (!tenant) {
@@ -107,7 +107,7 @@ export function validate_contract_requirements(
     success: true,
     contract,
     property,
-    owner: owner!,
+    landlord: landlord!,
     tenant: tenant!,
   }
 }

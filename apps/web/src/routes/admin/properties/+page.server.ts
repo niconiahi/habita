@@ -1,8 +1,11 @@
-import { redirect, error } from "@sveltejs/kit"
+import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { get_edit_property_ids } from "$lib/server/organization"
-import { require_edit_access } from "$lib/server/property_access"
+import { ACCESS_TYPE } from "$lib/access_type"
+import {
+  require_edit_access,
+  get_accessible_property_ids,
+} from "$lib/server/property_access"
 import { fetch_properties } from "./fetchers/properties.server"
 import { publish_property } from "./actions/publish_property.server"
 import { unpublish_property } from "./actions/unpublish_property.server"
@@ -13,9 +16,10 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = await get_edit_property_ids(
-    locals.user.id,
-  )
+  const property_ids = await get_accessible_property_ids(locals.user.id, [
+    ACCESS_TYPE.LANDLORD,
+    ACCESS_TYPE.MANAGER,
+  ])
   const properties = await fetch_properties(property_ids)
   return { properties }
 }
@@ -33,7 +37,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("property_id"),
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     await publish_property(form_data)
     return null
   },
@@ -49,7 +53,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("property_id"),
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     await unpublish_property(form_data)
     return null
   },

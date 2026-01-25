@@ -1,12 +1,12 @@
 <script lang="ts">
   import * as v from "valibot"
   import type { Contract } from "../../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-  import type { Owner } from "../../owner"
+  import type { Landlord } from "../../landlord"
   import type { Tenant } from "../../tenant"
   interface Props {
     contract: NonNullable<Contract>
     tenant: NonNullable<Tenant>
-    owner: NonNullable<Owner>
+    landlord: NonNullable<Landlord>
   }
   let { contract }: Props = $props()
   const price = $derived(

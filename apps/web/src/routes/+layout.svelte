@@ -19,6 +19,6 @@
 
 <Header
   notifications={data.notifications}
-  is_administrator={data.is_administrator}
+  is_manager={data.is_manager}
 />
 {@render children()}

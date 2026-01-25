@@ -32,7 +32,7 @@ const realtor = ac.newRole({
   tenant: ["read", "write"],
 })
 
-const admin = ac.newRole({
+const manager = ac.newRole({
   ...adminAc.statements,
   property: ["read", "write"],
   contract: ["read", "write"],
@@ -81,7 +81,6 @@ export const auth = betterAuth({
       expiresAt: "expires_at",
       ipAddress: "ip_address",
       userAgent: "user_agent",
-      activeOrganizationId: "active_organization_id",
       createdAt: "created_at",
       updatedAt: "updated_at",
     },
@@ -118,15 +117,42 @@ export const auth = betterAuth({
       }),
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await auth.api.createOrganization({
+            body: {
+              name: `Personal: ${user.email}`,
+              slug: `personal-${user.id}`,
+              userId: String(user.id),
+            },
+          })
+        },
+      },
+    },
+  },
   plugins: [
     organization({
       allowUserToCreateOrganization: false,
+      creatorRole: "manager",
       ac,
       roles: {
         landlord,
         realtor,
-        admin,
+        manager,
         tenant,
+      },
+      teams: {
+        enabled: true,
+        allowRemovingAllTeams: false,
+      },
+      organizationHooks: {
+        afterCreateOrganization: async ({ organization }) => {
+          await auth.api.createTeam({
+            body: { name: "Principal", organizationId: organization.id },
+          })
+        },
       },
       schema: {
         organization: {
@@ -150,6 +176,20 @@ export const auth = betterAuth({
             expiresAt: "expires_at",
             createdAt: "created_at",
             updatedAt: "updated_at",
+          },
+        },
+        team: {
+          fields: {
+            organizationId: "organization_id",
+            createdAt: "created_at",
+            updatedAt: "updated_at",
+          },
+        },
+        teamMember: {
+          fields: {
+            teamId: "team_id",
+            userId: "user_id",
+            createdAt: "created_at",
           },
         },
       },

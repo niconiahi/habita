@@ -6,7 +6,7 @@
   import Button from "$lib/components/Button.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
-  import { get_role_label } from "$lib/organization_role"
+  import { get_access_label, ACCESS_TYPE } from "$lib/access_type"
   import { display_name } from "$lib/display_name"
   import {
     get_property_destinies,
@@ -36,7 +36,7 @@
   const property_destinies = get_property_destinies()
   const has_landlord = $derived(
     data.property.members.some(
-      (member) => member.role === "landlord",
+      (member) => member.type === ACCESS_TYPE.LANDLORD,
     ),
   )
   const all_services_added = $derived(
@@ -270,14 +270,14 @@
             name="id"
           />
           <p>{display_name(member)}</p>
-          <p>{get_role_label(member.role)}</p>
+          <p>{get_access_label(member.type)}</p>
         </li>
       {/each}
     </ul>
     {#if !has_landlord}
       <Formulary.Root
         method="POST"
-        action={compose_action(ACTION.INVITE_OWNER)}
+        action={compose_action(ACTION.INVITE_LANDLORD)}
       >
         <Formulary.Fields>
           <Formulary.Field>

@@ -25,7 +25,7 @@ export async function create_pdf(
   const validation = validate_contract_requirements(
     data.contract,
     data.property,
-    data.owner,
+    data.landlord,
     data.tenant,
   )
   if (!validation.success) {
@@ -34,7 +34,7 @@ export async function create_pdf(
   const html = compose_html(
     validation.contract,
     validation.property,
-    validation.owner,
+    validation.landlord,
     validation.tenant,
   )
   const content = await generate_pdf_with_playwright(html)

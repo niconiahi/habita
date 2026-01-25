@@ -1,6 +1,6 @@
 import { render } from "svelte/server"
 import Contract from "./Contract.svx"
-import { fetch_owner, type Owner } from "$lib/server/owner"
+import { fetch_landlord, type Landlord } from "$lib/server/landlord"
 import {
   fetch_tenant,
   type Tenant,
@@ -17,23 +17,23 @@ export async function fetch_contract_data(
   property_id: number,
   contract_id: number,
 ) {
-  const [contract, property, owner, tenant] =
+  const [contract, property, landlord, tenant] =
     await Promise.all([
       fetch_contract(contract_id),
       fetch_property(property_id),
-      fetch_owner(property_id),
+      fetch_landlord(property_id),
       fetch_tenant(property_id),
     ])
-  return { contract, property, owner, tenant }
+  return { contract, property, landlord, tenant }
 }
 export function compose_html(
   contract: ContractType,
   property: Property,
-  owner: NonNullable<Owner>,
+  landlord: NonNullable<Landlord>,
   tenant: NonNullable<Tenant>,
 ): string {
   const { body, head } = render(Contract, {
-    props: { contract, property, owner, tenant },
+    props: { contract, property, landlord, tenant },
   })
   return `<!DOCTYPE html>
 <html lang="es">
@@ -74,11 +74,11 @@ export function compose_html(
 // const props: ContractProps = {
 //     start_date: contract.start_date?.toISOString() ?? "",
 //     end_date: contract.end_date?.toISOString() ?? "",
-//     owner: {
-//       name: owner.name ?? "",
-//       surname: owner.surname ?? "",
-//       phone_number: owner.phone_number ?? "",
-//       document_number: owner.document_number ?? 0,
+//     landlord: {
+//       name: landlord.name ?? "",
+//       surname: landlord.surname ?? "",
+//       phone_number: landlord.phone_number ?? "",
+//       document_number: landlord.document_number ?? 0,
 //     },
 //     tenant: {
 //       name: tenant.name ?? "",
@@ -92,7 +92,7 @@ export function compose_html(
 //         Number(property.location.house_number) || 0,
 //       state: property.location.state ?? "",
 //     },
-//     owner_location: {
+//     landlord_location: {
 //       road: "A completar",
 //       house_number: 0,
 //       state: "A completar",

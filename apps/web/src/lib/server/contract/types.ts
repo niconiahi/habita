@@ -33,11 +33,11 @@ export type Escalation = {
 export type ContractProps = {
   end_date: string
   start_date: string
-  owner: Signatory
+  landlord: Signatory
   fine: Fine
   default: Default
   tenant: Signatory
-  owner_location: Location
+  landlord_location: Location
   location: Location
   escalation: Escalation
   price: number

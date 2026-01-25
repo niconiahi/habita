@@ -1,19 +1,29 @@
 import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { ACCESS_TYPE } from "$lib/access_type"
+import { auth } from "$lib/server/auth"
 import {
-  get_edit_property_ids,
-  is_tenant_in_admin_properties,
-} from "$lib/server/organization"
+  get_accessible_property_ids,
+  is_tenant_accessible,
+} from "$lib/server/property_access"
 import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({
   locals,
   params,
+  request,
 }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
+  }
+  const can_access = await auth.api.hasPermission({
+    headers: request.headers,
+    body: { permissions: { tenant: ["read"] } },
+  })
+  if (!can_access) {
+    error(403, "Forbidden")
   }
   const tenant_id = v.parse(
     ForceNumberSchema,
@@ -22,12 +32,13 @@ export const load: PageServerLoad = async ({
       message: "tenant id should be a number",
     },
   )
-  const admin_property_ids = await get_edit_property_ids(
-    locals.user.id,
-  )
-  const has_access = await is_tenant_in_admin_properties(
+  const manager_property_ids = await get_accessible_property_ids(locals.user.id, [
+    ACCESS_TYPE.LANDLORD,
+    ACCESS_TYPE.MANAGER,
+  ])
+  const has_access = await is_tenant_accessible(
     tenant_id,
-    admin_property_ids,
+    manager_property_ids,
   )
   if (!has_access) {
     error(403, "not authorized")
