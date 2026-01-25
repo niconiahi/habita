@@ -24,6 +24,7 @@ jobs:
       gateway: ${{ steps.filter.outputs.gateway }}
       media: ${{ steps.filter.outputs.media }}
       status: ${{ steps.filter.outputs.status }}
+      geo: ${{ steps.filter.outputs.geo }}
       secrets: ${{ steps.filter.outputs.secrets }}
       services: ${{ steps.services.outputs.list }}
       any: ${{ steps.services.outputs.any }}
@@ -48,6 +49,8 @@ jobs:
               - 'infra/production/media/**'
             status:
               - 'infra/production/status/**'
+            geo:
+              - 'infra/production/geo/**'
 
       - name: Build services list
         id: services
@@ -77,6 +80,10 @@ jobs:
           fi
           if [[ "${{ steps.filter.outputs.status }}" == "true" ]]; then
             services="$services status"
+            any="true"
+          fi
+          if [[ "${{ steps.filter.outputs.geo }}" == "true" ]]; then
+            services="$services geo"
             any="true"
           fi
 

@@ -396,6 +396,10 @@ deploy +services:
         echo "→ Deploying status..."
         docker compose -p status -f {{infra}}/status/docker-compose.yml up -d --force-recreate --pull always
         ;;
+      geo)
+        echo "→ Deploying geo..."
+        docker compose -p geo -f {{infra}}/geo/docker-compose.yml up -d --force-recreate --pull always
+        ;;
       secrets)
         echo "→ Secrets decrypted. Restart services manually if needed:"
         echo "  docker compose -p app restart svelte"
