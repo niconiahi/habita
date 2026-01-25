@@ -31,7 +31,6 @@
     "@vitest/browser-playwright": "^4.0.15",
     "dotenv": "^17.2.3",
     "mdsvex": "^0.12.6",
-    "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "prettier-plugin-svelte": "^3.4.0",
     "svelte": "^5.45.6",

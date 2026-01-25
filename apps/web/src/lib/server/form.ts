@@ -54,6 +54,9 @@ export function normalize_input<
         return [key, Number(value)]
       }
       const value = formData.get(key)
+      if (value === null || value === "") {
+        return [key, undefined]
+      }
       if (isEmptyFile(value)) {
         return [key, undefined]
       }

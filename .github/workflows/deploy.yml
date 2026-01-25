@@ -108,7 +108,7 @@ jobs:
         with:
           context: ./apps/web
           file: ./apps/web/Dockerfile
-          target: prod
+          target: runtime
           push: true
           tags: |
             ${{ env.IMAGE_PREFIX }}:svelte-${{ github.sha }}

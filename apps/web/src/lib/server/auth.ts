@@ -1,16 +1,13 @@
 import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
-import {
-  defaultStatements,
-  ownerAc,
-  adminAc,
-} from "better-auth/plugins/organization/access"
 import { Pool } from "pg"
 import { encrypt } from "./encryption"
 
 const statement = {
-  ...defaultStatements,
+  organization: ["update", "delete"],
+  member: ["create", "update", "delete"],
+  invitation: ["create", "cancel"],
   property: ["read", "write"],
   contract: ["read", "write"],
   tenant: ["read", "write"],
@@ -19,21 +16,27 @@ const statement = {
 const ac = createAccessControl(statement)
 
 const landlord = ac.newRole({
-  ...ownerAc.statements,
+  organization: ["update", "delete"],
+  member: ["create", "update", "delete"],
+  invitation: ["create", "cancel"],
   property: ["read", "write"],
   contract: ["read", "write"],
   tenant: ["read", "write"],
 })
 
 const realtor = ac.newRole({
-  ...adminAc.statements,
+  organization: ["update"],
+  member: ["create", "update", "delete"],
+  invitation: ["create", "cancel"],
   property: ["read", "write"],
   contract: ["read", "write"],
   tenant: ["read", "write"],
 })
 
 const manager = ac.newRole({
-  ...adminAc.statements,
+  organization: ["update"],
+  member: ["create", "update", "delete"],
+  invitation: ["create", "cancel"],
   property: ["read", "write"],
   contract: ["read", "write"],
   tenant: ["read", "write"],
