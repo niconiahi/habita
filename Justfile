@@ -410,7 +410,14 @@ deploy +services:
   echo ""
   echo "=== Verifying health checks ==="
   sleep 10
-  unhealthy=$(docker ps --filter "health=unhealthy" --format "{{{{.Names}}}}" 2>/dev/null || true)
+
+  # Build filter for deployed services only (not all containers system-wide)
+  service_filters=""
+  for svc in {{services}}; do
+    service_filters="$service_filters --filter name=${svc}-"
+  done
+
+  unhealthy=$(docker ps $service_filters --filter "health=unhealthy" --format "{{{{.Names}}}}" 2>/dev/null || true)
   if [[ -n "$unhealthy" ]]; then
     echo "❌ UNHEALTHY containers detected: $unhealthy"
     exit 1
