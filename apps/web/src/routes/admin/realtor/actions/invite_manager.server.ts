@@ -1,7 +1,7 @@
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
 
-export async function invite_admin(
+export async function invite_manager(
   form_data: FormData,
   organization_id: string,
   inviter_id: number,
@@ -23,7 +23,7 @@ export async function invite_admin(
       id: invitation_id,
       organization_id,
       email,
-      role: "admin",
+      role: "manager",
       status: "pending",
       inviter_id,
       expires_at,

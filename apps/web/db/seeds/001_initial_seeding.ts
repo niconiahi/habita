@@ -37,12 +37,11 @@ import {
 import { SLOT_STATE } from "../../src/lib/slot_state.ts"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type.ts"
 import { COURT } from "../../src/lib/court.ts"
+import { ACCESS_TYPE } from "../../src/lib/access_type.ts"
 import { query_builder } from "../query_builder"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
-type OrganizationRole = "owner" | "admin" | "tenant"
 
 function compose_file_path(basename: string) {
   return `${__dirname}/../files/${basename}`
@@ -143,11 +142,29 @@ async function upsert_user({
   return user.id
 }
 
-async function create_property_organization(
+async function assign_property_access(
   property_id: number,
-  address: string,
   user_id: number,
-  role: OrganizationRole,
+  type: number,
+  now: string,
+) {
+  await query_builder
+    .insertInto("property_access")
+    .values({
+      property_id,
+      user_id,
+      type,
+      created_at: now,
+      updated_at: now,
+    })
+    .execute()
+  console.log(`assigned property_access: user ${user_id} -> property ${property_id} (type: ${type})`)
+}
+
+async function create_realtor_organization(
+  name: string,
+  user_id: number,
+  role: string,
   now: string,
 ) {
   const organization_id = randomUUID()
@@ -156,19 +173,13 @@ async function create_property_organization(
     .insertInto("organization")
     .values({
       id: organization_id,
-      name: `Property: ${address}`,
-      slug: `property-${property_id}`,
+      name,
+      slug: name.toLowerCase().replace(/\s+/g, "-"),
       created_at: now,
       updated_at: now,
     })
     .execute()
   console.log("created organization", organization_id)
-  await query_builder
-    .updateTable("property")
-    .set({ organization_id })
-    .where("id", "=", property_id)
-    .execute()
-  console.log("linked property to organization")
   await query_builder
     .insertInto("member")
     .values({
@@ -180,7 +191,7 @@ async function create_property_organization(
       updated_at: now,
     })
     .execute()
-  console.log("created member", member_id)
+  console.log(`added user ${user_id} as ${role} to organization`)
   return organization_id
 }
 
@@ -226,7 +237,7 @@ async function make_finished_contract(
 async function make_editing_contract(
   property_id: number,
   now: string,
-  admin_id: number,
+  manager_id: number,
   candidate_id: number,
 ) {
   const date = new Date()
@@ -294,7 +305,7 @@ async function make_editing_contract(
         property_id,
         event_id:
           "NHN2NmxmN3Y1dmt0cjFzNWF2NmprbWw0OTAgbmljb2xhcy5hY2NldHRhQG0",
-        host_id: admin_id,
+        host_id: manager_id,
         state: SLOT_STATE.FREE,
         start_date: slot_.start_date,
         end_date: slot_.end_date,
@@ -326,15 +337,15 @@ async function run() {
   console.log("seeding")
   const now = new Date().toISOString()
   console.log("creating users")
-  const owner_id = await upsert_user({
+  const landlord_id = await upsert_user({
     surname: "Andrea",
     name: "Medina",
     phone_number: "+5491125597648",
     document_number: 36829114,
     now,
-    email: "nicolas.accetta+owner@gmail.com",
+    email: "nicolas.accetta+landlord@gmail.com",
   })
-  const admin_id = await upsert_user({
+  const manager_id = await upsert_user({
     surname: "Accetta",
     name: "Nicolas",
     phone_number: "+5491122537752",
@@ -449,11 +460,18 @@ async function run() {
       .execute()
     console.log("created service")
   }
-  await create_property_organization(
+  // Create the realtor organization and add manager as member
+  await create_realtor_organization(
+    "Habita Inmobiliaria",
+    manager_id,
+    "manager",
+    now,
+  )
+  // Assign property-level access
+  await assign_property_access(
     property.id,
-    address,
-    admin_id,
-    "admin",
+    manager_id,
+    ACCESS_TYPE.MANAGER,
     now,
   )
   const finished_contract = await make_finished_contract(
@@ -463,7 +481,7 @@ async function run() {
   const editing_contract = await make_editing_contract(
     property.id,
     now,
-    admin_id,
+    manager_id,
     candidate_id,
   )
   const CONTRACT_FILES: {
@@ -548,7 +566,7 @@ async function run() {
     .insertInto("user_file")
     .values({
       file_id: credit_report_file_id,
-      user_id: admin_id,
+      user_id: manager_id,
       created_at: now,
       updated_at: now,
       type: USER_FILE_TYPE.CREDIT_REPORT,

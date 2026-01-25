@@ -8,6 +8,7 @@ import { ACTION } from "./actions/action"
 import type { PageServerLoad, Actions } from "./$types"
 
 export const load: PageServerLoad = async ({
+  request,
   locals,
   params,
 }) => {
@@ -18,7 +19,7 @@ export const load: PageServerLoad = async ({
     ForceNumberSchema,
     params.property_id,
   )
-  await require_edit_access(locals.user.id, property_id)
+  await require_edit_access(request.headers, locals.user.id, property_id)
   const contract_types = get_contract_types()
   return { contract_types }
 }
@@ -36,7 +37,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
-    await require_edit_access(locals.user.id, property_id)
+    await require_edit_access(request.headers, locals.user.id, property_id)
     const form_data = await request.formData()
     const { redirect_to } = await create_contract(
       form_data,

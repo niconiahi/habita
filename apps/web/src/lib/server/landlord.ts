@@ -2,12 +2,12 @@ import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
 import { ACCESS_TYPE } from "$lib/access_type"
 
-export async function fetch_tenant(property_id: number) {
-  const tenant = await query_builder
+export async function fetch_landlord(property_id: number) {
+  const landlord = await query_builder
     .selectFrom("user")
     .innerJoin("property_access", "property_access.user_id", "user.id")
     .where("property_access.property_id", "=", property_id)
-    .where("property_access.type", "=", ACCESS_TYPE.TENANT)
+    .where("property_access.type", "=", ACCESS_TYPE.LANDLORD)
     .select([
       "user.id",
       "user.name",
@@ -17,19 +17,17 @@ export async function fetch_tenant(property_id: number) {
       "user.email",
     ])
     .executeTakeFirst()
-  if (!tenant) return undefined
+  if (!landlord) return undefined
   return {
-    ...tenant,
-    name: decrypt(tenant.name),
-    surname: decrypt(tenant.surname),
-    phone_number: tenant.phone_number
-      ? decrypt(tenant.phone_number)
+    ...landlord,
+    name: decrypt(landlord.name),
+    surname: decrypt(landlord.surname),
+    phone_number: landlord.phone_number
+      ? decrypt(landlord.phone_number)
       : null,
-    document_number: tenant.document_number
-      ? decrypt(tenant.document_number)
+    document_number: landlord.document_number
+      ? decrypt(landlord.document_number)
       : null,
   }
 }
-export type Tenant = Awaited<
-  ReturnType<typeof fetch_tenant>
->
+export type Landlord = Awaited<ReturnType<typeof fetch_landlord>>

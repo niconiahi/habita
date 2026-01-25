@@ -829,54 +829,54 @@
     {/if}
   </Content.Section>
 {/snippet}
-{#snippet OwnerSection()}
+{#snippet LandlordSection()}
   <Content.Section>
     <Section.Header>
       <Section.Title>propietario</Section.Title>
     </Section.Header>
-    {#if errors.owner}
-      <span class="text-red-500">{errors.owner}</span>
+    {#if errors.landlord}
+      <span class="text-red-500">{errors.landlord}</span>
     {/if}
-    {#if data.owner}
+    {#if data.landlord}
       <div class="space-y-2">
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Nombre</p>
-          <p>{display_name(data.owner)}</p>
-          {#if errors.owner_name}
+          <p>{display_name(data.landlord)}</p>
+          {#if errors.landlord_name}
             <span class="text-red-500"
-              >{errors.owner_name}</span
+              >{errors.landlord_name}</span
             >
           {/if}
-          {#if errors.owner_surname}
+          {#if errors.landlord_surname}
             <span class="text-red-500"
-              >{errors.owner_surname}</span
+              >{errors.landlord_surname}</span
             >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Email</p>
-          <p>{data.owner.email}</p>
-          {#if errors.owner_email}
+          <p>{data.landlord.email}</p>
+          {#if errors.landlord_email}
             <span class="text-red-500"
-              >{errors.owner_email}</span
+              >{errors.landlord_email}</span
             >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">Teléfono</p>
-          <p>{data.owner.phone_number ?? "-"}</p>
-          {#if errors.owner_phone_number}
+          <p>{data.landlord.phone_number ?? "-"}</p>
+          {#if errors.landlord_phone_number}
             <span class="text-red-500"
-              >{errors.owner_phone_number}</span
+              >{errors.landlord_phone_number}</span
             >
           {/if}
         </div>
         <div class="space-y-1">
           <p class="text-sm text-gray-500">DNI</p>
-          <p>{data.owner.document_number ?? "-"}</p>
-          {#if errors.owner_document_number}
+          <p>{data.landlord.document_number ?? "-"}</p>
+          {#if errors.landlord_document_number}
             <span class="text-red-500"
-              >{errors.owner_document_number}</span
+              >{errors.landlord_document_number}</span
             >
           {/if}
         </div>
@@ -907,7 +907,7 @@
       {data.property.location?.house_number ?? ""}
     </a>
   </p>
-  {@render OwnerSection()}
+  {@render LandlordSection()}
   {@render TenantSection()}
   {@render SectionTwo()}
   {@render SectionThree()}

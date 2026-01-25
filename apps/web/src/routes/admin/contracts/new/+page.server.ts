@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit"
-import { get_edit_property_ids } from "$lib/server/organization"
+import { ACCESS_TYPE } from "$lib/access_type"
+import { get_accessible_property_ids } from "$lib/server/property_access"
 import { fetch_available_properties } from "./fetchers/available_properties.server"
 import type { Actions, PageServerLoad } from "./$types"
 
@@ -7,11 +8,12 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const admin_property_ids = await get_edit_property_ids(
-    locals.user.id,
-  )
+  const manager_property_ids = await get_accessible_property_ids(locals.user.id, [
+    ACCESS_TYPE.LANDLORD,
+    ACCESS_TYPE.MANAGER,
+  ])
   const available_properties =
-    await fetch_available_properties(admin_property_ids)
+    await fetch_available_properties(manager_property_ids)
   return { available_properties }
 }
 

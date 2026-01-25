@@ -1,9 +1,10 @@
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { ACCESS_TYPE } from "$lib/access_type"
 import {
-  add_user_to_property,
-  remove_user_role_from_property,
-} from "$lib/server/organization"
+  assign_property_access,
+  revoke_all_access_by_type,
+} from "$lib/server/property_access"
 
 export const InputSchema = v.object({
   candidate_id: ForceNumberSchema,
@@ -18,14 +19,7 @@ export async function set_tenant(form_data: FormData) {
       property_id: form_data.get("property_id"),
     },
   )
-  await remove_user_role_from_property(
-    property_id,
-    "tenant",
-  )
-  await add_user_to_property(
-    property_id,
-    candidate_id,
-    "tenant",
-  )
+  await revoke_all_access_by_type(property_id, ACCESS_TYPE.TENANT)
+  await assign_property_access(property_id, candidate_id, ACCESS_TYPE.TENANT)
   return { redirect_to: "/admin/candidates" }
 }

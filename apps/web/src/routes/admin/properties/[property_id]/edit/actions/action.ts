@@ -8,6 +8,6 @@ export const ACTION = {
   UPDATE_SERVICE: "update_service",
   DESTROY_SERVICE: "destroy_service",
   CREATE_PROPERTY_FILE: "create_property_file",
-  INVITE_OWNER: "invite_owner",
+  INVITE_LANDLORD: "invite_landlord",
   UPDATE_DESTINIES: "update_destinies",
 } as const

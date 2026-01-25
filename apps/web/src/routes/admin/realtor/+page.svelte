@@ -32,11 +32,11 @@
 
   <Content.Section>
     <Section.Header>
-      <Section.Title>Invitar Administrador</Section.Title>
+      <Section.Title>Invitar Gestor</Section.Title>
     </Section.Header>
     <form
       method="POST"
-      action={compose_action(ACTION.INVITE_ADMIN)}
+      action={compose_action(ACTION.INVITE_MANAGER)}
       use:enhance
       class="invite-form"
     >
@@ -47,7 +47,7 @@
           id="email"
           name="email"
           required
-          placeholder="admin@ejemplo.com"
+          placeholder="gestor@ejemplo.com"
         />
       </Formulary.Field>
       <Button type="submit">Enviar Invitacion</Button>
@@ -56,11 +56,11 @@
 
   <Content.Section>
     <Section.Header>
-      <Section.Title>Administradores</Section.Title>
+      <Section.Title>Gestores</Section.Title>
     </Section.Header>
-    {#if data.admins.length === 0}
+    {#if data.managers.length === 0}
       <p class="empty-state">
-        No hay administradores en tu organizacion todavia.
+        No hay gestores en tu organizacion todavia.
       </p>
     {:else}
       <Table.Root>
@@ -71,22 +71,22 @@
           <Table.Cell header>Acciones</Table.Cell>
         </Table.Header>
         <Table.Body>
-          {#each data.admins as admin (admin.id)}
+          {#each data.managers as manager (manager.id)}
             <Table.Row>
-              <Table.Cell>{display_name(admin)}</Table.Cell>
-              <Table.Cell>{admin.email}</Table.Cell>
-              <Table.Cell>{admin.property_count}</Table.Cell>
+              <Table.Cell>{display_name(manager)}</Table.Cell>
+              <Table.Cell>{manager.email}</Table.Cell>
+              <Table.Cell>{manager.property_count}</Table.Cell>
               <Table.Cell>
                 <form
                   method="POST"
-                  action={compose_action(ACTION.REMOVE_ADMIN)}
+                  action={compose_action(ACTION.REMOVE_MANAGER)}
                   use:enhance
                   style="display: inline;"
                 >
                   <input
                     type="hidden"
-                    name="admin_id"
-                    value={admin.id}
+                    name="manager_id"
+                    value={manager.id}
                   />
                   <Button type="submit">Remover</Button>
                 </form>

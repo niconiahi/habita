@@ -1,4 +1,5 @@
 import * as v from "valibot"
+import { error } from "@sveltejs/kit"
 import { LocationSchema } from "$lib/components/LocationInput.svelte"
 import { ForceNumberSchema } from "$lib/force_number"
 import { compose_point } from "$lib/server/point"
@@ -8,11 +9,9 @@ import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
 } from "$lib/property_type"
-import {
-  create_property_organization,
-  get_user_organization,
-  link_property_to_organization,
-} from "$lib/server/organization"
+import { ACCESS_TYPE } from "$lib/access_type"
+import { get_user_organization } from "$lib/server/organization"
+import { assign_property_access } from "$lib/server/property_access"
 import { query_builder } from "db/query_builder"
 
 export async function create_property(form_data: FormData) {
@@ -33,6 +32,10 @@ export async function create_property(form_data: FormData) {
     ForceNumberSchema,
     form_data.get("user_id"),
   )
+  const user_org = await get_user_organization(user_id)
+  if (!user_org) {
+    error(403, "User must belong to an organization to create properties")
+  }
   const property = await query_builder
     .transaction()
     .execute(async (tx) => {
@@ -72,31 +75,16 @@ export async function create_property(form_data: FormData) {
           unit,
           destinies,
           state: PROPERTY_STATE.EDITING,
+          realtor_id: user_org.id,
           created_at: now,
           updated_at: now,
           location_id: location.id,
         })
         .returning("property.id")
         .executeTakeFirstOrThrow()
-      return {
-        id: property.id,
-        address: location_.display_name,
-      }
+      return { id: property.id }
     })
-  // Check if user has an organization (as realtor or admin)
-  const user_org = await get_user_organization(user_id)
-
-  if (user_org) {
-    await link_property_to_organization(property.id, user_org.id)
-  } else {
-    await create_property_organization(
-      property.id,
-      property.address,
-      user_id,
-      "admin",
-    )
-  }
-
+  await assign_property_access(property.id, user_id, ACCESS_TYPE.MANAGER)
   return {
     redirect_to: `/admin/properties/${property.id}/edit`,
   }

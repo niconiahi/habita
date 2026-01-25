@@ -7,7 +7,8 @@ import {
   get_receipt_types,
 } from "$lib/receipt_type"
 import { query_builder } from "db/query_builder"
-import { require_property_role } from "$lib/server/property_access"
+import { require_property_access } from "$lib/server/property_access"
+import { ACCESS_TYPE } from "$lib/access_type"
 import { fetch_contract } from "../edit/fetchers/contract.server"
 import { fetch_property } from "../../../../../../properties/fetchers/property.server"
 import type { PageServerLoad, Actions } from "./$types"
@@ -15,6 +16,7 @@ import { ACTION } from "./actions/action"
 import { upload_receipt } from "./actions/upload_receipt.server"
 
 export const load: PageServerLoad = async ({
+  request,
   locals,
   params,
 }) => {
@@ -35,8 +37,8 @@ export const load: PageServerLoad = async ({
       message: "contract id should be a number",
     },
   )
-  await require_property_role(locals.user.id, property_id, [
-    "tenant",
+  await require_property_access(request.headers, locals.user.id, property_id, [
+    ACCESS_TYPE.TENANT,
   ])
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
@@ -114,10 +116,11 @@ export const actions: Actions = {
         message: "property id should be a number",
       },
     )
-    await require_property_role(
+    await require_property_access(
+      request.headers,
       locals.user.id,
       property_id,
-      ["tenant"],
+      [ACCESS_TYPE.TENANT],
     )
     const form_data = await request.formData()
     await upload_receipt(form_data)

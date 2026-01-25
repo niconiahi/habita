@@ -3,10 +3,8 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { now } from "$lib/server/now"
 import { compose_token_hash } from "$lib/server/token"
-import {
-  add_user_to_property,
-  get_property_organization,
-} from "$lib/server/organization"
+import { ACCESS_TYPE } from "$lib/access_type"
+import { assign_property_access } from "$lib/server/property_access"
 import { query_builder } from "db/query_builder"
 import type { RequestHandler } from "./$types"
 
@@ -66,15 +64,18 @@ export const GET: RequestHandler = async ({
   if (locals.user.email !== normalized_email) {
     return new Response(ERROR_MESSAGE, { status: 400 })
   }
-  const property_organization =
-    await get_property_organization(property_id)
-  if (!property_organization) {
+  const property = await query_builder
+    .selectFrom("property")
+    .where("id", "=", property_id)
+    .select("id")
+    .executeTakeFirst()
+  if (!property) {
     return new Response(ERROR_MESSAGE, { status: 400 })
   }
-  await add_user_to_property(
+  await assign_property_access(
     property_id,
     locals.user.id,
-    "landlord",
+    ACCESS_TYPE.LANDLORD,
   )
   await query_builder
     .updateTable("invitation_token")

@@ -54,7 +54,7 @@ endpoints:
 
   - name: Geocoding
     group: Services
-    url: "http://geo-nominatim-1:8090/status"
+    url: "http://geo-nominatim-1:8080/status"
     interval: 60s
     ui:
       hide-hostname: true

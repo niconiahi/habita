@@ -235,10 +235,22 @@ export interface Property {
   id: Generated<number>;
   location_id: number;
   organization_id: string | null;
+  realtor_id: string | null;
   state: number;
+  team_id: string | null;
   type: number;
   unit: string | null;
   updated_at: Timestamp;
+}
+
+export interface PropertyAccess {
+  created_at: Timestamp;
+  granted_by: number | null;
+  id: Generated<number>;
+  property_id: number;
+  type: number;
+  updated_at: Timestamp;
+  user_id: number;
 }
 
 export interface PropertyFile {
@@ -258,6 +270,13 @@ export interface Rate {
   updated_at: Timestamp;
   value: Numeric;
   year: number;
+}
+
+export interface Realtor {
+  created_at: Timestamp;
+  id: string;
+  realtor_id: number;
+  user_id: number;
 }
 
 export interface Receipt {
@@ -298,7 +317,8 @@ export interface Service {
 }
 
 export interface Session {
-  active_organization_id: string | null;
+  activeOrganizationId: string | null;
+  activeTeamId: string | null;
   created_at: Timestamp;
   expires_at: Timestamp;
   id: string;
@@ -947,8 +967,10 @@ export interface DB {
   payment_mercado_pago: PaymentMercadoPago;
   period: Period;
   property: Property;
+  property_access: PropertyAccess;
   property_file: PropertyFile;
   rate: Rate;
+  realtor: Realtor;
   receipt: Receipt;
   room: Room;
   room_map: RoomMap;

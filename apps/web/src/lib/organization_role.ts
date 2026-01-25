@@ -4,7 +4,7 @@ export type ObjectValues<T> = T[keyof T]
 export const ORGANIZATION_ROLE = {
   LANDLORD: "landlord",
   REALTOR: "realtor",
-  ADMIN: "admin",
+  MANAGER: "manager",
   TENANT: "tenant",
 } as const
 export const OrganizationRoleSchema = v.picklist(
@@ -28,8 +28,8 @@ export function get_role_label(
     case ORGANIZATION_ROLE.REALTOR: {
       return "Inmobiliaria"
     }
-    case ORGANIZATION_ROLE.ADMIN: {
-      return "Administrador"
+    case ORGANIZATION_ROLE.MANAGER: {
+      return "Gestor"
     }
     case ORGANIZATION_ROLE.TENANT: {
       return "Inquilino"

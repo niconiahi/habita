@@ -1,20 +1,5 @@
 import type * as v from "valibot"
 
-export function normalize_input(
-  form_data: FormData,
-  schema: v.ObjectSchema<any, any>,
-) {
-  const form_object: { [k: string]: unknown | undefined } =
-    {}
-  const schema_keys = Object.keys(schema.entries)
-
-  for (const key of schema_keys) {
-    const value = form_data.get(key)
-    form_object[key] = value !== null ? value : undefined
-  }
-
-  return form_object
-}
 
 export function get_errors<
   TSchema extends v.BaseSchema<any, any, any>,
@@ -28,4 +13,51 @@ export function get_errors<
     ]),
   ) as Partial<Record<keyof v.InferInput<TSchema>, string>>
   return errors
+}
+
+function isEmptyFile(value: FormDataEntryValue | null): boolean {
+  return (
+    value instanceof File &&
+    value.size === 0 &&
+    (value.name === "" || value.name === "blob")
+  )
+}
+
+function getType(schema: unknown): string {
+  if (typeof schema !== "object" || schema === null) return "unknown"
+  if (!("type" in schema)) return "unknown"
+  const type = schema.type
+  if ((type === "optional" || type === "nullish") && "wrapped" in schema) {
+    return getType(schema.wrapped)
+  }
+  return typeof type === "string" ? type : "unknown"
+}
+
+export function normalize_input<
+  T extends v.ObjectSchema<v.ObjectEntries, undefined>,
+>(formData: FormData, schema: T) {
+  const entries = schema.entries
+  return Object.fromEntries(
+    Object.entries(entries).map(([key, schema]) => {
+      const type = getType(schema)
+      if (type === "boolean") {
+        return [key, formData.get(key) === "on"]
+      }
+      if (type === "array") {
+        return [key, formData.getAll(key)]
+      }
+      if (type === "number") {
+        const value = formData.get(key)
+        if (value === null || value === "") {
+          return [key, undefined]
+        }
+        return [key, Number(value)]
+      }
+      const value = formData.get(key)
+      if (isEmptyFile(value)) {
+        return [key, undefined]
+      }
+      return [key, value]
+    }),
+  )
 }

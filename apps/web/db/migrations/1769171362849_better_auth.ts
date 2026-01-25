@@ -142,7 +142,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
   await db.schema
     .alterTable("session")
-    .addColumn("active_organization_id", "text")
+    .addColumn("activeOrganizationId", "text")
+    .execute()
+  await db.schema
+    .alterTable("session")
+    .addColumn("activeTeamId", "text")
     .execute()
   await db.schema
     .alterTable("account")
@@ -207,15 +211,6 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
-  await db.schema
-    .alterTable("access")
-    .dropConstraint("access_user_id_user_id_fk")
-    .execute()
-  await db.schema
-    .alterTable("access")
-    .dropConstraint("access_property_id_property_id_fk")
-    .execute()
-  await db.schema.dropTable("access").execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
@@ -286,7 +281,11 @@ export async function down(db: Kysely<any>): Promise<void> {
     .execute()
   await db.schema
     .alterTable("session")
-    .dropColumn("active_organization_id")
+    .dropColumn("activeOrganizationId")
+    .execute()
+  await db.schema
+    .alterTable("session")
+    .dropColumn("activeTeamId")
     .execute()
   await db.schema
     .alterTable("user")

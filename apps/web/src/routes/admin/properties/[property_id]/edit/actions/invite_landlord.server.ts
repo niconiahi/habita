@@ -9,7 +9,7 @@ import {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
-export async function invite_owner(form_data: FormData) {
+export async function invite_landlord(form_data: FormData) {
   const email = v.parse(
     v.pipe(v.string(), v.email()),
     form_data.get("email"),
@@ -32,7 +32,7 @@ export async function invite_owner(form_data: FormData) {
     })
     .executeTakeFirstOrThrow()
   const subject =
-    "Estas siendo invitado como dueño de una propiedad"
+    "Estas siendo invitado como propietario de una propiedad"
   const url = new URL(
     `https://dev.habita.rent/properties/${property_id}/accept-invite`,
   )
@@ -41,10 +41,10 @@ export async function invite_owner(form_data: FormData) {
 <div>
   <p>To accept, <a href="${url.toString()}">follow this link</a></p>
 </div>`
-  await send_owner_invite({ email, text, subject })
+  await send_landlord_invite({ email, text, subject })
 }
 
-async function send_owner_invite({
+async function send_landlord_invite({
   email,
   subject,
   text,
@@ -53,10 +53,10 @@ async function send_owner_invite({
   subject: string
   text: string
 }): Promise<void> {
-  console.log("Attempting to send owner invite to:", email)
+  console.log("Attempting to send landlord invite to:", email)
   try {
     const response = await fetch(
-      "http://go:8081/send-owner-invite",
+      "http://go:8081/send-landlord-invite",
       {
         method: "POST",
         headers: {
@@ -77,14 +77,14 @@ async function send_owner_invite({
         error_text,
       )
       throw new Error(
-        `Failed to send owner invite: ${response.status} - ${error_text}`,
+        `Failed to send landlord invite: ${response.status} - ${error_text}`,
       )
     }
-    console.log("Owner invite sent successfully")
+    console.log("Landlord invite sent successfully")
   } catch (error) {
-    console.error("Error sending owner invite:", error)
+    console.error("Error sending landlord invite:", error)
     throw new Error(
-      "there was an error while sending the owner invite",
+      "there was an error while sending the landlord invite",
       {
         cause: error,
       },

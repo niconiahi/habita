@@ -5,6 +5,7 @@ import {
 } from "$lib/contract_state"
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
+import { ACCESS_TYPE } from "$lib/access_type"
 
 export async function fetch_contracts(
   property_ids: number[],
@@ -13,16 +14,8 @@ export async function fetch_contracts(
   if (property_ids.length === 0) return []
   const contracts = await query_builder
     .selectFrom("contract")
-    .innerJoin(
-      "property",
-      "property.id",
-      "contract.property_id",
-    )
-    .innerJoin(
-      "location",
-      "location.id",
-      "property.location_id",
-    )
+    .innerJoin("property", "property.id", "contract.property_id")
+    .innerJoin("location", "location.id", "property.location_id")
     .where("contract.property_id", "in", property_ids)
     .where(
       "contract.state",
@@ -49,25 +42,17 @@ export async function fetch_contracts(
             "location.town",
             "location.state",
           ])
-          .whereRef(
-            "location.id",
-            "=",
-            "property.location_id",
-          ),
+          .whereRef("location.id", "=", "property.location_id"),
       )
         .$notNull()
         .as("location"),
       jsonObjectFrom(
         eb
           .selectFrom("user")
-          .innerJoin("member", "member.user_id", "user.id")
+          .innerJoin("property_access", "property_access.user_id", "user.id")
           .select(["user.name", "user.surname"])
-          .whereRef(
-            "member.organization_id",
-            "=",
-            "property.organization_id",
-          )
-          .where("member.role", "=", "tenant"),
+          .whereRef("property_access.property_id", "=", "property.id")
+          .where("property_access.type", "=", ACCESS_TYPE.TENANT),
       ).as("tenant"),
     ])
     .execute()

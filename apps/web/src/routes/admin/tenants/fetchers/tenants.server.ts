@@ -1,28 +1,21 @@
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
+import { ACCESS_TYPE } from "$lib/access_type"
 
 export async function fetch_tenants(
-  admin_property_ids: number[],
+  manager_property_ids: number[],
 ) {
-  if (admin_property_ids.length === 0) {
+  if (manager_property_ids.length === 0) {
     return []
   }
   const tenants = await query_builder
     .selectFrom("user")
-    .innerJoin("member", "member.user_id", "user.id")
-    .innerJoin(
-      "property",
-      "property.organization_id",
-      "member.organization_id",
-    )
-    .innerJoin(
-      "location",
-      "location.id",
-      "property.location_id",
-    )
-    .where("member.role", "=", "tenant")
-    .where("property.id", "in", admin_property_ids)
+    .innerJoin("property_access", "property_access.user_id", "user.id")
+    .innerJoin("property", "property.id", "property_access.property_id")
+    .innerJoin("location", "location.id", "property.location_id")
+    .where("property_access.type", "=", ACCESS_TYPE.TENANT)
+    .where("property.id", "in", manager_property_ids)
     .select((eb) => [
       "user.id",
       "user.name",
@@ -44,11 +37,7 @@ export async function fetch_tenants(
             "location.town",
             "location.state",
           ])
-          .whereRef(
-            "location.id",
-            "=",
-            "property.location_id",
-          ),
+          .whereRef("location.id", "=", "property.location_id"),
       )
         .$notNull()
         .as("location"),
