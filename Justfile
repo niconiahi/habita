@@ -274,7 +274,6 @@ secrets-encrypt:
 secrets-decrypt:
   sops -d --input-type dotenv --output-type dotenv {{infra}}/.env.enc > {{infra}}/.env
   chmod 600 {{infra}}/.env
-  sha256sum {{infra}}/.env.enc | cut -d' ' -f1 > {{infra}}/.env.enc.sha256
   @echo "Decrypted: {{infra}}/.env"
   @if [ -f "{{infra}}/scheduler/rclone.conf.enc" ]; then \
     sops -d {{infra}}/scheduler/rclone.conf.enc > {{infra}}/scheduler/rclone.conf; \
@@ -284,7 +283,29 @@ secrets-decrypt:
 
 # Edit encrypted secrets directly (opens in $EDITOR)
 secrets-edit:
+  #!/usr/bin/env bash
   sops --input-type dotenv --output-type dotenv {{infra}}/.env.enc
+  exit_code=$?
+  if [[ $exit_code -eq 200 ]]; then
+    echo "No changes made."
+    exit 0
+  fi
+  exit $exit_code
+
+# Decrypt secrets AND restart affected services (production workflow)
+secrets-apply:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  just --set env {{env}} secrets-decrypt
+
+  echo ""
+  echo "=== Restarting services to pick up new secrets ==="
+  docker compose -p app -f {{infra}}/app/docker-compose.yml restart svelte
+  docker compose -p api -f {{infra}}/api/docker-compose.yml restart go
+
+  echo ""
+  echo "✅ Secrets applied and services restarted"
 
 # Show current public key
 secrets-pubkey:
@@ -331,32 +352,11 @@ deploy +services:
   # Docker login is handled once during server provisioning via `docker login`
   # Credentials persist in ~/.docker/config.json
 
-  # Decrypt secrets if:
-  # 1. .env doesn't exist, OR
-  # 2. "secrets" is in services list, OR
-  # 3. .env.enc has changed (hash mismatch)
-  needs_decrypt=false
+  # Decrypt secrets only if .env doesn't exist (first deploy)
+  # For secret updates, manually run: just --set env production secrets-decrypt
   if [[ ! -f "{{infra}}/.env" ]]; then
-    needs_decrypt=true
-    echo "→ .env missing, will decrypt"
-  elif [[ " {{services}} " == *" secrets "* ]]; then
-    needs_decrypt=true
-    echo "→ secrets in deploy list, will decrypt"
-  elif [[ ! -f "{{infra}}/.env.enc.sha256" ]]; then
-    needs_decrypt=true
-    echo "→ .env.enc.sha256 missing, will decrypt"
-  else
-    current_hash=$(sha256sum {{infra}}/.env.enc | cut -d' ' -f1)
-    stored_hash=$(cat {{infra}}/.env.enc.sha256)
-    if [[ "$current_hash" != "$stored_hash" ]]; then
-      needs_decrypt=true
-      echo "→ .env.enc changed, will decrypt"
-    fi
-  fi
-
-  if [[ "$needs_decrypt" == "true" ]]; then
     echo ""
-    echo "=== Decrypting secrets ==="
+    echo "=== Decrypting secrets (first deploy) ==="
     just --set env {{env}} secrets-decrypt
   fi
 
@@ -397,11 +397,9 @@ deploy +services:
         docker compose -p status -f {{infra}}/status/docker-compose.yml up -d --force-recreate --pull always
         ;;
       secrets)
-        # Already handled above, just restart services that use .env (no pull - image unchanged)
-        echo "→ Restarting services that use .env..."
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
-        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate
+        echo "→ Secrets decrypted. Restart services manually if needed:"
+        echo "  docker compose -p app restart svelte"
+        echo "  docker compose -p api restart go"
         ;;
       *)
         echo "⚠ Unknown service: $svc"

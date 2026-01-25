@@ -45,8 +45,6 @@ jobs:
               - 'infra/production/gateway/**'
             media:
               - 'infra/production/media/**'
-            secrets:
-              - 'infra/production/.env.enc'
 
       - name: Build services list
         id: services
@@ -72,10 +70,6 @@ jobs:
           fi
           if [[ "${{ steps.filter.outputs.media }}" == "true" ]]; then
             services="$services media"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.secrets }}" == "true" ]]; then
-            services="$services secrets"
             any="true"
           fi
 
