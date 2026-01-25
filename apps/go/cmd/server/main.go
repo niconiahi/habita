@@ -28,7 +28,7 @@ func main() {
 
 	logger := observability.NewLogger()
 
-	// Health check (no tracing ne
+	// Health check (no tracing n
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))
