@@ -1,4 +1,4 @@
-import { logger } from "$lib/server/telemetry/logger"
+import { logger } from "../telemetry/logger"
 import { process_jobs } from "./process_jobs"
 
 async function main() {

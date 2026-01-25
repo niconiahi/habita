@@ -1,4 +1,4 @@
-import { logger } from "$lib/server/telemetry/logger"
+import { logger } from "../telemetry/logger"
 import { create_escalation_jobs } from "./create_escalation_jobs"
 
 async function main() {
