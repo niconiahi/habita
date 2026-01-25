@@ -326,10 +326,10 @@ deploy +services:
   # Docker login is handled once during server provisioning via `docker login`
   # Credentials persist in ~/.docker/config.json
 
-  # Decrypt secrets if .env doesn't exist
-  if [[ ! -f "{{infra}}/.env" ]]; then
+  # Decrypt secrets if .env doesn't exist OR if secrets is being deployed
+  if [[ ! -f "{{infra}}/.env" ]] || [[ " {{services}} " == *" secrets "* ]]; then
     echo ""
-    echo "=== Decrypting secrets (no .env found) ==="
+    echo "=== Decrypting secrets ==="
     just --set env {{env}} secrets-decrypt
   fi
 
