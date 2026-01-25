@@ -9,7 +9,7 @@ services:
       - ./ofelia.ini:/etc/ofelia/config.ini:ro
     command: daemon --config /etc/ofelia/config.ini
     healthcheck:
-      test: ["CMD", "pgrep", "-x", "ofelia"]
+      test: ["CMD", "pgrep", "ofelia"]
       interval: 30s
       timeout: 5s
       retries: 3
