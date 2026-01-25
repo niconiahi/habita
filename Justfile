@@ -32,6 +32,8 @@ up: network
   docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d
   @echo "Starting scheduler..."
   docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d
+  @echo "Starting pdf service..."
+  docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d
   @echo "Starting status page..."
   docker compose -p status -f {{infra}}/status/docker-compose.yml up -d
   @echo "Done! (geo not started - run 'just geo' if needed)"
@@ -39,6 +41,7 @@ up: network
 # Stop all services
 down:
   -docker compose -p status -f {{infra}}/status/docker-compose.yml down
+  -docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml down
   -docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml down
   -docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml down
   -docker compose -p media -f {{infra}}/media/docker-compose.yml down
@@ -86,6 +89,7 @@ status:
   @echo "\n=== API ===" && docker compose -p api -f {{infra}}/api/docker-compose.yml ps
   @echo "\n=== Gateway ===" && docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml ps
   @echo "\n=== Scheduler ===" && docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml ps
+  @echo "\n=== PDF ===" && docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml ps
   @echo "\n=== Media ===" && docker compose -p media -f {{infra}}/media/docker-compose.yml ps
   @echo "\n=== Status ===" && docker compose -p status -f {{infra}}/status/docker-compose.yml ps
 
@@ -360,6 +364,10 @@ deploy +services:
       media)
         echo "→ Deploying media..."
         docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate --pull always
+        ;;
+      pdf)
+        echo "→ Deploying pdf (build + restart)..."
+        docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d --force-recreate --build
         ;;
       status)
         echo "→ Deploying status..."

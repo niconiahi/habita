@@ -41,10 +41,10 @@ func main() {
 			"POST /send-email",
 		),
 	)
-	http.Handle("/send-owner-invite",
+	http.Handle("/send-landlord-invite",
 		otelhttp.NewHandler(
-			http.HandlerFunc(smtp.OwnerInviteHandler(logger)),
-			"POST /send-owner-invite",
+			http.HandlerFunc(smtp.LandlordInviteHandler(logger)),
+			"POST /send-landlord-invite",
 		),
 	)
 

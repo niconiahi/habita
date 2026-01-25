@@ -31,7 +31,7 @@ type EmailRequest struct {
 	Content  string  `json:"content"`
 }
 
-type OwnerInviteRequest struct {
+type LandlordInviteRequest struct {
 	Email   string `json:"email"`
 	Subject string `json:"subject"`
 	Text    string `json:"text"`
@@ -175,16 +175,16 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	return nil
 }
 
-func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req OwnerInviteRequest) error {
+func SendLandlordInvite(ctx context.Context, logger *observability.Logger, req LandlordInviteRequest) error {
 	tracer := otel.Tracer("smtp")
-	ctx, span := tracer.Start(ctx, "smtp.send_owner_invite")
+	ctx, span := tracer.Start(ctx, "smtp.send_landlord_invite")
 	defer span.End()
 
 	span.SetAttributes(
 		attribute.String("email.subject", req.Subject),
 	)
 
-	logger.Info(ctx, "sending owner invite", nil)
+	logger.Info(ctx, "sending landlord invite", nil)
 	if req.Email == "" || req.Subject == "" || req.Text == "" {
 		return fmt.Errorf("missing required fields")
 	}
@@ -222,7 +222,7 @@ func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req Owne
 
 	// Send via authenticated SMTP with STARTTLS (Gmail)
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
-	log.Printf("Sending owner invite from bookings@habita.rent to %s via %s with user: %s", req.Email, addr, smtpUser)
+	log.Printf("Sending landlord invite from bookings@habita.rent to %s via %s with user: %s", req.Email, addr, smtpUser)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", addr)
@@ -287,7 +287,7 @@ func SendOwnerInvite(ctx context.Context, logger *observability.Logger, req Owne
 		return fmt.Errorf("failed to quit: %v", err)
 	}
 
-	logger.Info(ctx, "owner invite sent successfully", nil)
+	logger.Info(ctx, "landlord invite sent successfully", nil)
 	return nil
 }
 
@@ -317,7 +317,7 @@ func Handler(logger *observability.Logger) http.HandlerFunc {
 	}
 }
 
-func OwnerInviteHandler(logger *observability.Logger) http.HandlerFunc {
+func LandlordInviteHandler(logger *observability.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 	if r.Method != http.MethodPost {
@@ -325,16 +325,16 @@ func OwnerInviteHandler(logger *observability.Logger) http.HandlerFunc {
 		return
 	}
 
-		var req OwnerInviteRequest
+		var req LandlordInviteRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			logger.Error(ctx, "failed to decode owner invite request", nil, err)
+			logger.Error(ctx, "failed to decode landlord invite request", nil, err)
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		if err := SendOwnerInvite(ctx, logger, req); err != nil {
-			logger.Error(ctx, "failed to send owner invite", nil, err)
-			http.Error(w, fmt.Sprintf("Failed to send owner invite: %v", err), http.StatusInternalServerError)
+		if err := SendLandlordInvite(ctx, logger, req); err != nil {
+			logger.Error(ctx, "failed to send landlord invite", nil, err)
+			http.Error(w, fmt.Sprintf("Failed to send landlord invite: %v", err), http.StatusInternalServerError)
 			return
 		}
 
