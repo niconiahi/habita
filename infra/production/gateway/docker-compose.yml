@@ -11,7 +11,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      test: ["CMD", "pidof", "caddy"]
       interval: 10s
       timeout: 5s
       retries: 3

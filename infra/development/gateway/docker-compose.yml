@@ -12,7 +12,7 @@ services:
       - ./certs/dev.habita.rent-key.pem:/etc/ssl/private/dev.habita.rent-key.pem:ro
       - ./certs/habita.pem:/etc/ssl/certs/habita.pem:ro
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      test: ["CMD", "pidof", "caddy"]
       interval: 10s
       timeout: 5s
       retries: 3
