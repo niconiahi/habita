@@ -328,6 +328,14 @@ deploy +services:
   fi
   echo "🔒 Deploy lock acquired"
 
+  # Verify IMAGE_TAG is set for deterministic deployments
+  if [[ -z "${IMAGE_TAG:-}" ]]; then
+    echo "❌ IMAGE_TAG environment variable is required"
+    echo "   Usage: IMAGE_TAG=<commit-sha> just --set env production deploy app api"
+    exit 1
+  fi
+  echo "📦 Deploying with IMAGE_TAG: $IMAGE_TAG"
+
   # Cleanup function for notifications and lock release
   cleanup() {
     local exit_code=$?
