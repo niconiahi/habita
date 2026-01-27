@@ -2,6 +2,6 @@
 
 <p>
   Visit <a href="https://habita.rent/properties"
-    >propertieS</a
+    >properties</a
   >
 </p>
