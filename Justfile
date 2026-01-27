@@ -4,6 +4,10 @@
 env := "development"
 infra := "infra/" + env
 
+# Default IMAGE_TAG for non-deploy commands (logs, status, etc.)
+# Deploy command validates this isn't "latest" for production deploys
+export IMAGE_TAG := env_var_or_default("IMAGE_TAG", "latest")
+
 # List available commands
 default:
   @just --list
@@ -328,9 +332,9 @@ deploy +services:
   fi
   echo "🔒 Deploy lock acquired"
 
-  # Verify IMAGE_TAG is set for deterministic deployments
-  if [[ -z "${IMAGE_TAG:-}" ]]; then
-    echo "❌ IMAGE_TAG environment variable is required"
+  # Verify IMAGE_TAG is a real commit SHA, not the default "latest"
+  if [[ "$IMAGE_TAG" == "latest" ]]; then
+    echo "❌ IMAGE_TAG must be a commit SHA, not 'latest'"
     echo "   Usage: IMAGE_TAG=<commit-sha> just --set env production deploy app api"
     exit 1
   fi
