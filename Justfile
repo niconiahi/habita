@@ -4,9 +4,8 @@
 env := "development"
 infra := "infra/" + env
 
-# Default IMAGE_TAG for non-deploy commands (logs, status, etc.)
-# Deploy command validates this isn't "latest" for production deploys
-export IMAGE_TAG := env_var_or_default("IMAGE_TAG", "latest")
+# IMAGE_TAG defaults to current git commit (matches deployed version on VPS)
+export IMAGE_TAG := env_var_or_default("IMAGE_TAG", `git rev-parse HEAD`)
 
 # List available commands
 default:
