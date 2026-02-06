@@ -9,4 +9,9 @@ export const ACTION = {
   CREATE_CONTRACT_ITEM_FILE: "create_contract_item_file",
   DESTROY_CONTRACT_ITEM_FILE: "destroy_contract_item_file",
   UPDATE_PERIOD: "update_period",
+  CREATE_WARRANTY: "create_warranty",
+  UPDATE_WARRANTY: "update_warranty",
+  ADD_INCOME_GUARANTOR: "add_income_guarantor",
+  UPDATE_INCOME_GUARANTOR: "update_income_guarantor",
+  DESTROY_INCOME_GUARANTOR: "destroy_income_guarantor",
 } as const

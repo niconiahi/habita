@@ -1,16 +1,7 @@
 <script lang="ts">
-  import type { Contract } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-  import type { Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
-  import type { Landlord } from "../landlord"
-  import type { Tenant } from "../tenant"
+  import type { ContractProps } from "./contract_props"
   import * as sections from "./sections"
-  interface Props {
-    contract: Contract
-    property: Property
-    landlord: Landlord
-    tenant: Tenant
-  }
-  let { contract, property, landlord, tenant }: Props =
+  let { contract, property, landlord, tenant, warranty }: ContractProps =
     $props()
 </script>
 
@@ -92,7 +83,7 @@
 
 ## Décima octava: Fiadores
 
-<sections.SectionEighteen />
+<sections.SectionEighteen {warranty} />
 
 ## Décima novena: Título ejecutivo
 

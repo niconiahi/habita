@@ -1,6 +1,6 @@
 import * as v from "valibot"
 import { error } from "@sveltejs/kit"
-import { LocationSchema } from "$lib/components/LocationInput.svelte"
+import { LocationSchema } from "$lib/location"
 import { ForceNumberSchema } from "$lib/force_number"
 import { compose_point } from "$lib/server/point"
 import { PropertyDestinySchema } from "$lib/property_destiny"

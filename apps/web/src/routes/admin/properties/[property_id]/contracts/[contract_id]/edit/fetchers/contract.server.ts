@@ -1,5 +1,5 @@
 import { sql } from "kysely"
-import { jsonArrayFrom } from "kysely/helpers/postgres"
+import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 
 export async function fetch_contract(id: number) {
@@ -23,6 +23,7 @@ export async function fetch_contract(id: number) {
       "contract.percentage_return",
       "contract.showroom_hours",
       "contract.court_id",
+      "contract.warranty_id",
       jsonArrayFrom(
         eb
           .selectFrom("period")

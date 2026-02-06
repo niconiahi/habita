@@ -359,7 +359,7 @@ async function run() {
     phone_number: "+5491188310588",
     document_number: 30019119,
     now,
-    email: "nicolas.accetta+tenant@gmail.com",
+    email: "nicolas.accetta@gmail.com",
   })
   const candidate_id = await upsert_user({
     surname: "Candidato",
@@ -408,22 +408,22 @@ async function run() {
     width: string
     length: string
   }[] = [
-    {
-      type: ROOM_TYPE.BEDROOM,
-      width: "4.5",
-      length: "3.2",
-    },
-    {
-      type: ROOM_TYPE.BATHROOM,
-      width: "2.1",
-      length: "1.8",
-    },
-    {
-      type: ROOM_TYPE.KITCHEN,
-      width: "3.5",
-      length: "2.8",
-    },
-  ]
+      {
+        type: ROOM_TYPE.BEDROOM,
+        width: "4.5",
+        length: "3.2",
+      },
+      {
+        type: ROOM_TYPE.BATHROOM,
+        width: "2.1",
+        length: "1.8",
+      },
+      {
+        type: ROOM_TYPE.KITCHEN,
+        width: "3.5",
+        length: "2.8",
+      },
+    ]
   for (const room_ of rooms) {
     const room = await query_builder
       .insertInto("room")
@@ -488,11 +488,11 @@ async function run() {
     type: ContractFileType
     path: string
   }[] = [
-    {
-      type: CONTRACT_FILE_TYPE.INSURANCE,
-      path: compose_file_path("insurance.pdf"),
-    },
-  ]
+      {
+        type: CONTRACT_FILE_TYPE.INSURANCE,
+        path: compose_file_path("insurance.pdf"),
+      },
+    ]
   for (const contract_file of CONTRACT_FILES) {
     const file_id = await upsert_file(contract_file.path)
     await query_builder
@@ -521,15 +521,15 @@ async function run() {
     type: ContractFileType
     path: string
   }[] = [
-    {
-      type: PROPERTY_FILE_TYPE.PHOTO,
-      path: compose_file_path("property_image_1.webp"),
-    },
-    {
-      type: PROPERTY_FILE_TYPE.PHOTO,
-      path: compose_file_path("property_image_2.webp"),
-    },
-  ]
+      {
+        type: PROPERTY_FILE_TYPE.PHOTO,
+        path: compose_file_path("property_image_1.webp"),
+      },
+      {
+        type: PROPERTY_FILE_TYPE.PHOTO,
+        path: compose_file_path("property_image_2.webp"),
+      },
+    ]
   for (const property_file of PROPERTY_FILES) {
     const file_id = await upsert_file(property_file.path)
     await query_builder
@@ -581,19 +581,19 @@ async function run() {
     year: number
     value: string
   }[] = [
-    {
-      type: RATE_TYPE.IPC,
-      month: get_month(date),
-      year: get_year(date),
-      value: "1.21",
-    },
-    {
-      type: RATE_TYPE.IPC,
-      month: get_month(subMonths(date, 3)),
-      year: get_year(subMonths(date, 3)),
-      value: "1.1",
-    },
-  ]
+      {
+        type: RATE_TYPE.IPC,
+        month: get_month(date),
+        year: get_year(date),
+        value: "1.21",
+      },
+      {
+        type: RATE_TYPE.IPC,
+        month: get_month(subMonths(date, 3)),
+        year: get_year(subMonths(date, 3)),
+        value: "1.1",
+      },
+    ]
   for (const rate of RATES) {
     await query_builder
       .insertInto("rate")
@@ -633,19 +633,19 @@ async function run() {
     start_date: Date
     end_date: Date
   }[] = [
-    {
-      contract_id: contract.id,
-      start_date: subMonths(date, 6),
-      end_date: subMonths(date, 3),
-      price: 600000,
-    },
-    {
-      contract_id: contract.id,
-      start_date: addDays(subMonths(date, 3), 1),
-      end_date: subDays(date, 1),
-      price: 600000,
-    },
-  ]
+      {
+        contract_id: contract.id,
+        start_date: subMonths(date, 6),
+        end_date: subMonths(date, 3),
+        price: 600000,
+      },
+      {
+        contract_id: contract.id,
+        start_date: addDays(subMonths(date, 3), 1),
+        end_date: subDays(date, 1),
+        price: 600000,
+      },
+    ]
   for (const period of PERIODS) {
     await query_builder
       .insertInto("period")

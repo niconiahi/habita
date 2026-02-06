@@ -7,7 +7,9 @@ import { encrypt } from "./encryption"
 const statement = {
   organization: ["update", "delete"],
   member: ["create", "update", "delete"],
-  invitation: ["create", "cancel"],
+  member_invitation: ["create", "cancel"],
+  owner_invitation: ["create", "cancel"],
+  property_assignment: ["create", "update"],
   property: ["read", "write"],
   contract: ["read", "write"],
   tenant: ["read", "write"],
@@ -16,33 +18,28 @@ const statement = {
 const ac = createAccessControl(statement)
 
 const landlord = ac.newRole({
-  organization: ["update", "delete"],
-  member: ["create", "update", "delete"],
-  invitation: ["create", "cancel"],
-  property: ["read", "write"],
-  contract: ["read", "write"],
-  tenant: ["read", "write"],
+  property: ["read"],
+  contract: ["read"],
+  tenant: ["read"],
 })
 
 const realtor = ac.newRole({
-  organization: ["update"],
+  organization: ["update", "delete"],
+  member_invitation: ["create", "cancel"],
   member: ["create", "update", "delete"],
-  invitation: ["create", "cancel"],
-  property: ["read", "write"],
-  contract: ["read", "write"],
-  tenant: ["read", "write"],
+  property_assignment: ["create", "update"],
+  property: ["read"],
 })
 
 const manager = ac.newRole({
-  organization: ["update"],
-  member: ["create", "update", "delete"],
-  invitation: ["create", "cancel"],
   property: ["read", "write"],
   contract: ["read", "write"],
-  tenant: ["read", "write"],
+  owner_invitation: ["create", "cancel"],
+  tenant: ["read"],
 })
 
 const tenant = ac.newRole({
+  tenant: ["read", "write"],
   property: ["read"],
   contract: ["read"],
 })

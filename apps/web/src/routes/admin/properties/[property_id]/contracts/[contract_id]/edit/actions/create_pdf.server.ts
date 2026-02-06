@@ -31,11 +31,15 @@ export async function create_pdf(
   if (!validation.success) {
     return { errors: { create_pdf: validation.errors } }
   }
+  if (!data.warranty) {
+    return { errors: { create_pdf: { warranty: "Falta la garantía del contrato" } } }
+  }
   const html = compose_html(
     validation.contract,
     validation.property,
     validation.landlord,
     validation.tenant,
+    data.warranty,
   )
   const content = await generate_pdf_with_playwright(html)
   await query_builder.transaction().execute(async (tx) => {
