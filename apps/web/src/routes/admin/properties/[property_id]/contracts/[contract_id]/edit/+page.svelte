@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte"
   import { enhance } from "$app/forms"
   import * as v from "valibot"
   import * as Content from "$lib/components/Content"
@@ -25,13 +26,19 @@
     ESCALATION_TYPE,
     get_escalation_label,
   } from "$lib/escalation_type"
+  import {
+    WARRANTY_TYPE,
+    get_warranty_type_label,
+  } from "$lib/warranty_type"
+  import LocationInput from "$lib/components/LocationInput.svelte"
   import { get_property_destiny_label } from "$lib/property_destiny"
   import type { ActionData, PageData } from "./$types"
   import { ACTION } from "./actions/action"
   import { compose_action } from "$lib/compose_action"
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
-  let errors = $derived(form?.errors?.create_pdf ?? {})
+  let errors = $derived((form?.errors as any)?.create_pdf ?? {})
+  let warranty_errors = $derived((form?.errors as any)?.create_warranty ?? {})
 
   const document_types = $derived(
     data.contract_file_types.map((type) => ({
@@ -48,6 +55,7 @@
     number,
     HTMLFormElement
   > = $state({})
+  let selected_warranty_type = $state(untrack(() => data.warranty?.type ?? ""))
 
   function handle_contract_item_file_click(
     contract_item_id: number,
@@ -573,6 +581,313 @@
   </Content.Section>
 {/snippet}
 
+{#snippet SectionSeventeen()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>sección 17: garantía</Section.Title>
+    </Section.Header>
+    <Formulary.Root
+      method="POST"
+      action={compose_action(data.warranty ? ACTION.UPDATE_WARRANTY : ACTION.CREATE_WARRANTY)}
+    >
+      <Formulary.Fields>
+        <input
+          type="hidden"
+          value={data.contract.id}
+          name="contract_id"
+        />
+        {#if data.warranty}
+          <input
+            type="hidden"
+            value={data.warranty.id}
+            name="warranty_id"
+          />
+        {/if}
+        <Formulary.Field>
+          <Formulary.Label for="warranty_type">tipo de garantía</Formulary.Label>
+          <Formulary.Select
+            name="warranty_type"
+            id="warranty_type"
+            bind:value={selected_warranty_type}
+          >
+            <option value="">Seleccionar tipo</option>
+            {#each Object.values(WARRANTY_TYPE) as type}
+              <option value={type}>{get_warranty_type_label(type)}</option>
+            {/each}
+          </Formulary.Select>
+          {#if warranty_errors.warranty_type}
+            <span class="text-red-500">{warranty_errors.warranty_type}</span>
+          {/if}
+        </Formulary.Field>
+        {#if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_name">nombre del garante</Formulary.Label>
+            <input
+              id="guarantor_name"
+              name="guarantor_name"
+              type="text"
+              value={data.warranty?.property_warranty?.guarantor_name ?? ""}
+            />
+            {#if warranty_errors.guarantor_name}
+              <span class="text-red-500">{warranty_errors.guarantor_name}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_dni">DNI del garante</Formulary.Label>
+            <input
+              id="guarantor_dni"
+              name="guarantor_dni"
+              type="text"
+              value={data.warranty?.property_warranty?.guarantor_dni ?? ""}
+            />
+            {#if warranty_errors.guarantor_dni}
+              <span class="text-red-500">{warranty_errors.guarantor_dni}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_email">email del garante</Formulary.Label>
+            <input
+              id="guarantor_email"
+              name="guarantor_email"
+              type="email"
+              value={data.warranty?.property_warranty?.guarantor_email ?? ""}
+            />
+            {#if warranty_errors.guarantor_email}
+              <span class="text-red-500">{warranty_errors.guarantor_email}</span>
+            {/if}
+          </Formulary.Field>
+          <LocationInput
+            default_value={data.warranty?.property_warranty ? `${data.warranty.property_warranty.road} ${data.warranty.property_warranty.house_number}` : ""}
+            default_lat={data.warranty?.property_warranty?.latitude ?? ""}
+            default_lon={data.warranty?.property_warranty?.longitude ?? ""}
+          />
+          {#if warranty_errors.location}
+            <span class="text-red-500">{warranty_errors.location}</span>
+          {/if}
+          <Formulary.Field>
+            <Formulary.Label for="cadastral_district">circunscripción</Formulary.Label>
+            <input
+              id="cadastral_district"
+              name="cadastral_district"
+              type="text"
+              value={data.warranty?.property_warranty?.cadastral_district ?? ""}
+            />
+            {#if warranty_errors.cadastral_district}
+              <span class="text-red-500">{warranty_errors.cadastral_district}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="cadastral_section">sección</Formulary.Label>
+            <input
+              id="cadastral_section"
+              name="cadastral_section"
+              type="text"
+              value={data.warranty?.property_warranty?.cadastral_section ?? ""}
+            />
+            {#if warranty_errors.cadastral_section}
+              <span class="text-red-500">{warranty_errors.cadastral_section}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="cadastral_block">manzana</Formulary.Label>
+            <input
+              id="cadastral_block"
+              name="cadastral_block"
+              type="text"
+              value={data.warranty?.property_warranty?.cadastral_block ?? ""}
+            />
+            {#if warranty_errors.cadastral_block}
+              <span class="text-red-500">{warranty_errors.cadastral_block}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="cadastral_parcel">parcela</Formulary.Label>
+            <input
+              id="cadastral_parcel"
+              name="cadastral_parcel"
+              type="text"
+              value={data.warranty?.property_warranty?.cadastral_parcel ?? ""}
+            />
+            {#if warranty_errors.cadastral_parcel}
+              <span class="text-red-500">{warranty_errors.cadastral_parcel}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="property_tax_id">partida inmobiliaria</Formulary.Label>
+            <input
+              id="property_tax_id"
+              name="property_tax_id"
+              type="text"
+              value={data.warranty?.property_warranty?.property_tax_id ?? ""}
+            />
+            {#if warranty_errors.property_tax_id}
+              <span class="text-red-500">{warranty_errors.property_tax_id}</span>
+            {/if}
+          </Formulary.Field>
+        {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_name">nombre del garante</Formulary.Label>
+            <input
+              id="guarantor_name"
+              name="guarantor_name"
+              type="text"
+              value={data.warranty?.surety_warranty?.guarantor_name ?? ""}
+            />
+            {#if warranty_errors.guarantor_name}
+              <span class="text-red-500">{warranty_errors.guarantor_name}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_dni">DNI del garante</Formulary.Label>
+            <input
+              id="guarantor_dni"
+              name="guarantor_dni"
+              type="text"
+              value={data.warranty?.surety_warranty?.guarantor_dni ?? ""}
+            />
+            {#if warranty_errors.guarantor_dni}
+              <span class="text-red-500">{warranty_errors.guarantor_dni}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="guarantor_email">email del garante</Formulary.Label>
+            <input
+              id="guarantor_email"
+              name="guarantor_email"
+              type="email"
+              value={data.warranty?.surety_warranty?.guarantor_email ?? ""}
+            />
+            {#if warranty_errors.guarantor_email}
+              <span class="text-red-500">{warranty_errors.guarantor_email}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="company_name">nombre de la aseguradora</Formulary.Label>
+            <input
+              id="company_name"
+              name="company_name"
+              type="text"
+              value={data.warranty?.surety_warranty?.company_name ?? ""}
+            />
+            {#if warranty_errors.company_name}
+              <span class="text-red-500">{warranty_errors.company_name}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="policy_number">número de póliza</Formulary.Label>
+            <input
+              id="policy_number"
+              name="policy_number"
+              type="text"
+              value={data.warranty?.surety_warranty?.policy_number ?? ""}
+            />
+            {#if warranty_errors.policy_number}
+              <span class="text-red-500">{warranty_errors.policy_number}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="company_email">email de la aseguradora</Formulary.Label>
+            <input
+              id="company_email"
+              name="company_email"
+              type="email"
+              value={data.warranty?.surety_warranty?.company_email ?? ""}
+            />
+            {#if warranty_errors.company_email}
+              <span class="text-red-500">{warranty_errors.company_email}</span>
+            {/if}
+          </Formulary.Field>
+        {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
+          <p class="text-gray-400">Guardar para agregar garantes</p>
+        {/if}
+      </Formulary.Fields>
+      {#if selected_warranty_type}
+        <Formulary.Actions>
+          <Button type="submit">{data.warranty ? "Guardar" : "Crear"} garantía</Button>
+        </Formulary.Actions>
+      {/if}
+    </Formulary.Root>
+    {#if selected_warranty_type === WARRANTY_TYPE.INCOME && data.warranty?.income_warranty}
+      <div class="space-y-4 mt-6">
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Garantes</span>
+        </div>
+        <ul class="flex flex-col gap-4">
+          {#each data.warranty.income_warranty.guarantors as guarantor (guarantor.id)}
+            <li class="border border-gray-700 p-4 rounded">
+              <Formulary.Root
+                method="POST"
+                action={compose_action(ACTION.UPDATE_INCOME_GUARANTOR)}
+              >
+                <Formulary.Fields>
+                  <input type="hidden" value={guarantor.id} name="id" />
+                  <Formulary.Field>
+                    <Formulary.Label for={`guarantor_name_${guarantor.id}`}>nombre</Formulary.Label>
+                    <input
+                      id={`guarantor_name_${guarantor.id}`}
+                      name="guarantor_name"
+                      type="text"
+                      value={guarantor.guarantor_name}
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label for={`guarantor_dni_${guarantor.id}`}>DNI</Formulary.Label>
+                    <input
+                      id={`guarantor_dni_${guarantor.id}`}
+                      name="guarantor_dni"
+                      type="text"
+                      value={guarantor.guarantor_dni}
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label for={`guarantor_email_${guarantor.id}`}>email</Formulary.Label>
+                    <input
+                      id={`guarantor_email_${guarantor.id}`}
+                      name="guarantor_email"
+                      type="email"
+                      value={guarantor.guarantor_email}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button type="submit">Guardar</Button>
+                  <Button
+                    type="submit"
+                    formaction={compose_action(ACTION.DESTROY_INCOME_GUARANTOR)}
+                  >Eliminar</Button>
+                </Formulary.Actions>
+              </Formulary.Root>
+            </li>
+          {/each}
+        </ul>
+        <Formulary.Root
+          method="POST"
+          action={compose_action(ACTION.ADD_INCOME_GUARANTOR)}
+        >
+          <Formulary.Fields>
+            <input type="hidden" value={data.warranty.id} name="warranty_id" />
+            <Formulary.Field>
+              <Formulary.Label for="new_guarantor_name">nombre del nuevo garante</Formulary.Label>
+              <input id="new_guarantor_name" name="guarantor_name" type="text" />
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="new_guarantor_dni">DNI</Formulary.Label>
+              <input id="new_guarantor_dni" name="guarantor_dni" type="text" />
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="new_guarantor_email">email</Formulary.Label>
+              <input id="new_guarantor_email" name="guarantor_email" type="email" />
+            </Formulary.Field>
+          </Formulary.Fields>
+          <Formulary.Actions>
+            <Button type="submit">Agregar garante</Button>
+          </Formulary.Actions>
+        </Formulary.Root>
+      </div>
+    {/if}
+  </Content.Section>
+{/snippet}
+
 {#snippet SectionTwentyOne()}
   <Content.Section>
     <Section.Header>
@@ -918,6 +1233,7 @@
   {@render SectionFourteen()}
   {@render SectionFifteen()}
   {@render SectionSixteen()}
+  {@render SectionSeventeen()}
   {@render SectionTwentyOne()}
   {@render ActionsSection()}
   {@render DocumentsSection()}

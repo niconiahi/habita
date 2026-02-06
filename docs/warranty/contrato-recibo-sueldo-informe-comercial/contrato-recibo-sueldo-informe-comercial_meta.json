@@ -1,0 +1,176 @@
+{
+  "table_of_contents": [
+    {
+      "title": "CONTRATO DE LOCACION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          201.708984375,
+          61.5849609375
+        ],
+        [
+          415.9281311035156,
+          61.5849609375
+        ],
+        [
+          415.9281311035156,
+          80.3408203125
+        ],
+        [
+          201.708984375,
+          80.3408203125
+        ]
+      ]
+    },
+    {
+      "title": "ABL: 0070039841684",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          62.268310546875,
+          60.8115234375
+        ],
+        [
+          192.9790802001953,
+          60.8115234375
+        ],
+        [
+          192.9790802001953,
+          76.5516357421875
+        ],
+        [
+          62.268310546875,
+          76.5516357421875
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          982
+        ],
+        [
+          "Line",
+          40
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          981
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          8
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1070
+        ],
+        [
+          "Line",
+          38
+        ],
+        [
+          "Text",
+          5
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          693
+        ],
+        [
+          "Line",
+          32
+        ],
+        [
+          "Text",
+          9
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          31
+        ],
+        [
+          "Line",
+          4
+        ],
+        [
+          "Text",
+          3
+        ],
+        [
+          "SectionHeader",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data/contrato-recibo-sueldo-informe-comercial"
+}

@@ -52,6 +52,7 @@ export interface Contract {
   state: number;
   type: number;
   updated_at: Timestamp;
+  warranty_id: number | null;
 }
 
 export interface ContractFile {
@@ -126,6 +127,23 @@ export interface GeometryColumns {
   f_table_schema: string | null;
   srid: number | null;
   type: string | null;
+}
+
+export interface IncomeWarranty {
+  created_at: Timestamp;
+  id: Generated<number>;
+  updated_at: Timestamp;
+  warranty_id: number;
+}
+
+export interface IncomeWarrantyGuarantor {
+  created_at: Timestamp;
+  guarantor_dni: string;
+  guarantor_email: string;
+  guarantor_name: string;
+  id: Generated<number>;
+  income_warranty_id: number;
+  updated_at: Timestamp;
 }
 
 export interface Invitation {
@@ -262,6 +280,22 @@ export interface PropertyFile {
   updated_at: Timestamp;
 }
 
+export interface PropertyWarranty {
+  cadastral_block: string;
+  cadastral_district: string;
+  cadastral_parcel: string;
+  cadastral_section: string;
+  created_at: Timestamp;
+  guarantor_dni: string;
+  guarantor_email: string;
+  guarantor_name: string;
+  id: Generated<number>;
+  location_id: number;
+  property_tax_id: string;
+  updated_at: Timestamp;
+  warranty_id: number;
+}
+
 export interface Rate {
   created_at: Timestamp;
   id: Generated<number>;
@@ -348,6 +382,19 @@ export interface SpatialRefSys {
   proj4text: string | null;
   srid: number;
   srtext: string | null;
+}
+
+export interface SuretyWarranty {
+  company_email: string;
+  company_name: string;
+  created_at: Timestamp;
+  guarantor_dni: string;
+  guarantor_email: string;
+  guarantor_name: string;
+  id: Generated<number>;
+  policy_number: string;
+  updated_at: Timestamp;
+  warranty_id: number;
 }
 
 export interface TigerAddr {
@@ -945,6 +992,13 @@ export interface Verification {
   value: string;
 }
 
+export interface Warranty {
+  created_at: Timestamp;
+  id: Generated<number>;
+  type: string;
+  updated_at: Timestamp;
+}
+
 export interface DB {
   account: Account;
   contract: Contract;
@@ -956,6 +1010,8 @@ export interface DB {
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;
+  income_warranty: IncomeWarranty;
+  income_warranty_guarantor: IncomeWarrantyGuarantor;
   invitation: Invitation;
   invitation_token: InvitationToken;
   job: Job;
@@ -969,6 +1025,7 @@ export interface DB {
   property: Property;
   property_access: PropertyAccess;
   property_file: PropertyFile;
+  property_warranty: PropertyWarranty;
   rate: Rate;
   realtor: Realtor;
   receipt: Receipt;
@@ -978,6 +1035,7 @@ export interface DB {
   session: Session;
   slot: Slot;
   spatial_ref_sys: SpatialRefSys;
+  surety_warranty: SuretyWarranty;
   "tiger.addr": TigerAddr;
   "tiger.addrfeat": TigerAddrfeat;
   "tiger.bg": TigerBg;
@@ -1017,4 +1075,5 @@ export interface DB {
   user: User;
   user_file: UserFile;
   verification: Verification;
+  warranty: Warranty;
 }
