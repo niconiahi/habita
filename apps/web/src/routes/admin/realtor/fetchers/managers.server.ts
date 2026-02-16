@@ -29,7 +29,9 @@ export async function fetch_managers_with_property_counts(
       return {
         ...manager,
         name: manager.name ? decrypt(manager.name) : null,
-        surname: manager.surname ? decrypt(manager.surname) : null,
+        surname: manager.surname
+          ? decrypt(manager.surname)
+          : null,
         property_count: result?.count ?? 0,
       }
     }),

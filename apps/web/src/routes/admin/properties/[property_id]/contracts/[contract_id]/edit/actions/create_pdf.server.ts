@@ -32,7 +32,13 @@ export async function create_pdf(
     return { errors: { create_pdf: validation.errors } }
   }
   if (!data.warranty) {
-    return { errors: { create_pdf: { warranty: "Falta la garantía del contrato" } } }
+    return {
+      errors: {
+        create_pdf: {
+          warranty: "Falta la garantía del contrato",
+        },
+      },
+    }
   }
   const html = compose_html(
     validation.contract,

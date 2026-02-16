@@ -1,5 +1,4 @@
 import devtoolsJson from "vite-plugin-devtools-json"
-import tailwindcss from "@tailwindcss/vite"
 import { defineConfig, type Plugin } from "vitest/config"
 import { playwright } from "@vitest/browser-playwright"
 import { sveltekit } from "@sveltejs/kit/vite"
@@ -26,12 +25,7 @@ function fontCachePlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [
-    sveltekit(),
-    tailwindcss(),
-    devtoolsJson(),
-    fontCachePlugin(),
-  ],
+  plugins: [sveltekit(), devtoolsJson(), fontCachePlugin()],
   server: {
     host: "0.0.0.0",
     port: 5174,

@@ -37,9 +37,12 @@ export const load: PageServerLoad = async ({
       message: "contract id should be a number",
     },
   )
-  await require_property_access(request.headers, locals.user.id, property_id, [
-    ACCESS_TYPE.TENANT,
-  ])
+  await require_property_access(
+    request.headers,
+    locals.user.id,
+    property_id,
+    [ACCESS_TYPE.TENANT],
+  )
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
     fetch_property(property_id),

@@ -53,7 +53,10 @@ async function send_landlord_invite({
   subject: string
   text: string
 }): Promise<void> {
-  console.log("Attempting to send landlord invite to:", email)
+  console.log(
+    "Attempting to send landlord invite to:",
+    email,
+  )
   try {
     const response = await fetch(
       "http://go:8081/send-landlord-invite",

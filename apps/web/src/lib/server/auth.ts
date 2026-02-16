@@ -47,7 +47,15 @@ const tenant = ac.newRole({
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
-  trustedOrigins: ["dev.habita.rent", "habita.rent"],
+  trustedOrigins: [
+    "dev.habita.rent",
+    "habita.rent",
+    "svelte",
+    "https://svelte:5174",
+  ],
+  emailAndPassword: {
+    enabled: true,
+  },
   database: new Pool({
     host: process.env.POSTGRES_HOST,
     user: process.env.POSTGRES_USER,
@@ -55,9 +63,16 @@ export const auth = betterAuth({
     database: process.env.POSTGRES_DB,
   }),
   advanced: {
-    generateId: false,
+    database: {
+      generateId: ({ model }) => {
+        if (model === "user") {
+          return false
+        }
+        return crypto.randomUUID()
+      },
+    },
     defaultCookieAttributes: {
-      sameSite: "none",
+      sameSite: "lax",
       secure: true,
     },
   },
@@ -112,22 +127,46 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       prompt: "select_account",
       mapProfileToUser: (profile) => ({
-        name: encrypt(profile.given_name),
-        surname: encrypt(profile.family_name),
+        name: profile.given_name,
+        surname: profile.family_name,
       }),
     },
   },
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
-          await auth.api.createOrganization({
-            body: {
-              name: `Personal: ${user.email}`,
-              slug: `personal-${user.id}`,
-              userId: String(user.id),
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              name:
+                typeof user.name === "string"
+                  ? encrypt(user.name)
+                  : user.name,
+              surname:
+                typeof user.surname === "string"
+                  ? encrypt(user.surname)
+                  : user.surname,
             },
-          })
+          }
+        },
+        after: async (user) => {
+          try {
+            await auth.api.createOrganization({
+              body: {
+                name: `Personal: ${user.email}`,
+                slug: `personal-${user.id}`,
+                userId: String(user.id),
+              },
+            })
+          } catch (error) {
+            console.error(
+              "Failed to create organization for user:",
+              user.id,
+              error,
+            )
+            throw error
+          }
         },
       },
     },
@@ -148,9 +187,14 @@ export const auth = betterAuth({
         allowRemovingAllTeams: false,
       },
       organizationHooks: {
-        afterCreateOrganization: async ({ organization }) => {
+        afterCreateOrganization: async ({
+          organization,
+        }) => {
           await auth.api.createTeam({
-            body: { name: "Principal", organizationId: organization.id },
+            body: {
+              name: "Principal",
+              organizationId: organization.id,
+            },
           })
         },
       },
@@ -186,6 +230,7 @@ export const auth = betterAuth({
           },
         },
         teamMember: {
+          modelName: "team_member",
           fields: {
             teamId: "team_id",
             userId: "user_id",

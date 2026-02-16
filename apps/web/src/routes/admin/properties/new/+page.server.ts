@@ -22,6 +22,12 @@ export const actions: Actions = {
     }
     const form_data = await request.formData()
     form_data.set("user_id", String(locals.user.id))
+    if (locals.session?.activeOrganizationId) {
+      form_data.set(
+        "organization_id",
+        locals.session.activeOrganizationId,
+      )
+    }
     const { redirect_to } = await create_property(form_data)
     redirect(303, redirect_to)
   },

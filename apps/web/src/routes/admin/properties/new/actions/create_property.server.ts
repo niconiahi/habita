@@ -1,5 +1,4 @@
 import * as v from "valibot"
-import { error } from "@sveltejs/kit"
 import { LocationSchema } from "$lib/location"
 import { ForceNumberSchema } from "$lib/force_number"
 import { compose_point } from "$lib/server/point"
@@ -10,7 +9,6 @@ import {
   PropertyTypeSchema,
 } from "$lib/property_type"
 import { ACCESS_TYPE } from "$lib/access_type"
-import { get_user_organization } from "$lib/server/organization"
 import { assign_property_access } from "$lib/server/property_access"
 import { query_builder } from "db/query_builder"
 
@@ -32,10 +30,10 @@ export async function create_property(form_data: FormData) {
     ForceNumberSchema,
     form_data.get("user_id"),
   )
-  const user_org = await get_user_organization(user_id)
-  if (!user_org) {
-    error(403, "User must belong to an organization to create properties")
-  }
+  const organization_id = v.parse(
+    v.nullable(v.pipe(v.string(), v.uuid())),
+    form_data.get("organization_id"),
+  )
   const property = await query_builder
     .transaction()
     .execute(async (tx) => {
@@ -75,7 +73,7 @@ export async function create_property(form_data: FormData) {
           unit,
           destinies,
           state: PROPERTY_STATE.EDITING,
-          realtor_id: user_org.id,
+          realtor_id: organization_id,
           created_at: now,
           updated_at: now,
           location_id: location.id,
@@ -84,7 +82,11 @@ export async function create_property(form_data: FormData) {
         .executeTakeFirstOrThrow()
       return { id: property.id }
     })
-  await assign_property_access(property.id, user_id, ACCESS_TYPE.MANAGER)
+  await assign_property_access(
+    property.id,
+    user_id,
+    ACCESS_TYPE.MANAGER,
+  )
   return {
     redirect_to: `/admin/properties/${property.id}/edit`,
   }

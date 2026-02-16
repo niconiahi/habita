@@ -6,10 +6,10 @@ const PAYMENT_METHOD_MERCADO_PAGO = 1
 const PAYMENT_STATUS_PENDING = 0
 
 export async function create_payment(): Promise<string> {
-  const preference = await create_preference(
-    "Pago de prueba",
-    50,
-  )
+  const preference = await create_preference({
+    title: "Pago de prueba",
+    amount: 50,
+  })
   const payment = await query_builder
     .insertInto("payment")
     .values({

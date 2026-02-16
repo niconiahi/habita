@@ -57,7 +57,10 @@ export const actions: Actions = {
     return null
   },
 
-  [ACTION.REASSIGN_PROPERTY]: async ({ request, locals }) => {
+  [ACTION.REASSIGN_PROPERTY]: async ({
+    request,
+    locals,
+  }) => {
     if (!locals.user) redirect(302, "/auth/google")
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,

@@ -5,9 +5,17 @@ import { ACCESS_TYPE } from "$lib/access_type"
 export async function fetch_landlord(property_id: number) {
   const landlord = await query_builder
     .selectFrom("user")
-    .innerJoin("property_access", "property_access.user_id", "user.id")
+    .innerJoin(
+      "property_access",
+      "property_access.user_id",
+      "user.id",
+    )
     .where("property_access.property_id", "=", property_id)
-    .where("property_access.type", "=", ACCESS_TYPE.LANDLORD)
+    .where(
+      "property_access.type",
+      "=",
+      ACCESS_TYPE.LANDLORD,
+    )
     .select([
       "user.id",
       "user.name",
@@ -30,4 +38,6 @@ export async function fetch_landlord(property_id: number) {
       : null,
   }
 }
-export type Landlord = Awaited<ReturnType<typeof fetch_landlord>>
+export type Landlord = Awaited<
+  ReturnType<typeof fetch_landlord>
+>

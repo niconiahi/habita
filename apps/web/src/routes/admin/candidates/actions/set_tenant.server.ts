@@ -19,7 +19,14 @@ export async function set_tenant(form_data: FormData) {
       property_id: form_data.get("property_id"),
     },
   )
-  await revoke_all_access_by_type(property_id, ACCESS_TYPE.TENANT)
-  await assign_property_access(property_id, candidate_id, ACCESS_TYPE.TENANT)
+  await revoke_all_access_by_type(
+    property_id,
+    ACCESS_TYPE.TENANT,
+  )
+  await assign_property_access(
+    property_id,
+    candidate_id,
+    ACCESS_TYPE.TENANT,
+  )
   return { redirect_to: "/admin/candidates" }
 }

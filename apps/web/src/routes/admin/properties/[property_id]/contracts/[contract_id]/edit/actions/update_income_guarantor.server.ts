@@ -11,7 +11,9 @@ const InputSchema = v.object({
   guarantor_email: v.string(),
 })
 
-export async function update_income_guarantor(form_data: FormData) {
+export async function update_income_guarantor(
+  form_data: FormData,
+) {
   const input = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),

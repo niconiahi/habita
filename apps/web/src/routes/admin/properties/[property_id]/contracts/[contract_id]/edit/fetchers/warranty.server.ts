@@ -1,7 +1,12 @@
-import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres"
+import {
+  jsonArrayFrom,
+  jsonObjectFrom,
+} from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 
-export async function fetch_warranty(warranty_id: number | null) {
+export async function fetch_warranty(
+  warranty_id: number | null,
+) {
   if (!warranty_id) return null
   const result = await query_builder
     .selectFrom("warranty")
@@ -11,7 +16,11 @@ export async function fetch_warranty(warranty_id: number | null) {
       jsonObjectFrom(
         eb
           .selectFrom("property_warranty")
-          .innerJoin("location", "location.id", "property_warranty.location_id")
+          .innerJoin(
+            "location",
+            "location.id",
+            "property_warranty.location_id",
+          )
           .select([
             "property_warranty.id",
             "property_warranty.guarantor_name",
@@ -32,7 +41,11 @@ export async function fetch_warranty(warranty_id: number | null) {
             "location.latitude",
             "location.longitude",
           ])
-          .whereRef("property_warranty.warranty_id", "=", "warranty.id"),
+          .whereRef(
+            "property_warranty.warranty_id",
+            "=",
+            "warranty.id",
+          ),
       ).as("property_warranty"),
       jsonObjectFrom(
         eb
@@ -55,7 +68,11 @@ export async function fetch_warranty(warranty_id: number | null) {
                 ),
             ).as("guarantors"),
           ])
-          .whereRef("income_warranty.warranty_id", "=", "warranty.id"),
+          .whereRef(
+            "income_warranty.warranty_id",
+            "=",
+            "warranty.id",
+          ),
       ).as("income_warranty"),
       jsonObjectFrom(
         eb
@@ -69,7 +86,11 @@ export async function fetch_warranty(warranty_id: number | null) {
             "surety_warranty.policy_number",
             "surety_warranty.company_email",
           ])
-          .whereRef("surety_warranty.warranty_id", "=", "warranty.id"),
+          .whereRef(
+            "surety_warranty.warranty_id",
+            "=",
+            "warranty.id",
+          ),
       ).as("surety_warranty"),
     ])
     .where("warranty.id", "=", warranty_id)

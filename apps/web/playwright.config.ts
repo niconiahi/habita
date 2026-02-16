@@ -12,9 +12,35 @@ if (!process.env.POSTGRES_USER) {
 }
 
 export default defineConfig({
-  webServer: {
-    command: "npm run build && npm run preview",
-    port: 4173,
-  },
   testDir: "e2e",
+  forbidOnly: !!process.env.CI,
+  reporter: "list",
+  use: {
+    // Docker uses internal hostname, local uses dev domain
+    baseURL: process.env.DOCKER_TEST
+      ? "https://svelte:5174"
+      : "https://dev.habita.rent",
+    ignoreHTTPSErrors: true,
+    launchOptions: {
+      slowMo: 500,
+      args: ["--start-maximized"],
+    },
+    viewport: null,
+  },
+  projects: [
+    {
+      name: "setup",
+      testMatch: /global\.setup\.ts/,
+      teardown: "teardown",
+    },
+    {
+      name: "teardown",
+      testMatch: /global\.teardown\.ts/,
+    },
+    {
+      name: "chromium",
+      dependencies: ["setup"],
+      testIgnore: /global\.(setup|teardown)\.ts/,
+    },
+  ],
 })

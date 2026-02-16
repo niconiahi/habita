@@ -19,10 +19,11 @@ export const load: PageServerLoad = async ({
     ContractStateSchema,
     Number(url.searchParams.get("state")),
   )
-  const property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const property_ids = await get_accessible_property_ids(
+    locals.user.id,
+    [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+    locals.session?.activeOrganizationId,
+  )
   const contracts = await fetch_contracts(property_ids, [
     state,
   ])

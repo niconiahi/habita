@@ -8,7 +8,7 @@ export const handle: Handle = async ({
   event,
   resolve,
 }) => {
-  let session = await auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: event.request.headers,
   })
   if (!session) {
@@ -21,7 +21,6 @@ export const handle: Handle = async ({
       building,
     })
   }
-  const active_organization_id = session.session.activeOrganizationId
   event.locals.user = {
     id: Number(session.user.id),
     email: session.user.email,
@@ -38,20 +37,8 @@ export const handle: Handle = async ({
     expiresAt: session.session.expiresAt,
     createdAt: session.session.createdAt,
     updatedAt: session.session.updatedAt,
-  }
-  if (!active_organization_id) {
-    const organizations = await auth.api.listOrganizations({
-      headers: event.request.headers,
-    })
-    if (organizations && organizations.length > 0) {
-      await auth.api.setActiveOrganization({
-        headers: event.request.headers,
-        body: { organizationId: organizations[0].id },
-      })
-      session = await auth.api.getSession({
-        headers: event.request.headers,
-      })
-    }
+    activeOrganizationId:
+      session.session.activeOrganizationId ?? null,
   }
   return svelteKitHandler({
     event,

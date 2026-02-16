@@ -1,6 +1,5 @@
 import type * as v from "valibot"
 
-
 export function get_errors<
   TSchema extends v.BaseSchema<any, any, any>,
 >(
@@ -15,7 +14,9 @@ export function get_errors<
   return errors
 }
 
-function isEmptyFile(value: FormDataEntryValue | null): boolean {
+function isEmptyFile(
+  value: FormDataEntryValue | null,
+): boolean {
   return (
     value instanceof File &&
     value.size === 0 &&
@@ -24,10 +25,14 @@ function isEmptyFile(value: FormDataEntryValue | null): boolean {
 }
 
 function getType(schema: unknown): string {
-  if (typeof schema !== "object" || schema === null) return "unknown"
+  if (typeof schema !== "object" || schema === null)
+    return "unknown"
   if (!("type" in schema)) return "unknown"
   const type = schema.type
-  if ((type === "optional" || type === "nullish") && "wrapped" in schema) {
+  if (
+    (type === "optional" || type === "nullish") &&
+    "wrapped" in schema
+  ) {
     return getType(schema.wrapped)
   }
   return typeof type === "string" ? type : "unknown"

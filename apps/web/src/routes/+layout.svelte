@@ -20,5 +20,7 @@
 <Header
   notifications={data.notifications}
   is_manager={data.is_manager}
+  organizations={data.organizations}
+  active_organization_id={data.active_organization_id}
 />
 {@render children()}

@@ -3,7 +3,10 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
-import { WARRANTY_TYPE, WarrantyTypeSchema } from "$lib/warranty_type"
+import {
+  WARRANTY_TYPE,
+  WarrantyTypeSchema,
+} from "$lib/warranty_type"
 import { LocationSchema } from "$lib/location"
 
 const PropertyWarrantySchema = v.object({
@@ -41,9 +44,17 @@ const IncomeWarrantySchema = v.object({
 })
 
 export async function update_warranty(form_data: FormData) {
-  const warranty_type = form_data.get("warranty_type") as string
-  const parsed_type = v.parse(WarrantyTypeSchema, warranty_type)
-  const warranty_id = v.parse(ForceNumberSchema, form_data.get("warranty_id"))
+  const warranty_type = form_data.get(
+    "warranty_type",
+  ) as string
+  const parsed_type = v.parse(
+    WarrantyTypeSchema,
+    warranty_type,
+  )
+  const warranty_id = v.parse(
+    ForceNumberSchema,
+    form_data.get("warranty_id"),
+  )
 
   await query_builder
     .updateTable("warranty")
@@ -60,7 +71,11 @@ export async function update_warranty(form_data: FormData) {
       const existing = await query_builder
         .selectFrom("property_warranty")
         .select(["id", "location_id"])
-        .where("property_warranty.warranty_id", "=", input.warranty_id)
+        .where(
+          "property_warranty.warranty_id",
+          "=",
+          input.warranty_id,
+        )
         .executeTakeFirst()
 
       if (existing) {
@@ -71,7 +86,8 @@ export async function update_warranty(form_data: FormData) {
             longitude: String(input.location.lon),
             address: input.location.display_name,
             road: input.location.address.road,
-            house_number: input.location.address.house_number,
+            house_number:
+              input.location.address.house_number,
             suburb: input.location.address.suburb,
             city: input.location.address.city,
             town: input.location.address.town,
@@ -104,7 +120,8 @@ export async function update_warranty(form_data: FormData) {
             longitude: String(input.location.lon),
             address: input.location.display_name,
             road: input.location.address.road,
-            house_number: input.location.address.house_number,
+            house_number:
+              input.location.address.house_number,
             suburb: input.location.address.suburb,
             city: input.location.address.city,
             town: input.location.address.town,
@@ -143,7 +160,11 @@ export async function update_warranty(form_data: FormData) {
       const existing = await query_builder
         .selectFrom("surety_warranty")
         .select("id")
-        .where("surety_warranty.warranty_id", "=", input.warranty_id)
+        .where(
+          "surety_warranty.warranty_id",
+          "=",
+          input.warranty_id,
+        )
         .executeTakeFirst()
 
       if (existing) {
@@ -186,7 +207,11 @@ export async function update_warranty(form_data: FormData) {
       const existing = await query_builder
         .selectFrom("income_warranty")
         .select("id")
-        .where("income_warranty.warranty_id", "=", input.warranty_id)
+        .where(
+          "income_warranty.warranty_id",
+          "=",
+          input.warranty_id,
+        )
         .executeTakeFirst()
 
       if (!existing) {

@@ -14,8 +14,16 @@ export async function fetch_contracts(
   if (property_ids.length === 0) return []
   const contracts = await query_builder
     .selectFrom("contract")
-    .innerJoin("property", "property.id", "contract.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "property",
+      "property.id",
+      "contract.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("contract.property_id", "in", property_ids)
     .where(
       "contract.state",
@@ -42,17 +50,33 @@ export async function fetch_contracts(
             "location.town",
             "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id"),
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),
       jsonObjectFrom(
         eb
           .selectFrom("user")
-          .innerJoin("property_access", "property_access.user_id", "user.id")
+          .innerJoin(
+            "property_access",
+            "property_access.user_id",
+            "user.id",
+          )
           .select(["user.name", "user.surname"])
-          .whereRef("property_access.property_id", "=", "property.id")
-          .where("property_access.type", "=", ACCESS_TYPE.TENANT),
+          .whereRef(
+            "property_access.property_id",
+            "=",
+            "property.id",
+          )
+          .where(
+            "property_access.type",
+            "=",
+            ACCESS_TYPE.TENANT,
+          ),
       ).as("tenant"),
     ])
     .execute()

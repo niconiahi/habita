@@ -13,7 +13,9 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = await get_accessible_property_ids(locals.user.id)
+  const property_ids = await get_accessible_property_ids(
+    locals.user.id,
+  )
   const properties =
     property_ids.length > 0
       ? await fetch_properties(property_ids)

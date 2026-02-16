@@ -32,7 +32,8 @@ export function validate_contract_requirements(
     errors.landlord = "Falta asignar un propietario"
   } else {
     if (!landlord.name)
-      errors.landlord_name = "Falta el nombre del propietario"
+      errors.landlord_name =
+        "Falta el nombre del propietario"
     if (!landlord.surname)
       errors.landlord_surname =
         "Falta el apellido del propietario"
@@ -40,7 +41,8 @@ export function validate_contract_requirements(
       errors.landlord_document_number =
         "Falta el DNI del propietario"
     if (!landlord.email)
-      errors.landlord_email = "Falta el email del propietario"
+      errors.landlord_email =
+        "Falta el email del propietario"
     if (!landlord.phone_number)
       errors.landlord_phone_number =
         "Falta el teléfono del propietario"
