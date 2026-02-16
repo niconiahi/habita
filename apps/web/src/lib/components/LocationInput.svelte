@@ -1,5 +1,8 @@
 <script module lang="ts">
-  export { LocationSchema, type Location } from "$lib/location"
+  export {
+    LocationSchema,
+    type Location,
+  } from "$lib/location"
 </script>
 
 <script lang="ts">
@@ -7,7 +10,10 @@
   import { safeParse } from "valibot"
   import { setup, assign } from "xstate"
   import { useMachine } from "@xstate/svelte"
-  import { LocationSchema, type Location } from "$lib/location"
+  import {
+    LocationSchema,
+    type Location,
+  } from "$lib/location"
 
   interface Props {
     default_value?: string

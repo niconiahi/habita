@@ -16,10 +16,11 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const property_ids = await get_accessible_property_ids(
+    locals.user.id,
+    [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+    locals.session?.activeOrganizationId,
+  )
   const properties = await fetch_properties(property_ids)
   return { properties }
 }
@@ -37,7 +38,11 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("property_id"),
     )
-    await require_edit_access(request.headers, locals.user.id, property_id)
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+    )
     await publish_property(form_data)
     return null
   },
@@ -53,7 +58,11 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("property_id"),
     )
-    await require_edit_access(request.headers, locals.user.id, property_id)
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+    )
     await unpublish_property(form_data)
     return null
   },

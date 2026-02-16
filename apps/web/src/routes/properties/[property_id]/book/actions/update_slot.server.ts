@@ -124,7 +124,7 @@ async function execute(form_data: FormData, span: Span) {
   const summary = `Visita a la propiedad ubicada en ${display_location(property.location)}`
   const content = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Memudo//Visita de propiedad//ES
+PRODID:-//Habita//Visita de propiedad//ES
 METHOD:REQUEST
 CALSCALE:GREGORIAN
 BEGIN:VEVENT

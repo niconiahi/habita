@@ -1,8 +1,10 @@
 import { error } from "@sveltejs/kit"
 import * as v from "valibot"
+import { sql } from "kysely"
 import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
 import { kv } from "$lib/server/kv"
+import { require_view_access } from "$lib/server/property_access"
 import type { RequestHandler } from "./$types"
 
 const FileSchema = v.object({
@@ -18,7 +20,87 @@ function compose_file_cache_key(id: number) {
   return `file:${id}`
 }
 
-export const GET: RequestHandler = async ({ params }) => {
+async function get_file_property_id(
+  file_id: number,
+  user_id: number,
+): Promise<number | null | undefined> {
+  const result = await query_builder
+    .selectFrom("property_file")
+    .select(
+      sql<number | null>`property_id`.as("property_id"),
+    )
+    .where("file_id", "=", file_id)
+    .unionAll(
+      query_builder
+        .selectFrom("contract_file")
+        .innerJoin(
+          "contract",
+          "contract.id",
+          "contract_file.contract_id",
+        )
+        .select(
+          sql<number | null>`contract.property_id`.as(
+            "property_id",
+          ),
+        )
+        .where("contract_file.file_id", "=", file_id),
+    )
+    .unionAll(
+      query_builder
+        .selectFrom("contract_item_file")
+        .innerJoin(
+          "contract_item",
+          "contract_item.id",
+          "contract_item_file.contract_item_id",
+        )
+        .innerJoin(
+          "contract",
+          "contract.id",
+          "contract_item.contract_id",
+        )
+        .select(
+          sql<number | null>`contract.property_id`.as(
+            "property_id",
+          ),
+        )
+        .where("contract_item_file.file_id", "=", file_id),
+    )
+    .unionAll(
+      query_builder
+        .selectFrom("receipt")
+        .innerJoin(
+          "contract",
+          "contract.id",
+          "receipt.contract_id",
+        )
+        .select(
+          sql<number | null>`contract.property_id`.as(
+            "property_id",
+          ),
+        )
+        .where("receipt.file_id", "=", file_id),
+    )
+    .unionAll(
+      query_builder
+        .selectFrom("user_file")
+        .select(sql<number | null>`null`.as("property_id"))
+        .where("file_id", "=", file_id)
+        .where("user_id", "=", user_id),
+    )
+    .limit(1)
+    .executeTakeFirst()
+
+  return result?.property_id
+}
+
+export const GET: RequestHandler = async ({
+  params,
+  locals,
+  request,
+}) => {
+  if (!locals.user) {
+    error(401, "Unauthorized")
+  }
   const file_id = v.parse(
     ForceNumberSchema,
     params.file_id,
@@ -26,6 +108,19 @@ export const GET: RequestHandler = async ({ params }) => {
       message: "file id should be a number",
     },
   )
+  const property_id = await get_file_property_id(
+    file_id,
+    locals.user.id,
+  )
+  if (!property_id) {
+    error(403, "Forbidden")
+  } else {
+    await require_view_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+    )
+  }
   const key = compose_file_cache_key(file_id)
   const fields_count = await kv.hlen(key)
   if (fields_count > 0) {
@@ -40,6 +135,8 @@ export const GET: RequestHandler = async ({ params }) => {
         headers: {
           "Content-Type": cached_file.mime,
           "Content-Disposition": `inline; filename="${cached_file.basename}"`,
+          "X-Content-Type-Options": "nosniff",
+          "Cache-Control": "private, no-cache, no-store",
         },
       },
     )
@@ -64,6 +161,8 @@ export const GET: RequestHandler = async ({ params }) => {
     headers: {
       "Content-Type": file.mime,
       "Content-Disposition": `inline; filename="${file.basename}"`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "private, no-cache, no-store",
     },
   })
 }

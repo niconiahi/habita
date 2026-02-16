@@ -23,10 +23,10 @@
   debiendo indemnizarlo también por los eventuales daños y perjuicios
   sufridos. Se establece este derecho para
   <strong>"EL LOCADOR"</strong>
-  en forma especial en el caso de la falta de pago de dos
-  (2) mensualidades de alquiler. FALTA DE PAGO: a) El simple
-  vencimiento del plazo pactado para el pago de los
-  alquileres y/o servicios constituirá en mora a
+  en forma especial en el caso de la falta de pago de dos (2)
+  mensualidades de alquiler. FALTA DE PAGO: a) El simple vencimiento
+  del plazo pactado para el pago de los alquileres y/o servicios
+  constituirá en mora a
   <strong>"EL LOCATARIO"</strong>
   de pleno derecho, sin necesidad de interpelación judicial o
   extrajudicial alguna y dará origen a la multa a favor de

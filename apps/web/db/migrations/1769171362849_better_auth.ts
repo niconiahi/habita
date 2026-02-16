@@ -1,4 +1,4 @@
-import type { Kysely } from "kysely"
+import { sql, type Kysely } from "kysely"
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
@@ -17,11 +17,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("refresh_token_expires_at", "timestamptz")
     .addColumn("scope", "text")
     .addColumn("id_token", "text")
+    .addColumn("password", "text")
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
@@ -35,10 +36,10 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
@@ -50,10 +51,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("slug", "text", (col) => col.unique())
     .addColumn("logo", "text")
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
@@ -67,10 +68,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("user_id", "integer", (col) => col.notNull())
     .addColumn("role", "text", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
@@ -91,31 +92,37 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
-    .createTable("property_organization")
-    .addColumn("id", "serial", (col) =>
+    .createTable("team")
+    .addColumn("id", "text", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("property_id", "integer", (col) =>
-      col.notNull().unique(),
-    )
+    .addColumn("name", "text", (col) => col.notNull())
     .addColumn("organization_id", "text", (col) =>
       col.notNull(),
     )
-    .addColumn("assigned_admin_id", "integer", (col) =>
-      col.references("user.id").onDelete("set null"),
-    )
     .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
     )
     .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull(),
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .execute()
+  await db.schema
+    .createTable("team_member")
+    .addColumn("id", "text", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("team_id", "text", (col) => col.notNull())
+    .addColumn("user_id", "integer", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull().defaultTo(sql`now()`),
     )
     .execute()
   await db.schema
@@ -194,20 +201,29 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute()
   await db.schema
-    .alterTable("property_organization")
+    .alterTable("team")
     .addForeignKeyConstraint(
-      "property_organization_property_id_property_id_fk",
-      ["property_id"],
-      "property",
+      "team_organization_id_organization_id_fk",
+      ["organization_id"],
+      "organization",
       ["id"],
     )
     .execute()
   await db.schema
-    .alterTable("property_organization")
+    .alterTable("team_member")
     .addForeignKeyConstraint(
-      "property_organization_organization_id_organization_id_fk",
-      ["organization_id"],
-      "organization",
+      "team_member_team_id_team_id_fk",
+      ["team_id"],
+      "team",
+      ["id"],
+    )
+    .execute()
+  await db.schema
+    .alterTable("team_member")
+    .addForeignKeyConstraint(
+      "team_member_user_id_user_id_fk",
+      ["user_id"],
+      "user",
       ["id"],
     )
     .execute()
@@ -250,14 +266,15 @@ export async function down(db: Kysely<any>): Promise<void> {
     )
     .execute()
   await db.schema
-    .dropTable("property_organization")
-    .ifExists()
-    .execute()
-  await db.schema
     .dropTable("invitation")
     .ifExists()
     .execute()
   await db.schema.dropTable("member").ifExists().execute()
+  await db.schema
+    .dropTable("team_member")
+    .ifExists()
+    .execute()
+  await db.schema.dropTable("team").ifExists().execute()
   await db.schema
     .dropTable("organization")
     .ifExists()

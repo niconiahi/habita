@@ -1,6 +1,9 @@
 import { addDays, addMonths } from "date-fns"
 import { query_builder } from "../../../db/query_builder"
-import type { FormulaParameter, Period } from "../../../db/types"
+import type {
+  FormulaParameter,
+  Period,
+} from "../../../db/types"
 import type { Insertable } from "kysely"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import * as v from "valibot"

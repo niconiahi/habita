@@ -7,7 +7,9 @@ const InputSchema = v.object({
   id: ForceNumberSchema,
 })
 
-export async function destroy_income_guarantor(form_data: FormData) {
+export async function destroy_income_guarantor(
+  form_data: FormData,
+) {
   const input = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),

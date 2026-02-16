@@ -64,7 +64,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	smtpPass := os.Getenv("SMTP_PASS")
 
 	// Build MIME multipart email with inline ICS calendar
-	boundary := "boundary-memudo-calendar-invite"
+	boundary := "boundary-habita-calendar-invite"
 
 	var body strings.Builder
 
@@ -294,10 +294,10 @@ func SendLandlordInvite(ctx context.Context, logger *observability.Logger, req L
 func Handler(logger *observability.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
 
 		var req EmailRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -320,10 +320,10 @@ func Handler(logger *observability.Logger) http.HandlerFunc {
 func LandlordInviteHandler(logger *observability.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
 
 		var req LandlordInviteRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

@@ -21,7 +21,11 @@ export const load: PageServerLoad = async ({
       message: "property id should be a number",
     },
   )
-  await require_edit_access(request.headers, locals.user.id, property_id)
+  await require_edit_access(
+    request.headers,
+    locals.user.id,
+    property_id,
+  )
   const [candidates, property] = await Promise.all([
     fetch_candidates(property_id),
     fetch_property(property_id),

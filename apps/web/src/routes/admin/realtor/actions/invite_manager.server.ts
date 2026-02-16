@@ -33,7 +33,9 @@ export async function invite_manager(
     .execute()
 
   // TODO: Send invitation email
-  console.log(`Invitation sent to ${email} for org ${organization_id}`)
+  console.log(
+    `Invitation sent to ${email} for org ${organization_id}`,
+  )
 
   return { email }
 }

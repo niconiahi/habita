@@ -6,7 +6,10 @@
   import Button from "$lib/components/Button.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
-  import { get_access_label, ACCESS_TYPE } from "$lib/access_type"
+  import {
+    get_access_label,
+    ACCESS_TYPE,
+  } from "$lib/access_type"
   import { display_name } from "$lib/display_name"
   import {
     get_property_destinies,

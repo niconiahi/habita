@@ -11,9 +11,21 @@ export async function fetch_tenants(
   }
   const tenants = await query_builder
     .selectFrom("user")
-    .innerJoin("property_access", "property_access.user_id", "user.id")
-    .innerJoin("property", "property.id", "property_access.property_id")
-    .innerJoin("location", "location.id", "property.location_id")
+    .innerJoin(
+      "property_access",
+      "property_access.user_id",
+      "user.id",
+    )
+    .innerJoin(
+      "property",
+      "property.id",
+      "property_access.property_id",
+    )
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
     .where("property_access.type", "=", ACCESS_TYPE.TENANT)
     .where("property.id", "in", manager_property_ids)
     .select((eb) => [
@@ -37,7 +49,11 @@ export async function fetch_tenants(
             "location.town",
             "location.state",
           ])
-          .whereRef("location.id", "=", "property.location_id"),
+          .whereRef(
+            "location.id",
+            "=",
+            "property.location_id",
+          ),
       )
         .$notNull()
         .as("location"),

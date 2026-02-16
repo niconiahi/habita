@@ -5,7 +5,11 @@ import { ACCESS_TYPE } from "$lib/access_type"
 export async function fetch_tenant(property_id: number) {
   const tenant = await query_builder
     .selectFrom("user")
-    .innerJoin("property_access", "property_access.user_id", "user.id")
+    .innerJoin(
+      "property_access",
+      "property_access.user_id",
+      "user.id",
+    )
     .where("property_access.property_id", "=", property_id)
     .where("property_access.type", "=", ACCESS_TYPE.TENANT)
     .select([

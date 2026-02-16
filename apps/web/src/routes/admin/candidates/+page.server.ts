@@ -15,10 +15,11 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const property_ids = await get_accessible_property_ids(
+    locals.user.id,
+    [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+    locals.session?.activeOrganizationId,
+  )
   const candidates = await fetch_candidates(property_ids)
   return { candidates }
 }
@@ -33,7 +34,11 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("property_id"),
     )
-    await require_edit_access(request.headers, locals.user.id, property_id)
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+    )
     const { redirect_to } = await set_tenant(form_data)
     redirect(303, redirect_to)
   },

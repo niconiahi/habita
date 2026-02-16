@@ -8,10 +8,12 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const manager_property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const manager_property_ids =
+    await get_accessible_property_ids(
+      locals.user.id,
+      [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+      locals.session?.activeOrganizationId,
+    )
   const available_properties =
     await fetch_available_properties(manager_property_ids)
   return { available_properties }

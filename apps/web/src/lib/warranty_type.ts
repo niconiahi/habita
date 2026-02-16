@@ -9,7 +9,9 @@ export const WARRANTY_TYPE = {
 export const WarrantyTypeSchema = v.picklist(
   Object.values(WARRANTY_TYPE),
 )
-export type WarrantyType = ObjectValues<typeof WARRANTY_TYPE>
+export type WarrantyType = ObjectValues<
+  typeof WARRANTY_TYPE
+>
 
 export function get_warranty_type_label(
   type: string | WarrantyType,

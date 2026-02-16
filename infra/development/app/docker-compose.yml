@@ -1,6 +1,7 @@
 services:
   db:
     image: postgis/postgis:17-3.4
+    platform: linux/amd64
     restart: unless-stopped
     env_file:
       - ../.env
@@ -116,6 +117,26 @@ services:
           cpus: "0.5"
     networks:
       - internal
+
+  # E2E test runner - uses official Playwright image
+  # Run with: docker compose -p app run --rm test
+  test:
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    working_dir: /app
+    volumes:
+      - ../../../apps/web:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      - svelte
+    networks:
+      - internal
+    # Not a long-running service - runs tests and exits
+    profiles:
+      - test
 
 networks:
   internal:

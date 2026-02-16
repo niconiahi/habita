@@ -26,9 +26,9 @@
   pactada, podrá optar por reclamar dichos daños e intereses.
   Queda aclarado que la permanencia de
   <strong>"EL LOCATARIO"</strong>
-  en el inmueble locado, después de vencido el término del
-  contrato, en cualquier caso, incluso cuando fuera por
-  voluntad del <strong>"EL LOCADOR"</strong> estará facultado
-  para solicitar del Juez o Autoridad competente la inmediata
-  restitución del inmueble.
+  en el inmueble locado, después de vencido el término del contrato,
+  en cualquier caso, incluso cuando fuera por voluntad del
+  <strong>"EL LOCADOR"</strong> estará facultado para solicitar
+  del Juez o Autoridad competente la inmediata restitución del
+  inmueble.
 </p>

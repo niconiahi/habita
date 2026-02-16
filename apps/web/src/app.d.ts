@@ -20,6 +20,7 @@ declare global {
         expiresAt: Date
         createdAt: Date
         updatedAt: Date
+        activeOrganizationId: string | null
       } | null
     }
   }

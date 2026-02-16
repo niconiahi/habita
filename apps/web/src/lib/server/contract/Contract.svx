@@ -1,8 +1,13 @@
 <script lang="ts">
   import type { ContractProps } from "./contract_props"
   import * as sections from "./sections"
-  let { contract, property, landlord, tenant, warranty }: ContractProps =
-    $props()
+  let {
+    contract,
+    property,
+    landlord,
+    tenant,
+    warranty,
+  }: ContractProps = $props()
 </script>
 
 # Contrato de locación

@@ -6,58 +6,122 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable("warranty")
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("type", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .execute()
   // Create property_warranty table
   await db.schema
     .createTable("property_warranty")
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("warranty_id", "integer", (col) => col.notNull())
-    .addColumn("guarantor_name", "text", (col) => col.notNull())
-    .addColumn("guarantor_dni", "text", (col) => col.notNull())
-    .addColumn("guarantor_email", "text", (col) => col.notNull())
-    .addColumn("location_id", "integer", (col) => col.notNull())
-    .addColumn("cadastral_district", "text", (col) => col.notNull())
-    .addColumn("cadastral_section", "text", (col) => col.notNull())
-    .addColumn("cadastral_block", "text", (col) => col.notNull())
-    .addColumn("cadastral_parcel", "text", (col) => col.notNull())
-    .addColumn("property_tax_id", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) => col.notNull())
+    .addColumn("warranty_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_name", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_dni", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_email", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("location_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("cadastral_district", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("cadastral_section", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("cadastral_block", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("cadastral_parcel", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("property_tax_id", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .execute()
   // Create income_warranty table
   await db.schema
     .createTable("income_warranty")
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("warranty_id", "integer", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) => col.notNull())
+    .addColumn("warranty_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .execute()
   // Create income_warranty_guarantor table
   await db.schema
     .createTable("income_warranty_guarantor")
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("income_warranty_id", "integer", (col) => col.notNull())
-    .addColumn("guarantor_name", "text", (col) => col.notNull())
-    .addColumn("guarantor_dni", "text", (col) => col.notNull())
-    .addColumn("guarantor_email", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) => col.notNull())
+    .addColumn("income_warranty_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_name", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_dni", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_email", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .execute()
   // Create surety_warranty table
   await db.schema
     .createTable("surety_warranty")
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("warranty_id", "integer", (col) => col.notNull())
-    .addColumn("guarantor_name", "text", (col) => col.notNull())
-    .addColumn("guarantor_dni", "text", (col) => col.notNull())
-    .addColumn("guarantor_email", "text", (col) => col.notNull())
-    .addColumn("company_name", "text", (col) => col.notNull())
-    .addColumn("policy_number", "text", (col) => col.notNull())
-    .addColumn("company_email", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamptz", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) => col.notNull())
+    .addColumn("warranty_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_name", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_dni", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("guarantor_email", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("company_name", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("policy_number", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("company_email", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
     .execute()
   // Add warranty_id to contract table
   await db.schema
@@ -133,9 +197,21 @@ export async function down(db: Kysely<any>): Promise<void> {
     .dropColumn("warranty_id")
     .execute()
   // Drop tables in reverse dependency order
-  await db.schema.dropTable("income_warranty_guarantor").ifExists().execute()
-  await db.schema.dropTable("surety_warranty").ifExists().execute()
-  await db.schema.dropTable("income_warranty").ifExists().execute()
-  await db.schema.dropTable("property_warranty").ifExists().execute()
+  await db.schema
+    .dropTable("income_warranty_guarantor")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropTable("surety_warranty")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropTable("income_warranty")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropTable("property_warranty")
+    .ifExists()
+    .execute()
   await db.schema.dropTable("warranty").ifExists().execute()
 }

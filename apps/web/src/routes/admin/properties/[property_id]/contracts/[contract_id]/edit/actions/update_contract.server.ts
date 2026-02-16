@@ -13,7 +13,7 @@ export const InputSchema = v.object({
   destiny: v.optional(ForceNumberSchema),
   escalation_duration: v.optional(v.string()),
   fine_percentage: v.optional(ForceNumberSchema),
-  early_termination: v.optional(v.string()),
+  early_termination: v.optional(ForceNumberSchema),
   property_type: v.optional(ForceNumberSchema),
   cbu: v.optional(v.string()),
   percentage_return: v.optional(ForceNumberSchema),
@@ -53,9 +53,7 @@ export async function update_contract(
       escalation_duration,
       updated_at: now,
       fine_amount: fine_percentage,
-      early_termination: early_termination
-        ? Number(early_termination)
-        : undefined,
+      early_termination,
       cbu,
       percentage_return,
       showroom_hours,

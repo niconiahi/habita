@@ -11,7 +11,9 @@ const InputSchema = v.object({
   guarantor_email: v.string(),
 })
 
-export async function add_income_guarantor(form_data: FormData) {
+export async function add_income_guarantor(
+  form_data: FormData,
+) {
   const input = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),
@@ -19,7 +21,11 @@ export async function add_income_guarantor(form_data: FormData) {
   const income_warranty = await query_builder
     .selectFrom("income_warranty")
     .select("id")
-    .where("income_warranty.warranty_id", "=", input.warranty_id)
+    .where(
+      "income_warranty.warranty_id",
+      "=",
+      input.warranty_id,
+    )
     .executeTakeFirstOrThrow()
   await query_builder
     .insertInto("income_warranty_guarantor")

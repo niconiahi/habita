@@ -10,10 +10,10 @@
 
 <p>
   Entre el Sr/a. <strong>{landlord.name}</strong>
-  <strong>{landlord.surname.toLocaleUpperCase()}</strong> con
-  DNI <strong>{landlord.document_number}</strong>, con
-  domicilio electrónico <strong>{landlord.email}</strong>, en
-  adelante llamado <strong>"EL LOCADOR"</strong>, por una
+  <strong>{landlord.surname.toLocaleUpperCase()}</strong>
+  con DNI <strong>{landlord.document_number}</strong>, con
+  domicilio electrónico <strong>{landlord.email}</strong>,
+  en adelante llamado <strong>"EL LOCADOR"</strong>, por una
   parte, y el Sr/a. <strong>{tenant.name}</strong>
   <strong>{tenant.surname.toLocaleUpperCase()}</strong> con
   DNI <strong>{tenant.document_number}</strong>, con

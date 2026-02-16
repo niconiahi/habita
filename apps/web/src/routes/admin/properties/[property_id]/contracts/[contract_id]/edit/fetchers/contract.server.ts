@@ -1,5 +1,8 @@
 import { sql } from "kysely"
-import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres"
+import {
+  jsonArrayFrom,
+  jsonObjectFrom,
+} from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
 
 export async function fetch_contract(id: number) {

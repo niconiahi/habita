@@ -15,7 +15,9 @@
     name: string | null
     surname: string | null
   }) {
-    return [user.name, user.surname].filter(Boolean).join(" ")
+    return [user.name, user.surname]
+      .filter(Boolean)
+      .join(" ")
   }
 </script>
 
@@ -25,7 +27,8 @@
   <Content.Section>
     <Section.Header>
       <Section.Title
-        >Organizacion: {data.organization.name}</Section.Title
+        >Organizacion: {data.organization
+          .name}</Section.Title
       >
     </Section.Header>
   </Content.Section>
@@ -67,19 +70,27 @@
         <Table.Header>
           <Table.Cell header>Nombre</Table.Cell>
           <Table.Cell header>Email</Table.Cell>
-          <Table.Cell header>Propiedades Asignadas</Table.Cell>
+          <Table.Cell header
+            >Propiedades Asignadas</Table.Cell
+          >
           <Table.Cell header>Acciones</Table.Cell>
         </Table.Header>
         <Table.Body>
           {#each data.managers as manager (manager.id)}
             <Table.Row>
-              <Table.Cell>{display_name(manager)}</Table.Cell>
+              <Table.Cell
+                >{display_name(manager)}</Table.Cell
+              >
               <Table.Cell>{manager.email}</Table.Cell>
-              <Table.Cell>{manager.property_count}</Table.Cell>
+              <Table.Cell
+                >{manager.property_count}</Table.Cell
+              >
               <Table.Cell>
                 <form
                   method="POST"
-                  action={compose_action(ACTION.REMOVE_MANAGER)}
+                  action={compose_action(
+                    ACTION.REMOVE_MANAGER,
+                  )}
                   use:enhance
                   style="display: inline;"
                 >

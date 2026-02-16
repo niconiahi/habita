@@ -32,10 +32,12 @@ export const load: PageServerLoad = async ({
       message: "tenant id should be a number",
     },
   )
-  const manager_property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const manager_property_ids =
+    await get_accessible_property_ids(
+      locals.user.id,
+      [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+      locals.session?.activeOrganizationId,
+    )
   const has_access = await is_tenant_accessible(
     tenant_id,
     manager_property_ids,

@@ -1,3 +1,4 @@
+import * as v from "valibot"
 import { get_origin } from "./origin"
 
 function get_config() {
@@ -20,15 +21,21 @@ function get_config() {
   }
 }
 
-interface CreatePreferenceResponse {
-  id: string
-  init_point: string
+const MercadoPagoPreferenceSchema = v.object({
+  id: v.string(),
+  init_point: v.string(),
+  sandbox_init_point: v.string(),
+})
+
+interface CreatePreferenceOptions {
+  title: string
+  amount: number
 }
 
 export async function create_preference(
-  title: string,
-  amount: number,
-): Promise<CreatePreferenceResponse> {
+  options: CreatePreferenceOptions,
+) {
+  const { title, amount } = options
   const { is_development, access_token } = get_config()
   const origin = get_origin()
   const response = await fetch(
@@ -50,8 +57,10 @@ export async function create_preference(
         back_urls: {
           success: `${origin}/pay/success`,
           failure: `${origin}/pay/failure`,
+          pending: `${origin}/pay/pending`,
         },
         auto_return: "approved",
+        notification_url: `${origin}/webhooks/mercadopago`,
       }),
     },
   )
@@ -62,10 +71,14 @@ export async function create_preference(
     )
   }
   const data = await response.json()
+  const preference = v.parse(
+    MercadoPagoPreferenceSchema,
+    data,
+  )
   return {
-    id: data.id,
+    id: preference.id,
     init_point: is_development
-      ? data.sandbox_init_point
-      : data.init_point,
+      ? preference.sandbox_init_point
+      : preference.init_point,
   }
 }

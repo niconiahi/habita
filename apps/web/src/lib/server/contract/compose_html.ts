@@ -1,11 +1,26 @@
 import * as v from "valibot"
 import { render } from "svelte/server"
 import Contract from "./Contract.svx"
-import { fetch_landlord, type Landlord } from "$lib/server/landlord"
-import { fetch_tenant, type Tenant } from "$lib/server/tenant"
-import { fetch_contract, type Contract as ContractType } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-import { fetch_property, type Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
-import { fetch_warranty, type Warranty } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/warranty.server"
+import {
+  fetch_landlord,
+  type Landlord,
+} from "$lib/server/landlord"
+import {
+  fetch_tenant,
+  type Tenant,
+} from "$lib/server/tenant"
+import {
+  fetch_contract,
+  type Contract as ContractType,
+} from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
+import {
+  fetch_property,
+  type Property,
+} from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
+import {
+  fetch_warranty,
+  type Warranty,
+} from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/warranty.server"
 import type { ContractProps } from "./contract_props"
 export async function fetch_contract_data(
   property_id: number,
@@ -18,7 +33,10 @@ export async function fetch_contract_data(
       fetch_landlord(property_id),
       fetch_tenant(property_id),
     ])
-  const warranty_id = v.parse(v.number(), contract?.warranty_id)
+  const warranty_id = v.parse(
+    v.number(),
+    contract?.warranty_id,
+  )
   const warranty = await fetch_warranty(warranty_id)
   return { contract, property, landlord, tenant, warranty }
 }
@@ -29,7 +47,13 @@ export function compose_html(
   tenant: NonNullable<Tenant>,
   warranty: Warranty,
 ): string {
-  const props: ContractProps = { contract, property, landlord, tenant, warranty }
+  const props: ContractProps = {
+    contract,
+    property,
+    landlord,
+    tenant,
+    warranty,
+  }
   const { body, head } = render(Contract, { props })
   return `<!DOCTYPE html>
 <html lang="es">

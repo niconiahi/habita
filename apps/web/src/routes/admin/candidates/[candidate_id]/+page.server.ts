@@ -22,10 +22,11 @@ export const load: PageServerLoad = async ({
       message: "candidate id should be a number",
     },
   )
-  const property_ids = await get_accessible_property_ids(locals.user.id, [
-    ACCESS_TYPE.LANDLORD,
-    ACCESS_TYPE.MANAGER,
-  ])
+  const property_ids = await get_accessible_property_ids(
+    locals.user.id,
+    [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+    locals.session?.activeOrganizationId,
+  )
   const candidate_slot = await query_builder
     .selectFrom("slot")
     .where("slot.visitant_id", "=", candidate_id)

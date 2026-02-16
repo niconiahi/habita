@@ -6,7 +6,9 @@ import {
   revoke_all_access_by_type,
 } from "$lib/server/property_access"
 
-export async function reassign_property(form_data: FormData) {
+export async function reassign_property(
+  form_data: FormData,
+) {
   const property_id = v.parse(
     ForceNumberSchema,
     form_data.get("property_id"),
@@ -15,9 +17,16 @@ export async function reassign_property(form_data: FormData) {
   const manager_id = manager_id_raw
     ? v.parse(ForceNumberSchema, manager_id_raw)
     : null
-  await revoke_all_access_by_type(property_id, ACCESS_TYPE.MANAGER)
+  await revoke_all_access_by_type(
+    property_id,
+    ACCESS_TYPE.MANAGER,
+  )
   if (manager_id) {
-    await assign_property_access(property_id, manager_id, ACCESS_TYPE.MANAGER)
+    await assign_property_access(
+      property_id,
+      manager_id,
+      ACCESS_TYPE.MANAGER,
+    )
   }
   return { property_id, manager_id }
 }

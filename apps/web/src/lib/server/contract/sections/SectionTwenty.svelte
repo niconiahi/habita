@@ -14,8 +14,9 @@
   lo relativo al presente contrato: <strong
     >"EL LOCADOR"</strong
   >
-  con domicilio electrónico <strong>{landlord.email}</strong>.
-  Teléfono: <strong>{landlord.phone_number}</strong>.
+  con domicilio electrónico
+  <strong>{landlord.email}</strong>. Teléfono:
+  <strong>{landlord.phone_number}</strong>.
   <strong>"EL LOCATARIO"</strong> con domicilio electrónico
   <strong>{tenant.email}</strong>. Teléfono:
   <strong>{tenant.phone_number}</strong>. LAS PARTES
