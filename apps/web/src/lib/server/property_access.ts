@@ -11,24 +11,43 @@ export async function require_property_access(
   user_id: number,
   property_id: number,
   allowed_types: AccessType[],
+  active_organization_id: string | null | undefined,
+  permissions: Record<string, string[]>,
 ) {
-  // Layer 1: Role-based permission check (Better Auth)
-  const permission: { property: ("read" | "write")[] } =
-    allowed_types.includes(ACCESS_TYPE.TENANT)
-      ? { property: ["read"] }
-      : { property: ["write"] }
-  const can_access = await auth.api.hasPermission({
-    headers,
-    body: { permissions: permission },
-  })
-  if (!can_access) error(403, "Forbidden")
-  // Layer 2: Property-specific assignment check (ACL table)
-  const access = await query_builder
+  // role-based permission check (RBAC — Role-Based Access Control)
+  if (active_organization_id) {
+    const result = await auth.api.hasPermission({
+      headers,
+      body: {
+        permissions,
+        organizationId: active_organization_id,
+      },
+    })
+    if (!result.success) error(403, "Forbidden")
+  }
+  // property-specific assignment check (ACL - Access Control List)
+  let query = query_builder
     .selectFrom("property_access")
-    .where("property_id", "=", property_id)
-    .where("user_id", "=", user_id)
-    .where("type", "in", allowed_types)
-    .executeTakeFirst()
+    .innerJoin(
+      "property",
+      "property.id",
+      "property_access.property_id",
+    )
+    .where("property_access.property_id", "=", property_id)
+    .where("property_access.user_id", "=", user_id)
+    .where("property_access.type", "in", allowed_types)
+  if (active_organization_id) {
+    // it's realtor's managed properties
+    query = query.where(
+      "property.realtor_id",
+      "=",
+      active_organization_id,
+    )
+  } else {
+    // it's personal "freelance" managed properties
+    query = query.where("property.realtor_id", "is", null)
+  }
+  const access = await query.executeTakeFirst()
   if (!access) error(403, "Forbidden")
   return access
 }
@@ -37,6 +56,7 @@ export async function require_view_access(
   headers: Headers,
   user_id: number,
   property_id: number,
+  active_organization_id: string | null | undefined,
 ) {
   return require_property_access(
     headers,
@@ -47,6 +67,8 @@ export async function require_view_access(
       ACCESS_TYPE.MANAGER,
       ACCESS_TYPE.TENANT,
     ],
+    active_organization_id,
+    { property: ["read"] },
   )
 }
 
@@ -54,12 +76,15 @@ export async function require_edit_access(
   headers: Headers,
   user_id: number,
   property_id: number,
+  active_organization_id: string | null | undefined,
 ) {
   return require_property_access(
     headers,
     user_id,
     property_id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
+    active_organization_id,
+    { property: ["write"] },
   )
 }
 
@@ -67,12 +92,15 @@ export async function require_landlord_access(
   headers: Headers,
   user_id: number,
   property_id: number,
+  active_organization_id: string | null | undefined,
 ) {
   return require_property_access(
     headers,
     user_id,
     property_id,
     [ACCESS_TYPE.LANDLORD],
+    active_organization_id,
+    { property: ["read"] },
   )
 }
 
@@ -93,9 +121,7 @@ export async function get_accessible_property_ids(
   if (types) {
     query = query.where("property_access.type", "in", types)
   }
-  if (active_organization_id === undefined) {
-    // No org filtering — show all properties
-  } else if (active_organization_id) {
+  if (active_organization_id) {
     query = query.where(
       "property.realtor_id",
       "=",
@@ -106,26 +132,6 @@ export async function get_accessible_property_ids(
   }
   const results = await query.execute()
   return results.map((r) => r.property_id)
-}
-
-export async function get_property_users(
-  property_id: number,
-  type?: AccessType,
-) {
-  let query = query_builder
-    .selectFrom("property_access")
-    .innerJoin("user", "user.id", "property_access.user_id")
-    .select([
-      "user.id",
-      "user.name",
-      "user.email",
-      "property_access.type",
-    ])
-    .where("property_access.property_id", "=", property_id)
-  if (type !== undefined) {
-    query = query.where("property_access.type", "=", type)
-  }
-  return query.execute()
 }
 
 export async function assign_property_access(
@@ -153,21 +159,6 @@ export async function assign_property_access(
     .execute()
 }
 
-export async function revoke_property_access(
-  property_id: number,
-  user_id: number,
-  type?: AccessType,
-) {
-  let query = query_builder
-    .deleteFrom("property_access")
-    .where("property_id", "=", property_id)
-    .where("user_id", "=", user_id)
-  if (type !== undefined) {
-    query = query.where("type", "=", type)
-  }
-  return query.execute()
-}
-
 export async function is_tenant_accessible(
   tenant_id: number,
   manager_property_ids: number[],
@@ -180,7 +171,7 @@ export async function is_tenant_accessible(
     .where("property_id", "in", manager_property_ids)
     .select("id")
     .executeTakeFirst()
-  return !!access
+  return access !== undefined
 }
 
 export async function revoke_all_access_by_type(

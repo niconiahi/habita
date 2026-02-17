@@ -26,16 +26,13 @@
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
-
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
-
   let file_input: HTMLInputElement | undefined = $state()
   let photo_form: HTMLFormElement | undefined = $state()
   let room_positions = $state<
     Map<number, { x: number; y: number }>
   >(new Map())
-
   const property_destinies = get_property_destinies()
   const has_landlord = $derived(
     data.property.members.some(
@@ -49,15 +46,12 @@
   const used_service_types = $derived(
     new Set(data.property.services.map((s) => s.type)),
   )
-
   function handle_add_photo_click() {
     file_input?.click()
   }
-
   function handle_photo_change() {
     photo_form?.requestSubmit()
   }
-
   function handle_positions_change(
     positions: Map<number, { x: number; y: number }>,
   ) {
@@ -111,11 +105,11 @@
           <Formulary.Label for="destiny"
             >tipos</Formulary.Label
           >
-          <fieldset class="flex flex-col gap-2">
+          <fieldset class="checkbox-list">
             {#each property_destinies as destiny}
               {@const is_checked =
                 data.property.destinies.includes(destiny)}
-              <label class="flex items-center gap-2">
+              <label class="checkbox-label">
                 <input
                   type="checkbox"
                   name="destiny"
@@ -264,9 +258,9 @@
     <Section.Header>
       <Section.Title>miembros</Section.Title>
     </Section.Header>
-    <ul class="flex flex-col gap-4 mb-4">
+    <ul class="member-list">
       {#each data.property.members as member, index (`member-${member.id}-${index}`)}
-        <li class="flex gap-4">
+        <li class="member-item">
           <input
             type="hidden"
             value={member.id}
@@ -310,13 +304,11 @@
         >
       </Section.Actions>
     </Section.Header>
-    <ul
-      class="!grid grid-cols-1 min-[800px]:grid-cols-2 min-[1200px]:grid-cols-3 gap-4 list-none p-0 m-0"
-    >
+    <ul class="photo-grid">
       {#each data.property.images as image (`image_${image.id}`)}
         <li>
           <img
-            class="w-full aspect-video object-cover block"
+            class="photo"
             alt="Foto de la propiedad"
             src={`data:image/webp;base64,${image.content}`}
           />
@@ -328,7 +320,7 @@
       method="POST"
       action={compose_action(ACTION.CREATE_PROPERTY_FILE)}
       enctype="multipart/form-data"
-      class="contents"
+      class="hidden-form"
       onchange={handle_photo_change}
       use:enhance
     >
@@ -421,7 +413,7 @@
       {/each}
     </ul>
     {#if form?.error}
-      <p class="text-red-500">{form.error}</p>
+      <p class="error">{form.error}</p>
     {/if}
   </Content.Section>
 {/snippet}
@@ -436,3 +428,67 @@
   {@render Photos()}
   {@render Services()}
 </Content.Root>
+
+<style>
+  .checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .member-item {
+    display: flex;
+    gap: 1rem;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  @media (min-width: 800px) {
+    .photo-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1200px) {
+    .photo-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .photo {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+  .hidden-form {
+    display: contents;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .error {
+    color: rgb(239 68 68);
+  }
+</style>

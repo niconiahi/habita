@@ -11,9 +11,7 @@
   import { compose_action } from "$lib/compose_action"
   import type { PageData } from "./$types"
   import { ACTION } from "./actions/action"
-
   let { data }: { data: PageData } = $props()
-
   function get_receipt_for_month_and_type(
     date: Date,
     type: ReceiptType,
@@ -51,21 +49,21 @@
           })}
         </Section.Title>
       </Section.Header>
-      <ul class="flex flex-col gap-2">
+      <ul class="receipt-list">
         {#each data.receipt_types as type (type)}
           {@const receipt = get_receipt_for_month_and_type(
             date,
             type,
           )}
           {@const label = get_receipt_type_label(type)}
-          <li class="flex items-center gap-4">
-            <span class="font-medium">{label}</span>
+          <li class="receipt-item">
+            <span class="receipt-label">{label}</span>
             {#if receipt}
               <a
                 href="/files/{receipt.file_id}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-blue-500 underline"
+                class="download-link"
               >
                 Descargar
               </a>
@@ -76,7 +74,7 @@
                   ACTION.UPLOAD_RECEIPT,
                 )}
                 enctype="multipart/form-data"
-                class="flex items-center gap-2"
+                class="upload-form"
               >
                 <input
                   type="hidden"
@@ -103,3 +101,28 @@
     </Content.Section>
   {/each}
 </Content.Root>
+
+<style>
+  .receipt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .receipt-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .receipt-label {
+    font-weight: 500;
+  }
+  .download-link {
+    color: rgb(59 130 246);
+    text-decoration: underline;
+  }
+  .upload-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+</style>

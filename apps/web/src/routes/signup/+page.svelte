@@ -23,7 +23,7 @@
         email,
         password,
         surname,
-        callbackURL: "/properties",
+        callbackURL: "/onboarding",
       })
 
     is_loading = false
@@ -34,13 +34,13 @@
       return
     }
 
-    goto("/properties")
+    goto("/onboarding")
   }
 
   async function handle_google_signup() {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/properties",
+      callbackURL: "/onboarding",
     })
   }
 </script>

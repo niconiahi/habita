@@ -1,3 +1,4 @@
+import { USER_FILE_TYPE } from "$lib/user_file_type"
 import { query_builder } from "../../db/query_builder"
 import { encrypt } from "../../src/lib/server/encryption"
 import type { TestUser } from "./auth"
@@ -212,7 +213,7 @@ export async function create_credit_report(
     .values({
       user_id,
       file_id: file.id,
-      type: 0, // USER_FILE_TYPE.CREDIT_REPORT
+      type: USER_FILE_TYPE.CREDIT_REPORT,
       created_at: now,
       updated_at: now,
     })

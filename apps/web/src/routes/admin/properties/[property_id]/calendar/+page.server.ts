@@ -29,6 +29,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
+    locals.session?.activeOrganizationId,
   )
   const [slots, property] = await Promise.all([
     fetch_slots(property_id),
@@ -60,6 +61,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -83,6 +85,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await destroy_slot(form_data)

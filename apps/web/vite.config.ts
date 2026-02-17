@@ -29,7 +29,7 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5174,
-    allowedHosts: ["dev.habita.rent", "app"],
+    allowedHosts: ["dev.habita.rent", "svelte", "app"],
     https: fs.existsSync("/certs/dev.habita.rent.pem")
       ? {
           cert: fs.readFileSync(
@@ -40,6 +40,12 @@ export default defineConfig({
           ),
         }
       : undefined,
+    proxy: {},
+    hmr: {
+      protocol: "wss",
+      host: "dev.habita.rent",
+      clientPort: 443,
+    },
     watch: {
       usePolling: true,
       interval: 1000,

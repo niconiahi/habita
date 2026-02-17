@@ -6,22 +6,21 @@
     type RateType,
   } from "$lib/rate_type"
   import type { PageData } from "./$types"
-
   let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>
   <Content.Title>Índice de actualización</Content.Title>
   <Content.Section>
-    <p class="mb-4">
+    <p class="current-month">
       Mes actual: {data.current_month}/{data.current_year}
     </p>
-    <div class="space-y-4">
+    <div class="rate-list">
       {#each data.rate_types as type (type)}
         {@const existing_rate = data.rates.find(
           (rate) => rate.type === type,
         )}
-        <form method="POST" class="flex items-center gap-4">
+        <form method="POST" class="rate-form">
           <input type="hidden" name="type" value={type} />
           <input
             type="hidden"
@@ -35,7 +34,7 @@
           />
           <label
             for="value-{type}"
-            class="w-32 font-medium"
+            class="rate-label"
           >
             {get_rate_label(type as RateType)}
           </label>
@@ -46,7 +45,7 @@
             step="0.01"
             value={existing_rate?.value ?? ""}
             placeholder="Valor"
-            class="border rounded px-3 py-2 w-48"
+            class="rate-input"
             required
           />
           <Button type="submit">Guardar</Button>
@@ -55,3 +54,29 @@
     </div>
   </Content.Section>
 </Content.Root>
+
+<style>
+  .current-month {
+    margin-bottom: 1rem;
+  }
+  .rate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .rate-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .rate-label {
+    width: 8rem;
+    font-weight: 500;
+  }
+  .rate-input {
+    border: 1px solid;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    width: 12rem;
+  }
+</style>

@@ -15,6 +15,7 @@ dev.habita.rent {
   reverse_proxy https://svelte:5174 {
     transport http {
       tls_insecure_skip_verify
+      versions h1.1
     }
   }
 }

@@ -8,7 +8,6 @@
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
-
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
 </script>
@@ -26,12 +25,12 @@
       <Formulary.Fields>
         <fieldset>
           <legend>Fechas disponibles</legend>
-          <div class="flex flex-col gap-2">
+          <div class="option-list">
             {#each data.dates as date_item}
               {@const date_string = get_date(
                 date_item.date,
               )}
-              <label class="flex items-center gap-2">
+              <label class="option-label">
                 <input
                   type="radio"
                   name="date"
@@ -49,7 +48,7 @@
           </div>
         </fieldset>
         {#if form?.errors && "set_date" in form.errors && form.errors.set_date?.date}
-          <span class="text-red-500"
+          <span class="error"
             >{form.errors.set_date.date}</span
           >
         {/if}
@@ -73,9 +72,9 @@
             <legend class="sr-only"
               >Seleccionar un horario</legend
             >
-            <div class="flex flex-col gap-2">
+            <div class="option-list">
               {#each data.times as time (time.id)}
-                <label class="flex items-center gap-2">
+                <label class="option-label">
                   <input
                     type="radio"
                     name="id"
@@ -99,7 +98,7 @@
             </div>
           </fieldset>
           {#if form?.errors && "update_slot" in form.errors && form.errors.update_slot?.id}
-            <span class="text-red-500"
+            <span class="error"
               >{form.errors.update_slot.id}</span
             >
           {/if}
@@ -118,3 +117,30 @@
     </Content.Section>
   {/if}
 </Content.Root>
+
+<style>
+  .option-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .option-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .error {
+    color: rgb(239 68 68);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+</style>

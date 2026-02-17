@@ -119,6 +119,7 @@ export const GET: RequestHandler = async ({
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
   }
   const key = compose_file_cache_key(file_id)

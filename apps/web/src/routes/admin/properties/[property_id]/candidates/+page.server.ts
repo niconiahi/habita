@@ -25,6 +25,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
+    locals.session?.activeOrganizationId,
   )
   const [candidates, property] = await Promise.all([
     fetch_candidates(property_id),

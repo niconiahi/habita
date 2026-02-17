@@ -8,7 +8,7 @@
 <Content.Root>
   <Content.Title>Pago de prueba</Content.Title>
   <Content.Section>
-    <p class="mb-4">
+    <p class="description">
       Realiza un pago de prueba de 50 ARS a través de
       Mercado Pago.
     </p>
@@ -20,3 +20,9 @@
     </form>
   </Content.Section>
 </Content.Root>
+
+<style>
+  .description {
+    margin-bottom: 1rem;
+  }
+</style>

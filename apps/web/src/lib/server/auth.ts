@@ -48,9 +48,8 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: [
-    "dev.habita.rent",
-    "habita.rent",
-    "svelte",
+    "https://dev.habita.rent",
+    "https://habita.rent",
     "https://svelte:5174",
   ],
   emailAndPassword: {
