@@ -4,14 +4,13 @@
   import Button from "$lib/components/Button.svelte"
   import { display_location } from "$lib/display_location"
   import type { PageData } from "./$types"
-
   let { data }: { data: PageData } = $props()
 </script>
 
 <Content.Root>
   <Content.Title>Propiedades</Content.Title>
   <Content.Section>
-    <ul class="flex flex-col gap-4 w-1/2">
+    <ul class="property-list">
       {#each data.properties as property (property.id)}
         {@const contract = property.contracts[0]}
         {@const price = contract?.current_price}
@@ -50,3 +49,12 @@
     </ul>
   </Content.Section>
 </Content.Root>
+
+<style>
+  .property-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 50%;
+  }
+</style>

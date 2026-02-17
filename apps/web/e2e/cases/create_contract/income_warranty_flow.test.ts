@@ -6,17 +6,18 @@ import {
 import { TEST_LANDLORD } from "../helpers/auth"
 import {
   fill_contract_sections,
-  fill_surety_warranty,
+  fill_income_warranty,
   generate_and_verify_pdf,
 } from "../helpers/contract-form"
 import { fill_location } from "../helpers/location"
+import { ACCESS_TYPE } from "$lib/access_type"
 
 // Shared state across serial tests
 let property_id: number
 let contract_id: number
 let landlord_user_id: number
 
-test.describe.serial("Full Flow - SURETY Warranty", () => {
+test.describe.serial("Full Flow - INCOME Warranty", () => {
   test.describe("Manager actions", () => {
     test.use({ storageState: ".auth/manager.json" })
 
@@ -30,7 +31,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       await page.selectOption("#type", "0") // DEPARTMENT
 
       // Fill unit number
-      await page.fill("#unit", "2B")
+      await page.fill("#unit", "8C")
 
       // Select at least one destiny
       await page.check('input[name="destiny"][value="0"]')
@@ -63,14 +64,14 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       await assign_property_access(
         property_id,
         landlord_user_id,
-        0,
+        ACCESS_TYPE.LANDLORD,
       )
       console.log(
         `Assigned landlord access to property ${property_id}`,
       )
     })
 
-    test("3. Creates and fills contract with SURETY warranty", async ({
+    test("3. Creates and fills contract with INCOME warranty", async ({
       page,
     }) => {
       // Create a new contract for the property
@@ -79,7 +80,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       )
 
       // Fill required fields
-      await page.fill("#price", "120000")
+      await page.fill("#price", "180000")
 
       // Submit to create the contract
       await page.click('button[type="submit"]')
@@ -104,8 +105,8 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       // Fill all contract sections (except warranty)
       await fill_contract_sections(page)
 
-      // Fill warranty section with SURETY type
-      await fill_surety_warranty(page)
+      // Fill warranty section with INCOME type (creates warranty + adds guarantors)
+      await fill_income_warranty(page)
 
       // Generate PDF
       await generate_and_verify_pdf(page)
@@ -138,16 +139,16 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
         `/admin/properties/${property_id}/calendar`,
       )
 
-      // Create a slot for day after tomorrow (to avoid conflicts with property-warranty test)
+      // Create a slot for 3 days from now (to avoid conflicts with other tests)
       const slot_date = new Date()
-      slot_date.setDate(slot_date.getDate() + 2)
+      slot_date.setDate(slot_date.getDate() + 3)
       const date_string = slot_date
         .toISOString()
         .split("T")[0]
 
       await page.fill("#date", date_string)
-      await page.fill("#start_time", "14:00")
-      await page.fill("#end_time", "15:00")
+      await page.fill("#start_time", "16:00")
+      await page.fill("#end_time", "17:00")
 
       await page.click('button:has-text("Crear horario")')
       await page.waitForLoadState("networkidle")

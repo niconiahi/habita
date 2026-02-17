@@ -38,6 +38,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const { redirect_to } = await set_tenant(form_data)
     redirect(303, redirect_to)

@@ -23,6 +23,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
+    locals.session?.activeOrganizationId,
   )
   const contract_types = get_contract_types()
   return { contract_types }
@@ -45,6 +46,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     const { redirect_to } = await create_contract(

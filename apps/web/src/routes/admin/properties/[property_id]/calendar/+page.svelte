@@ -10,13 +10,10 @@
   } from "$lib/slot_state"
   import { ACTION } from "./actions/action"
   import type { PageData } from "./$types"
-
   let { data }: { data: PageData } = $props()
-
   function format_date(date: Date): string {
     return date.toLocaleDateString("es-AR")
   }
-
   function format_time(date: Date): string {
     return date.toLocaleTimeString("es-AR", {
       hour: "2-digit",
@@ -28,7 +25,7 @@
 <Content.Root>
   <Content.Title>Calendario de visitas</Content.Title>
   <Content.Header>
-    <p class="text-gray-600">
+    <p class="subtitle">
       {data.property.location.road}
       {data.property.location.house_number}
     </p>
@@ -127,7 +124,7 @@
                     <Button type="submit">Eliminar</Button>
                   </Formulary.Root>
                 {:else}
-                  <span class="text-gray-400">-</span>
+                  <span class="inactive">-</span>
                 {/if}
               </Table.Cell>
             </Table.Row>
@@ -137,3 +134,12 @@
     {/if}
   </Content.Section>
 </Content.Root>
+
+<style>
+  .subtitle {
+    color: rgb(75 85 99);
+  }
+  .inactive {
+    color: rgb(156 163 175);
+  }
+</style>

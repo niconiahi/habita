@@ -52,6 +52,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
+    locals.session?.activeOrganizationId,
   )
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
@@ -105,6 +106,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await update_contract(form_data, property_id)
@@ -126,6 +128,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await create_file(form_data)
@@ -147,6 +150,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await destroy_file(form_data)
@@ -171,6 +175,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     return await create_pdf(form_data, property_id)
@@ -191,6 +196,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const contract_id = v.parse(
       ForceNumberSchema,
@@ -218,6 +224,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await update_contract_item(form_data)
@@ -239,6 +246,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await destroy_contract_item(form_data)
@@ -260,6 +268,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await create_contract_item_file(form_data)
@@ -281,6 +290,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await destroy_contract_item_file(form_data)
@@ -302,6 +312,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await update_period(form_data)
@@ -323,6 +334,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     return await create_warranty(form_data)
@@ -343,6 +355,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await update_warranty(form_data)
@@ -364,6 +377,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await add_income_guarantor(form_data)
@@ -385,6 +399,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await update_income_guarantor(form_data)
@@ -406,6 +421,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     await destroy_income_guarantor(form_data)

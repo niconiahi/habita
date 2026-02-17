@@ -13,13 +13,10 @@
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData } from "./$types"
-
   let { data }: { data: PageData } = $props()
-
   let property_type = $state<PropertyType>(
     PROPERTY_TYPE.DEPARTMENT,
   )
-
   function handle_type_change(event: Event) {
     const target = event.currentTarget as HTMLSelectElement
     property_type = Number(target.value) as PropertyType
@@ -79,9 +76,9 @@
     <Section.Header>
       <Section.Title>destino</Section.Title>
     </Section.Header>
-    <fieldset class="flex flex-col gap-2">
+    <fieldset class="checkbox-list">
       {#each data.property_destinies as destiny}
-        <label class="flex items-center gap-2">
+        <label class="checkbox-label">
           <input
             type="checkbox"
             name="destiny"
@@ -112,3 +109,16 @@
     </Formulary.Root>
   </Content.Section>
 </Content.Root>
+
+<style>
+  .checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+</style>

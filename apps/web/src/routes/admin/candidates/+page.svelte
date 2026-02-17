@@ -45,7 +45,7 @@
               </a>
             </Table.Cell>
             <Table.Cell>
-              <div class="flex gap-2">
+              <div class="actions">
                 <a
                   href={`/admin/candidates/${candidate.id}`}
                 >
@@ -78,3 +78,10 @@
     </Table.Root>
   </Content.Section>
 </Content.Root>
+
+<style>
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+</style>

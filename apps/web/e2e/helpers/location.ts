@@ -7,7 +7,7 @@ import { expect, type Page } from "@playwright/test"
 // Real addresses that return results from nominatim
 export const ADDRESSES = {
   PROPERTY: "Hilario Ascasubi 89 Monte Grande",
-  GUARANTOR: "boyaca 882",
+  GUARANTOR: "Boyaca 882",
 }
 
 export async function fill_location(

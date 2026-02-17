@@ -2,7 +2,6 @@ import { redirect, error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { ACCESS_TYPE } from "$lib/access_type"
-import { auth } from "$lib/server/auth"
 import {
   get_accessible_property_ids,
   is_tenant_accessible,
@@ -13,17 +12,9 @@ import type { PageServerLoad } from "./$types"
 export const load: PageServerLoad = async ({
   locals,
   params,
-  request,
 }) => {
   if (!locals.user) {
     redirect(302, "/auth/google")
-  }
-  const can_access = await auth.api.hasPermission({
-    headers: request.headers,
-    body: { permissions: { tenant: ["read"] } },
-  })
-  if (!can_access) {
-    error(403, "Forbidden")
   }
   const tenant_id = v.parse(
     ForceNumberSchema,

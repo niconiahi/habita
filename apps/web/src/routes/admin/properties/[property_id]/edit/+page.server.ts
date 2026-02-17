@@ -37,6 +37,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
+    locals.session?.activeOrganizationId,
   )
   const property = await fetch_property(property_id)
   if (!property) {
@@ -68,6 +69,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -90,6 +92,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     create_room(property_id)
     return null
@@ -110,6 +113,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -132,6 +136,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -154,6 +159,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -176,6 +182,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     create_service(property_id)
     return null
@@ -196,6 +203,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -224,6 +232,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -246,6 +255,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -268,6 +278,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -290,6 +301,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))

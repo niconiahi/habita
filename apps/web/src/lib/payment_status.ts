@@ -52,16 +52,16 @@ export function get_payment_status_style(
   const payment_status = v.parse(PaymentStatusSchema, type)
   switch (payment_status) {
     case PAYMENT_STATUS.APPROVED: {
-      return "text-green-600"
+      return "status-approved"
     }
     case PAYMENT_STATUS.PENDING: {
-      return "text-yellow-600"
+      return "status-pending"
     }
     case PAYMENT_STATUS.REJECTED:
     case PAYMENT_STATUS.CANCELLED:
     case PAYMENT_STATUS.REFUNDED:
     case PAYMENT_STATUS.CHARGED_BACK: {
-      return "text-red-600"
+      return "status-error"
     }
     default: {
       const _exhaustive: never = payment_status

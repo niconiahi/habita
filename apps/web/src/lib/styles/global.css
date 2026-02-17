@@ -9,6 +9,14 @@ body {
   background-color: var(--gray-900);
 }
 
+button,
+input,
+select,
+textarea {
+  color: var(--gray-100);
+  font-family: inherit;
+}
+
 input:not([type="radio"]):not([type="checkbox"]),
 select,
 textarea {

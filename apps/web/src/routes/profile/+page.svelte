@@ -11,11 +11,9 @@
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
-
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
   let errors = $derived(form?.errors?.update_user ?? {})
-
   const document_types = Object.values(USER_FILE_TYPE).map(
     (type) => ({
       value: type,
@@ -81,7 +79,7 @@
               placeholder="+5491123456789"
             />
             {#if errors.phone_number}
-              <div class="flex gap-2 items-center">
+              <div class="error-with-link">
                 <Formulary.Error
                   >{errors.phone_number}</Formulary.Error
                 >
@@ -141,12 +139,12 @@
         />
       </Section.Actions>
     </Section.Header>
-    <table class="w-full mt-4">
+    <table class="documents-table">
       <thead>
         <tr>
-          <th class="text-left">Documento</th>
-          <th class="text-left">Tipo</th>
-          <th class="text-left">Acciones</th>
+          <th>Documento</th>
+          <th>Tipo</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -175,3 +173,18 @@
   {@render PersonalInfo()}
   {@render Documents()}
 </Content.Root>
+
+<style>
+  .error-with-link {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .documents-table {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .documents-table th {
+    text-align: left;
+  }
+</style>

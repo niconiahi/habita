@@ -42,6 +42,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     await publish_property(form_data)
     return null
@@ -62,6 +63,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
+      locals.session?.activeOrganizationId,
     )
     await unpublish_property(form_data)
     return null

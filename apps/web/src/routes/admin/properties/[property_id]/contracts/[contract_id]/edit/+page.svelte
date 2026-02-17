@@ -43,14 +43,12 @@
   let warranty_errors = $derived(
     (form?.errors as any)?.create_warranty ?? {},
   )
-
   const document_types = $derived(
     data.contract_file_types.map((type) => ({
       value: type,
       label: get_contract_file_type_label(type),
     })),
   )
-
   let contract_item_file_inputs: Record<
     number,
     HTMLInputElement
@@ -62,13 +60,11 @@
   let selected_warranty_type = $state(
     untrack(() => data.warranty?.type ?? ""),
   )
-
   function handle_contract_item_file_click(
     contract_item_id: number,
   ) {
     contract_item_file_inputs[contract_item_id]?.click()
   }
-
   function handle_contract_item_file_change(
     contract_item_id: number,
   ) {
@@ -94,9 +90,9 @@
         </form>
       </Section.Actions>
     </Section.Header>
-    <ul class="flex flex-col gap-6">
+    <ul class="item-list">
       {#each data.contract.contract_items as contract_item (contract_item.id)}
-        <li class="border border-gray-700 p-4 rounded">
+        <li class="item-card">
           <Formulary.Root method="POST">
             <Formulary.Fields>
               <input
@@ -151,11 +147,9 @@
               >
             </Formulary.Actions>
           </Formulary.Root>
-          <div class="mt-4">
-            <div
-              class="flex items-center justify-between mb-2"
-            >
-              <span class="text-sm text-gray-400"
+          <div class="photos-section">
+            <div class="photos-header">
+              <span class="photos-label"
                 >Fotos</span
               >
               <Button
@@ -166,11 +160,11 @@
                   )}>Agregar foto</Button
               >
             </div>
-            <ul class="grid grid-cols-2 gap-2">
+            <ul class="photos-grid">
               {#each contract_item.files as file (`contract_item_file_${file.id}`)}
-                <li class="relative">
+                <li class="photo-item">
                   <img
-                    class="w-sm aspect-video object-cover block rounded"
+                    class="photo"
                     alt="Foto del item"
                     src={`data:image/webp;base64,${file.content}`}
                   />
@@ -179,7 +173,7 @@
                     action={compose_action(
                       ACTION.DESTROY_CONTRACT_ITEM_FILE,
                     )}
-                    class="absolute top-1 left-1 bg-gray-300"
+                    class="photo-delete"
                     use:enhance
                   >
                     <input
@@ -206,7 +200,7 @@
                 ACTION.CREATE_CONTRACT_ITEM_FILE,
               )}
               enctype="multipart/form-data"
-              class="contents"
+              class="hidden-form"
               use:enhance
             >
               <input
@@ -253,9 +247,9 @@
           name="id"
         />
         <Formulary.Field>
-          <span class="font-medium">Tipo</span>
+          <span class="field-label">Tipo</span>
           {#each data.property.destinies as destiny}
-            <label class="flex items-center gap-2">
+            <label class="radio-label">
               <input
                 type="radio"
                 id="destiny"
@@ -305,7 +299,7 @@
               : ""}
           />
           {#if errors.start_date}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.start_date}</span
             >
           {/if}
@@ -325,7 +319,7 @@
               : ""}
           />
           {#if errors.end_date}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.end_date}</span
             >
           {/if}
@@ -371,7 +365,7 @@
             {/each}
           </Formulary.Select>
           {#if errors.escalation_type}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.escalation_type}</span
             >
           {/if}
@@ -392,7 +386,7 @@
             {/each}
           </Formulary.Select>
           {#if errors.escalation_duration}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.escalation_duration}</span
             >
           {/if}
@@ -464,7 +458,7 @@
             value={data.contract.fine_amount ?? ""}
           />
           {#if errors.fine_amount}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.fine_amount}</span
             >
           {/if}
@@ -630,7 +624,7 @@
             {/each}
           </Formulary.Select>
           {#if warranty_errors.warranty_type}
-            <span class="text-red-500"
+            <span class="error"
               >{warranty_errors.warranty_type}</span
             >
           {/if}
@@ -648,7 +642,7 @@
                 ?.guarantor_name ?? ""}
             />
             {#if warranty_errors.guarantor_name}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_name}</span
               >
             {/if}
@@ -665,7 +659,7 @@
                 ?.guarantor_dni ?? ""}
             />
             {#if warranty_errors.guarantor_dni}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_dni}</span
               >
             {/if}
@@ -682,7 +676,7 @@
                 ?.guarantor_email ?? ""}
             />
             {#if warranty_errors.guarantor_email}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_email}</span
               >
             {/if}
@@ -697,7 +691,7 @@
               ?.longitude ?? ""}
           />
           {#if warranty_errors.location}
-            <span class="text-red-500"
+            <span class="error"
               >{warranty_errors.location}</span
             >
           {/if}
@@ -713,7 +707,7 @@
                 ?.cadastral_district ?? ""}
             />
             {#if warranty_errors.cadastral_district}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.cadastral_district}</span
               >
             {/if}
@@ -730,7 +724,7 @@
                 ?.cadastral_section ?? ""}
             />
             {#if warranty_errors.cadastral_section}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.cadastral_section}</span
               >
             {/if}
@@ -747,7 +741,7 @@
                 ?.cadastral_block ?? ""}
             />
             {#if warranty_errors.cadastral_block}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.cadastral_block}</span
               >
             {/if}
@@ -764,7 +758,7 @@
                 ?.cadastral_parcel ?? ""}
             />
             {#if warranty_errors.cadastral_parcel}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.cadastral_parcel}</span
               >
             {/if}
@@ -781,7 +775,7 @@
                 ?.property_tax_id ?? ""}
             />
             {#if warranty_errors.property_tax_id}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.property_tax_id}</span
               >
             {/if}
@@ -799,7 +793,7 @@
                 ?.guarantor_name ?? ""}
             />
             {#if warranty_errors.guarantor_name}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_name}</span
               >
             {/if}
@@ -816,7 +810,7 @@
                 ?.guarantor_dni ?? ""}
             />
             {#if warranty_errors.guarantor_dni}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_dni}</span
               >
             {/if}
@@ -833,7 +827,7 @@
                 ?.guarantor_email ?? ""}
             />
             {#if warranty_errors.guarantor_email}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.guarantor_email}</span
               >
             {/if}
@@ -850,7 +844,7 @@
                 ?.company_name ?? ""}
             />
             {#if warranty_errors.company_name}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.company_name}</span
               >
             {/if}
@@ -867,7 +861,7 @@
                 ?.policy_number ?? ""}
             />
             {#if warranty_errors.policy_number}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.policy_number}</span
               >
             {/if}
@@ -884,13 +878,13 @@
                 ?.company_email ?? ""}
             />
             {#if warranty_errors.company_email}
-              <span class="text-red-500"
+              <span class="error"
                 >{warranty_errors.company_email}</span
               >
             {/if}
           </Formulary.Field>
         {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
-          <p class="text-gray-400">
+          <p class="hint">
             Guardar para agregar garantes
           </p>
         {/if}
@@ -904,13 +898,13 @@
       {/if}
     </Formulary.Root>
     {#if selected_warranty_type === WARRANTY_TYPE.INCOME && data.warranty?.income_warranty}
-      <div class="space-y-4 mt-6">
-        <div class="flex items-center justify-between">
-          <span class="font-medium">Garantes</span>
+      <div class="guarantors-section">
+        <div class="guarantors-header">
+          <span class="field-label">Garantes</span>
         </div>
-        <ul class="flex flex-col gap-4">
+        <ul class="guarantor-list">
           {#each data.warranty.income_warranty.guarantors as guarantor (guarantor.id)}
-            <li class="border border-gray-700 p-4 rounded">
+            <li class="item-card">
               <Formulary.Root
                 method="POST"
                 action={compose_action(
@@ -1102,40 +1096,40 @@
       </Section.Actions>
     </Section.Header>
     {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
-      <div class="mb-4 space-y-1">
-        <p class="text-sm font-medium text-red-500">
+      <div class="error-block">
+        <p class="error-block-title">
           Errores de propiedad:
         </p>
         {#if errors.property_road}
-          <span class="text-red-500 block"
+          <span class="error block"
             >{errors.property_road}</span
           >
         {/if}
         {#if errors.property_house_number}
-          <span class="text-red-500 block"
+          <span class="error block"
             >{errors.property_house_number}</span
           >
         {/if}
         {#if errors.property_state}
-          <span class="text-red-500 block"
+          <span class="error block"
             >{errors.property_state}</span
           >
         {/if}
         {#if errors.property_unit}
-          <span class="text-red-500 block"
+          <span class="error block"
             >{errors.property_unit}</span
           >
         {/if}
       </div>
     {/if}
-    <ul class="flex flex-col gap-2">
+    <ul class="file-list">
       {#each data.contract.files as file (file.id)}
         {@const contract_type = v.parse(
           ContractFileTypeSchema,
           file.type,
         )}
-        <li class="flex items-center gap-4">
-          <span class="font-bold"
+        <li class="file-item">
+          <span class="file-type"
             >{get_contract_file_type_label(
               contract_type,
             )}</span
@@ -1143,7 +1137,7 @@
           <a
             target="_blank"
             href="/files/{file.id}"
-            class="text-blue-500 underline"
+            class="file-link"
             >{file.basename}</a
           >
           <form
@@ -1175,9 +1169,9 @@
       <Section.Title>períodos</Section.Title>
     </Section.Header>
     {#if errors.periods}
-      <span class="text-red-500">{errors.periods}</span>
+      <span class="error">{errors.periods}</span>
     {/if}
-    <ul class="flex flex-col gap-4">
+    <ul class="period-list">
       {#each data.contract.periods as period, index (period.id)}
         {#if index === 0}
           <li>
@@ -1210,7 +1204,7 @@
             </Formulary.Root>
           </li>
         {:else}
-          <li class="flex items-center gap-4">
+          <li class="period-item">
             <span>${period.price}</span>
           </li>
         {/if}
@@ -1225,57 +1219,57 @@
       <Section.Title>inquilino</Section.Title>
     </Section.Header>
     {#if errors.tenant}
-      <span class="text-red-500">{errors.tenant}</span>
+      <span class="error">{errors.tenant}</span>
     {/if}
     {#if data.tenant}
-      <div class="space-y-2">
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Nombre</p>
+      <div class="info-group">
+        <div class="info-block">
+          <p class="info-block-label">Nombre</p>
           <p>{display_name(data.tenant)}</p>
           {#if errors.tenant_name}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.tenant_name}</span
             >
           {/if}
           {#if errors.tenant_surname}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.tenant_surname}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Email</p>
+        <div class="info-block">
+          <p class="info-block-label">Email</p>
           <p>{data.tenant.email}</p>
           {#if errors.tenant_email}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.tenant_email}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Teléfono</p>
+        <div class="info-block">
+          <p class="info-block-label">Teléfono</p>
           <p>{data.tenant.phone_number ?? "-"}</p>
           {#if errors.tenant_phone_number}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.tenant_phone_number}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">DNI</p>
+        <div class="info-block">
+          <p class="info-block-label">DNI</p>
           <p>{data.tenant.document_number ?? "-"}</p>
           {#if errors.tenant_document_number}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.tenant_document_number}</span
             >
           {/if}
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">
+      <p class="empty-state">
         Sin inquilino asignado
       </p>
-      <a href="/admin/candidates" class="inline-block mt-2">
+      <a href="/admin/candidates" class="add-link">
         <Button>Agregar inquilino</Button>
       </a>
     {/if}
@@ -1287,60 +1281,60 @@
       <Section.Title>propietario</Section.Title>
     </Section.Header>
     {#if errors.landlord}
-      <span class="text-red-500">{errors.landlord}</span>
+      <span class="error">{errors.landlord}</span>
     {/if}
     {#if data.landlord}
-      <div class="space-y-2">
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Nombre</p>
+      <div class="info-group">
+        <div class="info-block">
+          <p class="info-block-label">Nombre</p>
           <p>{display_name(data.landlord)}</p>
           {#if errors.landlord_name}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.landlord_name}</span
             >
           {/if}
           {#if errors.landlord_surname}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.landlord_surname}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Email</p>
+        <div class="info-block">
+          <p class="info-block-label">Email</p>
           <p>{data.landlord.email}</p>
           {#if errors.landlord_email}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.landlord_email}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">Teléfono</p>
+        <div class="info-block">
+          <p class="info-block-label">Teléfono</p>
           <p>{data.landlord.phone_number ?? "-"}</p>
           {#if errors.landlord_phone_number}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.landlord_phone_number}</span
             >
           {/if}
         </div>
-        <div class="space-y-1">
-          <p class="text-sm text-gray-500">DNI</p>
+        <div class="info-block">
+          <p class="info-block-label">DNI</p>
           <p>{data.landlord.document_number ?? "-"}</p>
           {#if errors.landlord_document_number}
-            <span class="text-red-500"
+            <span class="error"
               >{errors.landlord_document_number}</span
             >
           {/if}
         </div>
       </div>
     {:else}
-      <p class="text-gray-500 text-sm">
+      <p class="empty-state">
         Sin propietario asignado
       </p>
       <a
         href="/admin/properties/{data.property
           .id}/edit#members"
-        class="inline-block mt-2"
+        class="add-link"
       >
         <Button>Agregar propietario</Button>
       </a>
@@ -1349,11 +1343,11 @@
 {/snippet}
 <Content.Root>
   <Content.Title>Edición de contrato</Content.Title>
-  <p class="text-sm text-gray-400">
+  <p class="property-link-text">
     Propiedad:
     <a
       href="/admin/properties/{data.property.id}/edit"
-      class="text-blue-500 underline"
+      class="property-link"
     >
       {data.property.location?.road ?? "Sin calle"}
       {data.property.location?.house_number ?? ""}
@@ -1376,3 +1370,170 @@
   {@render DocumentsSection()}
   {@render PeriodsSection()}
 </Content.Root>
+
+<style>
+  .error {
+    color: rgb(239 68 68);
+  }
+  .block {
+    display: block;
+  }
+  .field-label {
+    font-weight: 500;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .item-card {
+    border: 1px solid rgb(55 65 81);
+    padding: 1rem;
+    border-radius: 0.25rem;
+  }
+  .photos-section {
+    margin-top: 1rem;
+  }
+  .photos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .photos-label {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(156 163 175);
+  }
+  .photos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .photo-item {
+    position: relative;
+  }
+  .photo {
+    width: 24rem;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-radius: 0.25rem;
+  }
+  .photo-delete {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    background-color: rgb(209 213 219);
+  }
+  .hidden-form {
+    display: contents;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .hint {
+    color: rgb(156 163 175);
+  }
+  .guarantors-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .guarantors-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .guarantor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .error-block {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .error-block-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: rgb(239 68 68);
+  }
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .file-type {
+    font-weight: 700;
+  }
+  .file-link {
+    color: rgb(59 130 246);
+    text-decoration: underline;
+  }
+  .period-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .period-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .info-block-label {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(107 114 128);
+  }
+  .empty-state {
+    color: rgb(107 114 128);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .add-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
+  .property-link-text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(156 163 175);
+  }
+  .property-link {
+    color: rgb(59 130 246);
+    text-decoration: underline;
+  }
+</style>
