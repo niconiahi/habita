@@ -1,3 +1,4 @@
+import { createServer } from "node:http"
 import { chromium } from "playwright"
 
 const PORT = process.env.PORT || 8082
@@ -14,46 +15,39 @@ async function generate_pdf(html: string): Promise<Buffer> {
   return Buffer.from(pdf_buffer)
 }
 
-const server = Bun.serve({
-  port: PORT,
-  async fetch(req) {
-    const url = new URL(req.url)
-
-    // Health check
-    if (url.pathname === "/health" && req.method === "GET") {
-      return new Response("OK", { status: 200 })
-    }
-
-    // PDF generation
-    if (url.pathname === "/generate" && req.method === "POST") {
-      try {
-        const body = await req.json()
-        const html = body.html
-
-        if (!html || typeof html !== "string") {
-          return new Response(JSON.stringify({ error: "Missing html field" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          })
-        }
-
-        const pdf = await generate_pdf(html)
-
-        return new Response(pdf, {
-          status: 200,
-          headers: { "Content-Type": "application/pdf" },
-        })
-      } catch (error) {
-        console.error("PDF generation error:", error)
-        return new Response(JSON.stringify({ error: "PDF generation failed" }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        })
+const server = createServer(async (req, res) => {
+  if (req.url === "/health" && req.method === "GET") {
+    res.writeHead(200)
+    res.end("OK")
+    return
+  }
+  if (req.url === "/generate" && req.method === "POST") {
+    try {
+      const chunks: Buffer[] = []
+      for await (const chunk of req) {
+        chunks.push(chunk)
       }
+      const body = JSON.parse(Buffer.concat(chunks).toString())
+      const html = body.html
+      if (!html || typeof html !== "string") {
+        res.writeHead(400, { "Content-Type": "application/json" })
+        res.end(JSON.stringify({ error: "Missing html field" }))
+        return
+      }
+      const pdf = await generate_pdf(html)
+      res.writeHead(200, { "Content-Type": "application/pdf" })
+      res.end(pdf)
+    } catch (err) {
+      console.error("PDF generation error:", err)
+      res.writeHead(500, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ error: "PDF generation failed" }))
     }
-
-    return new Response("Not Found", { status: 404 })
-  },
+    return
+  }
+  res.writeHead(404)
+  res.end("Not Found")
 })
 
-console.log(`PDF service listening on port ${server.port}`)
+server.listen(PORT, () => {
+  console.log(`PDF service listening on port ${PORT}`)
+})

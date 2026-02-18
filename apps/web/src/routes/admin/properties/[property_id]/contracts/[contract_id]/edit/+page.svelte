@@ -149,9 +149,7 @@
           </Formulary.Root>
           <div class="photos-section">
             <div class="photos-header">
-              <span class="photos-label"
-                >Fotos</span
-              >
+              <span class="photos-label">Fotos</span>
               <Button
                 type="button"
                 onclick={() =>
@@ -299,9 +297,7 @@
               : ""}
           />
           {#if errors.start_date}
-            <span class="error"
-              >{errors.start_date}</span
-            >
+            <span class="error">{errors.start_date}</span>
           {/if}
         </Formulary.Field>
         <Formulary.Field>
@@ -319,9 +315,7 @@
               : ""}
           />
           {#if errors.end_date}
-            <span class="error"
-              >{errors.end_date}</span
-            >
+            <span class="error">{errors.end_date}</span>
           {/if}
         </Formulary.Field>
       </Formulary.Fields>
@@ -458,9 +452,7 @@
             value={data.contract.fine_amount ?? ""}
           />
           {#if errors.fine_amount}
-            <span class="error"
-              >{errors.fine_amount}</span
-            >
+            <span class="error">{errors.fine_amount}</span>
           {/if}
         </Formulary.Field>
       </Formulary.Fields>
@@ -884,9 +876,7 @@
             {/if}
           </Formulary.Field>
         {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
-          <p class="hint">
-            Guardar para agregar garantes
-          </p>
+          <p class="hint">Guardar para agregar garantes</p>
         {/if}
       </Formulary.Fields>
       {#if selected_warranty_type}
@@ -1137,8 +1127,7 @@
           <a
             target="_blank"
             href="/files/{file.id}"
-            class="file-link"
-            >{file.basename}</a
+            class="file-link">{file.basename}</a
           >
           <form
             method="POST"
@@ -1227,9 +1216,7 @@
           <p class="info-block-label">Nombre</p>
           <p>{display_name(data.tenant)}</p>
           {#if errors.tenant_name}
-            <span class="error"
-              >{errors.tenant_name}</span
-            >
+            <span class="error">{errors.tenant_name}</span>
           {/if}
           {#if errors.tenant_surname}
             <span class="error"
@@ -1241,9 +1228,7 @@
           <p class="info-block-label">Email</p>
           <p>{data.tenant.email}</p>
           {#if errors.tenant_email}
-            <span class="error"
-              >{errors.tenant_email}</span
-            >
+            <span class="error">{errors.tenant_email}</span>
           {/if}
         </div>
         <div class="info-block">
@@ -1266,9 +1251,7 @@
         </div>
       </div>
     {:else}
-      <p class="empty-state">
-        Sin inquilino asignado
-      </p>
+      <p class="empty-state">Sin inquilino asignado</p>
       <a href="/admin/candidates" class="add-link">
         <Button>Agregar inquilino</Button>
       </a>
@@ -1289,8 +1272,7 @@
           <p class="info-block-label">Nombre</p>
           <p>{display_name(data.landlord)}</p>
           {#if errors.landlord_name}
-            <span class="error"
-              >{errors.landlord_name}</span
+            <span class="error">{errors.landlord_name}</span
             >
           {/if}
           {#if errors.landlord_surname}
@@ -1328,9 +1310,7 @@
         </div>
       </div>
     {:else}
-      <p class="empty-state">
-        Sin propietario asignado
-      </p>
+      <p class="empty-state">Sin propietario asignado</p>
       <a
         href="/admin/properties/{data.property
           .id}/edit#members"

@@ -13,7 +13,9 @@
   <Content.Section>
     <button class="card" onclick={handle_freelance}>
       <h3 class="card-title">Freelance</h3>
-      <p class="card-description">Gestioná propiedades de forma independiente</p>
+      <p class="card-description">
+        Gestioná propiedades de forma independiente
+      </p>
     </button>
   </Content.Section>
 {/snippet}
@@ -22,7 +24,9 @@
   <Content.Section>
     <button class="card" onclick={handle_realtor}>
       <h3 class="card-title">Inmobiliaria</h3>
-      <p class="card-description">Gestioná propiedades como inmobiliaria con tu equipo</p>
+      <p class="card-description">
+        Gestioná propiedades como inmobiliaria con tu equipo
+      </p>
     </button>
   </Content.Section>
 {/snippet}

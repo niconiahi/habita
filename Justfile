@@ -9,6 +9,7 @@ export IMAGE_TAG := env_var_or_default("IMAGE_TAG", `git rev-parse HEAD`)
 
 mod db
 mod lint
+mod test
 mod secrets
 mod deploy
 
@@ -86,7 +87,7 @@ reload service:
 
 # Run production build locally (for testing auth flows that need ORIGIN)
 preview:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "bun run build && bun run preview --host 0.0.0.0 --port 5174"
+  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "pnpm run build && pnpm run preview --host 0.0.0.0 --port 5174"
 
 # Show status of all services
 status:
@@ -100,7 +101,7 @@ status:
 
 # Refresh node_modules in the svelte container (after adding/removing packages)
 deps:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte bun install
+  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm install
 
 # Rebuild a service image (after Dockerfile changes)
 rebuild project service="":
@@ -110,18 +111,6 @@ rebuild project service="":
   else
     docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache {{service}}
   fi
-
-# ============================================================================
-# Testing
-# ============================================================================
-
-# Run E2E tests with Playwright (dedicated test container)
-test-e2e *args:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm -e DOCKER_TEST=1 test npx playwright test {{args}}
-
-# Run E2E tests visually (headed mode, runs locally not in Docker)
-test-e2e-visual *args:
-  cd apps/web && POSTGRES_HOST=localhost npx playwright test --headed {{args}}
 
 # Clean up unused Docker resources
 prune:

@@ -42,6 +42,8 @@ export const load: PageServerLoad = async ({
     locals.user.id,
     property_id,
     [ACCESS_TYPE.TENANT],
+    locals.session?.activeOrganizationId,
+    { property: ["read"] },
   )
   const [contract, property] = await Promise.all([
     fetch_contract(contract_id),
@@ -124,6 +126,8 @@ export const actions: Actions = {
       locals.user.id,
       property_id,
       [ACCESS_TYPE.TENANT],
+      locals.session?.activeOrganizationId,
+      { property: ["read"] },
     )
     const form_data = await request.formData()
     await upload_receipt(form_data)

@@ -14,6 +14,7 @@ if (!process.env.POSTGRES_USER) {
 export default defineConfig({
   testDir: "e2e",
   forbidOnly: !!process.env.CI,
+  workers: 1,
   reporter: "list",
   use: {
     // Docker uses internal hostname, local uses dev domain
