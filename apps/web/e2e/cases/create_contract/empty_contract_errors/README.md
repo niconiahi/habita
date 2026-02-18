@@ -23,7 +23,7 @@ A manager creates a new contract but attempts to generate the PDF without fillin
 
 ### Key Assertions
 
-- Error count is greater than 0 after attempting PDF generation
+- An error shows in each field after attempting PDF generation
 - "Sin propietario asignado" message is visible (no landlord)
 - "Sin inquilino asignado" message is visible (no tenant)
 
