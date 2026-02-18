@@ -40,7 +40,7 @@ export default defineConfig({
           ),
         }
       : undefined,
-    proxy: {},
+
     hmr: {
       protocol: "wss",
       host: "dev.habita.rent",

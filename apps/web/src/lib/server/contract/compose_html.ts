@@ -1,4 +1,3 @@
-import * as v from "valibot"
 import { render } from "svelte/server"
 import Contract from "./Contract.svx"
 import {
@@ -33,11 +32,9 @@ export async function fetch_contract_data(
       fetch_landlord(property_id),
       fetch_tenant(property_id),
     ])
-  const warranty_id = v.parse(
-    v.number(),
-    contract?.warranty_id,
+  const warranty = await fetch_warranty(
+    contract?.warranty_id ?? null,
   )
-  const warranty = await fetch_warranty(warranty_id)
   return { contract, property, landlord, tenant, warranty }
 }
 export function compose_html(

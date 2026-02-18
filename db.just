@@ -34,7 +34,7 @@ reset:
 
   echo ""
   echo "=== Installing dependencies ==="
-  $APP_COMPOSE run --rm svelte bun install
+  $APP_COMPOSE run --rm svelte pnpm install
 
   echo ""
   echo "=== Waiting for database to be healthy ==="
@@ -44,15 +44,15 @@ reset:
 
   echo ""
   echo "=== Running migrations ==="
-  $APP_COMPOSE run --rm svelte bunx kysely migrate:latest
+  $APP_COMPOSE run --rm svelte pnpm kysely migrate:latest
 
   echo ""
   echo "=== Running seeds ==="
-  $APP_COMPOSE run --rm svelte bun run db:seed
+  $APP_COMPOSE run --rm svelte pnpm run db:seed
 
   echo ""
   echo "=== Generating database types ==="
-  $APP_COMPOSE run --rm svelte bun run db:types
+  $APP_COMPOSE run --rm svelte pnpm run db:types
 
   echo ""
   echo "✅ Database reset complete!"

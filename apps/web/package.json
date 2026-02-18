@@ -12,8 +12,8 @@
     "test:unit": "vitest",
     "test:e2e": "playwright test",
     "db:types": "node db/generate_types.mjs",
-    "db:seed": "bun kysely seed:run",
-    "db:migrate": "bun kysely migrate:latest"
+    "db:seed": "pnpm kysely seed:run",
+    "db:migrate": "pnpm kysely migrate:latest"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

@@ -18,7 +18,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 120s
-    shm_size: 1gb
+    shm_size: 2gb
     logging:
       driver: "json-file"
       options:
@@ -27,11 +27,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
-          cpus: "1.0"
+          memory: 4G
+          cpus: "2.0"
         reservations:
-          memory: 1G
-          cpus: "0.25"
+          memory: 2G
+          cpus: "0.5"
     networks:
       - internal
 

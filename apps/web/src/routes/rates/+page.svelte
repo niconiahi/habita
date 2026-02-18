@@ -32,10 +32,7 @@
             name="year"
             value={data.current_year}
           />
-          <label
-            for="value-{type}"
-            class="rate-label"
-          >
+          <label for="value-{type}" class="rate-label">
             {get_rate_label(type as RateType)}
           </label>
           <input

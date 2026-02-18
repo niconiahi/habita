@@ -52,9 +52,6 @@ export async function signup_test_user(
   console.log(`Signing up user: ${user.email}`)
   await page.goto("/signup")
 
-  // Wait for JS to be fully loaded (hydrated)
-  await page.waitForLoadState("networkidle")
-
   // Fill the signup form using input IDs for reliability
   await page.locator("#name").fill(user.name)
   await page.locator("#surname").fill(user.surname)
@@ -68,10 +65,10 @@ export async function signup_test_user(
   await submit_button.waitFor({ state: "visible" })
   await submit_button.click()
 
-  // Wait for redirect to /properties (successful signup auto-logs in)
+  // Wait for redirect to /onboarding (successful signup auto-logs in)
   // or wait for error message
   await Promise.race([
-    page.waitForURL(/\/properties/, { timeout: 20000 }),
+    page.waitForURL(/\/onboarding/, { timeout: 20000 }),
     page
       .locator(".error")
       .waitFor({ state: "visible", timeout: 20000 }),
@@ -98,9 +95,6 @@ export async function login_test_user(
 ): Promise<void> {
   console.log(`Logging in user: ${user.email}`)
   await page.goto("/login")
-
-  // Wait for JS to be fully loaded (hydrated)
-  await page.waitForLoadState("networkidle")
 
   // Fill the login form using input IDs for reliability
   await page.locator("#email").fill(user.email)
@@ -131,7 +125,6 @@ export async function authenticate_test_user(
 
   // Try to login first (user might already exist from a previous run)
   await page.goto("/login")
-  await page.waitForLoadState("networkidle")
 
   await page.locator("#email").fill(user.email)
   await page.locator("#password").fill(user.password)

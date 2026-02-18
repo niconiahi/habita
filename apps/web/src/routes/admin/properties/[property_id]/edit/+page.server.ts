@@ -73,7 +73,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    update_location(form_data)
+    await update_location(form_data)
     return null
   },
   [ACTION.CREATE_ROOM]: async ({
@@ -94,7 +94,7 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    create_room(property_id)
+    await create_room(property_id)
     return null
   },
   [ACTION.UPDATE_ROOM]: async ({
@@ -117,7 +117,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    update_room(form_data)
+    await update_room(form_data)
     return null
   },
   [ACTION.UPDATE_ROOM_POSITIONS]: async ({
@@ -163,7 +163,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    destroy_room(form_data)
+    await destroy_room(form_data)
     return null
   },
   [ACTION.CREATE_SERVICE]: async ({
@@ -184,7 +184,7 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    create_service(property_id)
+    await create_service(property_id)
     return null
   },
   [ACTION.UPDATE_SERVICE]: async ({
@@ -236,7 +236,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    destroy_service(form_data)
+    await destroy_service(form_data)
     return null
   },
   [ACTION.CREATE_PROPERTY_FILE]: async ({
@@ -259,7 +259,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    create_property_file(form_data, property_id)
+    await create_property_file(form_data, property_id)
     return null
   },
   [ACTION.INVITE_LANDLORD]: async ({
@@ -282,7 +282,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    invite_landlord(form_data)
+    await invite_landlord(form_data)
     return null
   },
   [ACTION.UPDATE_DESTINIES]: async ({

@@ -2,14 +2,14 @@ import { test, expect } from "@playwright/test"
 import {
   assign_property_access,
   get_user_id_by_email,
-} from "../helpers/db"
-import { TEST_LANDLORD } from "../helpers/auth"
+} from "../../../helpers/db"
+import { TEST_LANDLORD } from "../../../helpers/auth"
 import {
   fill_contract_sections,
   fill_income_warranty,
   generate_and_verify_pdf,
-} from "../helpers/contract-form"
-import { fill_location } from "../helpers/location"
+} from "../../../helpers/contract-form"
+import { fill_location } from "../../../helpers/location"
 import { ACCESS_TYPE } from "$lib/access_type"
 
 // Shared state across serial tests
