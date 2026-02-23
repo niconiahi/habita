@@ -1,7 +1,7 @@
 # Habita Infrastructure Orchestration
 
-# Override with: ENV=production just <command>
-env := env_var_or_default("ENV", "development")
+# Auto-detects production on VPS (/opt/habita), override with: ENV=production just <command>
+env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
 # IMAGE_TAG defaults to current git commit (matches deployed version on VPS)

@@ -1,6 +1,6 @@
 # CI/CD Deployment (called by GitHub Actions)
 
-env := env_var_or_default("ENV", "development")
+env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
 export IMAGE_TAG := env_var_or_default("IMAGE_TAG", `git rev-parse HEAD`)
