@@ -24,11 +24,12 @@ type Invitee struct {
 }
 
 type EmailRequest struct {
-	Host     Invitee `json:"host"`
-	Visitant Invitee `json:"visitant"`
-	Subject  string  `json:"subject"`
-	Text     string  `json:"text"`
-	Content  string  `json:"content"`
+	Type    string  `json:"type"`
+	To      Invitee `json:"to"`
+	Subject string  `json:"subject"`
+	Text    string  `json:"text"`
+	Content string  `json:"content"`
+	Html    string  `json:"html"`
 }
 
 type LandlordInviteRequest struct {
@@ -47,7 +48,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	)
 
 	logger.Info(ctx, "sending calendar invite", nil)
-	if req.Visitant.Email == "" || req.Host.Email == "" || req.Subject == "" || req.Content == "" {
+	if req.To.Email == "" || req.Subject == "" || req.Content == "" {
 		return fmt.Errorf("missing required fields")
 	}
 
@@ -69,8 +70,8 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	var body strings.Builder
 
 	// Email headers
-	body.WriteString(fmt.Sprintf("From: %s\r\n", "bookings@habita.rent"))
-	body.WriteString(fmt.Sprintf("To: %s, %s\r\n", req.Host.Email, req.Visitant.Email))
+	body.WriteString(fmt.Sprintf("From: %s\r\n", "notifications@habita.rent"))
+	body.WriteString(fmt.Sprintf("To: %s\r\n", req.To.Email))
 	body.WriteString(fmt.Sprintf("Subject: %s\r\n", req.Subject))
 	body.WriteString("MIME-Version: 1.0\r\n")
 	body.WriteString(fmt.Sprintf("Content-Type: multipart/alternative; boundary=\"%s\"\r\n", boundary))
@@ -102,7 +103,7 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 
 	// Send via authenticated SMTP with STARTTLS (Gmail)
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
-	log.Printf("Sending email from %s to %s via %s with user: %s", req.Host.Email, req.Visitant.Email, addr, smtpUser)
+	log.Printf("Sending email to %s via %s with user: %s", req.To.Email, addr, smtpUser)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", addr)
@@ -134,18 +135,14 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 		return fmt.Errorf("failed to authenticate: %v", err)
 	}
 
-	// Set sender and recipients
-	if err = client.Mail("bookings@habita.rent"); err != nil {
+	// Set sender and recipient
+	if err = client.Mail("notifications@habita.rent"); err != nil {
 		log.Printf("Failed to set sender: %v", err)
 		return fmt.Errorf("failed to set sender: %v", err)
 	}
-	if err = client.Rcpt(req.Host.Email); err != nil {
-		log.Printf("Failed to add host recipient: %v", err)
-		return fmt.Errorf("failed to add host recipient: %v", err)
-	}
-	if err = client.Rcpt(req.Visitant.Email); err != nil {
-		log.Printf("Failed to add visitant recipient: %v", err)
-		return fmt.Errorf("failed to add visitant recipient: %v", err)
+	if err = client.Rcpt(req.To.Email); err != nil {
+		log.Printf("Failed to add recipient: %v", err)
+		return fmt.Errorf("failed to add recipient: %v", err)
 	}
 
 	// Send data
@@ -172,6 +169,99 @@ func SendCalendarInvite(ctx context.Context, logger *observability.Logger, req E
 	}
 
 	logger.Info(ctx, "calendar invite sent successfully", nil)
+	return nil
+}
+
+func SendHtmlEmail(ctx context.Context, logger *observability.Logger, req EmailRequest) error {
+	tracer := otel.Tracer("smtp")
+	ctx, span := tracer.Start(ctx, "smtp.send_html_email")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("email.subject", req.Subject),
+	)
+
+	logger.Info(ctx, "sending html email", nil)
+	if req.To.Email == "" || req.Subject == "" || req.Html == "" {
+		return fmt.Errorf("missing required fields")
+	}
+
+	smtpHost := os.Getenv("SMTP_HOST")
+	if smtpHost == "" {
+		smtpHost = "smtp.gmail.com"
+	}
+	smtpPort := os.Getenv("SMTP_PORT")
+	if smtpPort == "" {
+		smtpPort = "587"
+	}
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPass := os.Getenv("SMTP_PASS")
+
+	if smtpUser == "" || smtpPass == "" {
+		return fmt.Errorf("SMTP_USER and SMTP_PASS are required")
+	}
+
+	var body strings.Builder
+	body.WriteString(fmt.Sprintf("From: %s\r\n", "notifications@habita.rent"))
+	body.WriteString(fmt.Sprintf("To: %s\r\n", req.To.Email))
+	body.WriteString(fmt.Sprintf("Subject: %s\r\n", req.Subject))
+	body.WriteString("MIME-Version: 1.0\r\n")
+	body.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	body.WriteString("Content-Transfer-Encoding: 7bit\r\n")
+	body.WriteString("\r\n")
+	body.WriteString(req.Html)
+	body.WriteString("\r\n")
+
+	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
+	log.Printf("Sending html email to %s via %s with user: %s", req.To.Email, addr, smtpUser)
+
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("failed to connect: %v", err)
+	}
+	defer conn.Close()
+
+	client, err := smtp.NewClient(conn, smtpHost)
+	if err != nil {
+		return fmt.Errorf("failed to create SMTP client: %v", err)
+	}
+	defer client.Close()
+
+	tlsConfig := &tls.Config{ServerName: smtpHost}
+	if err = client.StartTLS(tlsConfig); err != nil {
+		return fmt.Errorf("failed to start TLS: %v", err)
+	}
+
+	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
+	if err = client.Auth(auth); err != nil {
+		return fmt.Errorf("failed to authenticate: %v", err)
+	}
+
+	if err = client.Mail("notifications@habita.rent"); err != nil {
+		return fmt.Errorf("failed to set sender: %v", err)
+	}
+	if err = client.Rcpt(req.To.Email); err != nil {
+		return fmt.Errorf("failed to add recipient: %v", err)
+	}
+
+	writer, err := client.Data()
+	if err != nil {
+		return fmt.Errorf("failed to get data writer: %v", err)
+	}
+	_, err = writer.Write([]byte(body.String()))
+	if err != nil {
+		return fmt.Errorf("failed to write email data: %v", err)
+	}
+	err = writer.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close data writer: %v", err)
+	}
+
+	if err = client.Quit(); err != nil {
+		return fmt.Errorf("failed to quit: %v", err)
+	}
+
+	logger.Info(ctx, "html email sent successfully", nil)
 	return nil
 }
 
@@ -210,7 +300,7 @@ func SendLandlordInvite(ctx context.Context, logger *observability.Logger, req L
 	var body strings.Builder
 
 	// Email headers
-	body.WriteString(fmt.Sprintf("From: %s\r\n", "bookings@habita.rent"))
+	body.WriteString(fmt.Sprintf("From: %s\r\n", "notifications@habita.rent"))
 	body.WriteString(fmt.Sprintf("To: %s\r\n", req.Email))
 	body.WriteString(fmt.Sprintf("Subject: %s\r\n", req.Subject))
 	body.WriteString("MIME-Version: 1.0\r\n")
@@ -222,7 +312,7 @@ func SendLandlordInvite(ctx context.Context, logger *observability.Logger, req L
 
 	// Send via authenticated SMTP with STARTTLS (Gmail)
 	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
-	log.Printf("Sending landlord invite from bookings@habita.rent to %s via %s with user: %s", req.Email, addr, smtpUser)
+	log.Printf("Sending landlord invite from notifications@habita.rent to %s via %s with user: %s", req.Email, addr, smtpUser)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", addr)
@@ -255,7 +345,7 @@ func SendLandlordInvite(ctx context.Context, logger *observability.Logger, req L
 	}
 
 	// Set sender and recipient
-	if err = client.Mail("bookings@habita.rent"); err != nil {
+	if err = client.Mail("notifications@habita.rent"); err != nil {
 		log.Printf("Failed to set sender: %v", err)
 		return fmt.Errorf("failed to set sender: %v", err)
 	}
@@ -306,9 +396,16 @@ func Handler(logger *observability.Logger) http.HandlerFunc {
 			return
 		}
 
-		if err := SendCalendarInvite(ctx, logger, req); err != nil {
-			logger.Error(ctx, "failed to send calendar invite", nil, err)
-			http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
+		var sendErr error
+		switch req.Type {
+		case "html":
+			sendErr = SendHtmlEmail(ctx, logger, req)
+		default:
+			sendErr = SendCalendarInvite(ctx, logger, req)
+		}
+		if sendErr != nil {
+			logger.Error(ctx, "failed to send email", nil, sendErr)
+			http.Error(w, fmt.Sprintf("Failed to send email: %v", sendErr), http.StatusInternalServerError)
 			return
 		}
 

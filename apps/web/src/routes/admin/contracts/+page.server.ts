@@ -15,19 +15,21 @@ export const load: PageServerLoad = async ({
   if (!locals.user) {
     redirect(302, "/auth/google")
   }
-  const state = v.parse(
-    ContractStateSchema,
-    Number(url.searchParams.get("state")),
-  )
+  const state_param = url.searchParams.get("state")
+  const state =
+    state_param !== null
+      ? v.parse(ContractStateSchema, Number(state_param))
+      : undefined
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
     locals.session?.activeOrganizationId,
   )
-  const contracts = await fetch_contracts(property_ids, [
-    state,
-  ])
-  return { contracts, state }
+  const contracts = await fetch_contracts(
+    property_ids,
+    state !== undefined ? [state] : undefined,
+  )
+  return { contracts, state: state ?? null }
 }
 
 export const actions: Actions = {

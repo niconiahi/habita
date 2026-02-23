@@ -9,6 +9,10 @@
   import TypedFileUploadButton from "$lib/components/TypedFileUploadButton.svelte"
   import { display_name } from "$lib/display_name"
   import {
+    SIGNATURE_STATUS,
+    get_signature_status_label,
+  } from "$lib/signature_status"
+  import {
     ContractFileTypeSchema,
     get_contract_file_type_label,
   } from "$lib/contract_file_type"
@@ -42,6 +46,19 @@
   )
   let warranty_errors = $derived(
     (form?.errors as any)?.create_warranty ?? {},
+  )
+  let cert_result = $derived(form as any)
+  let has_contract_pdf = $derived(
+    data.contract.files.some((f) => f.type === 0),
+  )
+  let has_signed_pdf = $derived(
+    data.contract.files.some((f) => f.type === 2),
+  )
+  let both_signed = $derived(
+    data.signature?.landlord_status ===
+      SIGNATURE_STATUS.SIGNED &&
+      data.signature?.tenant_status ===
+        SIGNATURE_STATUS.SIGNED,
   )
   const document_types = $derived(
     data.contract_file_types.map((type) => ({
@@ -1049,6 +1066,176 @@
   </Content.Section>
 {/snippet}
 
+{#snippet SigningSection()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>firma digital</Section.Title>
+    </Section.Header>
+    {#if has_signed_pdf && both_signed}
+      <div class="signing-success">
+        <p class="signing-success-text">Contrato firmado</p>
+      </div>
+    {:else if data.signature}
+      <div class="signing-status">
+        <div class="signing-party">
+          <p class="info-block-label">Locador</p>
+          <p>
+            {get_signature_status_label(
+              data.signature.landlord_status,
+            )}
+          </p>
+          {#if data.signature.landlord_url && data.signature.landlord_status === SIGNATURE_STATUS.PENDING}
+            <a
+              href={data.signature.landlord_url}
+              target="_blank"
+              class="file-link">Enlace de firma</a
+            >
+          {/if}
+          <form
+            method="POST"
+            action={compose_action(
+              ACTION.START_ONBOARDING,
+            )}
+            use:enhance
+          >
+            <input
+              type="hidden"
+              name="party"
+              value="landlord"
+            />
+            <Button type="submit"
+              >Iniciar onboarding</Button
+            >
+          </form>
+        </div>
+        <div class="signing-party">
+          <p class="info-block-label">Locatario</p>
+          <p>
+            {get_signature_status_label(
+              data.signature.tenant_status,
+            )}
+          </p>
+          {#if data.signature.tenant_url && data.signature.tenant_status === SIGNATURE_STATUS.PENDING}
+            <a
+              href={data.signature.tenant_url}
+              target="_blank"
+              class="file-link">Enlace de firma</a
+            >
+          {/if}
+          <form
+            method="POST"
+            action={compose_action(
+              ACTION.START_ONBOARDING,
+            )}
+            use:enhance
+          >
+            <input
+              type="hidden"
+              name="party"
+              value="tenant"
+            />
+            <Button type="submit"
+              >Iniciar onboarding</Button
+            >
+          </form>
+        </div>
+      </div>
+    {:else}
+      {#if cert_result?.errors?.check_certificates}
+        <span class="error"
+          >{cert_result.errors.check_certificates}</span
+        >
+      {/if}
+      {#if cert_result?.errors?.send_for_signing}
+        <span class="error"
+          >{cert_result.errors.send_for_signing}</span
+        >
+      {/if}
+      {#if cert_result?.landlord_has_cert !== undefined}
+        <div class="signing-status">
+          <div class="signing-party">
+            <p class="info-block-label">Locador</p>
+            <p>
+              {cert_result.landlord_has_cert
+                ? "Tiene certificado"
+                : "Sin certificado"}
+            </p>
+          </div>
+          <div class="signing-party">
+            <p class="info-block-label">Locatario</p>
+            <p>
+              {cert_result.tenant_has_cert
+                ? "Tiene certificado"
+                : "Sin certificado"}
+            </p>
+          </div>
+          {#if cert_result.landlord_has_cert && cert_result.tenant_has_cert}
+            <form
+              method="POST"
+              action={compose_action(ACTION.SEND_FOR_SIGNING)}
+              use:enhance
+            >
+              <input
+                type="hidden"
+                name="contract_id"
+                value={data.contract.id}
+              />
+              <Button type="submit">Enviar a firmar</Button>
+            </form>
+          {/if}
+        </div>
+      {/if}
+      <div class="signing-status">
+        <form
+          method="POST"
+          action={compose_action(ACTION.CHECK_CERTIFICATES)}
+          use:enhance
+        >
+          <Button type="submit">Verificar certificados</Button>
+        </form>
+        <div class="signing-party">
+          <p class="info-block-label">Locador</p>
+          <form
+            method="POST"
+            action={compose_action(
+              ACTION.START_ONBOARDING,
+            )}
+            use:enhance
+          >
+            <input
+              type="hidden"
+              name="party"
+              value="landlord"
+            />
+            <Button type="submit"
+              >Iniciar onboarding</Button
+            >
+          </form>
+        </div>
+        <div class="signing-party">
+          <p class="info-block-label">Locatario</p>
+          <form
+            method="POST"
+            action={compose_action(
+              ACTION.START_ONBOARDING,
+            )}
+            use:enhance
+          >
+            <input
+              type="hidden"
+              name="party"
+              value="tenant"
+            />
+            <Button type="submit"
+              >Iniciar onboarding</Button
+            >
+          </form>
+        </div>
+      </div>
+    {/if}
+  </Content.Section>
+{/snippet}
+
 {#snippet ActionsSection()}
   <Content.Section>
     <Section.Header>
@@ -1160,45 +1347,67 @@
     {#if errors.periods}
       <span class="error">{errors.periods}</span>
     {/if}
-    <ul class="period-list">
-      {#each data.contract.periods as period, index (period.id)}
-        {#if index === 0}
-          <li>
-            <Formulary.Root
-              method="POST"
-              action={compose_action(ACTION.UPDATE_PERIOD)}
+    {#if data.contract.periods.length === 0}
+      <Formulary.Root
+        method="POST"
+        action={compose_action(ACTION.CREATE_PERIOD)}
+      >
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label for="price"
+              >precio inicial</Formulary.Label
             >
-              <Formulary.Fields>
-                <input
-                  type="hidden"
-                  value={period.id}
-                  name="id"
-                />
-                <Formulary.Field>
-                  <Formulary.Label for="price"
-                    >inicial</Formulary.Label
-                  >
+            <input id="price" name="price" type="number" />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button type="submit">Crear período</Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    {:else}
+      <ul class="period-list">
+        {#each data.contract.periods as period, index (period.id)}
+          {#if index === 0}
+            <li>
+              <Formulary.Root
+                method="POST"
+                action={compose_action(
+                  ACTION.UPDATE_PERIOD,
+                )}
+              >
+                <Formulary.Fields>
                   <input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={period.price}
+                    type="hidden"
+                    value={period.id}
+                    name="id"
                   />
-                </Formulary.Field>
-              </Formulary.Fields>
-              <Formulary.Actions>
-                <Button type="submit">Guardar precio</Button
-                >
-              </Formulary.Actions>
-            </Formulary.Root>
-          </li>
-        {:else}
-          <li class="period-item">
-            <span>${period.price}</span>
-          </li>
-        {/if}
-      {/each}
-    </ul>
+                  <Formulary.Field>
+                    <Formulary.Label for="price"
+                      >inicial</Formulary.Label
+                    >
+                    <input
+                      id="price"
+                      name="price"
+                      type="number"
+                      value={period.price}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button type="submit"
+                    >Guardar precio</Button
+                  >
+                </Formulary.Actions>
+              </Formulary.Root>
+            </li>
+          {:else}
+            <li class="period-item">
+              <span>${period.price}</span>
+            </li>
+          {/if}
+        {/each}
+      </ul>
+    {/if}
   </Content.Section>
 {/snippet}
 
@@ -1347,6 +1556,9 @@
   {@render SectionSeventeen()}
   {@render SectionTwentyOne()}
   {@render ActionsSection()}
+  {#if has_contract_pdf}
+    {@render SigningSection()}
+  {/if}
   {@render DocumentsSection()}
   {@render PeriodsSection()}
 </Content.Root>
@@ -1515,5 +1727,25 @@
   .property-link {
     color: rgb(59 130 246);
     text-decoration: underline;
+  }
+  .signing-status {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .signing-party {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .signing-success {
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: rgb(34 197 94 / 0.1);
+    border: 1px solid rgb(34 197 94);
+  }
+  .signing-success-text {
+    color: rgb(34 197 94);
+    font-weight: 500;
   }
 </style>

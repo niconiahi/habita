@@ -18,6 +18,7 @@ export async function fetch_tenant(property_id: number) {
       "user.surname",
       "user.phone_number",
       "user.document_number",
+      "user.cuil",
       "user.email",
     ])
     .executeTakeFirst()
@@ -32,6 +33,7 @@ export async function fetch_tenant(property_id: number) {
     document_number: tenant.document_number
       ? decrypt(tenant.document_number)
       : null,
+    cuil: tenant.cuil ? decrypt(tenant.cuil) : null,
   }
 }
 export type Tenant = Awaited<

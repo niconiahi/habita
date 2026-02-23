@@ -18,6 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("surname", "text", (col) => col.notNull())
     .addColumn("phone_number", "text")
     .addColumn("document_number", "text")
+    .addColumn("cuil", "text")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )

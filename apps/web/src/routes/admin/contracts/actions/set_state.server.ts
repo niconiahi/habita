@@ -7,7 +7,9 @@ import {
 } from "$lib/server/form"
 
 export const InputSchema = v.object({
-  state: v.pipe(ForceNumberSchema, ContractStateSchema),
+  state: v.optional(
+    v.pipe(ForceNumberSchema, ContractStateSchema),
+  ),
 })
 
 export async function execute(
@@ -19,8 +21,17 @@ export async function execute(
     normalize_input(form_data, InputSchema),
   )
   const url = new URL(request.url)
-  url.searchParams.set("state", String(input.state))
-  return { redirect_to: url.toString() }
+  for (const key of url.searchParams.keys()) {
+    if (key.startsWith("/")) {
+      url.searchParams.delete(key)
+    }
+  }
+  if (input.state === undefined) {
+    url.searchParams.delete("state")
+  } else {
+    url.searchParams.set("state", String(input.state))
+  }
+  return { redirect_to: url.pathname + url.search }
 }
 
 export const set_state = {

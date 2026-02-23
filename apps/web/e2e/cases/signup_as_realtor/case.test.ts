@@ -21,9 +21,7 @@ test.describe.serial("Signup as Realtor", () => {
     await page
       .locator("#surname")
       .fill(REALTOR_USER.surname)
-    await page
-      .locator("#email")
-      .fill(REALTOR_USER.email)
+    await page.locator("#email").fill(REALTOR_USER.email)
     await page
       .locator("#password")
       .fill(REALTOR_USER.password)
@@ -56,9 +54,7 @@ test.describe.serial("Signup as Realtor", () => {
     await page.goto("/login")
     await page.waitForLoadState("networkidle")
 
-    await page
-      .locator("#email")
-      .fill(REALTOR_USER.email)
+    await page.locator("#email").fill(REALTOR_USER.email)
     await page
       .locator("#password")
       .fill(REALTOR_USER.password)

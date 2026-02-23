@@ -13,8 +13,8 @@ A new user visits the platform and creates an account via email/password. After 
 
 ### Actors
 
-| Role           | Auth state file | Description                          |
-| -------------- | --------------- | ------------------------------------ |
+| Role            | Auth state file | Description                              |
+| --------------- | --------------- | ---------------------------------------- |
 | New user (anon) | None            | Signs up and becomes a freelance manager |
 
 ### Step-by-step Flow

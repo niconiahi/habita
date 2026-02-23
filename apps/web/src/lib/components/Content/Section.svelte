@@ -18,7 +18,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
-    width: 100%;
 
     & :global(li) {
       width: 100%;

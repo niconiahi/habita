@@ -68,8 +68,12 @@ export function validate_contract_requirements(
     errors.start_date = "Falta la fecha de inicio"
   if (!contract.end_date)
     errors.end_date = "Falta la fecha de finalización"
-  if (!contract.escalation_type)
+  if (
+    contract.escalation_type === null ||
+    contract.escalation_type === undefined
+  ) {
     errors.escalation_type = "Falta el tipo de escalación"
+  }
   if (!contract.escalation_duration)
     errors.escalation_duration =
       "Falta la duración de escalación"

@@ -34,10 +34,9 @@ test.describe.serial("Assign Candidate as Tenant", () => {
       property_id = Number(match![1])
 
       // Assign landlord
-      const landlord_user_id =
-        (await get_user_id_by_email(
-          TEST_LANDLORD.email,
-        ))!
+      const landlord_user_id = (await get_user_id_by_email(
+        TEST_LANDLORD.email,
+      ))!
       await assign_property_access(
         property_id,
         landlord_user_id,
@@ -72,9 +71,7 @@ test.describe.serial("Assign Candidate as Tenant", () => {
       await page.fill("#date", date_string)
       await page.fill("#start_time", "09:00")
       await page.fill("#end_time", "10:00")
-      await page.click(
-        'button:has-text("Crear horario")',
-      )
+      await page.click('button:has-text("Crear horario")')
       await page.waitForLoadState("networkidle")
     })
   })

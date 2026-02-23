@@ -4,9 +4,7 @@ import { fill_location } from "../../helpers/location"
 test.describe.serial("Create Property - House", () => {
   test.use({ storageState: ".auth/manager.json" })
 
-  test("1. Creates a house property", async ({
-    page,
-  }) => {
+  test("1. Creates a house property", async ({ page }) => {
     await page.goto("/admin/properties/new")
 
     // Fill location using the autocomplete helper
@@ -25,9 +23,7 @@ test.describe.serial("Create Property - House", () => {
     await page.click('button[type="submit"]')
 
     // Wait for redirect to property edit page
-    await page.waitForURL(
-      /\/admin\/properties\/\d+\/edit/,
-    )
+    await page.waitForURL(/\/admin\/properties\/\d+\/edit/)
     const url = page.url()
     const match = url.match(
       /\/admin\/properties\/(\d+)\/edit/,

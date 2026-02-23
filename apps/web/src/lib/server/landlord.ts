@@ -22,6 +22,7 @@ export async function fetch_landlord(property_id: number) {
       "user.surname",
       "user.phone_number",
       "user.document_number",
+      "user.cuil",
       "user.email",
     ])
     .executeTakeFirst()
@@ -36,6 +37,7 @@ export async function fetch_landlord(property_id: number) {
     document_number: landlord.document_number
       ? decrypt(landlord.document_number)
       : null,
+    cuil: landlord.cuil ? decrypt(landlord.cuil) : null,
   }
 }
 export type Landlord = Awaited<

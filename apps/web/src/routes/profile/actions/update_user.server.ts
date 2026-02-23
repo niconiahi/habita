@@ -21,6 +21,13 @@ const DocumentNumberSchema = v.pipe(
     "Debe ser un numero valido",
   ),
 )
+const CuilSchema = v.pipe(
+  v.string(),
+  v.check(
+    (val) => val === "" || /^\d+$/.test(val),
+    "Debe ser un numero valido",
+  ),
+)
 
 const InputSchema = v.object({
   name: v.pipe(
@@ -33,6 +40,7 @@ const InputSchema = v.object({
   ),
   phone_number: ArgentinePhoneSchema,
   document_number: DocumentNumberSchema,
+  cuil: CuilSchema,
 })
 
 async function execute(
@@ -53,6 +61,8 @@ async function execute(
     input.document_number === ""
       ? null
       : encrypt(input.document_number)
+  const cuil =
+    input.cuil === "" ? null : encrypt(input.cuil)
   await query_builder
     .updateTable("user")
     .set({
@@ -60,6 +70,7 @@ async function execute(
       surname,
       phone_number,
       document_number,
+      cuil,
       updated_at: new Date(),
     })
     .where("user.id", "=", user_id)
