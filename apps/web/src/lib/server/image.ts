@@ -60,7 +60,8 @@ function generate_image_url(
   options: ImageOptions,
 ): string {
   const origin = get_origin()
-  const source_url = `${origin}/files/${file_id}?v=${hash}`
+  const secret = get_env_var("IMGPROXY_SOURCE_SECRET")
+  const source_url = `${origin}/files/${file_id}?v=${hash}&secret=${secret}`
   const encoded_source_url =
     Buffer.from(source_url).toString("base64url")
   const processing_options =
