@@ -12,4 +12,7 @@ apps/legacy
 infra/*/.env
 infra/*/scheduler/rclone.conf
 
+# Deploy state
+.image-tag
+
 # Encrypted secrets (.enc) are TRACKED - do not add to gitignore

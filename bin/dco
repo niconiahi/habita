@@ -19,6 +19,10 @@ if [[ $# -ge 2 ]] && ! echo "$1" | grep -qwE "$compose_cmds"; then
   shift
 fi
 
+if [ -z "${IMAGE_TAG:-}" ] && [ -f "$REPO_ROOT/.image-tag" ]; then
+  export IMAGE_TAG="$(cat "$REPO_ROOT/.image-tag")"
+fi
+
 case "$stack" in
   app|gateway|api|media|geo|scheduler)
     docker compose -p "$stack" -f "$INFRA_DIR/$stack/docker-compose.yml" "$@" $service

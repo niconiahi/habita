@@ -167,4 +167,5 @@ jobs:
           script: |
             cd /opt/habita
             git fetch origin main && git reset --hard origin/main
+            echo "${{ github.sha }}" > .image-tag
             IMAGE_TAG=${{ github.sha }} ENV=production just deploy push ${{ needs.changes.outputs.services }}
