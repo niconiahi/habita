@@ -1,6 +1,6 @@
 # Secrets management (sops + age)
 
-env := env_var_or_default("ENV", "development")
+env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
 # Generate a new age key (one-time setup)

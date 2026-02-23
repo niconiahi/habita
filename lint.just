@@ -1,6 +1,6 @@
 # Lint recipes
 
-env := env_var_or_default("ENV", "development")
+env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
 # Run prettier formatting
