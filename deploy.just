@@ -3,7 +3,7 @@
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
-export IMAGE_TAG := env_var_or_default("IMAGE_TAG", `git rev-parse HEAD`)
+versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
 
 # Deploy specific services: ENV=production just deploy push app api scheduler
 push +services:
@@ -17,14 +17,6 @@ push +services:
     exit 1
   fi
   echo "🔒 Deploy lock acquired"
-
-  # Verify IMAGE_TAG is a real commit SHA, not the default "latest"
-  if [[ "$IMAGE_TAG" == "latest" ]]; then
-    echo "❌ IMAGE_TAG must be a commit SHA, not 'latest'"
-    echo "   Usage: IMAGE_TAG=<commit-sha> ENV=production just deploy push app api"
-    exit 1
-  fi
-  echo "📦 Deploying with IMAGE_TAG: $IMAGE_TAG"
 
   # Cleanup function for notifications and lock release
   cleanup() {
@@ -65,14 +57,14 @@ push +services:
     case $svc in
       app)
         echo "→ Deploying app (pull, migrate, restart)..."
-        docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
-        docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
-        docker compose -p app -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
+        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml pull svelte
+        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
+        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
         ;;
       api)
         echo "→ Deploying api (pull, restart)..."
-        docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
-        docker compose -p api -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
+        docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull go
+        docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
         ;;
       scheduler)
         echo "→ Deploying scheduler..."
@@ -125,14 +117,20 @@ push +services:
 
 # Pull latest images (for production deploys)
 pull:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml pull
-  docker compose -p api -f {{infra}}/api/docker-compose.yml pull
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml pull
+  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull
 
-# Deploy specific version (production only)
-tag tag:
-  IMAGE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
-  docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+# Deploy specific svelte version (production only)
+tag-svelte tag:
+  SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
+  SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
   @echo "Deployed svelte with tag: {{tag}}"
+
+# Deploy specific go version (production only)
+tag-go tag:
+  GO_TAG={{tag}} docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
+  GO_TAG={{tag}} docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+  @echo "Deployed go with tag: {{tag}}"
 
 # Rollback to previous commit(s) and redeploy
 rollback commits="1" +services="app api":

@@ -59,7 +59,7 @@ services:
       - internal
 
   svelte:
-    image: niconiahi/habita:svelte-${IMAGE_TAG:?IMAGE_TAG required}
+    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
     restart: unless-stopped
     env_file:
       - ../.env
