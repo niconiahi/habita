@@ -19,16 +19,17 @@ if [[ $# -ge 2 ]] && ! echo "$1" | grep -qwE "$compose_cmds"; then
   shift
 fi
 
-if [ -z "${IMAGE_TAG:-}" ] && [ -f "$REPO_ROOT/.image-tag" ]; then
-  export IMAGE_TAG="$(cat "$REPO_ROOT/.image-tag")"
+ENV_FILE=""
+if [ -f "$INFRA_DIR/versions.env" ]; then
+  ENV_FILE="--env-file $INFRA_DIR/versions.env"
 fi
 
 case "$stack" in
   app|gateway|api|media|geo|scheduler)
-    docker compose -p "$stack" -f "$INFRA_DIR/$stack/docker-compose.yml" "$@" $service
+    docker compose -p "$stack" $ENV_FILE -f "$INFRA_DIR/$stack/docker-compose.yml" "$@" $service
     ;;
   obs|observability)
-    docker compose -p observability -f "$INFRA_DIR/observability/docker-compose.yml" "$@" $service
+    docker compose -p observability $ENV_FILE -f "$INFRA_DIR/observability/docker-compose.yml" "$@" $service
     ;;
   *)
     echo "Unknown stack: $stack"

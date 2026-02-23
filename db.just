@@ -2,6 +2,7 @@
 
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
+versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
 
 # Open psql shell
 shell:
@@ -15,7 +16,7 @@ reset:
 
   echo "Environment: {{env}}"
 
-  APP_COMPOSE="docker compose -p app -f {{infra}}/app/docker-compose.yml"
+  APP_COMPOSE="docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml"
   RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""

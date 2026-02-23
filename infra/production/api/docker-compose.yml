@@ -1,6 +1,6 @@
 services:
   go:
-    image: niconiahi/habita:go-${IMAGE_TAG:?IMAGE_TAG required}
+    image: niconiahi/habita:go-${GO_TAG:?GO_TAG required}
     restart: unless-stopped
     env_file:
       - ../.env

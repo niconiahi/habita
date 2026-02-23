@@ -7,6 +7,7 @@ on:
       - 'apps/web/**'
       - 'apps/go/**'
       - 'infra/production/**'
+      - '!infra/production/versions.env'
       - '.github/workflows/deploy.yml'
 
 env:
@@ -151,9 +152,41 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # Commit updated version tags to versions.env
+  update-versions:
+    needs: [changes, build-svelte, build-go]
+    if: always() && !failure() && !cancelled() && needs.changes.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update versions.env
+        run: |
+          if [[ "${{ needs.changes.outputs.app }}" == "true" ]]; then
+            sed -i "s/^SVELTE_TAG=.*/SVELTE_TAG=${{ github.sha }}/" infra/production/versions.env
+          fi
+          if [[ "${{ needs.changes.outputs.api }}" == "true" ]]; then
+            sed -i "s/^GO_TAG=.*/GO_TAG=${{ github.sha }}/" infra/production/versions.env
+          fi
+          echo "Updated versions.env:"
+          cat infra/production/versions.env
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add infra/production/versions.env
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "deploy: update versions.env [skip ci]"
+          git push
+
   # Deploy changed services to VPS
   deploy:
-    needs: [changes, build-svelte, build-go]
+    needs: [changes, build-svelte, build-go, update-versions]
     if: always() && !failure() && !cancelled() && needs.changes.outputs.any == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -167,5 +200,4 @@ jobs:
           script: |
             cd /opt/habita
             git fetch origin main && git reset --hard origin/main
-            echo "${{ github.sha }}" > .image-tag
-            IMAGE_TAG=${{ github.sha }} ENV=production just deploy push ${{ needs.changes.outputs.services }}
+            ENV=production just deploy push ${{ needs.changes.outputs.services }}

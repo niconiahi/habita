@@ -4,8 +4,8 @@
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
-# IMAGE_TAG defaults to current git commit (matches deployed version on VPS)
-export IMAGE_TAG := env_var_or_default("IMAGE_TAG", `git rev-parse HEAD`)
+# versions.env: pass --env-file to compose when deploying in production
+versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
 
 mod db
 mod lint
@@ -30,11 +30,11 @@ infra-setup:
 # Start all services in correct order
 up: infra-setup
   @echo "Starting app (db + valkey + svelte)..."
-  docker compose -p app -f {{infra}}/app/docker-compose.yml up -d
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d
   @echo "Waiting for db to be healthy..."
   @until docker inspect --format='{{{{.State.Health.Status}}}}' $(docker ps -qf "label=habita.role=database" | head -1) 2>/dev/null | grep -q healthy; do sleep 2; done
   @echo "Starting api..."
-  docker compose -p api -f {{infra}}/api/docker-compose.yml up -d
+  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d
   @echo "Starting media..."
   docker compose -p media -f {{infra}}/media/docker-compose.yml up -d
   @echo "Starting gateway..."
@@ -56,43 +56,43 @@ down:
   -docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml down
   -docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml down
   -docker compose -p media -f {{infra}}/media/docker-compose.yml down
-  -docker compose -p api -f {{infra}}/api/docker-compose.yml down
+  -docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml down
   -docker compose -p geo -f {{infra}}/geo/docker-compose.yml down
-  -docker compose -p app -f {{infra}}/app/docker-compose.yml down
+  -docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml down
 
 # Start geo (nominatim) - heavy, optional
 geo: infra-setup
-  docker compose -p geo -f {{infra}}/geo/docker-compose.yml up -d
+  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml up -d
 
 # Stop geo
 geo-down:
-  docker compose -p geo -f {{infra}}/geo/docker-compose.yml down
+  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml down
 
 # View logs for a project or specific service (e.g., just logs app, just logs app svelte)
 logs project service="":
   #!/usr/bin/env bash
   if [[ -z "{{service}}" ]]; then
-    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml logs -f
+    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml logs -f
   else
-    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml logs -f {{service}}
+    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml logs -f {{service}}
   fi
 
 # Restart a specific service
 restart service:
-  docker compose -p {{service}} -f {{infra}}/{{service}}/docker-compose.yml restart
+  docker compose -p {{service}} {{versions_env}} -f {{infra}}/{{service}}/docker-compose.yml restart
 
 # Reload a service (recreates container to pick up new env vars)
 reload service:
-  docker compose -p {{service}} -f {{infra}}/{{service}}/docker-compose.yml up -d --force-recreate
+  docker compose -p {{service}} {{versions_env}} -f {{infra}}/{{service}}/docker-compose.yml up -d --force-recreate
 
 # Run production build locally (for testing auth flows that need ORIGIN)
 preview:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "pnpm run build && pnpm run preview --host 0.0.0.0 --port 5174"
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "pnpm run build && pnpm run preview --host 0.0.0.0 --port 5174"
 
 # Show status of all services
 status:
-  @echo "=== App ===" && docker compose -p app -f {{infra}}/app/docker-compose.yml ps
-  @echo "\n=== API ===" && docker compose -p api -f {{infra}}/api/docker-compose.yml ps
+  @echo "=== App ===" && docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml ps
+  @echo "\n=== API ===" && docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml ps
   @echo "\n=== Gateway ===" && docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml ps
   @echo "\n=== Scheduler ===" && docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml ps
   @echo "\n=== PDF ===" && docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml ps
@@ -101,15 +101,15 @@ status:
 
 # Refresh node_modules in the svelte container (after adding/removing packages)
 deps:
-  docker compose -p app -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm install
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm install
 
 # Rebuild a service image (after Dockerfile changes)
 rebuild project service="":
   #!/usr/bin/env bash
   if [[ -z "{{service}}" ]]; then
-    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache
+    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache
   else
-    docker compose -p {{project}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache {{service}}
+    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache {{service}}
   fi
 
 # Clean up unused Docker resources
