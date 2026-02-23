@@ -94,7 +94,7 @@ ssh user@your-server
 cd habita
 
 # Edit the encrypted secrets
-just --set env production secrets-edit
+just --set env production secrets edit
 # Fix the value, save, exit
 
 # Restart the affected service
@@ -121,7 +121,7 @@ Or restore the entire file:
 git checkout <commit> -- infra/production/.env.enc
 
 # Decrypt it
-just --set env production secrets-decrypt
+just --set env production secrets decrypt
 
 # Restart
 just --set env production restart app
@@ -218,7 +218,7 @@ just --set env production deploy <previous-sha>
 
 ### "Changed a secret and broke things"
 ```bash
-just --set env production secrets-edit  # fix it
+just --set env production secrets edit  # fix it
 just --set env production restart app
 ```
 
@@ -235,7 +235,7 @@ just --set env production up
 # Nuclear option: go back to last known good state
 just --set env production down
 git checkout <last-known-good-commit>
-just --set env production secrets-decrypt
+just --set env production secrets decrypt
 just --set env production up
 ```
 

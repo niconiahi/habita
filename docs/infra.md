@@ -404,7 +404,7 @@ The age private key should be in:
 
 1. Edit the plaintext file:
    ```bash
-   just --set env production secrets-edit
+   just --set env production secrets edit
    ```
 2. Add your variable: `NEW_SECRET=value`
 3. Save and close - sops auto-encrypts
@@ -813,7 +813,7 @@ docker exec $(docker ps -qf "label=habita.role=backup-uploader" | head -1) \
 ls ~/.config/sops/age/keys.txt
 
 # Verify key matches .sops.yaml
-just secrets-pubkey
+just secrets pubkey
 # Should match: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
 ```
 
@@ -917,11 +917,11 @@ All infrastructure operations are managed via [Just](https://github.com/casey/ju
 | `just restore-test` | Test backup restore |
 | `just deploy <svcs>` | Deploy services (CI/CD) |
 | `just rollback <n> <svcs>` | Rollback n commits |
-| `just secrets-decrypt` | Decrypt .env files |
-| `just secrets-encrypt` | Encrypt .env files |
-| `just secrets-edit` | Edit secrets in $EDITOR |
-| `just secrets-keygen` | Generate new age key |
-| `just secrets-pubkey` | View public key |
+| `just secrets decrypt` | Decrypt .env files |
+| `just secrets encrypt` | Encrypt .env files |
+| `just secrets edit` | Edit secrets in $EDITOR |
+| `just secrets keygen` | Generate new age key |
+| `just secrets pubkey` | View public key |
 | `just prune` | Clean Docker resources |
 | `just geo` | Start Nominatim (heavy) |
 | `just geo-down` | Stop Nominatim |

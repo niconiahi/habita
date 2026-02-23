@@ -240,8 +240,8 @@ Password: `signoz_clickhouse_secure_2024`
 
 ### Secrets Management
 - Environment files encrypted with SOPS + Age
-- Decrypt: `just secrets-decrypt`
-- Encrypt: `just secrets-encrypt`
+- Decrypt: `just secrets decrypt`
+- Encrypt: `just secrets encrypt`
 
 ### Non-Root Containers
 - Production imgproxy runs as user 1000:1000
@@ -307,5 +307,5 @@ dco obs up -d
 | `dco <project> restart` | Restart services |
 | `just backup` | Manual database backup |
 | `just restore-test` | Test backup restore |
-| `just secrets-decrypt` | Decrypt .env files |
-| `just secrets-encrypt` | Encrypt .env files |
+| `just secrets decrypt` | Decrypt .env files |
+| `just secrets encrypt` | Encrypt .env files |
