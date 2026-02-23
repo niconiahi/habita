@@ -31,7 +31,7 @@ Habita uses [SOPS](https://github.com/getsops/sops) with [age](https://github.co
 vim infra/production/.env
 
 # 2. Encrypt it
-just --set env production secrets-encrypt
+just --set env production secrets encrypt
 
 # 3. Commit and push
 git add infra/production/.env.enc
@@ -48,21 +48,21 @@ ssh user@habita.rent
 # Pull latest code and apply secrets
 cd /opt/habita
 git pull
-just --set env production secrets-apply
+just --set env production secrets apply
 ```
 
-The `secrets-apply` command decrypts the secrets AND restarts the affected services (svelte, go).
+The `secrets apply` command decrypts the secrets AND restarts the affected services (svelte, go).
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `just secrets-keygen` | Generate a new age key (one-time setup) |
-| `just secrets-encrypt` | Encrypt `.env` → `.env.enc` |
-| `just secrets-decrypt` | Decrypt `.env.enc` → `.env` |
-| `just secrets-edit` | Edit encrypted file directly in `$EDITOR` |
-| `just secrets-apply` | Decrypt AND restart services |
-| `just secrets-pubkey` | Show your public key |
+| `just secrets keygen` | Generate a new age key (one-time setup) |
+| `just secrets encrypt` | Encrypt `.env` → `.env.enc` |
+| `just secrets decrypt` | Decrypt `.env.enc` → `.env` |
+| `just secrets edit` | Edit encrypted file directly in `$EDITOR` |
+| `just secrets apply` | Decrypt AND restart services |
+| `just secrets pubkey` | Show your public key |
 
 All commands respect the `env` variable: `just --set env production <command>`
 
@@ -72,7 +72,7 @@ All commands respect the `env` variable: `just --set env production <command>`
 
 ```bash
 # Generate an age key
-just secrets-keygen
+just secrets keygen
 
 # Add your public key to .sops.yaml
 # (ask team for existing .sops.yaml or create one)
@@ -92,4 +92,4 @@ chmod 600 ~/.config/sops/age/keys.txt
 1. **Never commit `.env` files** — only `.env.enc`
 2. **CI has no access to secrets** — decryption is manual, intentional
 3. **One key per environment** — dev and prod can have different age keys
-4. **Rotate secrets by re-encrypting** — edit `.env`, run `secrets-encrypt`, commit
+4. **Rotate secrets by re-encrypting** — edit `.env`, run `secrets encrypt`, commit

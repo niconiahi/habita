@@ -105,7 +105,7 @@ nano ~/.config/sops/age/keys.txt
 chmod 600 ~/.config/sops/age/keys.txt
 
 # Decrypt production secrets
-just --set env production secrets-decrypt
+just --set env production secrets decrypt
 ```
 
 ### Step 6: Restore Database Backup

@@ -2,6 +2,7 @@
 
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
+versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
 
 # Generate a new age key (one-time setup)
 keygen:
@@ -56,8 +57,8 @@ apply:
 
   echo ""
   echo "=== Restarting services to pick up new secrets ==="
-  docker compose -p app -f {{infra}}/app/docker-compose.yml restart svelte
-  docker compose -p api -f {{infra}}/api/docker-compose.yml restart go
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml restart svelte
+  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml restart go
 
   echo ""
   echo "✅ Secrets applied and services restarted"

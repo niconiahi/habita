@@ -6,16 +6,16 @@ This project uses **sops + age** to encrypt secrets. Encrypted files (`.env.enc`
 
 ```bash
 # Edit secrets
-just secrets-edit                           # development
-just --set env production secrets-edit      # production
+just secrets edit                           # development
+just --set env production secrets edit      # production
 
 # After editing plaintext .env manually
-just secrets-encrypt                        # development
-just --set env production secrets-encrypt   # production
+just secrets encrypt                        # development
+just --set env production secrets encrypt   # production
 
 # On a new machine (after copying your private key)
-just secrets-decrypt                        # development
-just --set env production secrets-decrypt   # production
+just secrets decrypt                        # development
+just --set env production secrets decrypt   # production
 ```
 
 ---
@@ -55,14 +55,14 @@ just --set env production secrets-decrypt   # production
 
 **Option 1: Edit encrypted file directly** (recommended)
 ```bash
-just secrets-edit
+just secrets edit
 ```
 This decrypts → opens in `$EDITOR` → re-encrypts on save.
 
 **Option 2: Edit plaintext, then encrypt**
 ```bash
 vim infra/development/.env
-just secrets-encrypt
+just secrets encrypt
 ```
 
 ### After Changing Secrets
@@ -110,8 +110,8 @@ chmod 600 ~/.config/sops/age/keys.txt
 ### 3. Decrypt secrets
 
 ```bash
-just secrets-decrypt
-just --set env production secrets-decrypt
+just secrets decrypt
+just --set env production secrets decrypt
 ```
 
 ---
@@ -136,7 +136,7 @@ nano ~/.config/sops/age/keys.txt
 chmod 600 ~/.config/sops/age/keys.txt
 
 # 5. Decrypt production secrets
-just --set env production secrets-decrypt
+just --set env production secrets decrypt
 
 # 6. Start services
 just --set env production up
@@ -160,7 +160,7 @@ just --set env production up
 1. Generate new key: `age-keygen -o new-keys.txt`
 2. Decrypt all secrets with old key
 3. Update `.sops.yaml` with new public key
-4. Re-encrypt all secrets: `just secrets-encrypt`
+4. Re-encrypt all secrets: `just secrets encrypt`
 5. Rotate all actual secrets (DB passwords, API keys, etc.)
 6. Delete old key
 
@@ -169,7 +169,7 @@ just --set env production up
 Restore from git:
 ```bash
 git checkout HEAD -- infra/development/.env.enc
-just secrets-decrypt
+just secrets decrypt
 ```
 
 ---
@@ -182,7 +182,7 @@ If you need to give someone else access:
 Send them the private key securely (Signal, in-person, etc.)
 
 ### Option 2: Multiple keys (more secure)
-1. They generate their own key: `just secrets-keygen`
+1. They generate their own key: `just secrets keygen`
 2. They send you their **public** key (safe to share)
 3. You add their public key to `.sops.yaml`:
    ```yaml
@@ -192,7 +192,7 @@ Send them the private key securely (Signal, in-person, etc.)
          age1yourkey...,
          age1theirkey...
    ```
-4. Re-encrypt: `just secrets-encrypt`
+4. Re-encrypt: `just secrets encrypt`
 5. Commit updated `.sops.yaml` and `.env.enc`
 
 Now both keys can decrypt.
@@ -236,10 +236,10 @@ git checkout HEAD -- infra/development/.env.enc
 
 | Command | Description |
 |---------|-------------|
-| `just secrets-keygen` | Generate new age key |
-| `just secrets-encrypt` | Encrypt `.env` → `.env.enc` |
-| `just secrets-decrypt` | Decrypt `.env.enc` → `.env` |
-| `just secrets-edit` | Edit encrypted file directly |
-| `just secrets-pubkey` | Show your public key |
+| `just secrets keygen` | Generate new age key |
+| `just secrets encrypt` | Encrypt `.env` → `.env.enc` |
+| `just secrets decrypt` | Decrypt `.env.enc` → `.env` |
+| `just secrets edit` | Edit encrypted file directly |
+| `just secrets pubkey` | Show your public key |
 
 Add `--set env production` for production files.
