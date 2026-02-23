@@ -2,7 +2,11 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-INFRA_DIR="$REPO_ROOT/infra/development"
+if [ "$REPO_ROOT" = "/opt/habita" ]; then
+  INFRA_DIR="$REPO_ROOT/infra/production"
+else
+  INFRA_DIR="$REPO_ROOT/infra/development"
+fi
 
 stack="$1"
 shift
