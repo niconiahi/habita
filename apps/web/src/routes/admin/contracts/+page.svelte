@@ -62,8 +62,9 @@
           <Formulary.Select
             id="state"
             name="state"
-            value={data.state}
+            value={data.state ?? undefined}
           >
+            <option value="">Todos</option>
             {#each get_contract_states() as state}
               <option value={state}>
                 {get_contract_state_label(state)}

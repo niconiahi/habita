@@ -17,9 +17,7 @@ test.describe.serial("Edit Property with Room Map", () => {
     await page.check('input[name="destiny"][value="0"]')
     await page.click('button[type="submit"]')
 
-    await page.waitForURL(
-      /\/admin\/properties\/\d+\/edit/,
-    )
+    await page.waitForURL(/\/admin\/properties\/\d+\/edit/)
     const match = page
       .url()
       .match(/\/admin\/properties\/(\d+)\/edit/)
@@ -30,22 +28,16 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("2. Adds rooms to the property", async ({
     page,
   }) => {
-    await page.goto(
-      `/admin/properties/${property_id}/edit`,
-    )
+    await page.goto(`/admin/properties/${property_id}/edit`)
 
     // Add 4 rooms by clicking "Agregar ambiente" 4 times
-    const room_selects = page.locator(
-      'select[name="type"]',
-    )
+    const room_selects = page.locator('select[name="type"]')
     for (let i = 0; i < 4; i++) {
       await Promise.all([
         page.waitForResponse(
           (res) => res.request().method() === "POST",
         ),
-        page.click(
-          'button:has-text("Agregar ambiente")',
-        ),
+        page.click('button:has-text("Agregar ambiente")'),
       ])
       await expect(room_selects).toHaveCount(i + 1)
     }
@@ -57,9 +49,7 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("3. Configures room types and dimensions", async ({
     page,
   }) => {
-    await page.goto(
-      `/admin/properties/${property_id}/edit`,
-    )
+    await page.goto(`/admin/properties/${property_id}/edit`)
 
     // Get all room forms and configure each one
     const room_type_selects = page.locator(
@@ -105,9 +95,7 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("4. Moves rooms on the map and saves positions", async ({
     page,
   }) => {
-    await page.goto(
-      `/admin/properties/${property_id}/edit`,
-    )
+    await page.goto(`/admin/properties/${property_id}/edit`)
 
     // Wait for the positions input to be in the DOM
     const positions_input = page.locator(
@@ -118,7 +106,11 @@ test.describe.serial("Edit Property with Room Map", () => {
     // The room map uses a canvas with pointer events for dragging
     // Instead of simulating drag, we set positions via the hidden input
     // and submit the form (the same way the UI works internally)
-    const valid_positions = [
+    const valid_positions: {
+      room_id: number | null
+      position_x: number
+      position_y: number
+    }[] = [
       {
         room_id: null,
         position_x: 212.41379310344826,
@@ -194,18 +186,14 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("5. Adds a service to the property", async ({
     page,
   }) => {
-    await page.goto(
-      `/admin/properties/${property_id}/edit`,
-    )
+    await page.goto(`/admin/properties/${property_id}/edit`)
 
     // Add a service
     await Promise.all([
       page.waitForResponse(
         (res) => res.request().method() === "POST",
       ),
-      page.click(
-        'button:has-text("Agregar servicio")',
-      ),
+      page.click('button:has-text("Agregar servicio")'),
     ])
 
     // Configure the service (ABL = 0)

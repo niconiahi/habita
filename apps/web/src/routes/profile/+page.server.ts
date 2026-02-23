@@ -120,6 +120,7 @@ async function fetch_user_profile(user_id: number) {
       "user.email",
       "user.phone_number",
       "user.document_number",
+      "user.cuil",
     ])
     .executeTakeFirstOrThrow()
   return {
@@ -132,5 +133,6 @@ async function fetch_user_profile(user_id: number) {
     document_number: user.document_number
       ? decrypt(user.document_number)
       : null,
+    cuil: user.cuil ? decrypt(user.cuil) : null,
   }
 }

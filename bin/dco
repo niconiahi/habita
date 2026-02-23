@@ -7,12 +7,20 @@ INFRA_DIR="$REPO_ROOT/infra/development"
 stack="$1"
 shift
 
+# If the next arg is a service name (not a compose subcommand), extract it
+compose_cmds="up|down|build|create|events|exec|images|kill|logs|ls|pause|port|ps|pull|push|restart|rm|run|start|stop|top|unpause|wait|watch|version|config|cp|attach"
+service=""
+if [[ $# -ge 2 ]] && ! echo "$1" | grep -qwE "$compose_cmds"; then
+  service="$1"
+  shift
+fi
+
 case "$stack" in
   app|gateway|api|media|geo|scheduler)
-    docker compose -p "$stack" -f "$INFRA_DIR/$stack/docker-compose.yml" "$@"
+    docker compose -p "$stack" -f "$INFRA_DIR/$stack/docker-compose.yml" "$@" $service
     ;;
   obs|observability)
-    docker compose -p observability -f "$INFRA_DIR/observability/docker-compose.yml" "$@"
+    docker compose -p observability -f "$INFRA_DIR/observability/docker-compose.yml" "$@" $service
     ;;
   *)
     echo "Unknown stack: $stack"

@@ -34,10 +34,9 @@ test.describe.serial("Book a Slot", () => {
       property_id = Number(match![1])
 
       // Assign landlord
-      const landlord_user_id =
-        (await get_user_id_by_email(
-          TEST_LANDLORD.email,
-        ))!
+      const landlord_user_id = (await get_user_id_by_email(
+        TEST_LANDLORD.email,
+      ))!
       await assign_property_access(
         property_id,
         landlord_user_id,
@@ -72,16 +71,12 @@ test.describe.serial("Book a Slot", () => {
       await page.fill("#date", date_string)
       await page.fill("#start_time", "18:00")
       await page.fill("#end_time", "19:00")
-      await page.click(
-        'button:has-text("Crear horario")',
-      )
+      await page.click('button:has-text("Crear horario")')
       await page.waitForLoadState("networkidle")
 
       await page.reload()
       await page.waitForLoadState("networkidle")
-      await expect(
-        page.locator("table"),
-      ).toBeVisible()
+      await expect(page.locator("table")).toBeVisible()
     })
   })
 
@@ -104,8 +99,7 @@ test.describe.serial("Book a Slot", () => {
       })
       await expect(book_button).toBeVisible()
 
-      const href =
-        await book_button.getAttribute("href")
+      const href = await book_button.getAttribute("href")
       expect(href).toContain(
         `/properties/${property_id}/book`,
       )

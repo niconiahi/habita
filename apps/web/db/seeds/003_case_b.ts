@@ -1,15 +1,15 @@
 /**
- * CASE B: Contract In Progress
+ * CASE B: Complete Contract (Editing)
  *
- * Scenario: A property where the contract is still being set up.
+ * Scenario: A fully configured contract ready for PDF generation.
  *
  * - Property with manager, owner, and tenant assigned
- * - Contract in editing state (~50% of fields filled)
- * - No contract.pdf generated yet
+ * - Contract in editing state with all fields filled
+ * - Warranty, periods, and all contract data present
  * - Property state: editing
  *
- * Use this case to test the contract editing flow, incomplete
- * contract validation, and the "generate contract" action.
+ * Use this case to test the full contract editing flow,
+ * PDF generation, and digital signature integration.
  */
 
 import type { Kysely } from "kysely"
@@ -19,6 +19,7 @@ import { addMonths } from "date-fns"
 import type { DB } from "../types"
 import { CONTRACT_STATE } from "../../src/lib/contract_state"
 import { CONTRACT_TYPE } from "../../src/lib/contract_type"
+import { COURT } from "../../src/lib/court"
 import { PROPERTY_DESTINY } from "../../src/lib/property_destiny"
 import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
@@ -27,6 +28,7 @@ import { ROOM_TYPE } from "../../src/lib/room_type"
 import { SERVICE_TYPE } from "../../src/lib/service"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type"
 import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
+import { WARRANTY_TYPE } from "../../src/lib/warranty_type"
 import * as seeder from "../../src/lib/seeder"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -52,17 +54,19 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   const owner_id = await seeder.create_user({
     name: "Jorge",
     surname: "López",
-    email: "nicolas.accetta+b_owner@gmail.com",
+    email: "nico+owner@habita.rent",
     phone_number: "+5491155002002",
     document_number: 22345678,
+    cuil: "20000000019",
   })
 
   const tenant_id = await seeder.create_user({
     name: "Valentina",
     surname: "Díaz",
-    email: "nicolas.accetta+b_tenant@gmail.com",
+    email: "nico+tenant@habita.rent",
     phone_number: "+5491155002003",
     document_number: 38901234,
+    cuil: "20000000019",
   })
 
   // Upload credit report for tenant
@@ -147,25 +151,50 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seeder.set_owner(property_id, owner_id)
   await seeder.set_tenant(property_id, tenant_id)
 
-  // Create contract in EDITING state with ~50% of fields filled
-  // Missing: warranty, cbu, fine_amount, percentage_return, early_termination, court_id
+  // Create warranty (surety type)
+  const warranty_id = await seeder.create_warranty(
+    WARRANTY_TYPE.SURETY,
+  )
+  await seeder.create_surety_warranty(warranty_id, {
+    guarantor_name: "Ana Peralta",
+    guarantor_dni: "27654321",
+    guarantor_email:
+      "nicolas.accetta+b_guarantor@gmail.com",
+    company_name: "Fianzas del Sur S.A.",
+    policy_number: "POL-2025-00567",
+    company_email: "nicolas.accetta+b_surety@gmail.com",
+  })
+
+  // Create contract with all fields filled
   const contract_start = addMonths(date, 1)
   const contract_end = addMonths(date, 13)
 
-  await seeder.create_contract(property_id, {
-    type: CONTRACT_TYPE.LONG_TERM,
-    state: CONTRACT_STATE.EDITING,
-    start_date: contract_start,
-    end_date: contract_end,
-    destiny: PROPERTY_DESTINY.RESIDENTIAL,
-    escalation_type: RATE_TYPE.IPC,
-    escalation_duration: "P3M",
-    showroom_hours: 2,
-    // Intentionally missing: cbu, fine_amount, percentage_return, early_termination, court_id, warranty_id
-  })
+  const contract_id = await seeder.create_contract(
+    property_id,
+    {
+      type: CONTRACT_TYPE.LONG_TERM,
+      state: CONTRACT_STATE.EDITING,
+      start_date: contract_start,
+      end_date: contract_end,
+      destiny: PROPERTY_DESTINY.RESIDENTIAL,
+      escalation_type: RATE_TYPE.IPC,
+      escalation_duration: "P3M",
+      cbu: "0000003100020000000002",
+      fine_amount: 3,
+      percentage_return: 100,
+      early_termination: 3,
+      showroom_hours: 2,
+      court_id: COURT.CIUDAD_DE_BUENOS_AIRES,
+      warranty_id,
+    },
+  )
 
-  // No contract.pdf - still being edited
-  // No periods created yet - contract not finalized
+  // Create initial period
+  await seeder.create_period(contract_id, {
+    price: 450000,
+    start_date: contract_start,
+    end_date: addMonths(contract_start, 3),
+  })
 
   console.log("case_b seeding complete")
 }

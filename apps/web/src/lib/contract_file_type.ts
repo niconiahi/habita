@@ -4,6 +4,7 @@ export type ObjectValues<T> = T[keyof T]
 export const CONTRACT_FILE_TYPE = {
   CONTRACT: 0,
   INSURANCE: 1,
+  SIGNED: 2,
 } as const
 export const ContractFileTypeSchema = v.picklist(
   Object.values(CONTRACT_FILE_TYPE),
@@ -25,6 +26,9 @@ export function get_contract_file_type_label(
     }
     case CONTRACT_FILE_TYPE.INSURANCE: {
       return "Seguro"
+    }
+    case CONTRACT_FILE_TYPE.SIGNED: {
+      return "Contrato firmado"
     }
     default: {
       const _exhaustive: never = contract_file_type

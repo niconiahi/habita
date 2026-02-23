@@ -5,6 +5,7 @@ import { get_contract_file_types } from "$lib/contract_file_type"
 import { require_edit_access } from "$lib/server/property_access"
 import { fetch_landlord } from "$lib/server/landlord"
 import { fetch_tenant } from "$lib/server/tenant"
+import { query_builder } from "db/query_builder"
 import { fetch_contract } from "./fetchers/contract.server"
 import { fetch_property } from "./fetchers/property.server"
 import { fetch_warranty } from "./fetchers/warranty.server"
@@ -19,12 +20,36 @@ import { destroy_contract_item } from "./actions/destroy_contract_item.server"
 import { create_contract_item_file } from "./actions/create_contract_item_file.server"
 import { destroy_contract_item_file } from "./actions/destroy_contract_item_file.server"
 import { update_period } from "./actions/update_period.server"
+import { create_period } from "./actions/create_period.server"
 import { create_warranty } from "./actions/create_warranty.server"
 import { update_warranty } from "./actions/update_warranty.server"
 import { add_income_guarantor } from "./actions/add_income_guarantor.server"
 import { update_income_guarantor } from "./actions/update_income_guarantor.server"
 import { destroy_income_guarantor } from "./actions/destroy_income_guarantor.server"
+import { check_certificates } from "./actions/digital_signature/check_certificates.server"
+import { start_onboarding } from "./actions/digital_signature/start_onboarding.server"
+import { send_for_signing } from "./actions/digital_signature/send_for_signing.server"
+import { verify_signature } from "./actions/digital_signature/verify_signature.server"
 import { ACTION } from "./actions/action"
+
+async function fetch_signature(contract_id: number) {
+  return query_builder
+    .selectFrom("digital_signature")
+    .where("contract_id", "=", contract_id)
+    .select([
+      "id",
+      "contract_id",
+      "document_id",
+      "group_id",
+      "landlord_url",
+      "tenant_url",
+      "landlord_status",
+      "tenant_status",
+      "created_at",
+      "updated_at",
+    ])
+    .executeTakeFirst()
+}
 
 export const load: PageServerLoad = async ({
   request,
@@ -70,11 +95,13 @@ export const load: PageServerLoad = async ({
       `property does not exist for id ${property_id}`,
     )
   }
-  const [landlord, tenant, warranty] = await Promise.all([
-    fetch_landlord(property_id),
-    fetch_tenant(property_id),
-    fetch_warranty(contract.warranty_id),
-  ])
+  const [landlord, tenant, warranty, signature] =
+    await Promise.all([
+      fetch_landlord(property_id),
+      fetch_tenant(property_id),
+      fetch_warranty(contract.warranty_id),
+      fetch_signature(contract_id),
+    ])
   const contract_file_types = get_contract_file_types()
   return {
     contract,
@@ -83,6 +110,7 @@ export const load: PageServerLoad = async ({
     tenant,
     warranty,
     contract_file_types,
+    signature: signature ?? null,
   }
 }
 
@@ -318,6 +346,32 @@ export const actions: Actions = {
     await update_period(form_data)
     return null
   },
+  [ACTION.CREATE_PERIOD]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    const contract_id = v.parse(
+      ForceNumberSchema,
+      params.contract_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    await create_period(form_data, contract_id)
+    return null
+  },
   [ACTION.CREATE_WARRANTY]: async ({
     request,
     locals,
@@ -426,5 +480,96 @@ export const actions: Actions = {
     const form_data = await request.formData()
     await destroy_income_guarantor(form_data)
     return null
+  },
+  [ACTION.CHECK_CERTIFICATES]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    return await check_certificates(property_id)
+  },
+  [ACTION.START_ONBOARDING]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    return await start_onboarding(form_data, property_id)
+  },
+  [ACTION.SEND_FOR_SIGNING]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    return await send_for_signing(form_data, property_id)
+  },
+  [ACTION.VERIFY_SIGNATURE]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/properties")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    const contract_id = v.parse(
+      ForceNumberSchema,
+      params.contract_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    return await verify_signature(
+      form_data,
+      property_id,
+      contract_id,
+    )
   },
 }

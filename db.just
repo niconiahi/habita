@@ -14,27 +14,21 @@ reset:
   set -euo pipefail
 
   echo "Environment: {{env}}"
-  echo "⚠️  This will DELETE ALL DATA (database + cache)!"
-  read -p "Are you sure? (y/N) " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Aborted."
-    exit 1
-  fi
 
   APP_COMPOSE="docker compose -p app -f {{infra}}/app/docker-compose.yml"
+  RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""
   echo "=== Tearing down app and removing volumes ==="
   $APP_COMPOSE down -v
 
   echo ""
-  echo "=== Starting fresh containers ==="
-  $APP_COMPOSE up -d
+  echo "=== Starting infrastructure ==="
+  $APP_COMPOSE up -d db valkey
 
   echo ""
   echo "=== Installing dependencies ==="
-  $APP_COMPOSE run --rm svelte pnpm install
+  $RUN pnpm install --force
 
   echo ""
   echo "=== Waiting for database to be healthy ==="
@@ -44,15 +38,19 @@ reset:
 
   echo ""
   echo "=== Running migrations ==="
-  $APP_COMPOSE run --rm svelte pnpm kysely migrate:latest
+  $RUN pnpm kysely migrate:latest
 
   echo ""
   echo "=== Running seeds ==="
-  $APP_COMPOSE run --rm svelte pnpm run db:seed
+  $RUN pnpm run db:seed
 
   echo ""
   echo "=== Generating database types ==="
-  $APP_COMPOSE run --rm svelte pnpm run db:types
+  $RUN pnpm run db:types
+
+  echo ""
+  echo "=== Starting app ==="
+  $APP_COMPOSE up -d
 
   echo ""
   echo "✅ Database reset complete!"

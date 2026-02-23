@@ -107,6 +107,22 @@
             {/if}
           </Formulary.Field>
           <Formulary.Field>
+            <Formulary.Label for="cuil"
+              >cuil</Formulary.Label
+            >
+            <input
+              id="cuil"
+              name="cuil"
+              type="number"
+              value={data.user_profile.cuil ?? ""}
+            />
+            {#if errors.cuil}
+              <Formulary.Error
+                >{errors.cuil}</Formulary.Error
+              >
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
             <Formulary.Label for="email"
               >email</Formulary.Label
             >

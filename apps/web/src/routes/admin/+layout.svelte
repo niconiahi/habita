@@ -26,7 +26,7 @@
       <Dashboard.Link href="/admin/candidates"
         >Candidatos</Dashboard.Link
       >
-      <Dashboard.Link href="/admin/contracts?state=0"
+      <Dashboard.Link href="/admin/contracts"
         >Contratos</Dashboard.Link
       >
     </Dashboard.Section>

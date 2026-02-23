@@ -16,6 +16,7 @@
 <style>
   main {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     padding: var(--spacing-4);

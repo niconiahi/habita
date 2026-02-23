@@ -21,9 +21,7 @@ test.describe.serial("Signup as Freelance", () => {
     await page
       .locator("#surname")
       .fill(FREELANCE_USER.surname)
-    await page
-      .locator("#email")
-      .fill(FREELANCE_USER.email)
+    await page.locator("#email").fill(FREELANCE_USER.email)
     await page
       .locator("#password")
       .fill(FREELANCE_USER.password)
@@ -38,7 +36,9 @@ test.describe.serial("Signup as Freelance", () => {
     })
 
     // Choose freelance
-    await page.getByRole("button", { name: "Freelance" }).click()
+    await page
+      .getByRole("button", { name: "Freelance" })
+      .click()
 
     // Should redirect to admin properties
     await page.waitForURL("/admin/properties", {

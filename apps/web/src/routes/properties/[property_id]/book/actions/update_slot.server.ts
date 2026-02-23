@@ -134,7 +134,7 @@ DTSTART:${format_ics_date(slot.start_date)}
 DTEND:${format_ics_date(slot.end_date)}
 SUMMARY:${escape_ics_text(summary)}
 LOCATION:${escape_ics_text(display_location(property.location))}
-ORGANIZER;CN=Habita:MAILTO:bookings@habita.rent
+ORGANIZER;CN=Habita:MAILTO:notifications@habita.rent
 ATTENDEE;CN=${host.name};RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:${host.email}
 ATTENDEE;CN=${visitant.name};RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:${visitant.email}
 STATUS:CONFIRMED
@@ -142,7 +142,7 @@ SEQUENCE:0
 END:VEVENT
 END:VCALENDAR`
   logger.info("ics file created")
-  const text = `Hello ${visitant.name},
+  const visitant_text = `Hello ${visitant.name},
 
 You have been invited to visit the property located at ${property.location.road} ${property.location.house_number}.
 
@@ -153,32 +153,58 @@ Please open the attached calendar invitation to add this event to your calendar.
 
 Best regards,
 ${host.name}`
-  span.setAttribute("email.recipient", visitant.email)
+  const host_text = `Hello ${host.name},
+
+${visitant.name} has booked a visit to your property located at ${property.location.road} ${property.location.house_number}.
+
+Date: ${slot.start_date.toLocaleDateString()}
+Time: ${slot.start_date.toLocaleTimeString()} - ${slot.end_date.toLocaleTimeString()}
+
+Please open the attached calendar invitation to add this event to your calendar.`
+  span.setAttribute(
+    "email.visitant_recipient",
+    visitant.email,
+  )
+  span.setAttribute("email.host_recipient", host.email)
   span.setAttribute("email.subject", summary)
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   }
   propagation.inject(context.active(), headers)
-  const response = await fetch(
-    "http://go:8081/send-email",
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        host,
-        visitant,
-        subject: summary,
-        text,
-        content,
+  const [visitant_response, host_response] =
+    await Promise.all([
+      fetch("http://go:8081/send-email", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          to: visitant,
+          subject: summary,
+          text: visitant_text,
+          content,
+        }),
       }),
-    },
-  )
-  if (!response.ok) {
-    const message = "email service returned error"
+      fetch("http://go:8081/send-email", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          to: host,
+          subject: summary,
+          text: host_text,
+          content,
+        }),
+      }),
+    ])
+  if (!visitant_response.ok) {
+    const message = "visitant email service returned error"
     logger.error(message)
     throw new Error(message)
   }
-  logger.info("email sent via go service")
+  if (!host_response.ok) {
+    const message = "host email service returned error"
+    logger.error(message)
+    throw new Error(message)
+  }
+  logger.info("emails sent via go service")
   logger.info("slot booking completed")
 }
 

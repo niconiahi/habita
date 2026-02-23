@@ -12,9 +12,9 @@ A manager creates a new contract but attempts to generate the PDF without fillin
 
 ### Actors
 
-| Role    | Auth state file      | Description                              |
-| ------- | -------------------- | ---------------------------------------- |
-| Manager | `.auth/manager.json` | Creates property and empty contract      |
+| Role    | Auth state file      | Description                         |
+| ------- | -------------------- | ----------------------------------- |
+| Manager | `.auth/manager.json` | Creates property and empty contract |
 
 ### Step-by-step Flow
 
