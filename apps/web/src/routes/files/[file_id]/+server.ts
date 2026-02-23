@@ -93,14 +93,18 @@ async function get_file_property_id(
   return result?.property_id
 }
 
+function is_image(url: URL): boolean {
+  const secret = process.env.IMGPROXY_SOURCE_SECRET
+  if (!secret) return false
+  return url.searchParams.get("secret") === secret
+}
+
 export const GET: RequestHandler = async ({
   params,
   locals,
   request,
+  url,
 }) => {
-  if (!locals.user) {
-    error(401, "Unauthorized")
-  }
   const file_id = v.parse(
     ForceNumberSchema,
     params.file_id,
@@ -108,19 +112,24 @@ export const GET: RequestHandler = async ({
       message: "file id should be a number",
     },
   )
-  const property_id = await get_file_property_id(
-    file_id,
-    locals.user.id,
-  )
-  if (!property_id) {
-    error(403, "Forbidden")
-  } else {
-    await require_view_access(
-      request.headers,
+  if (!is_image(url)) {
+    if (!locals.user) {
+      error(401, "Unauthorized")
+    }
+    const property_id = await get_file_property_id(
+      file_id,
       locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
     )
+    if (!property_id) {
+      error(403, "Forbidden")
+    } else {
+      await require_view_access(
+        request.headers,
+        locals.user.id,
+        property_id,
+        locals.session?.activeOrganizationId,
+      )
+    }
   }
   const key = compose_file_cache_key(file_id)
   const fields_count = await kv.hlen(key)
