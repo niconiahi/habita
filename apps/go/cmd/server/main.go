@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	// Initialize OpenTelemetr
+	// Initialize OpenTelemet
 	tp, lp := observability.InitOTel()
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {

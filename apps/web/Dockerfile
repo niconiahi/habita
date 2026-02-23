@@ -46,7 +46,7 @@ FROM deps AS builder
 
 ARG COMMIT_SHA
 COPY . .
-RUN pnpm run build
+RUN pnpm exec svelte-kit sync && pnpm run build
 
 # -----------------------------------------------------------------------------
 # Stage: production - Production target with Node.js runtime
