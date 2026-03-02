@@ -184,6 +184,36 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_property_warranty_warranty_id")
+    .on("property_warranty")
+    .column("warranty_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_warranty_location_id")
+    .on("property_warranty")
+    .column("location_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_income_warranty_warranty_id")
+    .on("income_warranty")
+    .column("warranty_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_income_warranty_guarantor_income_warranty_id")
+    .on("income_warranty_guarantor")
+    .column("income_warranty_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_surety_warranty_warranty_id")
+    .on("surety_warranty")
+    .column("warranty_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_warranty_id")
+    .on("contract")
+    .column("warranty_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

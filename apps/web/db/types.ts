@@ -262,6 +262,7 @@ export interface Period {
 }
 
 export interface Property {
+  construction_year: number | null;
   created_at: Timestamp;
   destinies: number[];
   id: Generated<number>;
@@ -287,6 +288,14 @@ export interface PropertyAccess {
 export interface PropertyFile {
   created_at: Timestamp;
   file_id: number;
+  id: Generated<number>;
+  property_id: number;
+  type: number;
+  updated_at: Timestamp;
+}
+
+export interface PropertyTag {
+  created_at: Timestamp;
   id: Generated<number>;
   property_id: number;
   type: number;
@@ -1055,6 +1064,7 @@ export interface DB {
   property: Property;
   property_access: PropertyAccess;
   property_file: PropertyFile;
+  property_tag: PropertyTag;
   property_warranty: PropertyWarranty;
   rate: Rate;
   realtor: Realtor;

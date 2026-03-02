@@ -21,6 +21,16 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull(),
     )
     .execute()
+  await db.schema
+    .createIndex("idx_receipt_contract_id")
+    .on("receipt")
+    .column("contract_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_receipt_file_id")
+    .on("receipt")
+    .column("file_id")
+    .execute()
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.

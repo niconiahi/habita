@@ -48,6 +48,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_payment_mercado_pago_payment_id")
+    .on("payment_mercado_pago")
+    .column("payment_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

@@ -227,6 +227,46 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_account_user_id")
+    .on("account")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_member_organization_id")
+    .on("member")
+    .column("organization_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_member_user_id")
+    .on("member")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_invitation_organization_id")
+    .on("invitation")
+    .column("organization_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_invitation_inviter_id")
+    .on("invitation")
+    .column("inviter_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_team_organization_id")
+    .on("team")
+    .column("organization_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_team_member_team_id")
+    .on("team_member")
+    .column("team_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_team_member_user_id")
+    .on("team_member")
+    .column("user_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

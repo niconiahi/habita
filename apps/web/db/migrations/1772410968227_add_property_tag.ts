@@ -2,44 +2,44 @@ import type { Kysely } from "kysely"
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
-    .createTable("invitation_token")
-    .addColumn("id", "serial", (col) =>
-      col.primaryKey().notNull(),
-    )
-    .addColumn("token", "text")
-    .addColumn("email", "text", (col) => col.notNull())
+    .createTable("property_tag")
+    .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("property_id", "integer", (col) =>
       col.notNull(),
     )
+    .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
-    .addColumn("expires_at", "timestamptz", (col) =>
+    .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull(),
     )
-    .addColumn("used_at", "timestamptz")
     .execute()
-
   await db.schema
-    .alterTable("invitation_token")
+    .alterTable("property_tag")
     .addForeignKeyConstraint(
-      "invitation_token_property_id_fkey",
+      "property_tag_property_id_property_id_fk",
       ["property_id"],
       "property",
       ["id"],
-      (cb) => cb.onDelete("cascade"),
     )
     .execute()
   await db.schema
-    .createIndex("idx_invitation_token_property_id")
-    .on("invitation_token")
+    .createIndex("property_tag_property_id_idx")
+    .on("property_tag")
     .column("property_id")
+    .execute()
+  await db.schema
+    .createIndex("property_tag_property_id_type_unique_idx")
+    .unique()
+    .on("property_tag")
+    .columns(["property_id", "type"])
     .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema
-    .dropTable("invitation_token")
+    .dropTable("property_tag")
     .ifExists()
     .execute()
 }

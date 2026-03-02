@@ -56,6 +56,21 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_slot_property_id")
+    .on("slot")
+    .column("property_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_slot_host_id")
+    .on("slot")
+    .column("host_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_slot_visitant_id")
+    .on("slot")
+    .column("visitant_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
