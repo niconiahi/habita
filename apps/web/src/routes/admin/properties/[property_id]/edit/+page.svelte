@@ -23,6 +23,10 @@
     get_service_type_label,
     SERVICE_TYPE,
   } from "$lib/service"
+  import {
+    PROPERTY_TAG_CATEGORIES,
+    get_property_tag_type_label,
+  } from "$lib/property_tag_type"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
@@ -34,6 +38,9 @@
     Map<number, { x: number; y: number }>
   >(new Map())
   const property_destinies = get_property_destinies()
+  const active_tag_types = $derived(
+    new Set(data.property.tags.map((t) => t.type)),
+  )
   const has_landlord = $derived(
     data.property.members.some(
       (member) => member.type === ACCESS_TYPE.LANDLORD,
@@ -102,9 +109,7 @@
     >
       <Formulary.Fields>
         <Formulary.Field>
-          <Formulary.Label for="destiny"
-            >tipos</Formulary.Label
-          >
+          <Formulary.Label>tipos</Formulary.Label>
           <fieldset class="checkbox-list">
             {#each property_destinies as destiny}
               {@const is_checked =
@@ -418,10 +423,77 @@
   </Content.Section>
 {/snippet}
 
+{#snippet Tags()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>tags</Section.Title>
+    </Section.Header>
+    {#each PROPERTY_TAG_CATEGORIES as category}
+      <fieldset class="tag-category">
+        <legend>{category.label}</legend>
+        <div class="checkbox-list">
+          {#each category.tags as tag_type}
+            {@const is_checked = active_tag_types.has(tag_type)}
+            <form
+              method="POST"
+              action={compose_action(ACTION.TOGGLE_TAG)}
+              use:enhance
+            >
+              <input type="hidden" name="type" value={tag_type} />
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={is_checked}
+                  onchange={(e) => e.currentTarget.form?.requestSubmit()}
+                />
+                {get_property_tag_type_label(tag_type)}
+              </label>
+            </form>
+          {/each}
+        </div>
+      </fieldset>
+    {/each}
+  </Content.Section>
+{/snippet}
+
+{#snippet Building()}
+  <Content.Section>
+    <Section.Header>
+      <Section.Title>edificio</Section.Title>
+    </Section.Header>
+    <Formulary.Root
+      method="POST"
+      action={compose_action(ACTION.UPDATE_CONSTRUCTION_YEAR)}
+    >
+      <Formulary.Fields>
+        <Formulary.Field>
+          <Formulary.Label for="construction_year"
+            >año de construcción</Formulary.Label
+          >
+          <input
+            id="construction_year"
+            type="number"
+            name="construction_year"
+            min={1900}
+            max={2026}
+            placeholder="2015"
+            value={data.property.construction_year ?? ""}
+          />
+        </Formulary.Field>
+      </Formulary.Fields>
+      <Formulary.Actions>
+        <Button type="submit">Guardar año</Button>
+      </Formulary.Actions>
+    </Formulary.Root>
+  </Content.Section>
+{/snippet}
+
 <Content.Root>
   <Content.Title>Edición de propiedad</Content.Title>
   {@render Location()}
   {@render Destinies()}
+  {@render Tags()}
+  {@render Building()}
   {@render Rooms()}
   {@render RoomMapSection()}
   {@render Members()}
@@ -487,6 +559,15 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+  .tag-category {
+    border: none;
+    padding: 0;
+    margin: 0 0 1rem;
+  }
+  .tag-category legend {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
   }
   .error {
     color: rgb(239 68 68);

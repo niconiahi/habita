@@ -67,6 +67,21 @@ export async function up(db: Kysely<any>): Promise<void> {
       (cb) => cb.onDelete("cascade"),
     )
     .execute()
+  await db.schema
+    .createIndex("idx_contract_item_contract_id")
+    .on("contract_item")
+    .column("contract_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_item_file_contract_item_id")
+    .on("contract_item_file")
+    .column("contract_item_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_item_file_file_id")
+    .on("contract_item_file")
+    .column("file_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

@@ -10,4 +10,6 @@ export const ACTION = {
   CREATE_PROPERTY_FILE: "create_property_file",
   INVITE_LANDLORD: "invite_landlord",
   UPDATE_DESTINIES: "update_destinies",
+  TOGGLE_TAG: "toggle_tag",
+  UPDATE_CONSTRUCTION_YEAR: "update_construction_year",
 } as const

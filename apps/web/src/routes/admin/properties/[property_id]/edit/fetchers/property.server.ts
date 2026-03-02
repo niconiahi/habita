@@ -21,6 +21,7 @@ export async function fetch_property(id: number) {
       "property.type",
       "property.destinies",
       "property.state",
+      "property.construction_year",
       jsonArrayFrom(
         eb
           .selectFrom("room")
@@ -127,6 +128,19 @@ export async function fetch_property(id: number) {
             "property.id",
           ),
       ).as("contracts"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("property_tag")
+          .select([
+            "property_tag.id",
+            "property_tag.type",
+          ])
+          .whereRef(
+            "property_tag.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("tags"),
       jsonArrayFrom(
         eb
           .selectFrom("service")

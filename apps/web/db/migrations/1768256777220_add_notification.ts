@@ -28,6 +28,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_notification_property_id")
+    .on("notification")
+    .column("property_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

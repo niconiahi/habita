@@ -29,6 +29,11 @@ export const query_builder = lazy<Kysely<DB>>(() => {
 
   return new Kysely<DB>({
     dialect,
+    log(event) {
+      if (event.level === "query") {
+        console.log(`${event.queryDurationMillis} ms`)
+      }
+    },
     plugins: [
       new ParseJSONResultsPlugin(),
       new TelemetryPlugin(),

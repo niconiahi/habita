@@ -15,6 +15,8 @@ import { destroy_service } from "./actions/destroy_service.server"
 import { create_property_file } from "./actions/create_property_file.server"
 import { invite_landlord } from "./actions/invite_landlord.server"
 import { update_destinies } from "./actions/update_destinies.server"
+import { toggle_tag } from "./actions/toggle_tag.server"
+import { update_construction_year } from "./actions/update_construction_year.server"
 import { ACTION } from "./actions/action"
 import type { PageServerLoad, Actions } from "./$types"
 
@@ -306,6 +308,50 @@ export const actions: Actions = {
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     await update_destinies(form_data, property_id)
+    return null
+  },
+  [ACTION.TOGGLE_TAG]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/auth/google")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    await toggle_tag(form_data, property_id)
+    return null
+  },
+  [ACTION.UPDATE_CONSTRUCTION_YEAR]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/auth/google")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    await update_construction_year(form_data, property_id)
     return null
   },
 }

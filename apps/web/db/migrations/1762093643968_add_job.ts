@@ -45,6 +45,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["id"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_failed_job_job_id")
+    .on("failed_job")
+    .column("job_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

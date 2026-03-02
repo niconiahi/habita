@@ -374,6 +374,51 @@ export async function up(db: Kysely<any>): Promise<void> {
       ["property_id", "type"],
     )
     .execute()
+  await db.schema
+    .createIndex("idx_session_user_id")
+    .on("session")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_access_user_id")
+    .on("property_access")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_access_granted_by")
+    .on("property_access")
+    .column("granted_by")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_property_id")
+    .on("contract")
+    .column("property_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_formula_parameter_period_id")
+    .on("formula_parameter")
+    .column("period_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_period_contract_id")
+    .on("period")
+    .column("contract_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_location_id")
+    .on("property")
+    .column("location_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_realtor_user_id")
+    .on("realtor")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_room_property_id")
+    .on("room")
+    .column("property_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

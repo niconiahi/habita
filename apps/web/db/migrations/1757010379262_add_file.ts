@@ -103,6 +103,36 @@ export async function up(db: Kysely<any>): Promise<void> {
   //     ["id"],
   //   )
   //   .execute()
+  await db.schema
+    .createIndex("idx_user_file_user_id")
+    .on("user_file")
+    .column("user_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_user_file_file_id")
+    .on("user_file")
+    .column("file_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_file_contract_id")
+    .on("contract_file")
+    .column("contract_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_contract_file_file_id")
+    .on("contract_file")
+    .column("file_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_file_property_id")
+    .on("property_file")
+    .column("property_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_property_file_file_id")
+    .on("property_file")
+    .column("file_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
