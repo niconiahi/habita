@@ -278,7 +278,7 @@ export async function start_onboarding(
     process.env.NODE_ENV !== "development"
   return api_fetch(
     "/PostIniciarOnboardingPersonaFisica",
-    { ...params, MostrarPasoPagar: false },
+    { ...params, MostrarPasoPagar: show_payment_step },
     StartOnboardingResponseSchema,
   )
 }
