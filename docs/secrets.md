@@ -31,7 +31,7 @@ Habita uses [SOPS](https://github.com/getsops/sops) with [age](https://github.co
 vim infra/production/.env
 
 # 2. Encrypt it
-just --set env production secrets encrypt
+just secrets encrypt production
 
 # 3. Commit and push
 git add infra/production/.env.enc
@@ -48,23 +48,23 @@ ssh user@habita.rent
 # Pull latest code and apply secrets
 cd /opt/habita
 git pull
-just --set env production secrets apply
+just secrets apply
 ```
 
-The `secrets apply` command decrypts the secrets AND restarts the affected services (svelte, go).
+The `secrets apply` command decrypts the secrets AND recreates the affected services (svelte, go) so they pick up the new env vars.
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
 | `just secrets keygen` | Generate a new age key (one-time setup) |
-| `just secrets encrypt` | Encrypt `.env` → `.env.enc` |
-| `just secrets decrypt` | Decrypt `.env.enc` → `.env` |
-| `just secrets edit` | Edit encrypted file directly in `$EDITOR` |
-| `just secrets apply` | Decrypt AND restart services |
+| `just secrets encrypt [env]` | Encrypt `.env` → `.env.enc` |
+| `just secrets decrypt [env]` | Decrypt `.env.enc` → `.env` |
+| `just secrets edit [env]` | Edit encrypted file directly in `$EDITOR` |
+| `just secrets apply` | Decrypt AND recreate services |
 | `just secrets pubkey` | Show your public key |
 
-All commands respect the `env` variable: `just --set env production <command>`
+Environment auto-detects: `development` locally, `production` on the VPS. Pass an explicit target to override (e.g., `just secrets encrypt production`).
 
 ## First-Time Setup
 

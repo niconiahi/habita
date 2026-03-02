@@ -17,30 +17,30 @@ keygen:
     grep "public key:" ~/.config/sops/age/keys.txt | cut -d: -f2 | tr -d ' '; \
   fi
 
-# Encrypt .env to .env.enc
-encrypt:
-  sops -e --input-type dotenv --output-type dotenv {{infra}}/.env > {{infra}}/.env.enc
-  @echo "Encrypted: {{infra}}/.env.enc"
-  @if [ -f "{{infra}}/scheduler/rclone.conf" ]; then \
-    sops -e {{infra}}/scheduler/rclone.conf > {{infra}}/scheduler/rclone.conf.enc; \
-    echo "Encrypted: {{infra}}/scheduler/rclone.conf.enc"; \
+# Encrypt .env to .env.enc (e.g., just secrets encrypt production)
+encrypt target=env:
+  sops -e --input-type dotenv --output-type dotenv infra/{{target}}/.env > infra/{{target}}/.env.enc
+  @echo "Encrypted: infra/{{target}}/.env.enc"
+  @if [ -f "infra/{{target}}/scheduler/rclone.conf" ]; then \
+    sops -e infra/{{target}}/scheduler/rclone.conf > infra/{{target}}/scheduler/rclone.conf.enc; \
+    echo "Encrypted: infra/{{target}}/scheduler/rclone.conf.enc"; \
   fi
 
-# Decrypt .env.enc to .env
-decrypt:
-  sops -d --input-type dotenv --output-type dotenv {{infra}}/.env.enc > {{infra}}/.env
-  chmod 600 {{infra}}/.env
-  @echo "Decrypted: {{infra}}/.env"
-  @if [ -f "{{infra}}/scheduler/rclone.conf.enc" ]; then \
-    sops -d {{infra}}/scheduler/rclone.conf.enc > {{infra}}/scheduler/rclone.conf; \
-    chmod 600 {{infra}}/scheduler/rclone.conf; \
-    echo "Decrypted: {{infra}}/scheduler/rclone.conf"; \
+# Decrypt .env.enc to .env (e.g., just secrets decrypt production)
+decrypt target=env:
+  sops -d --input-type dotenv --output-type dotenv infra/{{target}}/.env.enc > infra/{{target}}/.env
+  chmod 600 infra/{{target}}/.env
+  @echo "Decrypted: infra/{{target}}/.env"
+  @if [ -f "infra/{{target}}/scheduler/rclone.conf.enc" ]; then \
+    sops -d infra/{{target}}/scheduler/rclone.conf.enc > infra/{{target}}/scheduler/rclone.conf; \
+    chmod 600 infra/{{target}}/scheduler/rclone.conf; \
+    echo "Decrypted: infra/{{target}}/scheduler/rclone.conf"; \
   fi
 
-# Edit encrypted secrets in $EDITOR
-edit:
+# Edit encrypted secrets in $EDITOR (e.g., just secrets edit production)
+edit target=env:
   #!/usr/bin/env bash
-  sops --input-type dotenv --output-type dotenv {{infra}}/.env.enc
+  sops --input-type dotenv --output-type dotenv infra/{{target}}/.env.enc
   exit_code=$?
   if [[ $exit_code -eq 200 ]]; then
     echo "No changes made."
@@ -48,7 +48,7 @@ edit:
   fi
   exit $exit_code
 
-# Decrypt secrets AND restart affected services
+# Decrypt secrets AND recreate affected services to pick up new env vars
 apply:
   #!/usr/bin/env bash
   set -euo pipefail
@@ -56,12 +56,12 @@ apply:
   ENV={{env}} just secrets decrypt
 
   echo ""
-  echo "=== Restarting services to pick up new secrets ==="
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml restart svelte
-  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml restart go
+  echo "=== Recreating services to pick up new secrets ==="
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
+  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
 
   echo ""
-  echo "✅ Secrets applied and services restarted"
+  echo "✅ Secrets applied and services recreated"
 
 # Show current age public key
 pubkey:
