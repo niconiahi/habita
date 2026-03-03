@@ -28,6 +28,7 @@ import { RATE_TYPE } from "../../src/lib/rate_type"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import { SERVICE_TYPE } from "../../src/lib/service"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { WARRANTY_TYPE } from "../../src/lib/warranty_type"
 import * as seeder from "../../src/lib/seeder"
 
@@ -133,6 +134,31 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seeder.set_manager(property_i1, manager_id)
   await seeder.set_owner(property_i1, owner_i1)
   await seeder.set_tenant(property_i1, tenant_i1)
+  // Add tags
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.CON_BALCON,
+  )
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.ASCENSOR,
+  )
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.AMOBLADO,
+  )
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.HELADERA,
+  )
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO,
+  )
+  await seeder.add_property_tag(
+    property_i1,
+    PROPERTY_TAG_TYPE.GYM,
+  )
 
   // Create property warranty
   const warranty_i1 = await seeder.create_warranty(
@@ -278,6 +304,31 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seeder.set_manager(property_i2, manager_id)
   await seeder.set_owner(property_i2, owner_i2)
   await seeder.set_tenant(property_i2, tenant_i2)
+  // Add tags
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.CONTRAFRENTE,
+  )
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.BAULERA,
+  )
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.COCINA_ELECTRICA,
+  )
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.TIRO_BALANCEADO,
+  )
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.SEGURIDAD,
+  )
+  await seeder.add_property_tag(
+    property_i2,
+    PROPERTY_TAG_TYPE.APTO_GATO,
+  )
 
   // Create income warranty with 2 guarantors
   const warranty_i2 = await seeder.create_warranty(
@@ -400,6 +451,35 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seeder.set_manager(property_i3, manager_id)
   await seeder.set_owner(property_i3, owner_i3)
   await seeder.set_tenant(property_i3, tenant_i3)
+  // Add tags
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.RAMPA,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.COCHERA,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.COCINA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.TERMOTANQUE,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.ESTUFA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.PILETA,
+  )
+  await seeder.add_property_tag(
+    property_i3,
+    PROPERTY_TAG_TYPE.APTO_PERRO,
+  )
 
   // Create surety warranty
   const warranty_i3 = await seeder.create_warranty(

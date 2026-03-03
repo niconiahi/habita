@@ -30,6 +30,7 @@ import { SERVICE_TYPE } from "../../src/lib/service"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type"
 import { WARRANTY_TYPE } from "../../src/lib/warranty_type"
 import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { CONTRACT_FILE_TYPE } from "../../src/lib/contract_file_type"
 import * as seeder from "../../src/lib/seeder"
 
@@ -155,6 +156,31 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     PROPERTY_FILE_TYPE.PHOTO,
   )
 
+  // Add tags
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.CON_BALCON,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.ASCENSOR,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.COCINA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.TERMOTANQUE,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.APTO_GATO,
+  )
   // Set property members (freelance manager - no organization)
   await seeder.set_manager(property_id, manager_id)
   await seeder.set_owner(property_id, owner_id)

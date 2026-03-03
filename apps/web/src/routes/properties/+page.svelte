@@ -20,17 +20,26 @@
   let { data }: { data: PageData } = $props()
   const active_tag_ids = $derived(
     data.filters.tags
-      ? data.filters.tags.split(",").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n))
+      ? data.filters.tags
+          .split(",")
+          .map((s) => Number(s.trim()))
+          .filter((n) => !Number.isNaN(n))
       : [],
   )
   const active_service_ids = $derived(
     data.filters.services
-      ? data.filters.services.split(",").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n))
+      ? data.filters.services
+          .split(",")
+          .map((s) => Number(s.trim()))
+          .filter((n) => !Number.isNaN(n))
       : [],
   )
   const range_hidden_entries = $derived(
     Object.entries(data.filters).filter(
-      ([key, value]) => key !== "tags" && key !== "services" && value !== undefined,
+      ([key, value]) =>
+        key !== "tags" &&
+        key !== "services" &&
+        value !== undefined,
     ),
   )
   const tag_groups = PROPERTY_TAG_CATEGORIES.map((cat) => ({
@@ -47,7 +56,10 @@
       label: get_service_type_label(type),
     })),
   }
-  function toggle_id(current: number[], id: number): string {
+  function toggle_id(
+    current: number[],
+    id: number,
+  ): string {
     if (current.includes(id)) {
       return current.filter((n) => n !== id).join(",")
     }
@@ -60,7 +72,9 @@
     <div class="filter-tags">
       {#each tag_groups as group (group.label)}
         <div class="filter-group">
-          <span class="filter-group-label">{group.label}</span>
+          <span class="filter-group-label"
+            >{group.label}</span
+          >
           <div class="filter-group-tags">
             {#each group.tags as tag (tag.id)}
               <form
@@ -68,19 +82,36 @@
                 action={compose_action(ACTION.SET_FILTERS)}
                 use:enhance
               >
-                <input type="hidden" name="tags" value={toggle_id(active_tag_ids, tag.id)} />
-                <input type="hidden" name="services" value={data.filters.services ?? ""} />
+                <input
+                  type="hidden"
+                  name="tags"
+                  value={toggle_id(active_tag_ids, tag.id)}
+                />
+                <input
+                  type="hidden"
+                  name="services"
+                  value={data.filters.services ?? ""}
+                />
                 {#each range_hidden_entries as [name, value] (name)}
-                  <input type="hidden" {name} value={String(value)} />
+                  <input
+                    type="hidden"
+                    {name}
+                    value={String(value)}
+                  />
                 {/each}
-                <PropertyTag label={tag.label} active={active_tag_ids.includes(tag.id)} />
+                <PropertyTag
+                  label={tag.label}
+                  active={active_tag_ids.includes(tag.id)}
+                />
               </form>
             {/each}
           </div>
         </div>
       {/each}
       <div class="filter-group">
-        <span class="filter-group-label">{service_group.label}</span>
+        <span class="filter-group-label"
+          >{service_group.label}</span
+        >
         <div class="filter-group-tags">
           {#each service_group.services as service (service.id)}
             <form
@@ -88,12 +119,32 @@
               action={compose_action(ACTION.SET_FILTERS)}
               use:enhance
             >
-              <input type="hidden" name="tags" value={data.filters.tags ?? ""} />
-              <input type="hidden" name="services" value={toggle_id(active_service_ids, service.id)} />
+              <input
+                type="hidden"
+                name="tags"
+                value={data.filters.tags ?? ""}
+              />
+              <input
+                type="hidden"
+                name="services"
+                value={toggle_id(
+                  active_service_ids,
+                  service.id,
+                )}
+              />
               {#each range_hidden_entries as [name, value] (name)}
-                <input type="hidden" {name} value={String(value)} />
+                <input
+                  type="hidden"
+                  {name}
+                  value={String(value)}
+                />
               {/each}
-              <PropertyTag label={service.label} active={active_service_ids.includes(service.id)} />
+              <PropertyTag
+                label={service.label}
+                active={active_service_ids.includes(
+                  service.id,
+                )}
+              />
             </form>
           {/each}
         </div>
@@ -105,8 +156,16 @@
         action={compose_action(ACTION.SET_FILTERS)}
         use:enhance
       >
-        <input type="hidden" name="tags" value={data.filters.tags ?? ""} />
-        <input type="hidden" name="services" value={data.filters.services ?? ""} />
+        <input
+          type="hidden"
+          name="tags"
+          value={data.filters.tags ?? ""}
+        />
+        <input
+          type="hidden"
+          name="services"
+          value={data.filters.services ?? ""}
+        />
         <div class="filter-ranges-grid">
           <RangeFilter
             label="Superficie total"

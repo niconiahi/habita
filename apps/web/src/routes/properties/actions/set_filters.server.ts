@@ -49,7 +49,10 @@ export function parse_filters(url: URL): Filters {
   return filters
 }
 
-function parse_ids<T>(param: string | undefined, schema: v.BaseSchema<unknown, T, v.BaseIssue<unknown>>): T[] {
+function parse_ids<T>(
+  param: string | undefined,
+  schema: v.BaseSchema<unknown, T, v.BaseIssue<unknown>>,
+): T[] {
   if (!param) return []
   return param
     .split(",")
@@ -60,15 +63,22 @@ function parse_ids<T>(param: string | undefined, schema: v.BaseSchema<unknown, T
     .map((r) => r.output)
 }
 
-export function parse_tag_types(tags_param: string | undefined) {
+export function parse_tag_types(
+  tags_param: string | undefined,
+) {
   return parse_ids(tags_param, PropertyTagTypeSchema)
 }
 
-export function parse_service_types(services_param: string | undefined) {
+export function parse_service_types(
+  services_param: string | undefined,
+) {
   return parse_ids(services_param, ServiceTypeSchema)
 }
 
-export async function execute(request: Request, form_data: FormData) {
+export async function execute(
+  request: Request,
+  form_data: FormData,
+) {
   const input = v.parse(
     InputSchema,
     normalize_input(form_data, InputSchema),
@@ -103,5 +113,9 @@ export async function execute(request: Request, form_data: FormData) {
       url.searchParams.delete(max_key)
     }
   }
-  return { redirect_to: decodeURIComponent(url.pathname + url.search) }
+  return {
+    redirect_to: decodeURIComponent(
+      url.pathname + url.search,
+    ),
+  }
 }

@@ -200,7 +200,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .column("warranty_id")
     .execute()
   await db.schema
-    .createIndex("idx_income_warranty_guarantor_income_warranty_id")
+    .createIndex(
+      "idx_income_warranty_guarantor_income_warranty_id",
+    )
     .on("income_warranty_guarantor")
     .column("income_warranty_id")
     .execute()

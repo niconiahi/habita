@@ -28,6 +28,7 @@ import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import { SERVICE_TYPE } from "../../src/lib/service"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import * as seeder from "../../src/lib/seeder"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -177,6 +178,27 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
   await seeder.set_manager(property1_id, manager1_id)
   await seeder.set_owner(property1_id, owner1_id)
+  // Add tags
+  await seeder.add_property_tag(
+    property1_id,
+    PROPERTY_TAG_TYPE.A_ESTRENAR,
+  )
+  await seeder.add_property_tag(
+    property1_id,
+    PROPERTY_TAG_TYPE.ASCENSOR,
+  )
+  await seeder.add_property_tag(
+    property1_id,
+    PROPERTY_TAG_TYPE.AMOBLADO,
+  )
+  await seeder.add_property_tag(
+    property1_id,
+    PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO,
+  )
+  await seeder.add_property_tag(
+    property1_id,
+    PROPERTY_TAG_TYPE.SEGURIDAD,
+  )
 
   // Contract for property 1
   const contract1_start = addMonths(date, 1)
@@ -250,6 +272,23 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
   await seeder.set_manager(property2_id, manager1_id)
   await seeder.set_owner(property2_id, owner2_id)
+  // Add tags
+  await seeder.add_property_tag(
+    property2_id,
+    PROPERTY_TAG_TYPE.CONTRAFRENTE,
+  )
+  await seeder.add_property_tag(
+    property2_id,
+    PROPERTY_TAG_TYPE.CON_BALCON,
+  )
+  await seeder.add_property_tag(
+    property2_id,
+    PROPERTY_TAG_TYPE.COCINA_ELECTRICA,
+  )
+  await seeder.add_property_tag(
+    property2_id,
+    PROPERTY_TAG_TYPE.TIRO_BALANCEADO,
+  )
 
   // ==========================================
   // Manager 2: 1 property
@@ -316,6 +355,31 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
   await seeder.set_manager(property3_id, manager2_id)
   await seeder.set_owner(property3_id, owner3_id)
+  // Add tags
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.COCHERA,
+  )
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.COCINA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.TERMOTANQUE,
+  )
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.PILETA,
+  )
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.APTO_GATO,
+  )
+  await seeder.add_property_tag(
+    property3_id,
+    PROPERTY_TAG_TYPE.APTO_PERRO,
+  )
 
   // Contract for property 3
   const contract3_start = addMonths(date, 1)
@@ -387,6 +451,27 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
   await seeder.set_manager(property4_id, manager3_id)
   await seeder.set_owner(property4_id, owner4_id)
+  // Add tags
+  await seeder.add_property_tag(
+    property4_id,
+    PROPERTY_TAG_TYPE.RAMPA,
+  )
+  await seeder.add_property_tag(
+    property4_id,
+    PROPERTY_TAG_TYPE.BAULERA,
+  )
+  await seeder.add_property_tag(
+    property4_id,
+    PROPERTY_TAG_TYPE.HELADERA,
+  )
+  await seeder.add_property_tag(
+    property4_id,
+    PROPERTY_TAG_TYPE.ESTUFA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property4_id,
+    PROPERTY_TAG_TYPE.SUM,
+  )
 
   // Contract for property 4
   const contract4_start = addMonths(date, 1)

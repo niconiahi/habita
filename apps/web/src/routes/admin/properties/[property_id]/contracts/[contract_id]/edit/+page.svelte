@@ -1093,9 +1093,7 @@
           {/if}
           <form
             method="POST"
-            action={compose_action(
-              ACTION.START_ONBOARDING,
-            )}
+            action={compose_action(ACTION.START_ONBOARDING)}
             use:enhance
           >
             <input
@@ -1103,8 +1101,7 @@
               name="party"
               value="landlord"
             />
-            <Button type="submit"
-              >Iniciar onboarding</Button
+            <Button type="submit">Iniciar onboarding</Button
             >
           </form>
         </div>
@@ -1124,9 +1121,7 @@
           {/if}
           <form
             method="POST"
-            action={compose_action(
-              ACTION.START_ONBOARDING,
-            )}
+            action={compose_action(ACTION.START_ONBOARDING)}
             use:enhance
           >
             <input
@@ -1134,8 +1129,7 @@
               name="party"
               value="tenant"
             />
-            <Button type="submit"
-              >Iniciar onboarding</Button
+            <Button type="submit">Iniciar onboarding</Button
             >
           </form>
         </div>
@@ -1172,7 +1166,9 @@
           {#if cert_result.landlord_has_cert && cert_result.tenant_has_cert}
             <form
               method="POST"
-              action={compose_action(ACTION.SEND_FOR_SIGNING)}
+              action={compose_action(
+                ACTION.SEND_FOR_SIGNING,
+              )}
               use:enhance
             >
               <input
@@ -1191,15 +1187,15 @@
           action={compose_action(ACTION.CHECK_CERTIFICATES)}
           use:enhance
         >
-          <Button type="submit">Verificar certificados</Button>
+          <Button type="submit"
+            >Verificar certificados</Button
+          >
         </form>
         <div class="signing-party">
           <p class="info-block-label">Locador</p>
           <form
             method="POST"
-            action={compose_action(
-              ACTION.START_ONBOARDING,
-            )}
+            action={compose_action(ACTION.START_ONBOARDING)}
             use:enhance
           >
             <input
@@ -1207,8 +1203,7 @@
               name="party"
               value="landlord"
             />
-            <Button type="submit"
-              >Iniciar onboarding</Button
+            <Button type="submit">Iniciar onboarding</Button
             >
           </form>
         </div>
@@ -1216,9 +1211,7 @@
           <p class="info-block-label">Locatario</p>
           <form
             method="POST"
-            action={compose_action(
-              ACTION.START_ONBOARDING,
-            )}
+            action={compose_action(ACTION.START_ONBOARDING)}
             use:enhance
           >
             <input
@@ -1226,8 +1219,7 @@
               name="party"
               value="tenant"
             />
-            <Button type="submit"
-              >Iniciar onboarding</Button
+            <Button type="submit">Iniciar onboarding</Button
             >
           </form>
         </div>

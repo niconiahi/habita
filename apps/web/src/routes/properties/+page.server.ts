@@ -14,7 +14,9 @@ import type { PageServerLoad, Actions } from "./$types"
 export const load: PageServerLoad = async ({ url }) => {
   const filters = parse_filters(url)
   const tag_types = parse_tag_types(filters.tags)
-  const service_types = parse_service_types(filters.services)
+  const service_types = parse_service_types(
+    filters.services,
+  )
   const properties = await fetch_properties({
     tag_types,
     service_types,
@@ -44,13 +46,19 @@ export const load: PageServerLoad = async ({ url }) => {
       })),
     }),
   )
-  return { properties: properties_with_image_props, filters }
+  return {
+    properties: properties_with_image_props,
+    filters,
+  }
 }
 
 export const actions: Actions = {
   [ACTION.SET_FILTERS]: async ({ request }) => {
     const form_data = await request.formData()
-    const { redirect_to } = await execute(request, form_data)
+    const { redirect_to } = await execute(
+      request,
+      form_data,
+    )
     redirect(303, redirect_to)
   },
 }
