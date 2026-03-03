@@ -23,7 +23,9 @@ export interface PropertyFilters {
   construction_year_max?: number
 }
 
-export async function fetch_properties(filters?: PropertyFilters) {
+export async function fetch_properties(
+  filters?: PropertyFilters,
+) {
   let query = query_builder
     .selectFrom("property")
     .innerJoin(
@@ -123,18 +125,27 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("property_tag")
             .select(sql.lit(1).as("one"))
-            .whereRef("property_tag.property_id", "=", "property.id")
+            .whereRef(
+              "property_tag.property_id",
+              "=",
+              "property.id",
+            )
             .where("property_tag.type", "=", tag_type),
         ),
       )
     }
-    for (const service_type of filters.service_types ?? []) {
+    for (const service_type of filters.service_types ??
+      []) {
       query = query.where((eb) =>
         eb.exists(
           eb
             .selectFrom("service")
             .select(sql.lit(1).as("one"))
-            .whereRef("service.property_id", "=", "property.id")
+            .whereRef(
+              "service.property_id",
+              "=",
+              "property.id",
+            )
             .where("service.type", "=", service_type),
         ),
       )
@@ -158,8 +169,16 @@ export async function fetch_properties(filters?: PropertyFilters) {
         eb(
           eb
             .selectFrom("room")
-            .select(sql<number>`coalesce(sum(room.width * room.length), 0)`.as("total"))
-            .whereRef("room.property_id", "=", "property.id"),
+            .select(
+              sql<number>`coalesce(sum(room.width * room.length), 0)`.as(
+                "total",
+              ),
+            )
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            ),
           ">=",
           filters.total_surface_min!,
         ),
@@ -170,8 +189,16 @@ export async function fetch_properties(filters?: PropertyFilters) {
         eb(
           eb
             .selectFrom("room")
-            .select(sql<number>`coalesce(sum(room.width * room.length), 0)`.as("total"))
-            .whereRef("room.property_id", "=", "property.id"),
+            .select(
+              sql<number>`coalesce(sum(room.width * room.length), 0)`.as(
+                "total",
+              ),
+            )
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            ),
           "<=",
           filters.total_surface_max!,
         ),
@@ -183,7 +210,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id"),
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            ),
           ">=",
           filters.ambientes_min!,
         ),
@@ -195,7 +226,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id"),
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            ),
           "<=",
           filters.ambientes_max!,
         ),
@@ -207,7 +242,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id")
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            )
             .where("room.type", "=", ROOM_TYPE.BEDROOM),
           ">=",
           filters.dormitorios_min!,
@@ -220,7 +259,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id")
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            )
             .where("room.type", "=", ROOM_TYPE.BEDROOM),
           "<=",
           filters.dormitorios_max!,
@@ -233,7 +276,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id")
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            )
             .where("room.type", "=", ROOM_TYPE.BATHROOM),
           ">=",
           filters.banos_min!,
@@ -246,7 +293,11 @@ export async function fetch_properties(filters?: PropertyFilters) {
           eb
             .selectFrom("room")
             .select(eb.fn.countAll<number>().as("cnt"))
-            .whereRef("room.property_id", "=", "property.id")
+            .whereRef(
+              "room.property_id",
+              "=",
+              "property.id",
+            )
             .where("room.type", "=", ROOM_TYPE.BATHROOM),
           "<=",
           filters.banos_max!,

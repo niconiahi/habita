@@ -131,10 +131,7 @@ export async function fetch_property(id: number) {
       jsonArrayFrom(
         eb
           .selectFrom("property_tag")
-          .select([
-            "property_tag.id",
-            "property_tag.type",
-          ])
+          .select(["property_tag.id", "property_tag.type"])
           .whereRef(
             "property_tag.property_id",
             "=",

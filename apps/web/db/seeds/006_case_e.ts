@@ -33,6 +33,7 @@ import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { WARRANTY_TYPE } from "../../src/lib/warranty_type"
 import * as seeder from "../../src/lib/seeder"
 
@@ -178,6 +179,31 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     PROPERTY_FILE_TYPE.PHOTO,
   )
 
+  // Add tags
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.COCHERA,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.COCINA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.TERMOTANQUE,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.ESTUFA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.PILETA,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.APTO_PERRO,
+  )
   // Set property members (no tenant - that's the point!)
   await seeder.set_manager(property_id, manager_id)
   await seeder.set_owner(property_id, owner_id)

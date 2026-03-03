@@ -32,6 +32,7 @@ import { RATE_TYPE } from "../../src/lib/rate_type"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import { SERVICE_TYPE } from "../../src/lib/service"
 import { USER_FILE_TYPE } from "../../src/lib/user_file_type"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { WARRANTY_TYPE } from "../../src/lib/warranty_type"
 import * as seeder from "../../src/lib/seeder"
 
@@ -160,6 +161,39 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     PROPERTY_FILE_TYPE.PHOTO,
   )
 
+  // Add tags
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.CON_BALCON,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.ASCENSOR,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.BAULERA,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.HELADERA,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.COCINA_A_GAS,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.SUM,
+  )
+  await seeder.add_property_tag(
+    property_id,
+    PROPERTY_TAG_TYPE.GYM,
+  )
   // Set property members
   await seeder.set_manager(property_id, manager_id)
   await seeder.set_owner(property_id, owner_id)

@@ -433,18 +433,24 @@
         <legend>{category.label}</legend>
         <div class="checkbox-list">
           {#each category.tags as tag_type}
-            {@const is_checked = active_tag_types.has(tag_type)}
+            {@const is_checked =
+              active_tag_types.has(tag_type)}
             <form
               method="POST"
               action={compose_action(ACTION.TOGGLE_TAG)}
               use:enhance
             >
-              <input type="hidden" name="type" value={tag_type} />
+              <input
+                type="hidden"
+                name="type"
+                value={tag_type}
+              />
               <label class="checkbox-label">
                 <input
                   type="checkbox"
                   checked={is_checked}
-                  onchange={(e) => e.currentTarget.form?.requestSubmit()}
+                  onchange={(e) =>
+                    e.currentTarget.form?.requestSubmit()}
                 />
                 {get_property_tag_type_label(tag_type)}
               </label>
@@ -463,7 +469,9 @@
     </Section.Header>
     <Formulary.Root
       method="POST"
-      action={compose_action(ACTION.UPDATE_CONSTRUCTION_YEAR)}
+      action={compose_action(
+        ACTION.UPDATE_CONSTRUCTION_YEAR,
+      )}
     >
       <Formulary.Fields>
         <Formulary.Field>

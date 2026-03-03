@@ -36,7 +36,8 @@ export async function create_user(data: {
     )
     return existing.id
   }
-  const cuil = data.cuil ?? compute_cuil(data.document_number)
+  const cuil =
+    data.cuil ?? compute_cuil(data.document_number)
   const user = await query_builder
     .insertInto("user")
     .values({

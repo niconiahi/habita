@@ -13,16 +13,34 @@ function get_config() {
   const postgres_password = process.env.POSTGRES_PASSWORD
   const postgres_db = process.env.POSTGRES_DB
   const google_client_id = process.env.GOOGLE_CLIENT_ID
-  const google_client_secret = process.env.GOOGLE_CLIENT_SECRET
-  if (!secret) throw new Error("BETTER_AUTH_SECRET is not set")
-  if (!base_url) throw new Error("BETTER_AUTH_URL is not set")
-  if (!postgres_host) throw new Error("POSTGRES_HOST is not set")
-  if (!postgres_user) throw new Error("POSTGRES_USER is not set")
-  if (!postgres_password) throw new Error("POSTGRES_PASSWORD is not set")
-  if (!postgres_db) throw new Error("POSTGRES_DB is not set")
-  if (!google_client_id) throw new Error("GOOGLE_CLIENT_ID is not set")
-  if (!google_client_secret) throw new Error("GOOGLE_CLIENT_SECRET is not set")
-  return { secret, base_url, postgres_host, postgres_user, postgres_password, postgres_db, google_client_id, google_client_secret }
+  const google_client_secret =
+    process.env.GOOGLE_CLIENT_SECRET
+  if (!secret)
+    throw new Error("BETTER_AUTH_SECRET is not set")
+  if (!base_url)
+    throw new Error("BETTER_AUTH_URL is not set")
+  if (!postgres_host)
+    throw new Error("POSTGRES_HOST is not set")
+  if (!postgres_user)
+    throw new Error("POSTGRES_USER is not set")
+  if (!postgres_password)
+    throw new Error("POSTGRES_PASSWORD is not set")
+  if (!postgres_db)
+    throw new Error("POSTGRES_DB is not set")
+  if (!google_client_id)
+    throw new Error("GOOGLE_CLIENT_ID is not set")
+  if (!google_client_secret)
+    throw new Error("GOOGLE_CLIENT_SECRET is not set")
+  return {
+    secret,
+    base_url,
+    postgres_host,
+    postgres_user,
+    postgres_password,
+    postgres_db,
+    google_client_id,
+    google_client_secret,
+  }
 }
 
 const statement = {
@@ -107,7 +125,10 @@ export const auth = lazy(() => {
       additionalFields: {
         surname: { type: "string", required: true },
         phone_number: { type: "string", required: false },
-        document_number: { type: "string", required: false },
+        document_number: {
+          type: "string",
+          required: false,
+        },
       },
     },
     session: {

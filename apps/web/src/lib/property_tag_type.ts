@@ -27,9 +27,13 @@ export const PROPERTY_TAG_TYPE = {
 export const PropertyTagTypeSchema = v.picklist(
   Object.values(PROPERTY_TAG_TYPE),
 )
-export type PropertyTagType = ObjectValues<typeof PROPERTY_TAG_TYPE>
+export type PropertyTagType = ObjectValues<
+  typeof PROPERTY_TAG_TYPE
+>
 
-export function get_property_tag_type_label(type: PropertyTagType) {
+export function get_property_tag_type_label(
+  type: PropertyTagType,
+) {
   switch (type) {
     case PROPERTY_TAG_TYPE.CONTRAFRENTE: {
       return "Contrafrente"
@@ -101,7 +105,9 @@ export function get_property_tag_type_label(type: PropertyTagType) {
   }
 }
 
-export function get_property_tag_slug(type: PropertyTagType) {
+export function get_property_tag_slug(
+  type: PropertyTagType,
+) {
   switch (type) {
     case PROPERTY_TAG_TYPE.CONTRAFRENTE: {
       return "contrafrente"
@@ -173,7 +179,9 @@ export function get_property_tag_slug(type: PropertyTagType) {
   }
 }
 
-export function get_property_tag_type_from_slug(slug: string) {
+export function get_property_tag_type_from_slug(
+  slug: string,
+) {
   for (const type of Object.values(PROPERTY_TAG_TYPE)) {
     if (get_property_tag_slug(type) === slug) {
       return type
@@ -191,12 +199,60 @@ interface PropertyTagCategory {
   tags: PropertyTagType[]
 }
 
-export const PROPERTY_TAG_CATEGORIES: PropertyTagCategory[] = [
-  { label: "Unidad", tags: [PROPERTY_TAG_TYPE.CONTRAFRENTE, PROPERTY_TAG_TYPE.A_ESTRENAR] },
-  { label: "Ambientes", tags: [PROPERTY_TAG_TYPE.CON_BALCON] },
-  { label: "Edificio", tags: [PROPERTY_TAG_TYPE.ASCENSOR, PROPERTY_TAG_TYPE.RAMPA, PROPERTY_TAG_TYPE.BAULERA, PROPERTY_TAG_TYPE.COCHERA] },
-  { label: "Equipamiento", tags: [PROPERTY_TAG_TYPE.AMOBLADO, PROPERTY_TAG_TYPE.HELADERA, PROPERTY_TAG_TYPE.COCINA_A_GAS, PROPERTY_TAG_TYPE.TERMOTANQUE, PROPERTY_TAG_TYPE.COCINA_ELECTRICA] },
-  { label: "Climatización", tags: [PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO, PROPERTY_TAG_TYPE.TIRO_BALANCEADO, PROPERTY_TAG_TYPE.ESTUFA_A_GAS] },
-  { label: "Amenities", tags: [PROPERTY_TAG_TYPE.PILETA, PROPERTY_TAG_TYPE.SUM, PROPERTY_TAG_TYPE.SEGURIDAD, PROPERTY_TAG_TYPE.GYM] },
-  { label: "Mascotas", tags: [PROPERTY_TAG_TYPE.APTO_GATO, PROPERTY_TAG_TYPE.APTO_PERRO] },
-]
+export const PROPERTY_TAG_CATEGORIES: PropertyTagCategory[] =
+  [
+    {
+      label: "Unidad",
+      tags: [
+        PROPERTY_TAG_TYPE.CONTRAFRENTE,
+        PROPERTY_TAG_TYPE.A_ESTRENAR,
+      ],
+    },
+    {
+      label: "Ambientes",
+      tags: [PROPERTY_TAG_TYPE.CON_BALCON],
+    },
+    {
+      label: "Edificio",
+      tags: [
+        PROPERTY_TAG_TYPE.ASCENSOR,
+        PROPERTY_TAG_TYPE.RAMPA,
+        PROPERTY_TAG_TYPE.BAULERA,
+        PROPERTY_TAG_TYPE.COCHERA,
+      ],
+    },
+    {
+      label: "Equipamiento",
+      tags: [
+        PROPERTY_TAG_TYPE.AMOBLADO,
+        PROPERTY_TAG_TYPE.HELADERA,
+        PROPERTY_TAG_TYPE.COCINA_A_GAS,
+        PROPERTY_TAG_TYPE.TERMOTANQUE,
+        PROPERTY_TAG_TYPE.COCINA_ELECTRICA,
+      ],
+    },
+    {
+      label: "Climatización",
+      tags: [
+        PROPERTY_TAG_TYPE.AIRE_ACONDICIONADO,
+        PROPERTY_TAG_TYPE.TIRO_BALANCEADO,
+        PROPERTY_TAG_TYPE.ESTUFA_A_GAS,
+      ],
+    },
+    {
+      label: "Amenities",
+      tags: [
+        PROPERTY_TAG_TYPE.PILETA,
+        PROPERTY_TAG_TYPE.SUM,
+        PROPERTY_TAG_TYPE.SEGURIDAD,
+        PROPERTY_TAG_TYPE.GYM,
+      ],
+    },
+    {
+      label: "Mascotas",
+      tags: [
+        PROPERTY_TAG_TYPE.APTO_GATO,
+        PROPERTY_TAG_TYPE.APTO_PERRO,
+      ],
+    },
+  ]
