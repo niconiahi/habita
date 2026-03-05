@@ -1,5 +1,8 @@
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { normalize_input } from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
 import { kv } from "$lib/server/kv"
 import { query_builder } from "db/query_builder"
 
@@ -7,33 +10,70 @@ function compose_file_cache_key(id: number) {
   return `file:${id}`
 }
 
+const InputSchema = v.object({
+  id: ForceNumberSchema,
+  contract_item_id: ForceNumberSchema,
+})
+
 export async function destroy_contract_item_file(
   form_data: FormData,
 ) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"))
-  const contract_item_id = v.parse(
-    ForceNumberSchema,
-    form_data.get("contract_item_id"),
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
-  await query_builder.transaction().execute(async (tx) => {
-    await tx
-      .deleteFrom("contract_item_file")
-      .where((eb) =>
-        eb.and([
-          eb("contract_item_file.file_id", "=", id),
-          eb(
-            "contract_item_file.contract_item_id",
-            "=",
-            contract_item_id,
-          ),
-        ]),
-      )
-      .execute()
-    await tx
-      .deleteFrom("file")
-      .where("file.id", "=", id)
-      .execute()
-  })
-  const cache_key = compose_file_cache_key(id)
+  if (!input_validation.success) {
+    return [
+      {
+        destroy_contract_item_file: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
+  const [transaction_error] = await safe_async(
+    query_builder.transaction().execute(async (tx) => {
+      await tx
+        .deleteFrom("contract_item_file")
+        .where((eb) =>
+          eb.and([
+            eb(
+              "contract_item_file.file_id",
+              "=",
+              input.id,
+            ),
+            eb(
+              "contract_item_file.contract_item_id",
+              "=",
+              input.contract_item_id,
+            ),
+          ]),
+        )
+        .execute()
+      await tx
+        .deleteFrom("file")
+        .where("file.id", "=", input.id)
+        .execute()
+    }),
+  )
+  if (transaction_error) {
+    logger.error(transaction_error.message, { file_id: input.id, contract_item_id: input.contract_item_id }, transaction_error)
+    return [
+      {
+        destroy_contract_item_file: {
+          execution:
+            "Error al eliminar el archivo del ítem",
+        },
+      },
+      null,
+    ] as const
+  }
+
+  const cache_key = compose_file_cache_key(input.id)
   await kv.del(cache_key)
+
+  return [null, null] as const
 }

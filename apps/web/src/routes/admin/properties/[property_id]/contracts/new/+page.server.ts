@@ -49,10 +49,13 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const { redirect_to } = await create_contract(
+    const [errors, data] = await create_contract(
       form_data,
       property_id,
     )
-    redirect(303, redirect_to)
+    if (errors) {
+      return { errors }
+    }
+    redirect(303, data.redirect_to)
   },
 }

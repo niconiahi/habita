@@ -3,26 +3,60 @@ import { query_builder } from "db/query_builder"
 import { ForceNumberSchema } from "$lib/force_number"
 import { now } from "$lib/server/now"
 import { ServiceTypeSchema } from "$lib/service"
+import { normalize_input } from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
+
+const InputSchema = v.object({
+  id: ForceNumberSchema,
+  code: v.string(),
+  type: v.pipe(v.string(), v.transform(Number), ServiceTypeSchema),
+})
 
 export async function update_service(
   form_data: FormData,
   property_id: number,
 ) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"))
-  const code = v.parse(v.string(), form_data.get("code"))
-  const type = v.parse(
-    ServiceTypeSchema,
-    Number(form_data.get("type")),
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
-  await query_builder
-    .updateTable("service")
-    .set({
-      property_id,
-      updated_at: now,
-      id,
-      type,
-      code,
-    })
-    .where("service.id", "=", id)
-    .execute()
+  if (!input_validation.success) {
+    return [
+      {
+        update_service: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
+  const [error] = await safe_async(
+    query_builder
+      .updateTable("service")
+      .set({
+        property_id,
+        updated_at: now,
+        id: input.id,
+        type: input.type,
+        code: input.code,
+      })
+      .where("service.id", "=", input.id)
+      .execute(),
+  )
+  if (error) {
+    logger.error(error.message, { property_id, service_id: input.id }, error)
+    return [
+      {
+        update_service: {
+          execution: "Error al actualizar el servicio",
+        },
+      },
+      null,
+    ] as const
+  }
+
+  return [null, null] as const
 }

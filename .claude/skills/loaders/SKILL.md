@@ -6,7 +6,7 @@ description: Data fetching patterns for loaders. Use when writing database queri
 - Every block of code that calls the database using `query_builder` will be wrapped in a function with prefix `fetch`
 
 ```ts
-const fetch_candidates() {
+function fetch_candidates() {
  return query_builder
     .selectFrom("slot")
     .innerJoin("user as visitant", "visitant.id", "slot.visitant_id")

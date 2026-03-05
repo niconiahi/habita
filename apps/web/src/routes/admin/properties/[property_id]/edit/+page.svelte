@@ -6,6 +6,7 @@
   import Button from "$lib/components/Button.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
+  import { has_action_error } from "$lib/has_action_error"
   import {
     get_access_label,
     ACCESS_TYPE,
@@ -417,8 +418,8 @@
         </li>
       {/each}
     </ul>
-    {#if form?.error}
-      <p class="error">{form.error}</p>
+    {#if has_action_error(form, "update_service")}
+      <p class="error">{form.errors.update_service}</p>
     {/if}
   </Content.Section>
 {/snippet}

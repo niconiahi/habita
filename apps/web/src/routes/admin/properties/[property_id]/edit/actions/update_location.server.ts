@@ -2,31 +2,74 @@ import * as v from "valibot"
 import { query_builder } from "db/query_builder"
 import { LocationSchema } from "$lib/location"
 import { ForceNumberSchema } from "$lib/force_number"
+import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { compose_point } from "$lib/server/point"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
+
+const InputSchema = v.object({
+  id: ForceNumberSchema,
+  location: v.pipe(
+    v.string("La ubicación es requerida"),
+    v.transform((val) => JSON.parse(val)),
+    LocationSchema,
+  ),
+})
 
 export async function update_location(form_data: FormData) {
-  const id = v.parse(ForceNumberSchema, form_data.get("id"))
-  const location = v.parse(
-    LocationSchema,
-    JSON.parse(form_data.get("location") as string),
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
-  await query_builder
-    .updateTable("location")
-    .set({
-      id,
-      latitude: location.lat,
-      longitude: location.lon,
-      point: compose_point(location.lat, location.lon),
-      house_number: Number(location.address.house_number),
-      address: location.display_name,
-      road: location.address.road,
-      city: location.address.city,
-      town: location.address.town,
-      state: location.address.state,
-      suburb: location.address.suburb,
-      updated_at: now,
-    })
-    .where("location.id", "=", id)
-    .execute()
+  if (!input_validation.success) {
+    return [
+      {
+        update_location: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
+  const [error] = await safe_async(
+    query_builder
+      .updateTable("location")
+      .set({
+        id: input.id,
+        latitude: input.location.lat,
+        longitude: input.location.lon,
+        point: compose_point(
+          input.location.lat,
+          input.location.lon,
+        ),
+        house_number: Number(
+          input.location.address.house_number,
+        ),
+        address: input.location.display_name,
+        road: input.location.address.road,
+        city: input.location.address.city,
+        town: input.location.address.town,
+        state: input.location.address.state,
+        suburb: input.location.address.suburb,
+        updated_at: now,
+      })
+      .where("location.id", "=", input.id)
+      .execute(),
+  )
+  if (error) {
+    logger.error(error.message, { location_id: input.id }, error)
+    return [
+      {
+        update_location: {
+          execution: "Error al actualizar la ubicación",
+        },
+      },
+      null,
+    ] as const
+  }
+
+  return [null, null] as const
 }

@@ -10,70 +10,80 @@ import {
 } from "$lib/property_type"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { assign_property_access } from "$lib/server/property_access"
+import { normalize_input } from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
+import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
 
-export async function create_property(form_data: FormData) {
-  const location_ = v.parse(
+const InputSchema = v.object({
+  location: v.pipe(
+    v.string("La ubicación es requerida"),
+    v.transform((val) => JSON.parse(val)),
     LocationSchema,
-    JSON.parse(form_data.get("location") as string),
+  ),
+  type: v.pipe(ForceNumberSchema, PropertyTypeSchema),
+  destiny: v.array(
+    v.pipe(ForceNumberSchema, PropertyDestinySchema),
+  ),
+  user_id: ForceNumberSchema,
+  organization_id: v.nullish(v.pipe(v.string(), v.uuid())),
+  unit: v.optional(v.string()),
+})
+
+export async function create_property(form_data: FormData) {
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
-  const type = v.parse(
-    PropertyTypeSchema,
-    Number(form_data.get("type")),
-  )
-  const destinies = v.parse(
-    v.array(PropertyDestinySchema),
-    form_data.getAll("destiny").map(Number),
-  )
-  const now = new Date().toISOString()
-  const user_id = v.parse(
-    ForceNumberSchema,
-    form_data.get("user_id"),
-  )
-  const organization_id = v.parse(
-    v.nullable(v.pipe(v.string(), v.uuid())),
-    form_data.get("organization_id"),
-  )
-  const property = await query_builder
-    .transaction()
-    .execute(async (tx) => {
+  if (!input_validation.success) {
+    return [
+      {
+        create_property: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
+  const unit =
+    input.type === PROPERTY_TYPE.DEPARTMENT
+      ? (input.unit ?? null)
+      : null
+
+  const [tx_error, property] = await safe_async(
+    query_builder.transaction().execute(async (tx) => {
       const location = await tx
         .insertInto("location")
         .values({
-          latitude: location_.lat,
-          longitude: location_.lon,
-          road: location_.address.road,
-          house_number: location_.address.house_number,
-          suburb: location_.address.suburb,
-          town: location_.address.town,
-          city: location_.address.city,
-          state: location_.address.state,
+          latitude: input.location.lat,
+          longitude: input.location.lon,
+          road: input.location.address.road,
+          house_number: input.location.address.house_number,
+          suburb: input.location.address.suburb,
+          town: input.location.address.town,
+          city: input.location.address.city,
+          state: input.location.address.state,
           point: compose_point(
-            location_.lat,
-            location_.lon,
+            input.location.lat,
+            input.location.lon,
           ),
-          address: location_.display_name,
+          address: input.location.display_name,
           created_at: now,
           updated_at: now,
         })
         .returning("id")
         .executeTakeFirstOrThrow()
-      let unit = null
-      if (type === PROPERTY_TYPE.DEPARTMENT) {
-        const unit_ = v.parse(
-          v.string(),
-          form_data.get("unit"),
-        )
-        unit = unit_
-      }
       const property = await tx
         .insertInto("property")
         .values({
-          type,
+          type: input.type,
           unit,
-          destinies,
+          destinies: input.destiny,
           state: PROPERTY_STATE.EDITING,
-          realtor_id: organization_id,
+          realtor_id: input.organization_id ?? null,
           created_at: now,
           updated_at: now,
           location_id: location.id,
@@ -81,13 +91,44 @@ export async function create_property(form_data: FormData) {
         .returning("property.id")
         .executeTakeFirstOrThrow()
       return { id: property.id }
-    })
-  await assign_property_access(
-    property.id,
-    user_id,
-    ACCESS_TYPE.MANAGER,
+    }),
   )
-  return {
-    redirect_to: `/admin/properties/${property.id}/edit`,
+  if (tx_error) {
+    logger.error(tx_error.message, { user_id: input.user_id, organization_id: input.organization_id }, tx_error)
+    return [
+      {
+        create_property: {
+          execution: "Error al crear la propiedad",
+        },
+      },
+      null,
+    ] as const
   }
+
+  const [access_error] = await safe_async(
+    assign_property_access(
+      property.id,
+      input.user_id,
+      ACCESS_TYPE.MANAGER,
+    ),
+  )
+  if (access_error) {
+    logger.error(access_error.message, { property_id: property.id, user_id: input.user_id }, access_error)
+    return [
+      {
+        create_property: {
+          execution:
+            "Error al asignar acceso a la propiedad",
+        },
+      },
+      null,
+    ] as const
+  }
+
+  return [
+    null,
+    {
+      redirect_to: `/admin/properties/${property.id}/edit`,
+    },
+  ] as const
 }

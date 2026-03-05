@@ -6,7 +6,7 @@ import {
   parse_filters,
   parse_tag_types,
   parse_service_types,
-  execute,
+  set_filters,
 } from "./actions/set_filters.server"
 import { ACTION } from "./actions/action"
 import type { PageServerLoad, Actions } from "./$types"
@@ -55,10 +55,11 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions: Actions = {
   [ACTION.SET_FILTERS]: async ({ request }) => {
     const form_data = await request.formData()
-    const { redirect_to } = await execute(
-      request,
-      form_data,
-    )
-    redirect(303, redirect_to)
+    const [set_filters_errors, set_filters_data] =
+      await set_filters(request, form_data)
+    if (set_filters_errors) {
+      return { errors: set_filters_errors }
+    }
+    redirect(303, set_filters_data.redirect_to)
   },
 }

@@ -1,25 +1,34 @@
 import * as v from "valibot"
 import { ContractStateSchema } from "$lib/contract_state"
 import { ForceNumberSchema } from "$lib/force_number"
-import {
-  get_errors,
-  normalize_input,
-} from "$lib/server/form"
+import { normalize_input } from "$lib/server/form"
 
-export const InputSchema = v.object({
+const InputSchema = v.object({
   state: v.optional(
     v.pipe(ForceNumberSchema, ContractStateSchema),
   ),
 })
 
-export async function execute(
+export async function set_state(
   request: Request,
   form_data: FormData,
 ) {
-  const input = v.parse(
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
+  if (!input_validation.success) {
+    return [
+      {
+        set_state: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
   const url = new URL(request.url)
   for (const key of url.searchParams.keys()) {
     if (key.startsWith("/")) {
@@ -31,12 +40,9 @@ export async function execute(
   } else {
     url.searchParams.set("state", String(input.state))
   }
-  return { redirect_to: url.pathname + url.search }
-}
 
-export const set_state = {
-  execute,
-  get_errors: (error: v.ValiError<typeof InputSchema>) => {
-    return get_errors<typeof InputSchema>(error)
-  },
+  return [
+    null,
+    { redirect_to: url.pathname + url.search },
+  ] as const
 }

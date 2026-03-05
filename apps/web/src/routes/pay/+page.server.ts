@@ -22,7 +22,11 @@ export const actions: Actions = {
     if (!is_webmaster(locals.user)) {
       error(403, "forbidden")
     }
-    const init_point = await create_payment()
-    redirect(303, init_point)
+    const [create_payment_errors, create_payment_data] =
+      await create_payment()
+    if (create_payment_errors) {
+      return { errors: create_payment_errors }
+    }
+    redirect(303, create_payment_data.init_point)
   },
 }

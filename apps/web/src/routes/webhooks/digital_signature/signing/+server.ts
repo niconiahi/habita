@@ -5,8 +5,10 @@ import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { CONTRACT_STATE } from "$lib/contract_state"
 import { SIGNATURE_STATUS } from "$lib/signature_status"
 import { fetch_signed_document } from "$lib/server/digital_signature"
+import { API_FETCH_ERROR } from "$lib/server/digital_signature"
 import { now } from "$lib/server/now"
 import { ForceNumberSchema } from "$lib/force_number"
+import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
 
 const PartySchema = v.picklist(["landlord", "tenant"])
@@ -72,9 +74,68 @@ export const GET: RequestHandler = async ({ url }) => {
     signature.tenant_status === SIGNATURE_STATUS.SIGNED &&
     signature.document_id
   ) {
-    const signed_document = await fetch_signed_document(
-      signature.document_id,
-    )
+    const [signed_document_error, signed_document] =
+      await fetch_signed_document(signature.document_id)
+    if (signed_document_error) {
+      if (
+        signed_document_error.type ===
+        API_FETCH_ERROR.FETCH_FAILED
+      ) {
+        // NOTE: fill the action message
+        logger.error(
+          signed_document_error.error.message,
+          {
+            contract_id,
+            error_type: API_FETCH_ERROR.FETCH_FAILED,
+          },
+          signed_document_error.error,
+        )
+      }
+      if (
+        signed_document_error.type ===
+        API_FETCH_ERROR.API_ERROR
+      ) {
+        // NOTE: fill the action message
+        logger.error(
+          signed_document_error.error.message,
+          {
+            contract_id,
+            error_type: API_FETCH_ERROR.API_ERROR,
+          },
+          signed_document_error.error,
+        )
+      }
+      if (
+        signed_document_error.type ===
+        API_FETCH_ERROR.JSON_PARSE_FAILED
+      ) {
+        // NOTE: fill the action message
+        logger.error(
+          signed_document_error.error.message,
+          {
+            contract_id,
+            error_type: API_FETCH_ERROR.JSON_PARSE_FAILED,
+          },
+          signed_document_error.error,
+        )
+      }
+      if (
+        signed_document_error.type ===
+        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        // NOTE: fill the action message
+        logger.error(
+          signed_document_error.error.message,
+          {
+            contract_id,
+            error_type:
+              API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED,
+          },
+          signed_document_error.error,
+        )
+      }
+      redirect(302, "/digital_signature/error")
+    }
     if (signed_document.Datos.ArchivoFirmadoBase64) {
       const signed_pdf = Buffer.from(
         signed_document.Datos.ArchivoFirmadoBase64,

@@ -17,10 +17,7 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   use: {
-    // Docker uses internal hostname, local uses dev domain
-    baseURL: process.env.DOCKER_TEST
-      ? "https://svelte:5174"
-      : "https://dev.habita.rent",
+    baseURL: "https://dev.habita.rent",
     ignoreHTTPSErrors: true,
     launchOptions: {
       slowMo: 500,

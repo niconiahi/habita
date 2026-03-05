@@ -66,7 +66,11 @@ export const actions: Actions = {
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
     form_data.set("host_id", String(locals.user.id))
-    await create_slot(form_data)
+    const [create_slot_errors] =
+      await create_slot(form_data)
+    if (create_slot_errors) {
+      return { errors: create_slot_errors }
+    }
     return null
   },
   [ACTION.DESTROY_SLOT]: async ({
@@ -88,7 +92,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await destroy_slot(form_data)
+    const [destroy_slot_errors] =
+      await destroy_slot(form_data)
+    if (destroy_slot_errors) {
+      return { errors: destroy_slot_errors }
+    }
     return null
   },
 }

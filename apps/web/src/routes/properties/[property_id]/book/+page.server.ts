@@ -5,7 +5,7 @@ import * as v from "valibot"
 import { ForceDateSchema } from "$lib/server/force_date"
 import { ForceNumberSchema } from "$lib/force_number"
 import { SLOT_STATE } from "$lib/slot_state"
-import { logger } from "$lib/server/telemetry/logger"
+import { logger } from "$lib/telemetry/logger"
 import { query_builder } from "db/query_builder"
 import { set_date } from "./actions/set_date.server"
 import { update_slot } from "./actions/update_slot.server"
@@ -48,25 +48,15 @@ export const actions: Actions = {
         )
         form_data.set("property_id", String(property_id))
         span.setAttribute("property.id", property_id)
-        try {
-          const { redirect_to } = await set_date.execute(
-            url,
-            form_data,
-          )
-          logger.info("date set successfully")
+        const [set_date_errors, set_date_data] =
+          await set_date(url, form_data)
+        if (set_date_errors) {
           span.end()
-          redirect(302, redirect_to)
-        } catch (err) {
-          if (err instanceof v.ValiError) {
-            span.end()
-            return {
-              errors: {
-                set_date: set_date.get_errors(err),
-              },
-            }
-          }
-          throw err
+          return { errors: set_date_errors }
         }
+        logger.info("date set successfully")
+        span.end()
+        redirect(302, set_date_data.redirect_to)
       },
     )
   },
@@ -82,22 +72,17 @@ export const actions: Actions = {
         )
         form_data.set("property_id", String(property_id))
         span.setAttribute("property.id", property_id)
-        try {
-          await update_slot.execute(form_data, span)
-          logger.info("slot updated successfully")
+        const [update_slot_errors] = await update_slot(
+          form_data,
+          span,
+        )
+        if (update_slot_errors) {
           span.end()
-          redirect(302, "..")
-        } catch (err) {
-          if (err instanceof v.ValiError) {
-            span.end()
-            return {
-              errors: {
-                update_slot: update_slot.get_errors(err),
-              },
-            }
-          }
-          throw err
+          return { errors: update_slot_errors }
         }
+        logger.info("slot updated successfully")
+        span.end()
+        redirect(302, "..")
       },
     )
   },

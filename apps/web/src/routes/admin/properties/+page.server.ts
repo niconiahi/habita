@@ -44,7 +44,11 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    await publish_property(form_data)
+    const [publish_property_errors] =
+      await publish_property(form_data)
+    if (publish_property_errors) {
+      return { errors: publish_property_errors }
+    }
     return null
   },
   [ACTION.UNPUBLISH_PROPERTY]: async ({
@@ -65,7 +69,11 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    await unpublish_property(form_data)
+    const [unpublish_property_errors] =
+      await unpublish_property(form_data)
+    if (unpublish_property_errors) {
+      return { errors: unpublish_property_errors }
+    }
     return null
   },
 }
