@@ -6,17 +6,19 @@ import {
 import * as v from "valibot"
 import { display_location } from "$lib/display_location"
 import { ForceNumberSchema } from "$lib/force_number"
-import {
-  normalize_input,
-  get_errors,
-} from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
+import { normalize_input } from "$lib/server/form"
 import {
   escape_ics_text,
   format_ics_date,
 } from "$lib/server/ics"
 import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { SLOT_STATE } from "$lib/slot_state"
-import { logger } from "$lib/server/telemetry/logger"
+import {
+  send_email,
+  SEND_EMAIL_ERROR,
+} from "$lib/server/send_email"
+import { logger } from "$lib/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
 import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
@@ -34,49 +36,92 @@ export const InputSchema = v.object({
   property_id: ForceNumberSchema,
 })
 
-async function execute(form_data: FormData, span: Span) {
-  const { visitant_id, id, property_id } = v.parse(
+export async function update_slot(
+  form_data: FormData,
+  span: Span,
+) {
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
+  if (!input_validation.success) {
+    return [
+      {
+        update_slot: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+  const { visitant_id, id, property_id } = input
+
   const user_files = await fetch_user_files(visitant_id)
   const has_credit_report = user_files.some(
     (file) => file.type === USER_FILE_TYPE.CREDIT_REPORT,
   )
   if (!has_credit_report) {
-    throw new Response("credit report required", {
-      status: 403,
-    })
+    return [
+      {
+        update_slot: {
+          execution:
+            "Se requiere un informe crediticio",
+        },
+      },
+      null,
+    ] as const
   }
+
   span.setAttribute("slot.id", id)
   span.setAttribute("visitant.id", visitant_id)
   logger.info("updating slot")
-  const slot = await query_builder
-    .updateTable("slot")
-    .set({
-      visitant_id,
-      state: SLOT_STATE.RESERVED,
-    })
-    .where("slot.id", "=", id)
-    .returning([
-      "slot.start_date",
-      "slot.end_date",
-      "slot.host_id",
-      "slot.property_id",
-      "slot.visitant_id",
-    ])
-    .executeTakeFirstOrThrow()
-  const now = new Date()
-  await query_builder
-    .insertInto("notification")
-    .values({
-      type: NOTIFICATION_TYPE.PROPERTY_VISIT,
-      href: "/admin/candidates",
-      property_id: slot.property_id,
-      created_at: now,
-      updated_at: now,
-    })
-    .execute()
+
+  const [tx_error, tx_result] = await safe_async(
+    query_builder.transaction().execute(async (tx) => {
+      const slot = await tx
+        .updateTable("slot")
+        .set({
+          visitant_id,
+          state: SLOT_STATE.RESERVED,
+        })
+        .where("slot.id", "=", id)
+        .returning([
+          "slot.start_date",
+          "slot.end_date",
+          "slot.host_id",
+          "slot.property_id",
+          "slot.visitant_id",
+        ])
+        .executeTakeFirstOrThrow()
+      const now = new Date()
+      await tx
+        .insertInto("notification")
+        .values({
+          type: NOTIFICATION_TYPE.PROPERTY_VISIT,
+          href: "/admin/candidates",
+          property_id: slot.property_id,
+          created_at: now,
+          updated_at: now,
+        })
+        .execute()
+      return slot
+    }),
+  )
+  if (tx_error) {
+    logger.error(tx_error.message, { slot_id: id, visitant_id, property_id }, tx_error)
+    return [
+      {
+        update_slot: {
+          execution:
+            "Error al actualizar la reserva",
+        },
+      },
+      null,
+    ] as const
+  }
+  const slot = tx_result
+
   logger.info("notification created")
   span.setAttribute(
     "slot.start_date",
@@ -88,6 +133,7 @@ async function execute(form_data: FormData, span: Span) {
   )
   span.setAttribute("host.id", slot.host_id)
   logger.info("slot updated")
+
   const host_row = await query_builder
     .selectFrom("user")
     .select(["email", "name"])
@@ -99,6 +145,7 @@ async function execute(form_data: FormData, span: Span) {
   })
   span.setAttribute("host.email", host.email)
   span.setAttribute("host.name", host.name)
+
   const visitant_row = await query_builder
     .selectFrom("user")
     .select(["email", "name"])
@@ -110,13 +157,21 @@ async function execute(form_data: FormData, span: Span) {
   })
   span.setAttribute("visitant.email", visitant.email)
   span.setAttribute("visitant.name", visitant.name)
+
   const property = await fetch_property(property_id)
   if (!property) {
-    logger.error("property not found")
-    throw new Response("property should exist", {
-      status: 404,
-    })
+    logger.error("property not found", { property_id })
+    return [
+      {
+        update_slot: {
+          execution:
+            "No se encontró la propiedad",
+        },
+      },
+      null,
+    ] as const
   }
+
   span.setAttribute(
     "property.location",
     display_location(property.location),
@@ -142,6 +197,7 @@ SEQUENCE:0
 END:VEVENT
 END:VCALENDAR`
   logger.info("ics file created")
+
   const visitant_text = `Hello ${visitant.name},
 
 You have been invited to visit the property located at ${property.location.road} ${property.location.house_number}.
@@ -167,49 +223,87 @@ Please open the attached calendar invitation to add this event to your calendar.
   )
   span.setAttribute("email.host_recipient", host.email)
   span.setAttribute("email.subject", summary)
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  }
-  propagation.inject(context.active(), headers)
-  const [visitant_response, host_response] =
+
+  const otel_headers: Record<string, string> = {}
+  propagation.inject(context.active(), otel_headers)
+  const [[visitant_email_error], [host_email_error]] =
     await Promise.all([
-      fetch("http://go:8081/send-email", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
+      send_email(
+        {
           to: visitant,
           subject: summary,
           text: visitant_text,
           content,
-        }),
-      }),
-      fetch("http://go:8081/send-email", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
+        },
+        otel_headers,
+      ),
+      send_email(
+        {
           to: host,
           subject: summary,
           text: host_text,
           content,
-        }),
-      }),
+        },
+        otel_headers,
+      ),
     ])
-  if (!visitant_response.ok) {
-    const message = "visitant email service returned error"
-    logger.error(message)
-    throw new Error(message)
+  if (visitant_email_error) {
+    if (
+      visitant_email_error.type ===
+      SEND_EMAIL_ERROR.FETCH_FAILED
+    ) {
+      logger.error(
+        visitant_email_error.error.message,
+        {
+          visitant_id,
+          error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
+        },
+        visitant_email_error.error,
+      )
+    }
+    if (
+      visitant_email_error.type ===
+      SEND_EMAIL_ERROR.SERVICE_ERROR
+    ) {
+      logger.error(
+        visitant_email_error.error.message,
+        {
+          visitant_id,
+          error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
+        },
+        visitant_email_error.error,
+      )
+    }
   }
-  if (!host_response.ok) {
-    const message = "host email service returned error"
-    logger.error(message)
-    throw new Error(message)
+  if (host_email_error) {
+    if (
+      host_email_error.type ===
+      SEND_EMAIL_ERROR.FETCH_FAILED
+    ) {
+      logger.error(
+        host_email_error.error.message,
+        {
+          host_id: slot.host_id,
+          error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
+        },
+        host_email_error.error,
+      )
+    }
+    if (
+      host_email_error.type ===
+      SEND_EMAIL_ERROR.SERVICE_ERROR
+    ) {
+      logger.error(
+        host_email_error.error.message,
+        {
+          host_id: slot.host_id,
+          error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
+        },
+        host_email_error.error,
+      )
+    }
   }
-  logger.info("emails sent via go service")
   logger.info("slot booking completed")
-}
 
-export const update_slot = {
-  execute,
-  get_errors: (error: v.ValiError<typeof InputSchema>) =>
-    get_errors<typeof InputSchema>(error),
+  return [null, null] as const
 }

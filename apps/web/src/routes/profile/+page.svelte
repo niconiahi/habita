@@ -8,12 +8,17 @@
     get_user_file_type_label,
     USER_FILE_TYPE,
   } from "$lib/user_file_type"
+  import { has_action_error } from "$lib/has_action_error"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
-  let errors = $derived(form?.errors?.update_user ?? {})
+  let input_errors = $derived(
+    has_action_error(form, "update_user")
+      ? (form.errors.update_user.input?.nested ?? {})
+      : {},
+  )
   const document_types = Object.values(USER_FILE_TYPE).map(
     (type) => ({
       value: type,
@@ -44,11 +49,11 @@
               value={data.user_profile.name}
               required
             />
-            {#if errors.name}
+            {#each input_errors.name ?? [] as error}
               <Formulary.Error
-                >{errors.name}</Formulary.Error
+                >{error}</Formulary.Error
               >
-            {/if}
+            {/each}
           </Formulary.Field>
           <Formulary.Field>
             <Formulary.Label for="surname"
@@ -61,11 +66,11 @@
               value={data.user_profile.surname}
               required
             />
-            {#if errors.surname}
+            {#each input_errors.surname ?? [] as error}
               <Formulary.Error
-                >{errors.surname}</Formulary.Error
+                >{error}</Formulary.Error
               >
-            {/if}
+            {/each}
           </Formulary.Field>
           <Formulary.Field>
             <Formulary.Label for="phone_number"
@@ -78,16 +83,16 @@
               value={data.user_profile.phone_number ?? ""}
               placeholder="+5491123456789"
             />
-            {#if errors.phone_number}
+            {#each input_errors.phone_number ?? [] as error}
               <div class="error-with-link">
                 <Formulary.Error
-                  >{errors.phone_number}</Formulary.Error
+                  >{error}</Formulary.Error
                 >
                 <a class="button" href="/learn/phone-number"
                   >Mirar documentacion</a
                 >
               </div>
-            {/if}
+            {/each}
           </Formulary.Field>
           <Formulary.Field>
             <Formulary.Label for="document_number"
@@ -100,11 +105,11 @@
               value={data.user_profile.document_number ??
                 ""}
             />
-            {#if errors.document_number}
+            {#each input_errors.document_number ?? [] as error}
               <Formulary.Error
-                >{errors.document_number}</Formulary.Error
+                >{error}</Formulary.Error
               >
-            {/if}
+            {/each}
           </Formulary.Field>
           <Formulary.Field>
             <Formulary.Label for="cuil"
@@ -116,11 +121,11 @@
               type="number"
               value={data.user_profile.cuil ?? ""}
             />
-            {#if errors.cuil}
+            {#each input_errors.cuil ?? [] as error}
               <Formulary.Error
-                >{errors.cuil}</Formulary.Error
+                >{error}</Formulary.Error
               >
-            {/if}
+            {/each}
           </Formulary.Field>
           <Formulary.Field>
             <Formulary.Label for="email"

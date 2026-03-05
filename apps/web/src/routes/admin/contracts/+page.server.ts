@@ -35,21 +35,11 @@ export const load: PageServerLoad = async ({
 export const actions: Actions = {
   [ACTION.SET_STATE]: async ({ request }) => {
     const form_data = await request.formData()
-    try {
-      const { redirect_to } = await set_state.execute(
-        request,
-        form_data,
-      )
-      redirect(303, redirect_to)
-    } catch (err) {
-      if (err instanceof v.ValiError) {
-        return {
-          errors: {
-            set_state: set_state.get_errors(err),
-          },
-        }
-      }
-      throw err
+    const [set_state_errors, set_state_data] =
+      await set_state(request, form_data)
+    if (set_state_errors) {
+      return { errors: set_state_errors }
     }
+    redirect(303, set_state_data.redirect_to)
   },
 }

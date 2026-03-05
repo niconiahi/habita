@@ -3,22 +3,58 @@ name: security
 description: Authentication and authorization patterns. Use when implementing auth checks, protecting routes, handling sessions, or managing user access control.
 ---
 
-- Upon session creation, also fetch `accesses` so that we know up front which pages will this user be able to go, without further `Request`s to the server. At least for authorization
-- These `accesses` would get stored as _user attributes_
-- **Authentication checks must be explicit in each protected route** - never use middleware or layout-level auth validation
-- Each protected route should call `require_auth()` or `get_current_user()` directly in its loader/action
+# Authentication
+
+- Uses **Better Auth** with SvelteKit integration
+- `hooks.server.ts` extracts the session and populates `event.locals.user` and `event.locals.session`
+- Every protected route checks `locals.user` directly — no middleware auth
 
 ```ts
-// Each protected route does its own auth check
-export async function loader({ request }: LoaderArgs) {
-  const { user } = await require_auth(request) // Explicit auth check
-  // Route-specific logic with user.accesses
+import { redirect } from "@sveltejs/kit"
+import type { PageServerLoad } from "./$types"
+
+export const load: PageServerLoad = async ({ locals }) => {
+  if (!locals.user) {
+    redirect(302, "/auth/google")
+  }
+  // locals.user.id, locals.user.email, locals.user.name, locals.user.surname
 }
 ```
 
+# Authorization — Two-Layer Model
+
+## Layer 1: RBAC (Better Auth `hasPermission`)
+
+Organization-level roles (landlord, realtor, manager, tenant) with permissions like `{ property: ["read"] }`.
+
+## Layer 2: ACL (`property_access` table)
+
+Property-specific access checked via `require_property_access()` which combines both layers.
+
+## Helper functions (`$lib/server/property_access.ts`)
+
+```ts
+import { require_edit_access } from "$lib/server/property_access"
+
+// In a loader or action:
+await require_edit_access(
+  request.headers,
+  locals.user.id,
+  property_id,
+  locals.session?.activeOrganizationId,
+)
+```
+
+Available helpers:
+- `require_view_access()` — read access (landlord, manager, tenant)
+- `require_edit_access()` — write access (landlord, manager)
+- `require_landlord_access()` — landlord only
+- `get_accessible_property_ids()` — bulk query for property IDs a user can access
+- `assign_property_access()` — grant access
+- `is_tenant_accessible()` — check if a tenant belongs to managed properties
+- `revoke_all_access_by_type()` — revoke access
+
 ### Resources
 
-[react-router session and cookies](https://reactrouter.com/explanation/sessions-and-cookies)
+[better-auth documentation](https://www.better-auth.com)
 [middleware authentication best practices](https://pilcrowonpaper.com/blog/middleware-auth)
-[oauth guide](https://pilcrowonpaper.com/blog/oauth-guide)
-

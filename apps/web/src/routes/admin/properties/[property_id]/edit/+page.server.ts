@@ -75,7 +75,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await update_location(form_data)
+    const [update_location_errors] =
+      await update_location(form_data)
+    if (update_location_errors) {
+      return { errors: update_location_errors }
+    }
     return null
   },
   [ACTION.CREATE_ROOM]: async ({
@@ -96,7 +100,11 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    await create_room(property_id)
+    const [create_room_errors] =
+      await create_room(property_id)
+    if (create_room_errors) {
+      return { errors: create_room_errors }
+    }
     return null
   },
   [ACTION.UPDATE_ROOM]: async ({
@@ -119,7 +127,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await update_room(form_data)
+    const [update_room_errors] =
+      await update_room(form_data)
+    if (update_room_errors) {
+      return { errors: update_room_errors }
+    }
     return null
   },
   [ACTION.UPDATE_ROOM_POSITIONS]: async ({
@@ -142,7 +154,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await update_room_positions(form_data)
+    const [update_room_positions_errors] =
+      await update_room_positions(form_data)
+    if (update_room_positions_errors) {
+      return { errors: update_room_positions_errors }
+    }
     return null
   },
   [ACTION.DESTROY_ROOM]: async ({
@@ -165,7 +181,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await destroy_room(form_data)
+    const [destroy_room_errors] =
+      await destroy_room(form_data)
+    if (destroy_room_errors) {
+      return { errors: destroy_room_errors }
+    }
     return null
   },
   [ACTION.CREATE_SERVICE]: async ({
@@ -186,7 +206,11 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    await create_service(property_id)
+    const [create_service_errors] =
+      await create_service(property_id)
+    if (create_service_errors) {
+      return { errors: create_service_errors }
+    }
     return null
   },
   [ACTION.UPDATE_SERVICE]: async ({
@@ -209,14 +233,14 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    try {
-      await update_service(form_data, property_id)
-      return null
-    } catch {
-      return {
-        error: "Sólo puede haber un servicio de cada tipo",
-      }
+    const [update_service_errors] = await update_service(
+      form_data,
+      property_id,
+    )
+    if (update_service_errors) {
+      return { errors: update_service_errors }
     }
+    return null
   },
   [ACTION.DESTROY_SERVICE]: async ({
     request,
@@ -238,7 +262,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await destroy_service(form_data)
+    const [destroy_service_errors] =
+      await destroy_service(form_data)
+    if (destroy_service_errors) {
+      return { errors: destroy_service_errors }
+    }
     return null
   },
   [ACTION.CREATE_PROPERTY_FILE]: async ({
@@ -261,7 +289,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await create_property_file(form_data, property_id)
+    const [create_property_file_errors] =
+      await create_property_file(form_data, property_id)
+    if (create_property_file_errors) {
+      return { errors: create_property_file_errors }
+    }
     return null
   },
   [ACTION.INVITE_LANDLORD]: async ({
@@ -284,7 +316,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await invite_landlord(form_data)
+    const [invite_landlord_errors] =
+      await invite_landlord(form_data)
+    if (invite_landlord_errors) {
+      return { errors: invite_landlord_errors }
+    }
     return null
   },
   [ACTION.UPDATE_DESTINIES]: async ({
@@ -307,7 +343,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    await update_destinies(form_data, property_id)
+    const [update_destinies_errors] =
+      await update_destinies(form_data, property_id)
+    if (update_destinies_errors) {
+      return { errors: update_destinies_errors }
+    }
     return null
   },
   [ACTION.TOGGLE_TAG]: async ({
@@ -329,7 +369,13 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await toggle_tag(form_data, property_id)
+    const [toggle_tag_errors] = await toggle_tag(
+      form_data,
+      property_id,
+    )
+    if (toggle_tag_errors) {
+      return { errors: toggle_tag_errors }
+    }
     return null
   },
   [ACTION.UPDATE_CONSTRUCTION_YEAR]: async ({
@@ -351,7 +397,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_construction_year(form_data, property_id)
+    const [update_construction_year_errors] =
+      await update_construction_year(form_data, property_id)
+    if (update_construction_year_errors) {
+      return { errors: update_construction_year_errors }
+    }
     return null
   },
 }

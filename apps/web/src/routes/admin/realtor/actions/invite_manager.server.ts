@@ -1,15 +1,33 @@
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
+import { normalize_input } from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
+
+const InputSchema = v.object({
+  email: v.pipe(v.string(), v.email()),
+})
 
 export async function invite_manager(
   form_data: FormData,
   organization_id: string,
   inviter_id: number,
 ) {
-  const email = v.parse(
-    v.pipe(v.string(), v.email()),
-    form_data.get("email"),
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
   )
+  if (!input_validation.success) {
+    return [
+      {
+        invite_manager: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
 
   const now = new Date()
   const invitation_id = crypto.randomUUID()
@@ -17,25 +35,35 @@ export async function invite_manager(
     now.getTime() + 7 * 24 * 60 * 60 * 1000,
   ) // 7 days
 
-  await query_builder
-    .insertInto("invitation")
-    .values({
-      id: invitation_id,
-      organization_id,
-      email,
-      role: "manager",
-      status: "pending",
-      inviter_id,
-      expires_at,
-      created_at: now,
-      updated_at: now,
-    })
-    .execute()
+  const [error] = await safe_async(
+    query_builder
+      .insertInto("invitation")
+      .values({
+        id: invitation_id,
+        organization_id,
+        email: input.email,
+        role: "manager",
+        status: "pending",
+        inviter_id,
+        expires_at,
+        created_at: now,
+        updated_at: now,
+      })
+      .execute(),
+  )
+  if (error) {
+    logger.error(error.message, { email: input.email, organization_id, inviter_id }, error)
+    return [
+      {
+        invite_manager: {
+          execution: "Error al enviar la invitación",
+        },
+      },
+      null,
+    ] as const
+  }
 
   // TODO: Send invitation email
-  console.log(
-    `Invitation sent to ${email} for org ${organization_id}`,
-  )
 
-  return { email }
+  return [null, null] as const
 }

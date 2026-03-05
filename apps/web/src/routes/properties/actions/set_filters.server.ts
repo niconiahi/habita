@@ -75,14 +75,26 @@ export function parse_service_types(
   return parse_ids(services_param, ServiceTypeSchema)
 }
 
-export async function execute(
+export async function set_filters(
   request: Request,
   form_data: FormData,
 ) {
-  const input = v.parse(
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
+  if (!input_validation.success) {
+    return [
+      {
+        set_filters: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
   const url = new URL(request.url)
   for (const key of url.searchParams.keys()) {
     if (key.startsWith("/")) {
@@ -113,9 +125,13 @@ export async function execute(
       url.searchParams.delete(max_key)
     }
   }
-  return {
-    redirect_to: decodeURIComponent(
-      url.pathname + url.search,
-    ),
-  }
+
+  return [
+    null,
+    {
+      redirect_to: decodeURIComponent(
+        url.pathname + url.search,
+      ),
+    },
+  ] as const
 }

@@ -1,19 +1,5 @@
 import type * as v from "valibot"
 
-export function get_errors<
-  TSchema extends v.BaseSchema<any, any, any>,
->(
-  error: v.ValiError<TSchema>,
-): Partial<Record<keyof v.InferInput<TSchema>, string>> {
-  const errors = Object.fromEntries(
-    error.issues.map((issue) => [
-      issue.path?.[0]?.key,
-      issue.message,
-    ]),
-  ) as Partial<Record<keyof v.InferInput<TSchema>, string>>
-  return errors
-}
-
 function isEmptyFile(
   value: FormDataEntryValue | null,
 ): boolean {

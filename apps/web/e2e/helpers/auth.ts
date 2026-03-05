@@ -135,15 +135,13 @@ export async function authenticate_test_user(
   await submit_button.waitFor({ state: "visible" })
   await submit_button.click()
 
-  // Wait for either success (redirect to /properties) or stay on login (error)
+  // Wait for either success (redirect to /properties) or stay on login (user doesn't exist yet)
   try {
     await page.waitForURL(/\/properties/, { timeout: 5000 })
-    console.log(`Login successful for: ${user.email}`)
-  } catch {
-    // Login failed - user probably doesn't exist, try signup
     console.log(
-      `Login failed for ${user.email}, attempting signup...`,
+      `User ${user.email} already exists, skipping signup`,
     )
+  } catch {
     await signup_test_user(page, user)
   }
 

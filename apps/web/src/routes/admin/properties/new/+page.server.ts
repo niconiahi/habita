@@ -28,7 +28,11 @@ export const actions: Actions = {
         locals.session.activeOrganizationId,
       )
     }
-    const { redirect_to } = await create_property(form_data)
-    redirect(303, redirect_to)
+    const [create_property_errors, create_property_data] =
+      await create_property(form_data)
+    if (create_property_errors) {
+      return { errors: create_property_errors }
+    }
+    redirect(303, create_property_data.redirect_to)
   },
 }

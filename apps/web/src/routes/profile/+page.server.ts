@@ -1,4 +1,3 @@
-import * as v from "valibot"
 import { redirect } from "@sveltejs/kit"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
@@ -38,7 +37,13 @@ export const actions: Actions = {
       redirect(302, "/auth/google")
     }
     const form_data = await request.formData()
-    await create_file(form_data, locals.user.id)
+    const [create_file_errors] = await create_file(
+      form_data,
+      locals.user.id,
+    )
+    if (create_file_errors) {
+      return { errors: create_file_errors }
+    }
     return null
   },
   [ACTION.UPDATE_USER]: async ({ request, locals }) => {
@@ -46,19 +51,14 @@ export const actions: Actions = {
       redirect(302, "/auth/google")
     }
     const form_data = await request.formData()
-    try {
-      await update_user.execute(form_data, locals.user.id)
-      return null
-    } catch (err) {
-      if (err instanceof v.ValiError) {
-        return {
-          errors: {
-            update_user: update_user.get_errors(err),
-          },
-        }
-      }
-      throw err
+    const [update_user_errors] = await update_user(
+      form_data,
+      locals.user.id,
+    )
+    if (update_user_errors) {
+      return { errors: update_user_errors }
     }
+    return null
   },
 }
 

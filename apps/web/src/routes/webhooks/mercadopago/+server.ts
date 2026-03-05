@@ -1,6 +1,8 @@
 import { json } from "@sveltejs/kit"
 import crypto from "node:crypto"
 import * as v from "valibot"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
 import { query_builder } from "db/query_builder"
 import { now } from "$lib/server/now"
 import { PAYMENT_STATUS } from "$lib/payment_status"
@@ -94,23 +96,57 @@ async function handle_payment_notification(
   payment_id: string,
 ) {
   const access_token = get_access_token()
-  const response = await fetch(
-    `https://api.mercadopago.com/v1/payments/${payment_id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
+  // NOTE: new safe implementation
+  const [fetch_error, response] = await safe_async(
+    fetch(
+      `https://api.mercadopago.com/v1/payments/${payment_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
       },
-    },
+    ),
   )
+  if (fetch_error) {
+    logger.error(
+      fetch_error.message,
+      { payment_id },
+      fetch_error,
+    )
+    return
+  }
   if (!response.ok) {
-    console.error(
+    logger.error(
       `Failed to fetch payment ${payment_id}: ${response.status}`,
+      { payment_id },
     )
     return
   }
 
-  const data = await response.json()
-  const payment = v.parse(MercadoPagoPaymentSchema, data)
+  const [json_error, data] = await safe_async(
+    response.json(),
+  )
+  if (json_error) {
+    logger.error(
+      json_error.message,
+      { payment_id },
+      json_error,
+    )
+    return
+  }
+
+  const payment_validation = v.safeParse(
+    MercadoPagoPaymentSchema,
+    data,
+  )
+  if (!payment_validation.success) {
+    logger.error("Schema validation failed", {
+      payment_id,
+    })
+    return
+  }
+  const payment = payment_validation.output
+
   const status = MERCADOPAGO_STATUS_MAP[payment.status]
 
   await query_builder
@@ -123,8 +159,9 @@ async function handle_payment_notification(
     .where("preference_id", "=", payment.preference_id)
     .execute()
 
-  console.log(
+  logger.info(
     `Payment ${payment_id} processed: ${payment.status} -> status ${status}`,
+    { payment_id },
   )
 }
 
@@ -133,15 +170,37 @@ export const POST: RequestHandler = async ({ request }) => {
   const request_id = request.headers.get("x-request-id")
 
   if (!verify_webhook_signature(signature, request_id)) {
-    console.error("Invalid MercadoPago webhook signature")
+    logger.error("Invalid MercadoPago webhook signature")
     return json(
       { error: "Invalid signature" },
       { status: 401 },
     )
   }
 
-  const data = await request.json()
-  const webhook = v.parse(MercadoPagoWebhookSchema, data)
+  // NOTE: new safe implementation
+  const [json_error, data] = await safe_async(
+    request.json(),
+  )
+  if (json_error) {
+    logger.error(json_error.message, { request_id }, json_error)
+    return json(
+      { error: "Invalid request body" },
+      { status: 400 },
+    )
+  }
+
+  const webhook_validation = v.safeParse(
+    MercadoPagoWebhookSchema,
+    data,
+  )
+  if (!webhook_validation.success) {
+    logger.error("Invalid webhook payload")
+    return json(
+      { error: "Invalid webhook payload" },
+      { status: 400 },
+    )
+  }
+  const webhook = webhook_validation.output
 
   if (webhook.type === "payment") {
     await handle_payment_notification(webhook.data.id)

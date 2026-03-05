@@ -5,6 +5,7 @@
   import Button from "$lib/components/Button.svelte"
   import { get_date } from "$lib/date"
   import { display_date } from "$lib/display_date"
+  import { has_action_error } from "$lib/has_action_error"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
@@ -47,10 +48,15 @@
             {/each}
           </div>
         </fieldset>
-        {#if form?.errors && "set_date" in form.errors && form.errors.set_date?.date}
-          <span class="error"
-            >{form.errors.set_date.date}</span
-          >
+        {#if has_action_error(form, "set_date")}
+          {#each form.errors.set_date.input?.nested?.date ?? [] as error}
+            <span class="error">{error}</span>
+          {/each}
+          {#if form.errors.set_date.execution}
+            <span class="error"
+              >{form.errors.set_date.execution}</span
+            >
+          {/if}
         {/if}
       </Formulary.Fields>
       <Formulary.Actions>
@@ -97,10 +103,15 @@
               {/each}
             </div>
           </fieldset>
-          {#if form?.errors && "update_slot" in form.errors && form.errors.update_slot?.id}
-            <span class="error"
-              >{form.errors.update_slot.id}</span
-            >
+          {#if has_action_error(form, "update_slot")}
+            {#each form.errors.update_slot.input?.nested?.id ?? [] as error}
+              <span class="error">{error}</span>
+            {/each}
+            {#if form.errors.update_slot.execution}
+              <span class="error"
+                >{form.errors.update_slot.execution}</span
+              >
+            {/if}
           {/if}
           <input
             type="hidden"

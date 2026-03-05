@@ -37,11 +37,14 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    await invite_manager(
+    const [invite_manager_errors] = await invite_manager(
       form_data,
       realtor_org.id,
       locals.user.id,
     )
+    if (invite_manager_errors) {
+      return { errors: invite_manager_errors }
+    }
     return null
   },
 
@@ -53,7 +56,13 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    await remove_manager(form_data, realtor_org.id)
+    const [remove_manager_errors] = await remove_manager(
+      form_data,
+      realtor_org.id,
+    )
+    if (remove_manager_errors) {
+      return { errors: remove_manager_errors }
+    }
     return null
   },
 
@@ -68,7 +77,11 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    await reassign_property(form_data)
+    const [reassign_property_errors] =
+      await reassign_property(form_data)
+    if (reassign_property_errors) {
+      return { errors: reassign_property_errors }
+    }
     return null
   },
 }

@@ -1,5 +1,21 @@
 import { pbkdf2Sync, createCipheriv } from "node:crypto"
 import * as v from "valibot"
+import { safe_async } from "$lib/safe_async"
+import type { ObjectValues } from "$lib/compose_types"
+import { logger } from "$lib/telemetry/logger"
+
+export const API_FETCH_ERROR = {
+  FETCH_FAILED: 0,
+  API_ERROR: 1,
+  JSON_PARSE_FAILED: 2,
+  SCHEMA_VALIDATION_FAILED: 3,
+} as const
+
+// NOTE: newly added error
+export type ApiFetchError = {
+  type: ObjectValues<typeof API_FETCH_ERROR>
+  error: Error
+}
 
 function get_config() {
   const username = process.env.DIGITAL_SIGNATURE_USERNAME
@@ -87,25 +103,87 @@ async function api_fetch<T>(
   endpoint: string,
   body: object,
   schema: v.GenericSchema<T>,
-): Promise<T> {
+): Promise<[ApiFetchError, null] | [null, T]> {
   const { base_url, user_id } = get_config()
-  const response = await fetch(`${base_url}${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: make_auth_token(),
-      IdentificadorUsuario: user_id,
-    },
-    body: JSON.stringify(body),
-  })
+  // NOTE: new safe implementation
+  const [fetch_error, response] = await safe_async(
+    fetch(`${base_url}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: make_auth_token(),
+        IdentificadorUsuario: user_id,
+      },
+      body: JSON.stringify(body),
+    }),
+  )
+  if (fetch_error) {
+    logger.error(
+      fetch_error.message,
+      { endpoint },
+      fetch_error,
+    )
+    return [
+      {
+        type: API_FETCH_ERROR.FETCH_FAILED,
+        error: fetch_error,
+      },
+      null,
+    ]
+  }
+
   if (!response.ok) {
     const error_text = await response.text()
-    throw new Error(
+    const api_error = new Error(
       `Digital signature API error (${endpoint}): ${error_text}`,
     )
+    logger.error(api_error.message, { endpoint }, api_error)
+    return [
+      {
+        type: API_FETCH_ERROR.API_ERROR,
+        error: api_error,
+      },
+      null,
+    ]
   }
-  const data = await response.json()
-  return v.parse(schema, data)
+
+  const [json_error, data] = await safe_async(
+    response.json(),
+  )
+  if (json_error) {
+    logger.error(
+      json_error.message,
+      { endpoint },
+      json_error,
+    )
+    return [
+      {
+        type: API_FETCH_ERROR.JSON_PARSE_FAILED,
+        error: json_error,
+      },
+      null,
+    ]
+  }
+
+  const parsed_validation = v.safeParse(schema, data)
+  if (!parsed_validation.success) {
+    const parse_error = new Error("Schema validation failed")
+    logger.error(
+      parse_error.message,
+      { endpoint },
+      parse_error,
+    )
+    return [
+      {
+        type: API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED,
+        error: parse_error,
+      },
+      null,
+    ]
+  }
+  const parsed = parsed_validation.output
+
+  return [null, parsed]
 }
 
 const BaseResponseSchema = v.object({

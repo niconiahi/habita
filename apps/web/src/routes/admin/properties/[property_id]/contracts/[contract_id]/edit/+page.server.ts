@@ -137,7 +137,13 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_contract(form_data, property_id)
+    const [update_contract_errors] = await update_contract(
+      form_data,
+      property_id,
+    )
+    if (update_contract_errors) {
+      return { errors: update_contract_errors }
+    }
     return null
   },
   [ACTION.CREATE_FILE]: async ({
@@ -159,7 +165,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await create_file(form_data)
+    const [create_file_errors] =
+      await create_file(form_data)
+    if (create_file_errors) {
+      return { errors: create_file_errors }
+    }
     return null
   },
   [ACTION.DESTROY_FILE]: async ({
@@ -181,7 +191,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await destroy_file(form_data)
+    const [destroy_file_errors] =
+      await destroy_file(form_data)
+    if (destroy_file_errors) {
+      return { errors: destroy_file_errors }
+    }
     return null
   },
   [ACTION.CREATE_PDF]: async ({
@@ -206,7 +220,14 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    return await create_pdf(form_data, property_id)
+    const [create_pdf_errors] = await create_pdf(
+      form_data,
+      property_id,
+    )
+    if (create_pdf_errors) {
+      return { errors: create_pdf_errors }
+    }
+    return null
   },
   [ACTION.CREATE_CONTRACT_ITEM]: async ({
     request,
@@ -233,7 +254,11 @@ export const actions: Actions = {
         message: "contract id should be a number",
       },
     )
-    await create_contract_item(contract_id)
+    const [create_contract_item_errors] =
+      await create_contract_item(contract_id)
+    if (create_contract_item_errors) {
+      return { errors: create_contract_item_errors }
+    }
     return null
   },
   [ACTION.UPDATE_CONTRACT_ITEM]: async ({
@@ -255,7 +280,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_contract_item(form_data)
+    const [update_contract_item_errors] =
+      await update_contract_item(form_data)
+    if (update_contract_item_errors) {
+      return { errors: update_contract_item_errors }
+    }
     return null
   },
   [ACTION.DESTROY_CONTRACT_ITEM]: async ({
@@ -277,7 +306,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await destroy_contract_item(form_data)
+    const [destroy_contract_item_errors] =
+      await destroy_contract_item(form_data)
+    if (destroy_contract_item_errors) {
+      return { errors: destroy_contract_item_errors }
+    }
     return null
   },
   [ACTION.CREATE_CONTRACT_ITEM_FILE]: async ({
@@ -299,7 +332,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await create_contract_item_file(form_data)
+    const [create_contract_item_file_errors] =
+      await create_contract_item_file(form_data)
+    if (create_contract_item_file_errors) {
+      return { errors: create_contract_item_file_errors }
+    }
     return null
   },
   [ACTION.DESTROY_CONTRACT_ITEM_FILE]: async ({
@@ -321,7 +358,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await destroy_contract_item_file(form_data)
+    const [destroy_contract_item_file_errors] =
+      await destroy_contract_item_file(form_data)
+    if (destroy_contract_item_file_errors) {
+      return { errors: destroy_contract_item_file_errors }
+    }
     return null
   },
   [ACTION.UPDATE_PERIOD]: async ({
@@ -343,7 +384,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_period(form_data)
+    const [update_period_errors] =
+      await update_period(form_data)
+    if (update_period_errors) {
+      return { errors: update_period_errors }
+    }
     return null
   },
   [ACTION.CREATE_PERIOD]: async ({
@@ -369,7 +414,13 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await create_period(form_data, contract_id)
+    const [create_period_errors] = await create_period(
+      form_data,
+      contract_id,
+    )
+    if (create_period_errors) {
+      return { errors: create_period_errors }
+    }
     return null
   },
   [ACTION.CREATE_WARRANTY]: async ({
@@ -391,7 +442,12 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    return await create_warranty(form_data)
+    const [create_warranty_errors] =
+      await create_warranty(form_data)
+    if (create_warranty_errors) {
+      return { errors: create_warranty_errors }
+    }
+    return null
   },
   [ACTION.UPDATE_WARRANTY]: async ({
     request,
@@ -412,7 +468,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_warranty(form_data)
+    const [update_warranty_errors] =
+      await update_warranty(form_data)
+    if (update_warranty_errors) {
+      return { errors: update_warranty_errors }
+    }
     return null
   },
   [ACTION.ADD_INCOME_GUARANTOR]: async ({
@@ -434,7 +494,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await add_income_guarantor(form_data)
+    const [add_income_guarantor_errors] =
+      await add_income_guarantor(form_data)
+    if (add_income_guarantor_errors) {
+      return { errors: add_income_guarantor_errors }
+    }
     return null
   },
   [ACTION.UPDATE_INCOME_GUARANTOR]: async ({
@@ -456,7 +520,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await update_income_guarantor(form_data)
+    const [update_income_guarantor_errors] =
+      await update_income_guarantor(form_data)
+    if (update_income_guarantor_errors) {
+      return { errors: update_income_guarantor_errors }
+    }
     return null
   },
   [ACTION.DESTROY_INCOME_GUARANTOR]: async ({
@@ -478,7 +546,11 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    await destroy_income_guarantor(form_data)
+    const [destroy_income_guarantor_errors] =
+      await destroy_income_guarantor(form_data)
+    if (destroy_income_guarantor_errors) {
+      return { errors: destroy_income_guarantor_errors }
+    }
     return null
   },
   [ACTION.CHECK_CERTIFICATES]: async ({
@@ -499,7 +571,12 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    return await check_certificates(property_id)
+    const [check_certificates_errors] =
+      await check_certificates(property_id)
+    if (check_certificates_errors) {
+      return { errors: check_certificates_errors }
+    }
+    return null
   },
   [ACTION.START_ONBOARDING]: async ({
     request,
@@ -520,7 +597,12 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    return await start_onboarding(form_data, property_id)
+    const [start_onboarding_errors] =
+      await start_onboarding(form_data, property_id)
+    if (start_onboarding_errors) {
+      return { errors: start_onboarding_errors }
+    }
+    return null
   },
   [ACTION.SEND_FOR_SIGNING]: async ({
     request,
@@ -541,7 +623,12 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    return await send_for_signing(form_data, property_id)
+    const [send_for_signing_errors] =
+      await send_for_signing(form_data, property_id)
+    if (send_for_signing_errors) {
+      return { errors: send_for_signing_errors }
+    }
+    return null
   },
   [ACTION.VERIFY_SIGNATURE]: async ({
     request,
@@ -566,10 +653,15 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    return await verify_signature(
-      form_data,
-      property_id,
-      contract_id,
-    )
+    const [verify_signature_errors] =
+      await verify_signature(
+        form_data,
+        property_id,
+        contract_id,
+      )
+    if (verify_signature_errors) {
+      return { errors: verify_signature_errors }
+    }
+    return null
   },
 }

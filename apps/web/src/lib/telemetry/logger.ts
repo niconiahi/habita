@@ -80,7 +80,7 @@ function error(
   get_otel_logger().emit({
     severityNumber: SeverityNumber.ERROR,
     body: message,
-    attributes,
+    attributes: _attributes,
   })
 }
 

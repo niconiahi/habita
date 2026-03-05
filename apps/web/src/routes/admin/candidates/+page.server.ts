@@ -40,7 +40,11 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const { redirect_to } = await set_tenant(form_data)
-    redirect(303, redirect_to)
+    const [set_tenant_errors, set_tenant_data] =
+      await set_tenant(form_data)
+    if (set_tenant_errors) {
+      return { errors: set_tenant_errors }
+    }
+    redirect(303, set_tenant_data.redirect_to)
   },
 }

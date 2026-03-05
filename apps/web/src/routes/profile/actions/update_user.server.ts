@@ -1,10 +1,9 @@
 import * as v from "valibot"
 import { query_builder } from "db/query_builder"
-import {
-  normalize_input,
-  get_errors,
-} from "$lib/server/form"
+import { normalize_input } from "$lib/server/form"
 import { encrypt } from "$lib/server/encryption"
+import { safe_async } from "$lib/safe_async"
+import { logger } from "$lib/telemetry/logger"
 
 const ArgentinePhoneSchema = v.pipe(
   v.string(),
@@ -43,14 +42,26 @@ const InputSchema = v.object({
   cuil: CuilSchema,
 })
 
-async function execute(
+export async function update_user(
   form_data: FormData,
   user_id: number,
 ) {
-  const input = v.parse(
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
+  if (!input_validation.success) {
+    return [
+      {
+        update_user: {
+          input: v.flatten(input_validation.issues),
+        },
+      },
+      null,
+    ] as const
+  }
+  const input = input_validation.output
+
   const name = encrypt(input.name)
   const surname = encrypt(input.surname)
   const phone_number =
@@ -63,23 +74,31 @@ async function execute(
       : encrypt(input.document_number)
   const cuil =
     input.cuil === "" ? null : encrypt(input.cuil)
-  await query_builder
-    .updateTable("user")
-    .set({
-      name,
-      surname,
-      phone_number,
-      document_number,
-      cuil,
-      updated_at: new Date(),
-    })
-    .where("user.id", "=", user_id)
-    .execute()
-}
+  const [error] = await safe_async(
+    query_builder
+      .updateTable("user")
+      .set({
+        name,
+        surname,
+        phone_number,
+        document_number,
+        cuil,
+        updated_at: new Date(),
+      })
+      .where("user.id", "=", user_id)
+      .execute(),
+  )
+  if (error) {
+    logger.error(error.message, { user_id }, error)
+    return [
+      {
+        update_user: {
+          execution: "Error al actualizar el perfil",
+        },
+      },
+      null,
+    ] as const
+  }
 
-export const update_user = {
-  execute,
-  get_errors: (error: v.ValiError<typeof InputSchema>) => {
-    return get_errors<typeof InputSchema>(error)
-  },
+  return [null, null] as const
 }
