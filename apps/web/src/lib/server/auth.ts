@@ -4,6 +4,7 @@ import { createAccessControl } from "better-auth/plugins/access"
 import { Pool } from "pg"
 import { encrypt } from "./encryption"
 import { lazy } from "$lib/server/lazy"
+import { logger } from "$lib/telemetry/logger"
 
 function get_config() {
   const secret = process.env.BETTER_AUTH_SECRET
@@ -202,11 +203,19 @@ export const auth = lazy(() => {
                   userId: String(user.id),
                 },
               })
+              logger.info("user signed up", {
+                user_id: user.id,
+                email: user.email,
+              })
             } catch (error) {
-              console.error(
-                "Failed to create organization for user:",
-                user.id,
-                error,
+              const err =
+                error instanceof Error
+                  ? error
+                  : new Error(String(error))
+              logger.error(
+                "failed to create organization for user",
+                { user_id: user.id },
+                err,
               )
               throw error
             }

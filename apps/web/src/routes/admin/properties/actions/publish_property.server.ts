@@ -51,5 +51,9 @@ export async function publish_property(
       null,
     ] as const
   }
+  logger.info("property published", {
+    property_id: input.property_id,
+  })
+
   return [null, null] as const
 }

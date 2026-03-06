@@ -112,6 +112,11 @@ export async function invite_landlord(form_data: FormData) {
     }
   }
 
+  logger.info("landlord invitation sent", {
+    property_id: input.property_id,
+    email: input.email,
+  })
+
   return [null, null] as const
 }
 

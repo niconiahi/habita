@@ -75,5 +75,10 @@ export async function upload_receipt(form_data: FormData) {
     ] as const
   }
 
+  logger.info("receipt uploaded", {
+    contract_id: input.contract_id,
+    receipt_type: input.type,
+  })
+
   return [null, null] as const
 }

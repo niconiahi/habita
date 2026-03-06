@@ -5,6 +5,7 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
 import { kv } from "$lib/server/kv"
 import { require_view_access } from "$lib/server/property_access"
+import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
 
 const FileSchema = v.object({
@@ -121,6 +122,10 @@ export const GET: RequestHandler = async ({
       locals.user.id,
     )
     if (!property_id) {
+      logger.warn("file access denied", {
+        file_id,
+        user_id: locals.user.id,
+      })
       error(403, "Forbidden")
     } else {
       await require_view_access(
