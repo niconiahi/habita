@@ -7,6 +7,7 @@ import { normalize_input } from "$lib/server/form"
 import { fetch_landlord } from "$lib/server/landlord"
 import { fetch_tenant } from "$lib/server/tenant"
 import { get_origin } from "$lib/server/origin"
+import { logger } from "$lib/telemetry/logger"
 
 const PartySchema = v.picklist(["landlord", "tenant"])
 
@@ -121,5 +122,10 @@ export async function start_onboarding(
       null,
     ] as const
   }
+  logger.info("digital signature onboarding started", {
+    property_id,
+    party: input.party,
+  })
+
   return [null, null] as const
 }

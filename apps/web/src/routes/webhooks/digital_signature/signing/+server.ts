@@ -53,6 +53,11 @@ export const GET: RequestHandler = async ({ url }) => {
       .where("contract_id", "=", contract_id)
       .execute()
   }
+  logger.info("contract party signed", {
+    contract_id,
+    party,
+    status,
+  })
   if (result === "error") {
     redirect(302, "/digital_signature/error")
   }
@@ -177,6 +182,9 @@ export const GET: RequestHandler = async ({ url }) => {
             .where("id", "=", contract_id)
             .execute()
         })
+      logger.info("contract activated after both signatures", {
+        contract_id,
+      })
     }
   }
   redirect(302, "/digital_signature/success")

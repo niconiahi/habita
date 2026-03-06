@@ -5,6 +5,7 @@ import { now } from "$lib/server/now"
 import { compose_token_hash } from "$lib/server/token"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { assign_property_access } from "$lib/server/property_access"
+import { logger } from "$lib/telemetry/logger"
 import { query_builder } from "db/query_builder"
 import type { RequestHandler } from "./$types"
 
@@ -82,5 +83,9 @@ export const GET: RequestHandler = async ({
     .set({ used_at: now })
     .where("invitation_token.token", "=", token_hash)
     .execute()
+  logger.info("landlord accepted property invite", {
+    property_id,
+    user_id: locals.user.id,
+  })
   redirect(302, `/properties/${property_id}`)
 }

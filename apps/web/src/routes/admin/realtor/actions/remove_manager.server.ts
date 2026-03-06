@@ -57,5 +57,10 @@ export async function remove_manager(
       null,
     ] as const
   }
+  logger.info("manager removed from organization", {
+    organization_id,
+    manager_id: input.manager_id,
+  })
+
   return [null, null] as const
 }

@@ -70,6 +70,11 @@ export async function set_tenant(form_data: FormData) {
     ] as const
   }
 
+  logger.info("tenant assigned to property", {
+    property_id: input.property_id,
+    candidate_id: input.candidate_id,
+  })
+
   return [
     null,
     { redirect_to: "/admin/candidates" },

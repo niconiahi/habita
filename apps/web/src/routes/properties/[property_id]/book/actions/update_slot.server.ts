@@ -75,7 +75,6 @@ export async function update_slot(
 
   span.setAttribute("slot.id", id)
   span.setAttribute("visitant.id", visitant_id)
-  logger.info("updating slot")
 
   const [tx_error, tx_result] = await safe_async(
     query_builder.transaction().execute(async (tx) => {
@@ -122,7 +121,6 @@ export async function update_slot(
   }
   const slot = tx_result
 
-  logger.info("notification created")
   span.setAttribute(
     "slot.start_date",
     slot.start_date.toISOString(),
@@ -132,7 +130,6 @@ export async function update_slot(
     slot.end_date.toISOString(),
   )
   span.setAttribute("host.id", slot.host_id)
-  logger.info("slot updated")
 
   const host_row = await query_builder
     .selectFrom("user")
@@ -196,7 +193,6 @@ STATUS:CONFIRMED
 SEQUENCE:0
 END:VEVENT
 END:VCALENDAR`
-  logger.info("ics file created")
 
   const visitant_text = `Hello ${visitant.name},
 
@@ -303,7 +299,11 @@ Please open the attached calendar invitation to add this event to your calendar.
       )
     }
   }
-  logger.info("slot booking completed")
+  logger.info("property visit booked", {
+    slot_id: id,
+    property_id,
+    visitant_id,
+  })
 
   return [null, null] as const
 }

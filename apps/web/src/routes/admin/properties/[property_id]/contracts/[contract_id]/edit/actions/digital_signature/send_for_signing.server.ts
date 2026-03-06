@@ -270,6 +270,12 @@ export async function send_for_signing(
       null,
     ] as const
   }
+  logger.info("contract sent for signing", {
+    contract_id: input.contract_id,
+    document_id:
+      submit_result.Datos.IdentificadorDocumento,
+  })
+
   const signatures_url = `${origin}/signatures`
   const email_html = `<p>Tiene un documento para firmar en Habita.</p><p><a href="${signatures_url}">Ver mis documentos</a></p>`
   await Promise.all(

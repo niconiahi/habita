@@ -125,6 +125,11 @@ export async function create_property(form_data: FormData) {
     ] as const
   }
 
+  logger.info("property created", {
+    property_id: property.id,
+    user_id: input.user_id,
+  })
+
   return [
     null,
     {

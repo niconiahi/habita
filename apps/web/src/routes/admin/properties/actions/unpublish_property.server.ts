@@ -52,5 +52,9 @@ export async function unpublish_property(
       null,
     ] as const
   }
+  logger.info("property unpublished", {
+    property_id: input.property_id,
+  })
+
   return [null, null] as const
 }

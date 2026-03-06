@@ -188,5 +188,10 @@ export async function create_pdf(
       null,
     ] as const
   }
+  logger.info("contract pdf generated", {
+    property_id,
+    contract_id: input.id,
+  })
+
   return [null, null] as const
 }

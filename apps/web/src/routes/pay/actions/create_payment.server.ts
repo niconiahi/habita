@@ -117,6 +117,10 @@ export async function create_payment() {
     ] as const
   }
 
+  logger.info("payment preference created", {
+    preference_id: preference.id,
+  })
+
   return [
     null,
     { init_point: preference.init_point },

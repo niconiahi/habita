@@ -65,5 +65,10 @@ export async function invite_manager(
 
   // TODO: Send invitation email
 
+  logger.info("manager invited to organization", {
+    organization_id,
+    email: input.email,
+  })
+
   return [null, null] as const
 }

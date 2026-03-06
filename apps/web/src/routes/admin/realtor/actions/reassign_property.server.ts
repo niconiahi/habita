@@ -74,6 +74,11 @@ export async function reassign_property(
     }
   }
 
+  logger.info("property reassigned", {
+    property_id: input.property_id,
+    new_manager_id: input.manager_id,
+  })
+
   return [
     null,
     {

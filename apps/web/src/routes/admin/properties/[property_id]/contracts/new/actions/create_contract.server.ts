@@ -72,6 +72,11 @@ export async function create_contract(
       null,
     ] as const
   }
+  logger.info("contract created", {
+    property_id,
+    contract_id: contract.id,
+  })
+
   return [
     null,
     {
