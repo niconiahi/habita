@@ -571,12 +571,12 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const [check_certificates_errors] =
+    const [check_certificates_errors, check_certificates_data] =
       await check_certificates(property_id)
     if (check_certificates_errors) {
       return { errors: check_certificates_errors }
     }
-    return null
+    return check_certificates_data
   },
   [ACTION.START_ONBOARDING]: async ({
     request,
