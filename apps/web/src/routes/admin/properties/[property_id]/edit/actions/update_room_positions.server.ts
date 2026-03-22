@@ -62,7 +62,11 @@ export async function update_room_positions(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { room_count: input.positions.length }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { room_count: input.positions.length },
+      transaction_error,
+    )
     return [
       {
         update_room_positions: {

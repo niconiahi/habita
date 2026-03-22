@@ -35,7 +35,11 @@ export async function destroy_income_guarantor(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { guarantor_id: input.id }, error)
+    logger.error(
+      error.message,
+      { guarantor_id: input.id },
+      error,
+    )
     return [
       {
         destroy_income_guarantor: {

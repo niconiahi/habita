@@ -58,7 +58,11 @@ export async function toggle_tag(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { property_id, tag_type: input.type }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { property_id, tag_type: input.type },
+      transaction_error,
+    )
     return [
       {
         toggle_tag: {

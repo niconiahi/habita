@@ -48,7 +48,11 @@ export async function create_property_file(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { property_id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { property_id },
+      transaction_error,
+    )
     return [
       {
         create_property_file: {

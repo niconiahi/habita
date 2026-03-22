@@ -49,8 +49,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "La persona no tiene CUIL configurado",
+          execution: "La persona no tiene CUIL configurado",
         },
       },
       null,
@@ -72,8 +71,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "Error al buscar la firma digital",
+          execution: "Error al buscar la firma digital",
         },
       },
       null,
@@ -121,8 +119,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "Error al buscar el PDF del contrato",
+          execution: "Error al buscar el PDF del contrato",
         },
       },
       null,
@@ -132,8 +129,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "No se encontró el PDF del contrato",
+          execution: "No se encontró el PDF del contrato",
         },
       },
       null,
@@ -165,8 +161,7 @@ export async function verify_signature(
       ] as const
     }
     if (
-      certificate_error.type ===
-      API_FETCH_ERROR.API_ERROR
+      certificate_error.type === API_FETCH_ERROR.API_ERROR
     ) {
       return [
         {
@@ -209,8 +204,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "Error al obtener el certificado",
+          execution: "Error al obtener el certificado",
         },
       },
       null,
@@ -301,8 +295,7 @@ export async function verify_signature(
         certificate.Datos.CertificadoDerBase64,
       HashSHA256Hexadecimal: original_hash,
       HashSHA256FirmadoHexadecimal:
-        signed_document.Datos
-          .HashSHA256FirmadoHexadecimal,
+        signed_document.Datos.HashSHA256FirmadoHexadecimal,
     })
   if (verify_error) {
     if (
@@ -318,9 +311,7 @@ export async function verify_signature(
         null,
       ] as const
     }
-    if (
-      verify_error.type === API_FETCH_ERROR.API_ERROR
-    ) {
+    if (verify_error.type === API_FETCH_ERROR.API_ERROR) {
       return [
         {
           verify_signature: {
@@ -362,8 +353,7 @@ export async function verify_signature(
     return [
       {
         verify_signature: {
-          execution:
-            "Error al verificar la firma",
+          execution: "Error al verificar la firma",
         },
       },
       null,

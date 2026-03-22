@@ -24,8 +24,7 @@ export async function create_contract_item(
     return [
       {
         create_contract_item: {
-          execution:
-            "Error al crear el ítem del contrato",
+          execution: "Error al crear el ítem del contrato",
         },
       },
       null,

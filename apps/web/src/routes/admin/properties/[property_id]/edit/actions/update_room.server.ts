@@ -10,7 +10,11 @@ const InputSchema = v.object({
   id: ForceNumberSchema,
   length: ForceNumberSchema,
   width: ForceNumberSchema,
-  type: v.pipe(v.string(), v.transform(Number), RoomTypeSchema),
+  type: v.pipe(
+    v.string(),
+    v.transform(Number),
+    RoomTypeSchema,
+  ),
 })
 
 export async function update_room(form_data: FormData) {
@@ -43,7 +47,11 @@ export async function update_room(form_data: FormData) {
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { room_id: input.id }, error)
+    logger.error(
+      error.message,
+      { room_id: input.id },
+      error,
+    )
     return [
       {
         update_room: {

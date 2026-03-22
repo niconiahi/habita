@@ -52,7 +52,11 @@ export async function invite_manager(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { email: input.email, organization_id, inviter_id }, error)
+    logger.error(
+      error.message,
+      { email: input.email, organization_id, inviter_id },
+      error,
+    )
     return [
       {
         invite_manager: {

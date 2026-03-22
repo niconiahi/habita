@@ -40,7 +40,11 @@ export const GET: RequestHandler = async ({
   )
   if (fetch_error) {
     clearTimeout(timeout)
-    logger.error(fetch_error.message, { query }, fetch_error)
+    logger.error(
+      fetch_error.message,
+      { query },
+      fetch_error,
+    )
     if (fetch_error.name === "AbortError") {
       error(504, "Nominatim timeout")
     }
@@ -71,7 +75,11 @@ export const GET: RequestHandler = async ({
     JSON.parse(text),
   )
   if (parse_error) {
-    logger.error(parse_error.message, { query }, parse_error)
+    logger.error(
+      parse_error.message,
+      { query },
+      parse_error,
+    )
     return json(
       { error: "Invalid JSON from Nominatim" },
       { status: 502 },

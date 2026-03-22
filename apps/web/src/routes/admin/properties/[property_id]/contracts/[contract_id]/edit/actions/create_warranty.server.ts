@@ -186,7 +186,14 @@ export async function create_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { contract_id: input.contract_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            contract_id: input.contract_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             create_warranty: {
@@ -246,7 +253,14 @@ export async function create_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { contract_id: input.contract_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            contract_id: input.contract_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             create_warranty: {
@@ -312,7 +326,14 @@ export async function create_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { contract_id: input.contract_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            contract_id: input.contract_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             create_warranty: {

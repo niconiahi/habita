@@ -62,7 +62,15 @@ export async function create_slot(form_data: FormData) {
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id: input.property_id, host_id: input.host_id, date: input.date }, error)
+    logger.error(
+      error.message,
+      {
+        property_id: input.property_id,
+        host_id: input.host_id,
+        date: input.date,
+      },
+      error,
+    )
     return [
       {
         create_slot: {

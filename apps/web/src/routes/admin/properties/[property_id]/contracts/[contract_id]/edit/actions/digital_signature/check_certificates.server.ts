@@ -13,8 +13,7 @@ export async function check_certificates(
     return [
       {
         check_certificates: {
-          execution:
-            "El locador no tiene CUIL configurado",
+          execution: "El locador no tiene CUIL configurado",
         },
       },
       null,

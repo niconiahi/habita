@@ -182,9 +182,12 @@ export const GET: RequestHandler = async ({ url }) => {
             .where("id", "=", contract_id)
             .execute()
         })
-      logger.info("contract activated after both signatures", {
-        contract_id,
-      })
+      logger.info(
+        "contract activated after both signatures",
+        {
+          contract_id,
+        },
+      )
     }
   }
   redirect(302, "/digital_signature/success")

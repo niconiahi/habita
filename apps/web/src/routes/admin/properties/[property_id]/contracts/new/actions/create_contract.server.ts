@@ -33,40 +33,37 @@ export async function create_contract(
   const input = input_validation.output
 
   const [error, contract] = await safe_async(
-    query_builder
-      .transaction()
-      .execute(async (tx) => {
-        const contract = await tx
-          .insertInto("contract")
-          .values({
-            property_id,
-            created_at: now,
-            updated_at: now,
-            state: CONTRACT_STATE.EDITING,
-            type: input.type,
-          })
-          .returning("id")
-          .executeTakeFirstOrThrow()
-        await tx
-          .insertInto("period")
-          .values({
-            contract_id: contract.id,
-            price: input.price,
-            created_at: now,
-            updated_at: now,
-          })
-          .returning("id")
-          .executeTakeFirstOrThrow()
-        return contract
-      }),
+    query_builder.transaction().execute(async (tx) => {
+      const contract = await tx
+        .insertInto("contract")
+        .values({
+          property_id,
+          created_at: now,
+          updated_at: now,
+          state: CONTRACT_STATE.EDITING,
+          type: input.type,
+        })
+        .returning("id")
+        .executeTakeFirstOrThrow()
+      await tx
+        .insertInto("period")
+        .values({
+          contract_id: contract.id,
+          price: input.price,
+          created_at: now,
+          updated_at: now,
+        })
+        .returning("id")
+        .executeTakeFirstOrThrow()
+      return contract
+    }),
   )
   if (error) {
     logger.error(error.message, { property_id }, error)
     return [
       {
         create_contract: {
-          execution:
-            "Error al crear el contrato",
+          execution: "Error al crear el contrato",
         },
       },
       null,

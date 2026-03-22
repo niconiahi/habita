@@ -50,9 +50,7 @@
               required
             />
             {#each input_errors.name ?? [] as error}
-              <Formulary.Error
-                >{error}</Formulary.Error
-              >
+              <Formulary.Error>{error}</Formulary.Error>
             {/each}
           </Formulary.Field>
           <Formulary.Field>
@@ -67,9 +65,7 @@
               required
             />
             {#each input_errors.surname ?? [] as error}
-              <Formulary.Error
-                >{error}</Formulary.Error
-              >
+              <Formulary.Error>{error}</Formulary.Error>
             {/each}
           </Formulary.Field>
           <Formulary.Field>
@@ -85,9 +81,7 @@
             />
             {#each input_errors.phone_number ?? [] as error}
               <div class="error-with-link">
-                <Formulary.Error
-                  >{error}</Formulary.Error
-                >
+                <Formulary.Error>{error}</Formulary.Error>
                 <a class="button" href="/learn/phone-number"
                   >Mirar documentacion</a
                 >
@@ -106,9 +100,7 @@
                 ""}
             />
             {#each input_errors.document_number ?? [] as error}
-              <Formulary.Error
-                >{error}</Formulary.Error
-              >
+              <Formulary.Error>{error}</Formulary.Error>
             {/each}
           </Formulary.Field>
           <Formulary.Field>
@@ -122,9 +114,7 @@
               value={data.user_profile.cuil ?? ""}
             />
             {#each input_errors.cuil ?? [] as error}
-              <Formulary.Error
-                >{error}</Formulary.Error
-              >
+              <Formulary.Error>{error}</Formulary.Error>
             {/each}
           </Formulary.Field>
           <Formulary.Field>

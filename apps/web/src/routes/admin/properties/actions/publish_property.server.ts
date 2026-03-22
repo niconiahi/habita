@@ -41,7 +41,11 @@ export async function publish_property(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id: input.property_id }, error)
+    logger.error(
+      error.message,
+      { property_id: input.property_id },
+      error,
+    )
     return [
       {
         publish_property: {

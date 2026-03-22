@@ -9,7 +9,10 @@ import { query_builder } from "db/query_builder"
 
 const InputSchema = v.object({
   contract_id: ForceNumberSchema,
-  file_type: v.pipe(ForceNumberSchema, ContractFileTypeSchema),
+  file_type: v.pipe(
+    ForceNumberSchema,
+    ContractFileTypeSchema,
+  ),
   file: v.instance(File),
 })
 
@@ -80,7 +83,14 @@ export async function create_file(form_data: FormData) {
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { contract_id: input.contract_id, file_type: input.file_type }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      {
+        contract_id: input.contract_id,
+        file_type: input.file_type,
+      },
+      transaction_error,
+    )
     return [
       {
         create_file: {

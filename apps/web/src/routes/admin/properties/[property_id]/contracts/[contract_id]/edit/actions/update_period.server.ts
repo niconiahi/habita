@@ -39,7 +39,11 @@ export async function update_period(form_data: FormData) {
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { period_id: input.id }, error)
+    logger.error(
+      error.message,
+      { period_id: input.id },
+      error,
+    )
     return [
       {
         update_period: {

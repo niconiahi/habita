@@ -45,7 +45,14 @@ export async function update_income_guarantor(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { guarantor_id: input.id, guarantor_dni: input.guarantor_dni }, error)
+    logger.error(
+      error.message,
+      {
+        guarantor_id: input.id,
+        guarantor_dni: input.guarantor_dni,
+      },
+      error,
+    )
     return [
       {
         update_income_guarantor: {

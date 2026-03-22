@@ -10,7 +10,11 @@ import { logger } from "$lib/telemetry/logger"
 const InputSchema = v.object({
   id: ForceNumberSchema,
   code: v.string(),
-  type: v.pipe(v.string(), v.transform(Number), ServiceTypeSchema),
+  type: v.pipe(
+    v.string(),
+    v.transform(Number),
+    ServiceTypeSchema,
+  ),
 })
 
 export async function update_service(
@@ -47,7 +51,11 @@ export async function update_service(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id, service_id: input.id }, error)
+    logger.error(
+      error.message,
+      { property_id, service_id: input.id },
+      error,
+    )
     return [
       {
         update_service: {

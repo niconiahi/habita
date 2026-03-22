@@ -60,7 +60,11 @@ export async function update_location(form_data: FormData) {
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { location_id: input.id }, error)
+    logger.error(
+      error.message,
+      { location_id: input.id },
+      error,
+    )
     return [
       {
         update_location: {

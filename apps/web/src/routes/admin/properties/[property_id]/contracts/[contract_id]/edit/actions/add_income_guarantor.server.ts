@@ -57,7 +57,14 @@ export async function add_income_guarantor(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { warranty_id: input.warranty_id, guarantor_dni: input.guarantor_dni }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      {
+        warranty_id: input.warranty_id,
+        guarantor_dni: input.guarantor_dni,
+      },
+      transaction_error,
+    )
     return [
       {
         add_income_guarantor: {

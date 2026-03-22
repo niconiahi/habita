@@ -94,7 +94,14 @@ export async function create_property(form_data: FormData) {
     }),
   )
   if (tx_error) {
-    logger.error(tx_error.message, { user_id: input.user_id, organization_id: input.organization_id }, tx_error)
+    logger.error(
+      tx_error.message,
+      {
+        user_id: input.user_id,
+        organization_id: input.organization_id,
+      },
+      tx_error,
+    )
     return [
       {
         create_property: {
@@ -113,7 +120,11 @@ export async function create_property(form_data: FormData) {
     ),
   )
   if (access_error) {
-    logger.error(access_error.message, { property_id: property.id, user_id: input.user_id }, access_error)
+    logger.error(
+      access_error.message,
+      { property_id: property.id, user_id: input.user_id },
+      access_error,
+    )
     return [
       {
         create_property: {
