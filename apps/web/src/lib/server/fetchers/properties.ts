@@ -1,4 +1,4 @@
-import { sql } from "kysely"
+import { sql, type SqlBool } from "kysely"
 import {
   jsonArrayFrom,
   jsonObjectFrom,
@@ -9,6 +9,7 @@ import type { PropertyTagType } from "$lib/property_tag_type"
 import { query_builder } from "db/query_builder"
 
 export interface PropertyFilters {
+  zone_id?: number
   tag_types?: PropertyTagType[]
   service_types?: number[]
   ambientes_min?: number
@@ -119,36 +120,53 @@ export async function fetch_properties(
     ])
     .where("property.state", "=", PROPERTY_STATE.PUBLISHED)
   if (filters) {
-    for (const tag_type of filters.tag_types ?? []) {
+    if (filters.zone_id) {
+      const zone_id = filters.zone_id
       query = query.where((eb) =>
         eb.exists(
           eb
-            .selectFrom("property_tag")
+            .selectFrom("zone")
             .select(sql.lit(1).as("one"))
-            .whereRef(
-              "property_tag.property_id",
-              "=",
-              "property.id",
-            )
-            .where("property_tag.type", "=", tag_type),
+            .where("zone.id", "=", zone_id)
+            .where(
+              sql<SqlBool>`ST_Contains(zone.geometry, location.point)`,
+            ),
         ),
       )
     }
-    for (const service_type of filters.service_types ??
-      []) {
-      query = query.where((eb) =>
-        eb.exists(
-          eb
-            .selectFrom("service")
-            .select(sql.lit(1).as("one"))
-            .whereRef(
-              "service.property_id",
-              "=",
-              "property.id",
-            )
-            .where("service.type", "=", service_type),
-        ),
-      )
+    if (filters.tag_types?.length) {
+      for (const tag_type of filters.tag_types) {
+        query = query.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("property_tag")
+              .select(sql.lit(1).as("one"))
+              .whereRef(
+                "property_tag.property_id",
+                "=",
+                "property.id",
+              )
+              .where("property_tag.type", "=", tag_type),
+          ),
+        )
+      }
+    }
+    if (filters.service_types?.length) {
+      for (const service_type of filters.service_types) {
+        query = query.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("service")
+              .select(sql.lit(1).as("one"))
+              .whereRef(
+                "service.property_id",
+                "=",
+                "property.id",
+              )
+              .where("service.type", "=", service_type),
+          ),
+        )
+      }
     }
     if (filters.construction_year_min !== undefined) {
       query = query.where(
@@ -165,6 +183,7 @@ export async function fetch_properties(
       )
     }
     if (filters.total_surface_min !== undefined) {
+      const min = filters.total_surface_min
       query = query.where((eb) =>
         eb(
           eb
@@ -180,11 +199,12 @@ export async function fetch_properties(
               "property.id",
             ),
           ">=",
-          filters.total_surface_min!,
+          min,
         ),
       )
     }
     if (filters.total_surface_max !== undefined) {
+      const max = filters.total_surface_max
       query = query.where((eb) =>
         eb(
           eb
@@ -200,11 +220,12 @@ export async function fetch_properties(
               "property.id",
             ),
           "<=",
-          filters.total_surface_max!,
+          max,
         ),
       )
     }
     if (filters.ambientes_min !== undefined) {
+      const min = filters.ambientes_min
       query = query.where((eb) =>
         eb(
           eb
@@ -216,11 +237,12 @@ export async function fetch_properties(
               "property.id",
             ),
           ">=",
-          filters.ambientes_min!,
+          min,
         ),
       )
     }
     if (filters.ambientes_max !== undefined) {
+      const max = filters.ambientes_max
       query = query.where((eb) =>
         eb(
           eb
@@ -232,11 +254,12 @@ export async function fetch_properties(
               "property.id",
             ),
           "<=",
-          filters.ambientes_max!,
+          max,
         ),
       )
     }
     if (filters.dormitorios_min !== undefined) {
+      const min = filters.dormitorios_min
       query = query.where((eb) =>
         eb(
           eb
@@ -249,11 +272,12 @@ export async function fetch_properties(
             )
             .where("room.type", "=", ROOM_TYPE.BEDROOM),
           ">=",
-          filters.dormitorios_min!,
+          min,
         ),
       )
     }
     if (filters.dormitorios_max !== undefined) {
+      const max = filters.dormitorios_max
       query = query.where((eb) =>
         eb(
           eb
@@ -266,11 +290,12 @@ export async function fetch_properties(
             )
             .where("room.type", "=", ROOM_TYPE.BEDROOM),
           "<=",
-          filters.dormitorios_max!,
+          max,
         ),
       )
     }
     if (filters.banos_min !== undefined) {
+      const min = filters.banos_min
       query = query.where((eb) =>
         eb(
           eb
@@ -283,11 +308,12 @@ export async function fetch_properties(
             )
             .where("room.type", "=", ROOM_TYPE.BATHROOM),
           ">=",
-          filters.banos_min!,
+          min,
         ),
       )
     }
     if (filters.banos_max !== undefined) {
+      const max = filters.banos_max
       query = query.where((eb) =>
         eb(
           eb
@@ -300,7 +326,7 @@ export async function fetch_properties(
             )
             .where("room.type", "=", ROOM_TYPE.BATHROOM),
           "<=",
-          filters.banos_max!,
+          max,
         ),
       )
     }

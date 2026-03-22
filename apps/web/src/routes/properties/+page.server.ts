@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit"
 import { fetch_properties } from "$lib/server/fetchers/properties"
+import { fetch_zones } from "$lib/server/fetchers/zones"
 import { get_img_props } from "$lib/server/image"
 import { display_location } from "$lib/display_location"
 import {
@@ -17,20 +18,35 @@ export const load: PageServerLoad = async ({ url }) => {
   const service_types = parse_service_types(
     filters.services,
   )
-  const properties = await fetch_properties({
-    tag_types,
-    service_types,
-    ambientes_min: filters.ambientes_min,
-    ambientes_max: filters.ambientes_max,
-    dormitorios_min: filters.dormitorios_min,
-    dormitorios_max: filters.dormitorios_max,
-    banos_min: filters.banos_min,
-    banos_max: filters.banos_max,
-    total_surface_min: filters.total_surface_min,
-    total_surface_max: filters.total_surface_max,
-    construction_year_min: filters.construction_year_min,
-    construction_year_max: filters.construction_year_max,
-  })
+  const [properties, zones] = await Promise.all([
+    fetch_properties({
+      zone_id: filters.zone_id,
+      tag_types,
+      service_types,
+      ambientes_min: filters.ambientes_min,
+      ambientes_max: filters.ambientes_max,
+      dormitorios_min: filters.dormitorios_min,
+      dormitorios_max: filters.dormitorios_max,
+      banos_min: filters.banos_min,
+      banos_max: filters.banos_max,
+      total_surface_min: filters.total_surface_min,
+      total_surface_max: filters.total_surface_max,
+      construction_year_min:
+        filters.construction_year_min,
+      construction_year_max:
+        filters.construction_year_max,
+    }),
+    fetch_zones(),
+  ])
+  const zone_items = zones.map((z) => ({
+    id: z.id,
+    label: z.label,
+    badge: z.badge,
+  }))
+  const selected_zone = filters.zone_id
+    ? zone_items.find((z) => z.id === filters.zone_id) ??
+      null
+    : null
   const properties_with_image_props = properties.map(
     (property) => ({
       ...property,
@@ -49,6 +65,8 @@ export const load: PageServerLoad = async ({ url }) => {
   return {
     properties: properties_with_image_props,
     filters,
+    zone_items,
+    selected_zone,
   }
 }
 

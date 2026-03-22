@@ -12,7 +12,10 @@ const RANGE_PARAMS = [
   "construction_year",
 ] as const
 
+const ZONE_PARAMS = ["zone_id"] as const
+
 export const InputSchema = v.object({
+  zone_id: v.optional(ForceNumberSchema),
   tags: v.optional(v.string()),
   services: v.optional(v.string()),
   ambientes_min: v.optional(ForceNumberSchema),
@@ -35,6 +38,12 @@ export function parse_filters(url: URL): Filters {
   const filters: Filters = {
     tags: tags_param ?? undefined,
     services: services_param ?? undefined,
+  }
+  for (const name of ZONE_PARAMS) {
+    const val = url.searchParams.get(name)
+    if (val !== null) {
+      filters[name] = Number(val)
+    }
   }
   for (const name of RANGE_PARAMS) {
     const min_val = url.searchParams.get(`${name}_min`)
@@ -99,6 +108,13 @@ export async function set_filters(
   for (const key of url.searchParams.keys()) {
     if (key.startsWith("/")) {
       url.searchParams.delete(key)
+    }
+  }
+  for (const name of ZONE_PARAMS) {
+    if (input[name] !== undefined) {
+      url.searchParams.set(name, String(input[name]))
+    } else {
+      url.searchParams.delete(name)
     }
   }
   if (input.tags) {

@@ -85,11 +85,11 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // Create location and property
   const location_id = await seeder.create_location({
     address:
-      "Av. Corrientes 1234, Balvanera, Buenos Aires, Argentina",
-    latitude: -34.6039594755102,
-    longitude: -58.38421722040816,
-    road: "Av. Corrientes",
-    house_number: 1234,
+      "Paso, Balvanera, Buenos Aires, Argentina",
+    latitude: -34.6092155,
+    longitude: -58.4031396,
+    road: "Paso",
+    house_number: 0,
     suburb: "Balvanera",
     state: "Buenos Aires",
   })

@@ -6,6 +6,7 @@
   import PropertyTag from "$lib/components/PropertyTag.svelte"
   import RangeFilter from "$lib/components/RangeFilter.svelte"
   import { display_location } from "$lib/display_location"
+  import ZoneInput from "$lib/components/ZoneInput.svelte"
   import { compose_action } from "$lib/compose_action"
   import {
     PROPERTY_TAG_CATEGORIES,
@@ -37,6 +38,7 @@
   const range_hidden_entries = $derived(
     Object.entries(data.filters).filter(
       ([key, value]) =>
+        key !== "zone_id" &&
         key !== "tags" &&
         key !== "services" &&
         value !== undefined,
@@ -67,8 +69,36 @@
   }
 </script>
 
+{#snippet ZoneFilter()}
+  <form
+    method="POST"
+    action={compose_action(ACTION.SET_FILTERS)}
+    use:enhance
+  >
+    <ZoneInput
+      items={data.zone_items}
+      default_value={data.selected_zone}
+    />
+    <input
+      type="hidden"
+      name="tags"
+      value={data.filters.tags ?? ""}
+    />
+    <input
+      type="hidden"
+      name="services"
+      value={data.filters.services ?? ""}
+    />
+    {#each range_hidden_entries as [name, value] (name)}
+      <input type="hidden" {name} value={String(value)} />
+    {/each}
+    <Button type="submit">Buscar zona</Button>
+  </form>
+{/snippet}
+
 {#snippet Filters()}
   <div class="filters">
+    {@render ZoneFilter()}
     <div class="filter-tags">
       {#each tag_groups as group (group.label)}
         <div class="filter-group">
@@ -82,6 +112,9 @@
                 action={compose_action(ACTION.SET_FILTERS)}
                 use:enhance
               >
+                {#if data.filters.zone_id}
+                  <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+                {/if}
                 <input
                   type="hidden"
                   name="tags"
@@ -119,6 +152,9 @@
               action={compose_action(ACTION.SET_FILTERS)}
               use:enhance
             >
+              {#if data.filters.zone_id}
+                <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+              {/if}
               <input
                 type="hidden"
                 name="tags"
@@ -156,6 +192,9 @@
         action={compose_action(ACTION.SET_FILTERS)}
         use:enhance
       >
+        {#if data.filters.zone_id}
+          <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+        {/if}
         <input
           type="hidden"
           name="tags"
