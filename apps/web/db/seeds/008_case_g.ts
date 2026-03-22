@@ -413,11 +413,11 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
 
   const location4_id = await seeder.create_location({
     address:
-      "Av. Independencia 2345, San Telmo, Buenos Aires, Argentina",
-    latitude: -34.618422155102046,
-    longitude: -58.3994831877551,
-    road: "Av. Independencia",
-    house_number: 2345,
+      "Perú 1160, San Telmo, Buenos Aires, Argentina",
+    latitude: -34.6214013,
+    longitude: -58.37375,
+    road: "Perú",
+    house_number: 1160,
     suburb: "San Telmo",
     state: "Buenos Aires",
   })

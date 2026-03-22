@@ -63,11 +63,11 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // Create location and property
   const location_id = await seeder.create_location({
     address:
-      "Av. del Libertador 6789, Núñez, Buenos Aires, Argentina",
-    latitude: -34.5496990950547,
-    longitude: -58.45356634319559,
-    road: "Av. del Libertador",
-    house_number: 6789,
+      "11 de Septiembre de 1888 3658, Núñez, Buenos Aires, Argentina",
+    latitude: -34.5453484,
+    longitude: -58.4621491,
+    road: "11 de Septiembre de 1888",
+    house_number: 3658,
     suburb: "Núñez",
     state: "Buenos Aires",
   })

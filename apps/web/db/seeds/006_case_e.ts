@@ -113,11 +113,11 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // Create location and property
   const location_id = await seeder.create_location({
     address:
-      "Av. Medrano 1234, Almagro, Buenos Aires, Argentina",
-    latitude: -34.59493066122449,
-    longitude: -58.41979702244898,
-    road: "Av. Medrano",
-    house_number: 1234,
+      "Bartolomé Mitre 3964, Almagro, Buenos Aires, Argentina",
+    latitude: -34.6099883,
+    longitude: -58.4222331,
+    road: "Bartolomé Mitre",
+    house_number: 3964,
     suburb: "Almagro",
     state: "Buenos Aires",
   })

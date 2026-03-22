@@ -12,6 +12,7 @@ mod lint
 mod test
 mod secrets
 mod deploy
+mod zone
 
 # List available commands
 default:
