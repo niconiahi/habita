@@ -75,8 +75,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            "Error al buscar el PDF del contrato",
+          execution: "Error al buscar el PDF del contrato",
         },
       },
       null,
@@ -86,8 +85,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            "No se encontró el PDF del contrato",
+          execution: "No se encontró el PDF del contrato",
         },
       },
       null,
@@ -101,8 +99,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            "El locador no tiene CUIL configurado",
+          execution: "El locador no tiene CUIL configurado",
         },
       },
       null,
@@ -206,8 +203,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            "Error al enviar para firma digital",
+          execution: "Error al enviar para firma digital",
         },
       },
       null,
@@ -217,8 +213,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            submit_result.MensajeResultado,
+          execution: submit_result.MensajeResultado,
         },
       },
       null,
@@ -226,13 +221,11 @@ export async function send_for_signing(
   }
   const landlord_auth =
     submit_result.Datos.Autorizaciones.find(
-      (a) =>
-        a.CodigoUnicoIdentificacion === landlord.cuil,
+      (a) => a.CodigoUnicoIdentificacion === landlord.cuil,
     )
   const tenant_auth =
     submit_result.Datos.Autorizaciones.find(
-      (a) =>
-        a.CodigoUnicoIdentificacion === tenant.cuil,
+      (a) => a.CodigoUnicoIdentificacion === tenant.cuil,
     )
   const [insert_error] = await safe_async(
     query_builder
@@ -241,12 +234,10 @@ export async function send_for_signing(
         contract_id: input.contract_id,
         document_id:
           submit_result.Datos.IdentificadorDocumento,
-        group_id:
-          submit_result.Datos.IdentificadorGrupo,
+        group_id: submit_result.Datos.IdentificadorGrupo,
         landlord_url:
           landlord_auth?.URLAutorizacion ?? null,
-        tenant_url:
-          tenant_auth?.URLAutorizacion ?? null,
+        tenant_url: tenant_auth?.URLAutorizacion ?? null,
         landlord_status: SIGNATURE_STATUS.PENDING,
         tenant_status: SIGNATURE_STATUS.PENDING,
         created_at: now,
@@ -255,16 +246,11 @@ export async function send_for_signing(
       .execute(),
   )
   if (insert_error) {
-    logger.error(
-      insert_error.message,
-      {},
-      insert_error,
-    )
+    logger.error(insert_error.message, {}, insert_error)
     return [
       {
         send_for_signing: {
-          execution:
-            "Error al guardar la firma digital",
+          execution: "Error al guardar la firma digital",
         },
       },
       null,
@@ -272,8 +258,7 @@ export async function send_for_signing(
   }
   logger.info("contract sent for signing", {
     contract_id: input.contract_id,
-    document_id:
-      submit_result.Datos.IdentificadorDocumento,
+    document_id: submit_result.Datos.IdentificadorDocumento,
   })
 
   const signatures_url = `${origin}/signatures`
@@ -289,14 +274,12 @@ export async function send_for_signing(
           email: recipient.email,
           name: recipient.name,
         },
-        subject:
-          "Tiene un documento para firmar en Habita",
+        subject: "Tiene un documento para firmar en Habita",
         html: email_html,
       })
       if (email_error) {
         if (
-          email_error.type ===
-          SEND_EMAIL_ERROR.FETCH_FAILED
+          email_error.type === SEND_EMAIL_ERROR.FETCH_FAILED
         ) {
           logger.error(
             email_error.error.message,

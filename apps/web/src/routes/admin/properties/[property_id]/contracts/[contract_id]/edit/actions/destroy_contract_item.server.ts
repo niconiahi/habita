@@ -52,7 +52,9 @@ export async function destroy_contract_item(
           .where("id", "=", contract_item_file.file_id)
           .execute()
         await kv.del(
-          compose_file_cache_key(contract_item_file.file_id),
+          compose_file_cache_key(
+            contract_item_file.file_id,
+          ),
         )
       }
 
@@ -63,7 +65,11 @@ export async function destroy_contract_item(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { contract_item_id: input.id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { contract_item_id: input.id },
+      transaction_error,
+    )
     return [
       {
         destroy_contract_item: {

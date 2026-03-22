@@ -63,7 +63,14 @@ export async function invite_landlord(form_data: FormData) {
       .executeTakeFirstOrThrow(),
   )
   if (insert_error) {
-    logger.error(insert_error.message, { property_id: input.property_id, email: input.email }, insert_error)
+    logger.error(
+      insert_error.message,
+      {
+        property_id: input.property_id,
+        email: input.email,
+      },
+      insert_error,
+    )
     return [
       {
         invite_landlord: {
@@ -96,19 +103,29 @@ export async function invite_landlord(form_data: FormData) {
       invite_error.type ===
       SEND_LANDLORD_INVITE_ERROR.FETCH_FAILED
     ) {
-      logger.error(invite_error.error.message, {
-        email: input.email,
-        error_type: SEND_LANDLORD_INVITE_ERROR.FETCH_FAILED,
-      }, invite_error.error)
+      logger.error(
+        invite_error.error.message,
+        {
+          email: input.email,
+          error_type:
+            SEND_LANDLORD_INVITE_ERROR.FETCH_FAILED,
+        },
+        invite_error.error,
+      )
     }
     if (
       invite_error.type ===
       SEND_LANDLORD_INVITE_ERROR.SERVICE_ERROR
     ) {
-      logger.error(invite_error.error.message, {
-        email: input.email,
-        error_type: SEND_LANDLORD_INVITE_ERROR.SERVICE_ERROR,
-      }, invite_error.error)
+      logger.error(
+        invite_error.error.message,
+        {
+          email: input.email,
+          error_type:
+            SEND_LANDLORD_INVITE_ERROR.SERVICE_ERROR,
+        },
+        invite_error.error,
+      )
     }
   }
 

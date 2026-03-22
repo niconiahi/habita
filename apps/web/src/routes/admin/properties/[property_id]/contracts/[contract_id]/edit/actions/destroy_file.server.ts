@@ -54,7 +54,11 @@ export async function destroy_file(form_data: FormData) {
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { file_id: input.id, contract_id: input.contract_id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { file_id: input.id, contract_id: input.contract_id },
+      transaction_error,
+    )
     return [
       {
         destroy_file: {

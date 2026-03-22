@@ -33,7 +33,11 @@ export async function destroy_room(form_data: FormData) {
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { room_id: input.id }, error)
+    logger.error(
+      error.message,
+      { room_id: input.id },
+      error,
+    )
     return [
       {
         destroy_room: {

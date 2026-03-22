@@ -185,12 +185,18 @@ export async function update_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { warranty_id: input.warranty_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            warranty_id: input.warranty_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             update_warranty: {
-              execution:
-                "Error al actualizar la garantía",
+              execution: "Error al actualizar la garantía",
             },
           },
           null,
@@ -249,11 +255,7 @@ export async function update_warranty(form_data: FormData) {
                 company_email: input.company_email,
                 updated_at: now,
               })
-              .where(
-                "surety_warranty.id",
-                "=",
-                existing.id,
-              )
+              .where("surety_warranty.id", "=", existing.id)
               .execute()
           } else {
             await tx
@@ -274,12 +276,18 @@ export async function update_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { warranty_id: input.warranty_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            warranty_id: input.warranty_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             update_warranty: {
-              execution:
-                "Error al actualizar la garantía",
+              execution: "Error al actualizar la garantía",
             },
           },
           null,
@@ -339,12 +347,18 @@ export async function update_warranty(form_data: FormData) {
         }),
       )
       if (transaction_error) {
-        logger.error(transaction_error.message, { warranty_id: input.warranty_id, warranty_type: input.warranty_type }, transaction_error)
+        logger.error(
+          transaction_error.message,
+          {
+            warranty_id: input.warranty_id,
+            warranty_type: input.warranty_type,
+          },
+          transaction_error,
+        )
         return [
           {
             update_warranty: {
-              execution:
-                "Error al actualizar la garantía",
+              execution: "Error al actualizar la garantía",
             },
           },
           null,

@@ -40,11 +40,7 @@ export async function destroy_contract_item_file(
         .deleteFrom("contract_item_file")
         .where((eb) =>
           eb.and([
-            eb(
-              "contract_item_file.file_id",
-              "=",
-              input.id,
-            ),
+            eb("contract_item_file.file_id", "=", input.id),
             eb(
               "contract_item_file.contract_item_id",
               "=",
@@ -60,7 +56,14 @@ export async function destroy_contract_item_file(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { file_id: input.id, contract_item_id: input.contract_item_id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      {
+        file_id: input.id,
+        contract_item_id: input.contract_item_id,
+      },
+      transaction_error,
+    )
     return [
       {
         destroy_contract_item_file: {

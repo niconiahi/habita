@@ -182,7 +182,11 @@ export const POST: RequestHandler = async ({ request }) => {
     request.json(),
   )
   if (json_error) {
-    logger.error(json_error.message, { request_id }, json_error)
+    logger.error(
+      json_error.message,
+      { request_id },
+      json_error,
+    )
     return json(
       { error: "Invalid request body" },
       { status: 400 },

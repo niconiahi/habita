@@ -65,7 +65,11 @@ export async function update_contract(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id, contract_id: input.id }, error)
+    logger.error(
+      error.message,
+      { property_id, contract_id: input.id },
+      error,
+    )
     return [
       {
         update_contract: {

@@ -177,12 +177,15 @@ export async function create_pdf(
     }),
   )
   if (tx_error) {
-    logger.error(tx_error.message, { property_id, contract_id: input.id }, tx_error)
+    logger.error(
+      tx_error.message,
+      { property_id, contract_id: input.id },
+      tx_error,
+    )
     return [
       {
         create_pdf: {
-          execution:
-            "Error al guardar el PDF del contrato",
+          execution: "Error al guardar el PDF del contrato",
         },
       },
       null,

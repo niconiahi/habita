@@ -41,7 +41,14 @@ export async function update_construction_year(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id, construction_year: input.construction_year }, error)
+    logger.error(
+      error.message,
+      {
+        property_id,
+        construction_year: input.construction_year,
+      },
+      error,
+    )
     return [
       {
         update_construction_year: {

@@ -65,8 +65,7 @@ export async function update_slot(
     return [
       {
         update_slot: {
-          execution:
-            "Se requiere un informe crediticio",
+          execution: "Se requiere un informe crediticio",
         },
       },
       null,
@@ -108,12 +107,15 @@ export async function update_slot(
     }),
   )
   if (tx_error) {
-    logger.error(tx_error.message, { slot_id: id, visitant_id, property_id }, tx_error)
+    logger.error(
+      tx_error.message,
+      { slot_id: id, visitant_id, property_id },
+      tx_error,
+    )
     return [
       {
         update_slot: {
-          execution:
-            "Error al actualizar la reserva",
+          execution: "Error al actualizar la reserva",
         },
       },
       null,
@@ -161,8 +163,7 @@ export async function update_slot(
     return [
       {
         update_slot: {
-          execution:
-            "No se encontró la propiedad",
+          execution: "No se encontró la propiedad",
         },
       },
       null,

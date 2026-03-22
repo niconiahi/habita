@@ -106,7 +106,11 @@ export async function create_payment() {
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { preference_id: preference.id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { preference_id: preference.id },
+      transaction_error,
+    )
     return [
       {
         create_payment: {

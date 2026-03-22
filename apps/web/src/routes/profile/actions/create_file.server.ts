@@ -77,7 +77,11 @@ export async function create_file(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { user_id, file_type: input.type }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { user_id, file_type: input.type },
+      transaction_error,
+    )
     return [
       {
         create_file: {

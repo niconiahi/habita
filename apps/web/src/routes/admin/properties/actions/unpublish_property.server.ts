@@ -41,12 +41,15 @@ export async function unpublish_property(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { property_id: input.property_id }, error)
+    logger.error(
+      error.message,
+      { property_id: input.property_id },
+      error,
+    )
     return [
       {
         unpublish_property: {
-          execution:
-            "Error al despublicar la propiedad",
+          execution: "Error al despublicar la propiedad",
         },
       },
       null,

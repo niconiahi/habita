@@ -167,7 +167,8 @@ async function api_fetch<T>(
 
   const parsed_validation = v.safeParse(schema, data)
   if (!parsed_validation.success) {
-    const parse_error = new Error("Schema validation failed")
+    const parse_error = new Error("Schema validation failed",
+    )
     logger.error(
       parse_error.message,
       { endpoint },

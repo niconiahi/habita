@@ -59,8 +59,7 @@ export async function start_onboarding(
   })
   if (onboarding_error) {
     if (
-      onboarding_error.type ===
-      API_FETCH_ERROR.FETCH_FAILED
+      onboarding_error.type === API_FETCH_ERROR.FETCH_FAILED
     ) {
       return [
         {
@@ -78,8 +77,7 @@ export async function start_onboarding(
       return [
         {
           start_onboarding: {
-            execution:
-              "Error en el servicio de registro",
+            execution: "Error en el servicio de registro",
           },
         },
         null,

@@ -79,12 +79,15 @@ export async function create_contract_item_file(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { contract_item_id: input.contract_item_id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { contract_item_id: input.contract_item_id },
+      transaction_error,
+    )
     return [
       {
         create_contract_item_file: {
-          execution:
-            "Error al crear el archivo del ítem",
+          execution: "Error al crear el archivo del ítem",
         },
       },
       null,

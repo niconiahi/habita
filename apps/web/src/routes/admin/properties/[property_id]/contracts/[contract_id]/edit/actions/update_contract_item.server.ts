@@ -9,7 +9,10 @@ import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
   id: ForceNumberSchema,
-  name: v.pipe(v.string(), v.minLength(1, "El nombre es requerido")),
+  name: v.pipe(
+    v.string(),
+    v.minLength(1, "El nombre es requerido"),
+  ),
   state: v.pipe(
     v.string(),
     v.transform(Number),
@@ -48,7 +51,11 @@ export async function update_contract_item(
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { contract_item_id: input.id }, error)
+    logger.error(
+      error.message,
+      { contract_item_id: input.id },
+      error,
+    )
     return [
       {
         update_contract_item: {

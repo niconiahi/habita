@@ -46,12 +46,15 @@ export async function remove_manager(
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { manager_id: input.manager_id, organization_id }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      { manager_id: input.manager_id, organization_id },
+      transaction_error,
+    )
     return [
       {
         remove_manager: {
-          execution:
-            "Error al eliminar el manager",
+          execution: "Error al eliminar el manager",
         },
       },
       null,

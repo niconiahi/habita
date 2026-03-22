@@ -38,7 +38,14 @@ export async function set_tenant(form_data: FormData) {
     ),
   )
   if (revoke_error) {
-    logger.error(revoke_error.message, { property_id: input.property_id, candidate_id: input.candidate_id }, revoke_error)
+    logger.error(
+      revoke_error.message,
+      {
+        property_id: input.property_id,
+        candidate_id: input.candidate_id,
+      },
+      revoke_error,
+    )
     return [
       {
         set_tenant: {
@@ -58,7 +65,14 @@ export async function set_tenant(form_data: FormData) {
     ),
   )
   if (assign_error) {
-    logger.error(assign_error.message, { property_id: input.property_id, candidate_id: input.candidate_id }, assign_error)
+    logger.error(
+      assign_error.message,
+      {
+        property_id: input.property_id,
+        candidate_id: input.candidate_id,
+      },
+      assign_error,
+    )
     return [
       {
         set_tenant: {

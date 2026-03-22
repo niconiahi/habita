@@ -40,7 +40,11 @@ export async function reassign_property(
     ),
   )
   if (revoke_error) {
-    logger.error(revoke_error.message, { property_id: input.property_id }, revoke_error)
+    logger.error(
+      revoke_error.message,
+      { property_id: input.property_id },
+      revoke_error,
+    )
     return [
       {
         reassign_property: {
@@ -61,7 +65,14 @@ export async function reassign_property(
       ),
     )
     if (assign_error) {
-      logger.error(assign_error.message, { property_id: input.property_id, manager_id: input.manager_id }, assign_error)
+      logger.error(
+        assign_error.message,
+        {
+          property_id: input.property_id,
+          manager_id: input.manager_id,
+        },
+        assign_error,
+      )
       return [
         {
           reassign_property: {

@@ -64,7 +64,14 @@ export async function upload_receipt(form_data: FormData) {
     }),
   )
   if (transaction_error) {
-    logger.error(transaction_error.message, { contract_id: input.contract_id, receipt_type: input.type }, transaction_error)
+    logger.error(
+      transaction_error.message,
+      {
+        contract_id: input.contract_id,
+        receipt_type: input.type,
+      },
+      transaction_error,
+    )
     return [
       {
         upload_receipt: {
