@@ -1,4 +1,5 @@
 <script lang="ts">
+  const QUERY_MINIMUM = 5
   import { untrack } from "svelte"
   import { setup, assign } from "xstate"
   import { useMachine } from "@xstate/svelte"
@@ -15,6 +16,13 @@
   }
 
   let { items, default_value = null }: Props = $props()
+
+  function strip_diacritics(text: string): string {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+  }
 
   const id = "zone_input"
   const list_id = `${id}_listbox`
@@ -230,10 +238,6 @@
     },
   })
 
-  function strip_diacritics(text: string): string {
-    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-  }
-
   function handle_input(event: Event) {
     const target = event.currentTarget as HTMLInputElement
     const value = target.value
@@ -242,12 +246,15 @@
       send({ type: "ESCAPE" })
       return
     }
-    const words = strip_diacritics(value).split(/\s+/).filter(Boolean)
-    const filtered = items.filter((item) => {
+    if (value.length < QUERY_MINIMUM) return
+    const words = strip_diacritics(value)
+      .split(/\s+/)
+      .filter(Boolean)
+    const next_items = items.filter((item) => {
       const label = strip_diacritics(item.label)
       return words.every((word) => label.includes(word))
     })
-    send({ type: "FILTER_SUCCESS", items: filtered })
+    send({ type: "FILTER_SUCCESS", items: next_items })
   }
 
   function handle_keydown(event: KeyboardEvent) {
