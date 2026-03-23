@@ -1,17 +1,17 @@
 import { logger } from "../../telemetry/logger"
-import { create_escalation_jobs } from "./create_escalation_jobs"
+import { create_renewal_jobs } from "./create_renewal_jobs"
 
 async function main() {
   try {
-    logger.info("starting escalation job creation")
-    const result = await create_escalation_jobs()
-    logger.info("escalation job creation completed", {
+    logger.info("starting renewal job creation")
+    const result = await create_renewal_jobs()
+    logger.info("renewal job creation completed", {
       jobs_created: result.created,
     })
     process.exit(0)
   } catch (error) {
     logger.error(
-      "fatal error during escalation job creation",
+      "fatal error during renewal job creation",
       {},
       error instanceof Error
         ? error

@@ -6,6 +6,8 @@ import { logger } from "$lib/telemetry/logger"
 import { query_builder } from "db/query_builder"
 import { now } from "$lib/server/now"
 import { PAYMENT_STATUS } from "$lib/payment_status"
+import { JOB_TYPE } from "$lib/job_type"
+import { JOB_STATUS } from "$lib/job_status"
 import type { RequestHandler } from "./$types"
 
 const MERCADOPAGO_STATUS_MAP = {
@@ -163,6 +165,63 @@ async function handle_payment_notification(
     `Payment ${payment_id} processed: ${payment.status} -> status ${status}`,
     { payment_id },
   )
+
+  if (status === PAYMENT_STATUS.APPROVED) {
+    const payment_record = await query_builder
+      .selectFrom("payment_mercado_pago")
+      .where("preference_id", "=", payment.preference_id)
+      .select("payment_id")
+      .executeTakeFirst()
+
+    if (payment_record) {
+      const subscription_payment = await query_builder
+        .selectFrom("subscription_payment")
+        .where(
+          "payment_id",
+          "=",
+          payment_record.payment_id,
+        )
+        .select("id")
+        .executeTakeFirst()
+
+      if (subscription_payment) {
+        await query_builder
+          .transaction()
+          .execute(async (tx) => {
+            const job = await tx
+              .insertInto("job")
+              .values({
+                type: JOB_TYPE.EXTEND_SUBSCRIPTION,
+                status: JOB_STATUS.PENDING,
+                scheduled_at: now,
+                created_at: now,
+                updated_at: now,
+              })
+              .returning("id")
+              .executeTakeFirstOrThrow()
+
+            await tx
+              .insertInto("job_subscription_payment")
+              .values({
+                job_id: job.id,
+                subscription_payment_id:
+                  subscription_payment.id,
+                created_at: now,
+              })
+              .execute()
+          })
+
+        logger.info(
+          "enqueued EXTEND_SUBSCRIPTION job for payment",
+          {
+            payment_id,
+            subscription_payment_id:
+              subscription_payment.id,
+          },
+        )
+      }
+    }
+  }
 }
 
 export const POST: RequestHandler = async ({ request }) => {

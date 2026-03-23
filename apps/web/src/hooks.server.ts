@@ -3,6 +3,7 @@ import { auth } from "$lib/server/auth"
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
 import { decrypt } from "$lib/server/encryption"
+import { fetch_user_subscriptions } from "$lib/server/subscription"
 
 export const handle: Handle = async ({
   event,
@@ -14,6 +15,7 @@ export const handle: Handle = async ({
   if (!session) {
     event.locals.user = null
     event.locals.session = null
+    event.locals.subscriptions = []
     return svelteKitHandler({
       event,
       resolve,
@@ -21,8 +23,9 @@ export const handle: Handle = async ({
       building,
     })
   }
+  const user_id = Number(session.user.id)
   event.locals.user = {
-    id: Number(session.user.id),
+    id: user_id,
     email: session.user.email,
     name: session.user.name
       ? decrypt(session.user.name)
@@ -33,13 +36,15 @@ export const handle: Handle = async ({
   }
   event.locals.session = {
     id: session.session.id,
-    userId: Number(session.session.userId),
+    userId: user_id,
     expiresAt: session.session.expiresAt,
     createdAt: session.session.createdAt,
     updatedAt: session.session.updatedAt,
     activeOrganizationId:
       session.session.activeOrganizationId ?? null,
   }
+  event.locals.subscriptions =
+    await fetch_user_subscriptions(user_id)
   return svelteKitHandler({
     event,
     resolve,

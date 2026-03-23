@@ -47,7 +47,8 @@
       "mcp__playwright__browser_click",
       "Bash(npx tsc:*)",
       "Bash(docker compose:*)",
-      "Bash(just test-e2e:*)"
+      "Bash(just test-e2e:*)",
+      "mcp__better-auth__search-better-auth-docs"
     ],
     "deny": [],
     "ask": []

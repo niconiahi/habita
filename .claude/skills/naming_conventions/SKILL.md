@@ -15,6 +15,7 @@ description: Naming conventions for variables, functions, files, and patterns. U
 - Svelte snippets: `PascalCase`
 - FormData variable: always `form_data`, never `formData`
 - User-facing error messages: always in Spanish
+- Never user contractions or abbreviations in names — always spell out the full word: `organization` not `org`, `subscription` not `sub`, `configuration` not `config`, `property` not `prop`. This applies to ALL names: variables, functions, parameters, loop iterators, logger strings. No exceptions.
 
 ## Variables named after what produced them
 

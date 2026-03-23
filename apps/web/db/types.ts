@@ -191,6 +191,13 @@ export interface Job {
   updated_at: Timestamp;
 }
 
+export interface JobSubscriptionPayment {
+  created_at: Timestamp;
+  id: Generated<number>;
+  job_id: number;
+  subscription_payment_id: number;
+}
+
 export interface Location {
   address: string;
   city: string | null;
@@ -404,6 +411,25 @@ export interface SpatialRefSys {
   proj4text: string | null;
   srid: number;
   srtext: string | null;
+}
+
+export interface Subscription {
+  created_at: Timestamp;
+  ends_at: Timestamp;
+  id: Generated<number>;
+  organization_id: string;
+  starts_at: Timestamp;
+  status: number;
+  type: number;
+  updated_at: Timestamp;
+  user_id: number;
+}
+
+export interface SubscriptionPayment {
+  created_at: Timestamp;
+  id: Generated<number>;
+  payment_id: number;
+  subscription_id: number;
 }
 
 export interface SuretyWarranty {
@@ -1063,6 +1089,7 @@ export interface DB {
   invitation: Invitation;
   invitation_token: InvitationToken;
   job: Job;
+  job_subscription_payment: JobSubscriptionPayment;
   location: Location;
   member: Member;
   notification: Notification;
@@ -1084,6 +1111,8 @@ export interface DB {
   session: Session;
   slot: Slot;
   spatial_ref_sys: SpatialRefSys;
+  subscription: Subscription;
+  subscription_payment: SubscriptionPayment;
   surety_warranty: SuretyWarranty;
   team: Team;
   team_member: TeamMember;

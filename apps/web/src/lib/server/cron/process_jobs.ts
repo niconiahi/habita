@@ -2,8 +2,10 @@ import { query_builder } from "../../../../db/query_builder"
 import { JOB_STATUS } from "../../job_status"
 import { JOB_TYPE } from "../../job_type"
 import { now } from "../now"
-import { logger } from "$lib/telemetry/logger"
+import { logger } from "../../telemetry/logger"
 import { calculate_all_due_escalations } from "../calculate_all_due_escalations"
+import { send_renewal_reminder } from "./send_renewal_reminder"
+import { extend_subscription } from "./extend_subscription"
 
 export async function process_jobs() {
   const pending_jobs = await query_builder
@@ -24,6 +26,20 @@ export async function process_jobs() {
           logger.info("job processed contracts", {
             job_id: job.id,
             contracts_processed: result.processed,
+          })
+          break
+        }
+        case JOB_TYPE.SEND_RENEWAL_REMINDER: {
+          await send_renewal_reminder()
+          logger.info("renewal reminders sent", {
+            job_id: job.id,
+          })
+          break
+        }
+        case JOB_TYPE.EXTEND_SUBSCRIPTION: {
+          await extend_subscription(job.id)
+          logger.info("subscription extended", {
+            job_id: job.id,
           })
           break
         }

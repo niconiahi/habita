@@ -2,6 +2,7 @@
   import "$lib/styles/styles.css"
   import favicon from "$lib/assets/favicon.svg"
   import Header from "$lib/components/Header.svelte"
+  import SubscriptionBanner from "$lib/components/SubscriptionBanner.svelte"
   import type { LayoutData } from "./$types"
 
   let {
@@ -23,4 +24,9 @@
   organizations={data.organizations}
   active_organization_id={data.active_organization_id}
 />
+{#if data.subscription_grace}
+  <SubscriptionBanner
+    days_remaining={data.subscription_days_remaining}
+  />
+{/if}
 {@render children()}
