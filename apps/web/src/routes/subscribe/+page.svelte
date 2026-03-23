@@ -19,7 +19,9 @@
         <p>
           Válida hasta el
           <strong>
-            {new Date(data.ends_at).toLocaleDateString("es-AR")}
+            {new Date(data.ends_at).toLocaleDateString(
+              "es-AR",
+            )}
           </strong>
         </p>
       {/if}
@@ -32,13 +34,13 @@
     <div class="status-card status-due">
       {#if data.has_subscription && data.status === SUBSCRIPTION_STATUS.GRACE}
         <p class="warning">
-          Tu suscripción venció. Renová para continuar usando
-          Habita.
+          Tu suscripción venció. Renová para continuar
+          usando Habita.
         </p>
       {:else}
         <p class="warning">
-          Tu suscripción está bloqueada. Realizá el pago para
-          continuar.
+          Tu suscripción está bloqueada. Realizá el pago
+          para continuar.
         </p>
       {/if}
 

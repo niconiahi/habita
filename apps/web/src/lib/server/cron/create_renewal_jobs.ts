@@ -18,11 +18,7 @@ async function fetch_expiring_organization_ids() {
       "<=",
       sql<Date>`${seven_days_from_now.toISOString()}::timestamptz`,
     )
-    .where(
-      "ends_at",
-      ">",
-      sql<Date>`${now}::timestamptz`,
-    )
+    .where("ends_at", ">", sql<Date>`${now}::timestamptz`)
     .groupBy("organization_id")
     .execute()
 }
@@ -31,11 +27,7 @@ async function fetch_grace_organization_ids() {
   return query_builder
     .selectFrom("subscription")
     .select("organization_id")
-    .where(
-      "ends_at",
-      "<=",
-      sql<Date>`${now}::timestamptz`,
-    )
+    .where("ends_at", "<=", sql<Date>`${now}::timestamptz`)
     .where(
       "ends_at",
       ">",
@@ -73,10 +65,14 @@ async function has_recent_fulfilled_reminder() {
 export async function create_renewal_jobs() {
   let created = 0
 
-  const expiring_organizations = await fetch_expiring_organization_ids()
-  logger.info("found organizations with expiring subscriptions", {
-    count: expiring_organizations.length,
-  })
+  const expiring_organizations =
+    await fetch_expiring_organization_ids()
+  logger.info(
+    "found organizations with expiring subscriptions",
+    {
+      count: expiring_organizations.length,
+    },
+  )
 
   for (const organization of expiring_organizations) {
     if (await has_pending_reminder()) {
@@ -102,7 +98,8 @@ export async function create_renewal_jobs() {
     })
   }
 
-  const grace_organizations = await fetch_grace_organization_ids()
+  const grace_organizations =
+    await fetch_grace_organization_ids()
   logger.info("found organizations in grace period", {
     count: grace_organizations.length,
   })

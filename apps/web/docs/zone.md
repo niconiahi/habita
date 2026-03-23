@@ -25,28 +25,28 @@ Self-hosted Nominatim instance running in the geo stack. Used for geocoding addr
 
 Nominatim's main table. Every geographic feature from OpenStreetMap lives here. Key columns:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `name` | hstore | Name in multiple languages. Access with `name->'name'` |
-| `class` | text | Primary category (e.g., `place`, `boundary`) |
-| `type` | text | Sub-category (e.g., `suburb`, `administrative`) |
-| `admin_level` | integer | Administrative hierarchy level |
-| `country_code` | text | ISO country code (e.g., `ar`) |
-| `geometry` | geometry | POINT, POLYGON, or MULTIPOLYGON |
+| Column         | Type     | Description                                            |
+| -------------- | -------- | ------------------------------------------------------ |
+| `name`         | hstore   | Name in multiple languages. Access with `name->'name'` |
+| `class`        | text     | Primary category (e.g., `place`, `boundary`)           |
+| `type`         | text     | Sub-category (e.g., `suburb`, `administrative`)        |
+| `admin_level`  | integer  | Administrative hierarchy level                         |
+| `country_code` | text     | ISO country code (e.g., `ar`)                          |
+| `geometry`     | geometry | POINT, POLYGON, or MULTIPOLYGON                        |
 
 **Key finding**: `class='place'` entries are almost entirely POINTs (no boundary polygon). The actual polygon boundaries live under `class='boundary', type='administrative'` — all 14,930 Argentine entries have POLYGON or MULTIPOLYGON geometries.
 
 ### Argentine admin levels
 
-| Level | What it is | Count |
-|-------|-----------|-------|
-| 4 | Provincia / CABA | 24 |
-| 5 | Departamento / Partido | ~528 |
-| 6 | Distrito, Pedanía, Cuartel (varies by province) | ~655 |
-| 7 | Municipio | ~1,964 |
-| 8 | Localidad | ~2,051 |
-| 9 | Barrio | ~5,779 |
-| 10 | (no official name — community-contributed data) | ~3,711 |
+| Level | What it is                                      | Count  |
+| ----- | ----------------------------------------------- | ------ |
+| 4     | Provincia / CABA                                | 24     |
+| 5     | Departamento / Partido                          | ~528   |
+| 6     | Distrito, Pedanía, Cuartel (varies by province) | ~655   |
+| 7     | Municipio                                       | ~1,964 |
+| 8     | Localidad                                       | ~2,051 |
+| 9     | Barrio                                          | ~5,779 |
+| 10    | (no official name — community-contributed data) | ~3,711 |
 
 Source: [OSM Wiki — boundary=administrative](https://wiki.openstreetmap.org/wiki/Tag:boundary=administrative). The scheme is "proposed" — not fully standardized.
 
@@ -54,20 +54,21 @@ Source: [OSM Wiki — boundary=administrative](https://wiki.openstreetmap.org/wi
 
 Each province uses different levels. Full data at `apps/web/temp/province_levels.md`.
 
-| Provincia | 6 | 7 | 8 | 9 | 10 |
-|-----------|---|---|---|---|----|
-| Buenos Aires | Cuartel (179) | — | Localidad (561) | Barrio (1554) | (87) |
-| CABA | — | — | — | Barrio (48) | — |
-| Catamarca | — | Municipio (35) | Localidad (81) | Barrio (68) | (153) |
-| Córdoba | Pedanía (146) | Municipio (426) | Localidad (279) | Barrio (877) | (145) |
-| Entre Ríos | Distrito (106) | Municipio (229) | Localidad (44) | Barrio (133) | (182) |
-| Mendoza | Distrito (203) | — | Localidad (23) | Barrio (292) | — |
-| San Juan | Distrito (20) | — | Localidad (3) | Barrio (4) | (853) |
-| Santa Fe | — | Municipio/Comuna (373) | Localidad (170) | Barrio (618) | (395) |
+| Provincia    | 6              | 7                      | 8               | 9             | 10    |
+| ------------ | -------------- | ---------------------- | --------------- | ------------- | ----- |
+| Buenos Aires | Cuartel (179)  | —                      | Localidad (561) | Barrio (1554) | (87)  |
+| CABA         | —              | —                      | —               | Barrio (48)   | —     |
+| Catamarca    | —              | Municipio (35)         | Localidad (81)  | Barrio (68)   | (153) |
+| Córdoba      | Pedanía (146)  | Municipio (426)        | Localidad (279) | Barrio (877)  | (145) |
+| Entre Ríos   | Distrito (106) | Municipio (229)        | Localidad (44)  | Barrio (133)  | (182) |
+| Mendoza      | Distrito (203) | —                      | Localidad (23)  | Barrio (292)  | —     |
+| San Juan     | Distrito (20)  | —                      | Localidad (3)   | Barrio (4)    | (853) |
+| Santa Fe     | —              | Municipio/Comuna (373) | Localidad (170) | Barrio (618)  | (395) |
 
 (Remaining provinces follow similar patterns — see `province_levels.md` for the full table.)
 
 Notable variations:
+
 - **Depto = Municipio** (same entity, no level 7): La Rioja, Mendoza, San Juan
 - **Level 6 varies**: Cuartel (Buenos Aires), Pedanía (Córdoba), Distrito (Entre Ríos, Mendoza, San Juan)
 - **CABA**: Comunas at level 5, barrios at level 9
@@ -75,18 +76,21 @@ Notable variations:
 ### Hierarchy examples
 
 **Buenos Aires province** (skips level 7):
+
 ```
 Provincia Buenos Aires (4) → Partido (5) → Localidad (8)
   e.g. Buenos Aires → Partido de La Matanza → Ramos Mejía, San Justo...
 ```
 
 **CABA** (goes directly to barrios):
+
 ```
 CABA (4) → Barrio (9)
   e.g. CABA → Palermo, Recoleta, Caballito... (48 barrios)
 ```
 
 **Córdoba**:
+
 ```
 Provincia Córdoba (4) → Departamento (5) → Municipio/Comuna (7) → Localidad (8) → Barrio (9)
   e.g. → Departamento Capital → Municipio de Córdoba → Córdoba → Nueva Córdoba, Güemes...
@@ -95,6 +99,7 @@ Provincia Córdoba (4) → Departamento (5) → Municipio/Comuna (7) → Localid
 ### Duplicate names
 
 Names repeat across provinces:
+
 - Level 8: "San Justo" in Buenos Aires, Entre Ríos, Santa Fe. "Avellaneda" in Buenos Aires, Córdoba.
 - Level 9: "Centro" appears 79 times. "San Martín" 34 times. "Belgrano" 28 times.
 
@@ -184,6 +189,7 @@ These extraction queries are slow — they take minutes because of the spatial j
 ### Label edge cases
 
 Out of ~14,700 zones, 3 have incomplete labels due to missing parent data in OSM:
+
 - 1 zone with only province (no department): `"Dock Sud, Buenos Aires"`
 - 2 zones with no parents at all: `"Ushuaia"`, `"Bahía Ushuaia"` (Tierra del Fuego boundary data is sparse)
 
@@ -228,6 +234,7 @@ When the user selects an item, the component renders a single hidden `<input nam
 ### Search behavior
 
 The combobox filters client-side by splitting the typed query into words and checking that every word appears somewhere in the label (case-insensitive, diacritics-stripped). For example:
+
 - `"palermo ciudad de"` matches `"Palermo, Comuna 14, Ciudad Autónoma de Buenos Aires"` — each word ("palermo", "ciudad", "de") is found independently in the label
 - `"palermo cor"` matches `"Alto Palermo, Departamento Capital, Córdoba"` — diacritics are stripped so "cor" matches "Córdoba"
 
@@ -245,7 +252,11 @@ The properties page has multiple independent filter forms — the zone combobox,
 
 ```svelte
 {#if data.filters.zone_id}
-  <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+  <input
+    type="hidden"
+    name="zone_id"
+    value={data.filters.zone_id}
+  />
 {/if}
 ```
 

@@ -19,11 +19,7 @@ async function is_trial(organization_id: string) {
 
   const payment = await query_builder
     .selectFrom("subscription_payment")
-    .where(
-      "subscription_id",
-      "=",
-      subscription.id,
-    )
+    .where("subscription_id", "=", subscription.id)
     .select("id")
     .executeTakeFirst()
   return !payment

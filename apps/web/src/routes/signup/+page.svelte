@@ -30,7 +30,7 @@
 
     if (auth_error) {
       error =
-        auth_error.message ?? "Error al crear la cuenta"
+        auth_error.message || "Error al crear la cuenta"
       return
     }
 

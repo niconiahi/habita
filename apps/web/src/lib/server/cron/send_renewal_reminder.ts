@@ -37,7 +37,11 @@ export async function send_renewal_reminder() {
   for (const organization of organizations) {
     const seat_count_result = await query_builder
       .selectFrom("subscription")
-      .where("organization_id", "=", organization.organization_id)
+      .where(
+        "organization_id",
+        "=",
+        organization.organization_id,
+      )
       .select(sql<number>`count(*)::int`.as("count"))
       .executeTakeFirst()
     const seat_count = seat_count_result?.count ?? 1

@@ -113,7 +113,11 @@
                 use:enhance
               >
                 {#if data.filters.zone_id}
-                  <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+                  <input
+                    type="hidden"
+                    name="zone_id"
+                    value={data.filters.zone_id}
+                  />
                 {/if}
                 <input
                   type="hidden"
@@ -153,7 +157,11 @@
               use:enhance
             >
               {#if data.filters.zone_id}
-                <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+                <input
+                  type="hidden"
+                  name="zone_id"
+                  value={data.filters.zone_id}
+                />
               {/if}
               <input
                 type="hidden"
@@ -193,7 +201,11 @@
         use:enhance
       >
         {#if data.filters.zone_id}
-          <input type="hidden" name="zone_id" value={data.filters.zone_id} />
+          <input
+            type="hidden"
+            name="zone_id"
+            value={data.filters.zone_id}
+          />
         {/if}
         <input
           type="hidden"

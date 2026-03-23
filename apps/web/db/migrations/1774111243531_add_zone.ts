@@ -10,8 +10,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("label", "text", (col) => col.notNull())
     .addColumn("badge", "text", (col) => col.notNull())
-    .addColumn("geometry", sql`geometry(Geometry, 4326)`, (col) =>
-      col.notNull(),
+    .addColumn(
+      "geometry",
+      sql`geometry(Geometry, 4326)`,
+      (col) => col.notNull(),
     )
     .addUniqueConstraint("zone_name_level_label_unique", [
       "name",
@@ -54,9 +56,21 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropIndex("location_town_index").ifExists().execute()
-  await db.schema.dropIndex("location_city_index").ifExists().execute()
-  await db.schema.dropIndex("location_suburb_index").ifExists().execute()
-  await db.schema.dropIndex("location_point_gist").ifExists().execute()
+  await db.schema
+    .dropIndex("location_town_index")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropIndex("location_city_index")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropIndex("location_suburb_index")
+    .ifExists()
+    .execute()
+  await db.schema
+    .dropIndex("location_point_gist")
+    .ifExists()
+    .execute()
   await db.schema.dropTable("zone").ifExists().execute()
 }

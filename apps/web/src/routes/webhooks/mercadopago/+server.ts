@@ -176,11 +176,7 @@ async function handle_payment_notification(
     if (payment_record) {
       const subscription_payment = await query_builder
         .selectFrom("subscription_payment")
-        .where(
-          "payment_id",
-          "=",
-          payment_record.payment_id,
-        )
+        .where("payment_id", "=", payment_record.payment_id)
         .select("id")
         .executeTakeFirst()
 

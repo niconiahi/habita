@@ -10,9 +10,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("organization_id", "text", (col) =>
       col.notNull(),
     )
-    .addColumn("user_id", "integer", (col) =>
-      col.notNull(),
-    )
+    .addColumn("user_id", "integer", (col) => col.notNull())
     .addColumn("status", "integer", (col) => col.notNull())
     .addColumn("type", "integer", (col) => col.notNull())
     .addColumn("starts_at", "timestamptz", (col) =>
@@ -110,11 +108,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("job_id", "integer", (col) =>
-      col.notNull(),
-    )
-    .addColumn("subscription_payment_id", "integer", (col) =>
-      col.notNull(),
+    .addColumn("job_id", "integer", (col) => col.notNull())
+    .addColumn(
+      "subscription_payment_id",
+      "integer",
+      (col) => col.notNull(),
     )
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),

@@ -12,9 +12,7 @@ import type { Actions, PageServerLoad } from "./$types"
 const FREELANCE_PRICE_USD = 50
 const REALTOR_SEAT_PRICE_USD = 40
 
-export const load: PageServerLoad = async ({
-  locals,
-}) => {
+export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
     redirect(302, "/login")
   }
@@ -37,9 +35,10 @@ export const load: PageServerLoad = async ({
     new Date(subscription.ends_at),
   )
 
-  const organization_subscriptions = await fetch_organization_subscriptions(
-    subscription.organization_id,
-  )
+  const organization_subscriptions =
+    await fetch_organization_subscriptions(
+      subscription.organization_id,
+    )
   const seat_count = organization_subscriptions.length
 
   const amount =
@@ -84,7 +83,9 @@ export const actions: Actions = {
     }
 
     const [errors, data] =
-      await create_subscription_payment(active_organization_id)
+      await create_subscription_payment(
+        active_organization_id,
+      )
     if (errors) {
       return { errors }
     }

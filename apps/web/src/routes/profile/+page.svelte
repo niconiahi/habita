@@ -31,6 +31,12 @@
   <Content.Section>
     <Section.Header>
       <Section.Title>informacion personal</Section.Title>
+      <Section.Actions>
+        <a
+          class="learn-link"
+          href="/learn/profile-information">Saber mas</a
+        >
+      </Section.Actions>
     </Section.Header>
     {#key data.user_profile}
       <Formulary.Root
@@ -186,6 +192,11 @@
 </Content.Root>
 
 <style>
+  .learn-link {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
   .error-with-link {
     display: flex;
     gap: 0.5rem;
