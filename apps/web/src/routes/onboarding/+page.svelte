@@ -1,33 +1,50 @@
 <script lang="ts">
-  import { goto } from "$app/navigation"
   import * as Content from "$lib/components/Content"
-  function handle_freelance() {
-    goto("/admin/properties")
-  }
-  function handle_realtor() {
-    goto("/demo")
-  }
+  import * as Formulary from "$lib/components/Formulary"
+  import { compose_action } from "$lib/compose_action"
+  import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
+  import { ACTION } from "./actions/action"
 </script>
 
 {#snippet FreelanceCard()}
   <Content.Section>
-    <button class="card" onclick={handle_freelance}>
-      <h3 class="card-title">Freelance</h3>
-      <p class="card-description">
-        Gestioná propiedades de forma independiente
-      </p>
-    </button>
+    <Formulary.Root
+      action={compose_action(ACTION.SELECT_ACCOUNT_TYPE)}
+      method="POST"
+    >
+      <input
+        type="hidden"
+        name="type"
+        value={SUBSCRIPTION_TYPE.FREELANCE}
+      />
+      <button class="card" type="submit">
+        <h3 class="card-title">Freelance</h3>
+        <p class="card-description">
+          Gestioná propiedades de forma independiente
+        </p>
+      </button>
+    </Formulary.Root>
   </Content.Section>
 {/snippet}
 
 {#snippet RealtorCard()}
   <Content.Section>
-    <button class="card" onclick={handle_realtor}>
-      <h3 class="card-title">Inmobiliaria</h3>
-      <p class="card-description">
-        Gestioná propiedades como inmobiliaria con tu equipo
-      </p>
-    </button>
+    <Formulary.Root
+      action={compose_action(ACTION.SELECT_ACCOUNT_TYPE)}
+      method="POST"
+    >
+      <input
+        type="hidden"
+        name="type"
+        value={SUBSCRIPTION_TYPE.REALTOR}
+      />
+      <button class="card" type="submit">
+        <h3 class="card-title">Inmobiliaria</h3>
+        <p class="card-description">
+          Gestioná propiedades como inmobiliaria con tu equipo
+        </p>
+      </button>
+    </Formulary.Root>
   </Content.Section>
 {/snippet}
 

@@ -1,4 +1,5 @@
 import * as v from "valibot"
+import { sql } from "kysely"
 import { query_builder } from "db/query_builder"
 import { normalize_input } from "$lib/server/form"
 import { safe_async } from "$lib/safe_async"
@@ -7,6 +8,26 @@ import { logger } from "$lib/telemetry/logger"
 const InputSchema = v.object({
   email: v.pipe(v.string(), v.email()),
 })
+
+async function is_trial(organization_id: string) {
+  const subscription = await query_builder
+    .selectFrom("subscription")
+    .where("organization_id", "=", organization_id)
+    .select("id")
+    .executeTakeFirst()
+  if (!subscription) return false
+
+  const payment = await query_builder
+    .selectFrom("subscription_payment")
+    .where(
+      "subscription_id",
+      "=",
+      subscription.id,
+    )
+    .select("id")
+    .executeTakeFirst()
+  return !payment
+}
 
 export async function invite_manager(
   form_data: FormData,
@@ -28,6 +49,27 @@ export async function invite_manager(
     ] as const
   }
   const input = input_validation.output
+
+  const trial = await is_trial(organization_id)
+  if (trial) {
+    const result = await query_builder
+      .selectFrom("member")
+      .where("organization_id", "=", organization_id)
+      .select(sql<number>`count(*)::int`.as("count"))
+      .executeTakeFirst()
+    const member_count = result?.count ?? 0
+    if (member_count >= 2) {
+      return [
+        {
+          invite_manager: {
+            execution:
+              "Durante el período de prueba solo podés tener 1 administrador",
+          },
+        },
+        null,
+      ] as const
+    }
+  }
 
   const now = new Date()
   const invitation_id = crypto.randomUUID()

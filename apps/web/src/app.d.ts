@@ -22,6 +22,15 @@ declare global {
         updatedAt: Date
         activeOrganizationId: string | null
       } | null
+      subscriptions: {
+        id: number
+        organization_id: string
+        user_id: number
+        status: number
+        type: number
+        starts_at: string
+        ends_at: string
+      }[]
     }
   }
 }

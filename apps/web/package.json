@@ -38,6 +38,9 @@
     "vitest": "^4.0.15",
     "vitest-browser-svelte": "^2.0.1"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.208.0",
@@ -57,6 +60,7 @@
     "marked": "^17.0.1",
     "n2words": "^1.23.1",
     "pg": "^8.16.3",
+    "tsx": "^4.21.0",
     "valibot": "^1.2.0",
     "xstate": "^5.19.0",
     "zod": "^4"

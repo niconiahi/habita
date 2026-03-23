@@ -3,6 +3,8 @@ import * as v from "valibot"
 export type ObjectValues<T> = T[keyof T]
 export const JOB_TYPE = {
   CALCULATE_PRICES: 0,
+  SEND_RENEWAL_REMINDER: 1,
+  EXTEND_SUBSCRIPTION: 2,
 } as const
 export const JobTypeSchema = v.picklist(
   Object.values(JOB_TYPE),

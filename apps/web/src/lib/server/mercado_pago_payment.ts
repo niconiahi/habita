@@ -46,6 +46,11 @@ const MercadoPagoPreferenceSchema = v.object({
 interface CreatePreferenceOptions {
   title: string
   amount: number
+  back_urls?: {
+    success: string
+    failure: string
+    pending: string
+  }
 }
 
 export async function create_preference(
@@ -54,9 +59,14 @@ export async function create_preference(
   | [CreatePreferenceError, null]
   | [null, { id: string; init_point: string }]
 > {
-  const { title, amount } = options
+  const { title, amount, back_urls } = options
   const { is_development, access_token } = get_config()
   const origin = get_origin()
+  const resolved_back_urls = back_urls ?? {
+    success: `${origin}/pay/success`,
+    failure: `${origin}/pay/failure`,
+    pending: `${origin}/pay/pending`,
+  }
   // NOTE: new safe implementation
   const [fetch_error, response] = await safe_async(
     fetch(
@@ -75,11 +85,7 @@ export async function create_preference(
               unit_price: amount,
             },
           ],
-          back_urls: {
-            success: `${origin}/pay/success`,
-            failure: `${origin}/pay/failure`,
-            pending: `${origin}/pay/pending`,
-          },
+          back_urls: resolved_back_urls,
           auto_return: "approved",
           notification_url: `${origin}/webhooks/mercadopago`,
         }),

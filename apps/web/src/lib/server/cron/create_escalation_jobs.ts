@@ -5,7 +5,7 @@ import { CONTRACT_STATE } from "../../contract_state"
 import { JOB_STATUS } from "../../job_status"
 import { JOB_TYPE } from "../../job_type"
 import { now } from "../now"
-import { logger } from "$lib/telemetry/logger"
+import { logger } from "../../telemetry/logger"
 import { ForceDateSchema } from "../force_date"
 
 async function fetch_contracts() {
