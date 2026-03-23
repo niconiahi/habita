@@ -98,7 +98,8 @@ subscriptions: {
   type: number
   ends_at: string
   starts_at: string
-}[]
+}
+;[]
 ```
 
 ## Subscription creation (onboarding)
@@ -225,31 +226,37 @@ All seats in the organization are extended together — one payment covers every
 ## Files
 
 ### Database
+
 - `db/migrations/1774231558814_add_subscription.ts` — `subscription`, `subscription_payment`, `job_subscription_payment` tables with FKs and indexes
 - `db/types.ts` — `Subscription`, `SubscriptionPayment`, `JobSubscriptionPayment` interfaces (generated)
 
 ### Constants
+
 - `$lib/subscription_status.ts` — `SUBSCRIPTION_STATUS`, labels, schema
 - `$lib/subscription_type.ts` — `SUBSCRIPTION_TYPE`, labels, schema
 
 ### Core logic
+
 - `$lib/server/subscription.ts` — `resolve_subscription_status`, `get_grace_days_remaining`, `fetch_user_subscriptions`, `fetch_organization_subscriptions`, `require_active_subscription`
 - `src/hooks.server.ts` — populates `locals.subscriptions`
 - `src/app.d.ts` — `subscriptions` type on `App.Locals`
 
 ### Onboarding
+
 - `routes/onboarding/+page.server.ts` — `select_account_type` action creates subscription
 - `routes/onboarding/+page.svelte` — cards submit forms with hidden `type` field
 - `routes/onboarding/actions/action.ts` — `ACTION.SELECT_ACCOUNT_TYPE`
 - `routes/onboarding/actions/select_account_type.server.ts` — creates subscription with 30-day free period
 
 ### Feature gating
+
 - `$lib/components/SubscriptionBanner.svelte` — unclosable banner for grace period
 - `routes/+layout.server.ts` — runs `require_active_subscription`, passes grace data
 - `routes/+layout.svelte` — renders `SubscriptionBanner` when in grace
 - `routes/admin/realtor/actions/invite_manager.server.ts` — trial seat enforcement
 
 ### Cron
+
 - `$lib/job_type.ts` — `SEND_RENEWAL_REMINDER=1`, `EXTEND_SUBSCRIPTION=2`
 - `$lib/server/cron/create_renewal_jobs.ts` — finds expiring subscriptions, creates reminder jobs
 - `$lib/server/cron/create_renewal_jobs.script.ts` — entry point for Ofelia
@@ -260,6 +267,7 @@ All seats in the organization are extended together — one payment covers every
 - `infra/production/scheduler/ofelia.ini` — same
 
 ### Payment page
+
 - `routes/subscribe/+page.server.ts` — loader + `create_subscription_payment` action
 - `routes/subscribe/+page.svelte` — payment form with amount breakdown
 - `routes/subscribe/actions/action.ts` — `ACTION.CREATE_SUBSCRIPTION_PAYMENT`
@@ -268,7 +276,9 @@ All seats in the organization are extended together — one payment covers every
 - `routes/subscribe/success/+page.svelte` — confirmation page
 
 ### Webhook
+
 - `routes/webhooks/mercadopago/+server.ts` — enqueues `EXTEND_SUBSCRIPTION` job on approved payment
 
 ### MercadoPago
+
 - `$lib/server/mercado_pago_payment.ts` — `create_preference` now accepts optional `back_urls` for subscription flow

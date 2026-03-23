@@ -8,30 +8,15 @@ import {
   fetch_notifications,
   type Notification,
 } from "$lib/fetchers/notifications.server"
-import { require_active_subscription } from "$lib/server/subscription"
+import {
+  resolve_subscription_status,
+  get_grace_days_remaining,
+} from "$lib/server/subscription"
 import { SUBSCRIPTION_STATUS } from "$lib/subscription_status"
 import type { LayoutServerLoad } from "./$types"
 
-const PUBLIC_ROUTES = [
-  "/login",
-  "/signup",
-  "/onboarding",
-  "/subscribe",
-  "/webhooks",
-  "/health",
-  "/api",
-]
-
-function is_public_route(pathname: string) {
-  if (pathname === "/") return true
-  return PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route),
-  )
-}
-
 export const load: LayoutServerLoad = async ({
   locals,
-  url,
 }) => {
   let notifications: Notification[] = []
   let is_manager = false
@@ -56,19 +41,21 @@ export const load: LayoutServerLoad = async ({
       locals.user.id,
     )
 
-    if (!is_public_route(url.pathname)) {
-      const subscription_check =
-        require_active_subscription(
-          locals.subscriptions,
-          locals.session?.activeOrganizationId ?? null,
-        )
-      if (
-        subscription_check.status ===
-        SUBSCRIPTION_STATUS.GRACE
-      ) {
+    const active_organization_id =
+      locals.session?.activeOrganizationId ?? null
+    const subscription = locals.subscriptions.find(
+      (s) => s.organization_id === active_organization_id,
+    )
+    if (subscription) {
+      const status = resolve_subscription_status(
+        new Date(subscription.ends_at),
+      )
+      if (status === SUBSCRIPTION_STATUS.GRACE) {
         subscription_grace = true
         subscription_days_remaining =
-          subscription_check.days_remaining
+          get_grace_days_remaining(
+            new Date(subscription.ends_at),
+          )
       }
     }
   }

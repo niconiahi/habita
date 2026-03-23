@@ -6,6 +6,17 @@
   import { ACTION } from "./actions/action"
 </script>
 
+{#snippet TenantCard()}
+  <Content.Section>
+    <a class="card" href="/profile">
+      <h3 class="card-title">Inquilino</h3>
+      <p class="card-description">
+        Completá tu perfil para poder firmar contratos
+      </p>
+    </a>
+  </Content.Section>
+{/snippet}
+
 {#snippet FreelanceCard()}
   <Content.Section>
     <Formulary.Root
@@ -41,7 +52,8 @@
       <button class="card" type="submit">
         <h3 class="card-title">Inmobiliaria</h3>
         <p class="card-description">
-          Gestioná propiedades como inmobiliaria con tu equipo
+          Gestioná propiedades como inmobiliaria con tu
+          equipo
         </p>
       </button>
     </Formulary.Root>
@@ -52,6 +64,7 @@
   <Content.Title>Elegí tu tipo de cuenta</Content.Title>
   {@render FreelanceCard()}
   {@render RealtorCard()}
+  {@render TenantCard()}
 </Content.Root>
 
 <style>
@@ -68,6 +81,7 @@
     text-align: left;
     transition: border-color 0.15s ease;
     color: var(--gray-100);
+    text-decoration: none;
   }
   .card:hover {
     border-color: var(--accent);

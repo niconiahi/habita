@@ -28,7 +28,8 @@ export async function create_subscription_payment(
     return [
       {
         create_subscription_payment: {
-          execution: "No se encontró una suscripción activa",
+          execution:
+            "No se encontró una suscripción activa",
         },
       },
       null,

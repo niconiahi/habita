@@ -31,10 +31,8 @@ export const load: PageServerLoad = async ({ url }) => {
       banos_max: filters.banos_max,
       total_surface_min: filters.total_surface_min,
       total_surface_max: filters.total_surface_max,
-      construction_year_min:
-        filters.construction_year_min,
-      construction_year_max:
-        filters.construction_year_max,
+      construction_year_min: filters.construction_year_min,
+      construction_year_max: filters.construction_year_max,
     }),
     fetch_zones(),
   ])
@@ -44,8 +42,8 @@ export const load: PageServerLoad = async ({ url }) => {
     badge: z.badge,
   }))
   const selected_zone = filters.zone_id
-    ? zone_items.find((z) => z.id === filters.zone_id) ??
-      null
+    ? (zone_items.find((z) => z.id === filters.zone_id) ??
+      null)
     : null
   const properties_with_image_props = properties.map(
     (property) => ({
