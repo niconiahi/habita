@@ -1,8 +1,4 @@
-import {
-  context,
-  propagation,
-  type Span,
-} from "@opentelemetry/api"
+import { type Span } from "@opentelemetry/api"
 import * as v from "valibot"
 import { display_location } from "$lib/display_location"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -14,10 +10,7 @@ import {
 } from "$lib/server/ics"
 import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { SLOT_STATE } from "$lib/slot_state"
-import {
-  send_email,
-  SEND_EMAIL_ERROR,
-} from "$lib/server/send_email"
+import { publish_send_booking_confirmation } from "$lib/server/broker/producer/publish_send_booking_confirmation"
 import { logger } from "$lib/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
 import { query_builder } from "db/query_builder"
@@ -214,92 +207,15 @@ Date: ${slot.start_date.toLocaleDateString()}
 Time: ${slot.start_date.toLocaleTimeString()} - ${slot.end_date.toLocaleTimeString()}
 
 Please open the attached calendar invitation to add this event to your calendar.`
-  span.setAttribute(
-    "email.visitant_recipient",
-    visitant.email,
-  )
-  span.setAttribute("email.host_recipient", host.email)
-  span.setAttribute("email.subject", summary)
+  await publish_send_booking_confirmation(id, {
+    visitant,
+    host,
+    subject: summary,
+    visitant_text,
+    host_text,
+    content,
+  })
 
-  const otel_headers: Record<string, string> = {}
-  propagation.inject(context.active(), otel_headers)
-  const [[visitant_email_error], [host_email_error]] =
-    await Promise.all([
-      send_email(
-        {
-          to: visitant,
-          subject: summary,
-          text: visitant_text,
-          content,
-        },
-        otel_headers,
-      ),
-      send_email(
-        {
-          to: host,
-          subject: summary,
-          text: host_text,
-          content,
-        },
-        otel_headers,
-      ),
-    ])
-  if (visitant_email_error) {
-    if (
-      visitant_email_error.type ===
-      SEND_EMAIL_ERROR.FETCH_FAILED
-    ) {
-      logger.error(
-        visitant_email_error.error.message,
-        {
-          visitant_id,
-          error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
-        },
-        visitant_email_error.error,
-      )
-    }
-    if (
-      visitant_email_error.type ===
-      SEND_EMAIL_ERROR.SERVICE_ERROR
-    ) {
-      logger.error(
-        visitant_email_error.error.message,
-        {
-          visitant_id,
-          error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
-        },
-        visitant_email_error.error,
-      )
-    }
-  }
-  if (host_email_error) {
-    if (
-      host_email_error.type ===
-      SEND_EMAIL_ERROR.FETCH_FAILED
-    ) {
-      logger.error(
-        host_email_error.error.message,
-        {
-          host_id: slot.host_id,
-          error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
-        },
-        host_email_error.error,
-      )
-    }
-    if (
-      host_email_error.type ===
-      SEND_EMAIL_ERROR.SERVICE_ERROR
-    ) {
-      logger.error(
-        host_email_error.error.message,
-        {
-          host_id: slot.host_id,
-          error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
-        },
-        host_email_error.error,
-      )
-    }
-  }
   logger.info("property visit booked", {
     slot_id: id,
     property_id,

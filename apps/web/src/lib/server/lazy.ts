@@ -12,11 +12,12 @@ const is_dev = process.env.NODE_ENV !== "production"
 //
 // In production, there is no HMR. Each instance lives in
 // a module-scoped closure — simple and no globalThis needed.
-const hmr_cache = ((globalThis as Record<string, unknown>)
-  .__lazy_hmr_cache ??= new Map<string, object>()) as Map<
-    string,
-    object
-  >
+const hmr_cache = ((
+  globalThis as Record<string, unknown>
+).__lazy_hmr_cache ??= new Map<string, object>()) as Map<
+  string,
+  object
+>
 
 function hash(source: string): string {
   let h = 0
@@ -31,7 +32,8 @@ export function lazy<T extends object>(create: () => T): T {
     const key = hash(create.toString())
     return new Proxy({} as T, {
       get(_, prop) {
-        if (!hmr_cache.has(key)) hmr_cache.set(key, create())
+        if (!hmr_cache.has(key))
+          hmr_cache.set(key, create())
         const instance = hmr_cache.get(key) as T
         const value = instance[prop as keyof T]
         return typeof value === "function"

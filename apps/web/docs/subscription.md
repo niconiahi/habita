@@ -46,17 +46,6 @@ payment_id        integer FK → payment.id
 created_at        timestamptz
 ```
 
-### `job_subscription_payment` table
-
-Links an `EXTEND_SUBSCRIPTION` job to the `subscription_payment` that triggered it. This exists because the `job` table has no metadata/payload column — it's a pure linking table.
-
-```
-id                      serial PK
-job_id                  integer FK → job.id
-subscription_payment_id integer FK → subscription_payment.id
-created_at              timestamptz
-```
-
 ### Constants
 
 - `SUBSCRIPTION_STATUS`: `ACTIVE=0`, `GRACE=1`, `LOCKED=2` — in `$lib/subscription_status.ts`
@@ -148,8 +137,8 @@ MercadoPago has a Preapproval API for automatic recurring billing, but we chose 
 2. **Admin visits `/subscribe`** (from email link or from the hard redirect)
 3. **`/subscribe` creates a fresh MercadoPago preference** on-demand
 4. **Admin pays** via MercadoPago checkout
-5. **Webhook enqueues a job** (does NOT directly mutate subscriptions)
-6. **`process_jobs` extends the subscription** by 1 month
+5. **Webhook publishes an `extend_subscription` event** to the message broker
+6. **Consumer extends the subscription** by 1 month
 
 ### Why cron doesn't create MercadoPago preferences
 
@@ -159,16 +148,11 @@ Instead, the cron only sends emails with a link to `/subscribe`. The `/subscribe
 
 ### Cron: `create_renewal_jobs`
 
-Runs daily at 8 AM (configured in Ofelia). Two checks:
+Runs daily at 8 AM (configured in Ofelia). Checks for expiring or grace-period organizations. If any exist and no Valkey lock is active (`lock:send_renewal_reminder`, 24h TTL), publishes a `send_renewal_reminder` event to the broker. The lock prevents duplicate sends if the cron fires twice in one day.
 
-1. **Pre-expiry reminder** (7 days before `current_period_end`): Creates a `SEND_RENEWAL_REMINDER` job if no PENDING one exists.
-2. **Grace period reminder** (`current_period_end <= now`, still within 7-day grace): Creates another `SEND_RENEWAL_REMINDER` job if no PENDING one exists and no FULFILLED one was created in the last 24 hours.
+### Consumer handler: `send_renewal_reminder`
 
-This means the admin gets at most 2 emails: one heads-up 7 days before, one urgent reminder at grace start.
-
-### Job handler: `SEND_RENEWAL_REMINDER`
-
-Processed by `process_jobs`. For each organization with expiring subscriptions:
+Processed by the broker consumer. For each organization with expiring subscriptions:
 
 1. Counts seats (subscription rows) for the organization
 2. Calculates display amount: freelance=$50, realtor=seats×$40
@@ -193,29 +177,30 @@ The `create_subscription_payment` action:
 4. In a transaction: creates `payment`, `payment_mercado_pago`, and `subscription_payment` records
 5. Redirects to MercadoPago checkout
 
-### Webhook: enqueue, don't execute
+### Webhook: publish, don't execute
 
 When MercadoPago sends an "approved" webhook:
 
 1. Existing flow: verify HMAC, fetch payment details, update `payment_mercado_pago.status`
-2. **New**: Check if this payment has a `subscription_payment` record
-3. If yes: in a transaction, insert a `job` (type=`EXTEND_SUBSCRIPTION`) and a `job_subscription_payment` linking row
+2. Check if this payment has a `subscription_payment` record
+3. If yes: publish an `extend_subscription` event to the broker with the `subscription_payment_id`
 4. Return 200 immediately
 
-The webhook does NOT mutate subscriptions directly. This is intentional — if the extension fails (database error, network issue), the job stays in the `failed_job` table and can be investigated/retried. The webhook itself is fast and always succeeds (just an INSERT).
+The webhook does NOT mutate subscriptions directly. This is intentional — if the extension fails, the message retries up to 3 times and then lands in the dead letter queue for investigation. The webhook itself is fast and always succeeds (just a publish).
 
-### Job handler: `EXTEND_SUBSCRIPTION`
+### Consumer handler: `extend_subscription`
 
-Processed by `process_jobs`:
+Processed by the broker consumer:
 
-1. Looks up `job_subscription_payment` → gets `subscription_payment_id`
-2. Follows the FK chain: `subscription_payment` → `subscription` → `organization_id`
-3. In a transaction: updates ALL subscription rows for the organization:
-   - `current_period_start = current_period_end`
-   - `current_period_end = current_period_end + 1 month`
-4. On failure: inserts `failed_job` record (existing pattern)
+1. Validates the message payload (`subscription_payment_id`)
+2. Checks `subscription_payment.processed_at` — if not null, skips (idempotency guard)
+3. Follows the FK chain: `subscription_payment` → `subscription` → `organization_id`
+4. In a transaction: updates ALL subscription rows for the organization and sets `processed_at`:
+   - `starts_at = ends_at`
+   - `ends_at = ends_at + interval '1 month'`
+5. On failure: retries up to 3 times, then routes to DLQ
 
-All seats in the organization are extended together — one payment covers everyone.
+All seats in the organization are extended together — one payment covers everyone. The `processed_at` guard prevents double-extension if the message is delivered more than once.
 
 ## What about adding/removing seats mid-month?
 
@@ -227,8 +212,8 @@ All seats in the organization are extended together — one payment covers every
 
 ### Database
 
-- `db/migrations/1774231558814_add_subscription.ts` — `subscription`, `subscription_payment`, `job_subscription_payment` tables with FKs and indexes
-- `db/types.ts` — `Subscription`, `SubscriptionPayment`, `JobSubscriptionPayment` interfaces (generated)
+- `db/migrations/1774231558814_add_subscription.ts` — `subscription`, `subscription_payment` tables with FKs and indexes
+- `db/types.ts` — `Subscription`, `SubscriptionPayment` interfaces (generated)
 
 ### Constants
 
@@ -255,16 +240,19 @@ All seats in the organization are extended together — one payment covers every
 - `routes/+layout.svelte` — renders `SubscriptionBanner` when in grace
 - `routes/admin/realtor/actions/invite_manager.server.ts` — trial seat enforcement
 
-### Cron
+### Cron & Broker
 
-- `$lib/job_type.ts` — `SEND_RENEWAL_REMINDER=1`, `EXTEND_SUBSCRIPTION=2`
-- `$lib/server/cron/create_renewal_jobs.ts` — finds expiring subscriptions, creates reminder jobs
+- `$lib/server/cron/create_renewal_jobs.ts` — finds expiring subscriptions, publishes `send_renewal_reminder` event
 - `$lib/server/cron/create_renewal_jobs.script.ts` — entry point for Ofelia
 - `$lib/server/cron/send_renewal_reminder.ts` — sends email to organization admin
-- `$lib/server/cron/extend_subscription.ts` — extends all organization seats by 1 month
-- `$lib/server/cron/process_jobs.ts` — handles `SEND_RENEWAL_REMINDER` and `EXTEND_SUBSCRIPTION`
+- `$lib/server/cron/extend_subscription.ts` — `extend_subscription_by_payment_id()` with idempotency guard
+- `$lib/server/broker/events/extend_subscription.ts` — event schema + topic name
+- `$lib/server/broker/events/send_renewal_reminder.ts` — event schema + topic name
+- `$lib/server/broker/consumer/handle_extend_subscription.ts` — consumer handler with retry/DLQ
+- `$lib/server/broker/consumer/handle_send_renewal_reminder.ts` — consumer handler with retry/DLQ
 - `infra/development/scheduler/ofelia.ini` — daily `create-renewal-jobs` at 8 AM
 - `infra/production/scheduler/ofelia.ini` — same
+- See `docs/broker.md` for full broker architecture
 
 ### Payment page
 
@@ -277,7 +265,7 @@ All seats in the organization are extended together — one payment covers every
 
 ### Webhook
 
-- `routes/webhooks/mercadopago/+server.ts` — enqueues `EXTEND_SUBSCRIPTION` job on approved payment
+- `routes/webhooks/mercadopago/+server.ts` — publishes `extend_subscription` event on approved payment
 
 ### MercadoPago
 

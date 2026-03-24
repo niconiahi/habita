@@ -42,6 +42,8 @@ up: infra-setup
   docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d
   @echo "Starting scheduler..."
   docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d
+  @echo "Starting broker..."
+  docker compose -p broker -f {{infra}}/broker/docker-compose.yml up -d
   @echo "Starting pdf service..."
   docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d
   @echo "Starting status page..."
@@ -54,6 +56,7 @@ up: infra-setup
 down:
   -docker compose -p status -f {{infra}}/status/docker-compose.yml down
   -docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml down
+  -docker compose -p broker -f {{infra}}/broker/docker-compose.yml down
   -docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml down
   -docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml down
   -docker compose -p media -f {{infra}}/media/docker-compose.yml down
@@ -95,6 +98,7 @@ status:
   @echo "=== App ===" && docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml ps
   @echo "\n=== API ===" && docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml ps
   @echo "\n=== Gateway ===" && docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml ps
+  @echo "\n=== Broker ===" && docker compose -p broker -f {{infra}}/broker/docker-compose.yml ps
   @echo "\n=== Scheduler ===" && docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml ps
   @echo "\n=== PDF ===" && docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml ps
   @echo "\n=== Media ===" && docker compose -p media -f {{infra}}/media/docker-compose.yml ps

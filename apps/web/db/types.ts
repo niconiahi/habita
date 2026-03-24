@@ -108,14 +108,6 @@ export interface DigitalSignature {
   updated_at: Timestamp
 }
 
-export interface FailedJob {
-  attempt_count: Generated<number>
-  created_at: Timestamp
-  failed_at: Timestamp
-  id: Generated<number>
-  job_id: number
-}
-
 export interface File {
   basename: string
   content: Buffer
@@ -193,22 +185,6 @@ export interface InvitationToken {
   property_id: number
   token: string | null
   used_at: Timestamp | null
-}
-
-export interface Job {
-  created_at: Timestamp
-  id: Generated<number>
-  scheduled_at: Timestamp
-  status: number
-  type: number
-  updated_at: Timestamp
-}
-
-export interface JobSubscriptionPayment {
-  created_at: Timestamp
-  id: Generated<number>
-  job_id: number
-  subscription_payment_id: number
 }
 
 export interface Location {
@@ -442,6 +418,7 @@ export interface SubscriptionPayment {
   created_at: Timestamp
   id: Generated<number>
   payment_id: number
+  processed_at: Timestamp | null
   subscription_id: number
 }
 
@@ -1092,7 +1069,6 @@ export interface DB {
   contract_item: ContractItem
   contract_item_file: ContractItemFile
   digital_signature: DigitalSignature
-  failed_job: FailedJob
   file: File
   formula_parameter: FormulaParameter
   geography_columns: GeographyColumns
@@ -1101,8 +1077,6 @@ export interface DB {
   income_warranty_guarantor: IncomeWarrantyGuarantor
   invitation: Invitation
   invitation_token: InvitationToken
-  job: Job
-  job_subscription_payment: JobSubscriptionPayment
   location: Location
   member: Member
   notification: Notification

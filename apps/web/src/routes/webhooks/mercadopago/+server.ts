@@ -6,8 +6,7 @@ import { logger } from "$lib/telemetry/logger"
 import { query_builder } from "db/query_builder"
 import { now } from "$lib/server/now"
 import { PAYMENT_STATUS } from "$lib/payment_status"
-import { JOB_TYPE } from "$lib/job_type"
-import { JOB_STATUS } from "$lib/job_status"
+import { publish_extend_subscription } from "$lib/server/broker/producer/publish_extend_subscription"
 import type { RequestHandler } from "./$types"
 
 const MERCADOPAGO_STATUS_MAP = {
@@ -181,34 +180,12 @@ async function handle_payment_notification(
         .executeTakeFirst()
 
       if (subscription_payment) {
-        await query_builder
-          .transaction()
-          .execute(async (tx) => {
-            const job = await tx
-              .insertInto("job")
-              .values({
-                type: JOB_TYPE.EXTEND_SUBSCRIPTION,
-                status: JOB_STATUS.PENDING,
-                scheduled_at: now,
-                created_at: now,
-                updated_at: now,
-              })
-              .returning("id")
-              .executeTakeFirstOrThrow()
-
-            await tx
-              .insertInto("job_subscription_payment")
-              .values({
-                job_id: job.id,
-                subscription_payment_id:
-                  subscription_payment.id,
-                created_at: now,
-              })
-              .execute()
-          })
+        await publish_extend_subscription(
+          subscription_payment.id,
+        )
 
         logger.info(
-          "enqueued EXTEND_SUBSCRIPTION job for payment",
+          "published extend_subscription event for payment",
           {
             payment_id,
             subscription_payment_id:

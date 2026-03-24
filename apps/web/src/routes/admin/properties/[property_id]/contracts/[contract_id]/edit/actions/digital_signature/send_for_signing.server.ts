@@ -9,10 +9,7 @@ import {
   API_FETCH_ERROR,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
-import {
-  send_email,
-  SEND_EMAIL_ERROR,
-} from "$lib/server/send_email"
+import { publish_send_signing_request } from "$lib/server/broker/producer/publish_send_signing_request"
 import { fetch_landlord } from "$lib/server/landlord"
 import { fetch_tenant } from "$lib/server/tenant"
 import { get_origin } from "$lib/server/origin"
@@ -263,48 +260,15 @@ export async function send_for_signing(
 
   const signatures_url = `${origin}/signatures`
   const email_html = `<p>Tiene un documento para firmar en Habita.</p><p><a href="${signatures_url}">Ver mis documentos</a></p>`
-  await Promise.all(
-    [
+
+  await publish_send_signing_request(input.contract_id, {
+    recipients: [
       { email: landlord.email, name: landlord.name },
       { email: tenant.email, name: tenant.name },
-    ].map(async function send_signing_email(recipient) {
-      const [email_error] = await send_email({
-        type: "html",
-        to: {
-          email: recipient.email,
-          name: recipient.name,
-        },
-        subject: "Tiene un documento para firmar en Habita",
-        html: email_html,
-      })
-      if (email_error) {
-        if (
-          email_error.type === SEND_EMAIL_ERROR.FETCH_FAILED
-        ) {
-          logger.error(
-            email_error.error.message,
-            {
-              recipient_email: recipient.email,
-              error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
-            },
-            email_error.error,
-          )
-        }
-        if (
-          email_error.type ===
-          SEND_EMAIL_ERROR.SERVICE_ERROR
-        ) {
-          logger.error(
-            email_error.error.message,
-            {
-              recipient_email: recipient.email,
-              error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
-            },
-            email_error.error,
-          )
-        }
-      }
-    }),
-  )
+    ],
+    subject: "Tiene un documento para firmar en Habita",
+    html: email_html,
+  })
+
   return [null, null] as const
 }

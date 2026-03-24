@@ -3,13 +3,9 @@ import { query_builder } from "../../../../db/query_builder"
 import { now } from "../now"
 import { logger } from "../../telemetry/logger"
 
-export async function extend_subscription(job_id: number) {
-  const link = await query_builder
-    .selectFrom("job_subscription_payment")
-    .where("job_id", "=", job_id)
-    .select("subscription_payment_id")
-    .executeTakeFirstOrThrow()
-
+export async function extend_subscription_by_payment_id(
+  subscription_payment_id: number,
+) {
   const subscription_payment = await query_builder
     .selectFrom("subscription_payment")
     .innerJoin(
@@ -20,10 +16,21 @@ export async function extend_subscription(job_id: number) {
     .where(
       "subscription_payment.id",
       "=",
-      link.subscription_payment_id,
+      subscription_payment_id,
     )
-    .select("subscription.organization_id")
+    .select([
+      "subscription.organization_id",
+      "subscription_payment.processed_at",
+    ])
     .executeTakeFirstOrThrow()
+
+  if (subscription_payment.processed_at) {
+    logger.info(
+      "subscription payment already processed, skipping",
+      { subscription_payment_id },
+    )
+    return
+  }
 
   const organization_id =
     subscription_payment.organization_id
@@ -38,10 +45,16 @@ export async function extend_subscription(job_id: number) {
       })
       .where("organization_id", "=", organization_id)
       .execute()
+
+    await tx
+      .updateTable("subscription_payment")
+      .set({ processed_at: now })
+      .where("id", "=", subscription_payment_id)
+      .execute()
   })
 
   logger.info("extended subscriptions for organization", {
     organization_id,
-    job_id,
+    subscription_payment_id,
   })
 }
