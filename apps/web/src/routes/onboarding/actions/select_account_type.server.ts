@@ -5,10 +5,7 @@ import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { SUBSCRIPTION_STATUS } from "$lib/subscription_status"
-import {
-  SUBSCRIPTION_TYPE,
-  SubscriptionTypeSchema,
-} from "$lib/subscription_type"
+import { SubscriptionTypeSchema } from "$lib/subscription_type"
 import { ForceNumberSchema } from "$lib/force_number"
 
 const InputSchema = v.object({
@@ -87,10 +84,7 @@ export async function select_account_type(
     ] as const
   }
 
-  const redirect_path =
-    result.output.type === SUBSCRIPTION_TYPE.FREELANCE
-      ? "/admin/properties"
-      : "/demo"
+  const redirect_path = "/admin/properties"
 
   return [null, { redirect_path }] as const
 }

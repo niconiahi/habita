@@ -38,3 +38,15 @@ v.pipe(v.string(), v.transform((value) => Number(value)))
 ```
 
 - Use blank lines to separate imports from code, functions from each other, and logical blocks within functions
+
+- No magic numbers or magic strings — extract named constants or utility functions. If a value appears in logic (not just a data literal), it must have a name that explains its purpose.
+
+```ts
+// bad
+const retry_count = Number(message.headers?.["retry-count"]?.toString() ?? "0")
+if (retry_count < 3) { ... }
+
+// good
+const retry_count = get_retry_count(message.headers)
+if (retry_count < MAX_RETRIES) { ... }
+```

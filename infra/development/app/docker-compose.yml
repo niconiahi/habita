@@ -17,6 +17,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
@@ -91,8 +92,9 @@ services:
       OTEL_SERVICE_NAME: svelte
       OTEL_ENVIRONMENT: development
       NODE_OPTIONS: --max-old-space-size=4096
+      BROKER_BROKERS: redpanda:9092
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5174/health"]
+      test: ["CMD-SHELL", "node -e \"process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'; fetch('https://localhost:5174/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -115,6 +117,50 @@ services:
         reservations:
           memory: 512M
           cpus: "0.5"
+    networks:
+      - internal
+
+  consumer:
+    build:
+      context: ../../../apps/web
+      dockerfile: Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    restart: unless-stopped
+    labels:
+      - "habita.role=consumer"
+    volumes:
+      - ../../../apps/web:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://valkey:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_SERVICE_NAME: consumer
+      OTEL_ENVIRONMENT: development
+      BROKER_BROKERS: redpanda:9092
+    command: pnpm exec tsx src/lib/server/broker/consumer/consumer.script.ts
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     networks:
       - internal
 

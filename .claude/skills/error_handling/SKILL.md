@@ -602,6 +602,4 @@ All constants and types are colocated in the same file as their utility function
 | `API_FETCH_ERROR` | `$lib/server/digital_signature.ts` | `FETCH_FAILED`, `API_ERROR`, `JSON_PARSE_FAILED`, `SCHEMA_VALIDATION_FAILED` |
 | `GENERATE_PDF_WITH_PLAYWRIGHT_ERROR` | `$lib/server/pdf_generator.ts` | `FETCH_FAILED`, `SERVICE_ERROR`, `BUFFER_READ_FAILED` |
 | `CREATE_PREFERENCE_ERROR` | `$lib/server/mercado_pago_payment.ts` | `FETCH_FAILED`, `API_ERROR`, `JSON_PARSE_FAILED`, `SCHEMA_VALIDATION_FAILED` |
-| `REQUEST_DEMO_ERROR` | `routes/demo/actions/request_demo.server.ts` | `FETCH_FAILED`, `SERVICE_ERROR` |
-| `SEND_LANDLORD_INVITE_ERROR` | `routes/.../edit/actions/invite_landlord.server.ts` | `FETCH_FAILED`, `SERVICE_ERROR` |
 | `SEND_EMAIL_ERROR` | `$lib/server/send_email.ts` | `FETCH_FAILED`, `SERVICE_ERROR` |

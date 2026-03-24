@@ -68,6 +68,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("payment_id", "integer", (col) =>
       col.notNull(),
     )
+    .addColumn("processed_at", "timestamptz")
     .addColumn("created_at", "timestamptz", (col) =>
       col.notNull(),
     )
@@ -102,54 +103,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on("subscription_payment")
     .column("payment_id")
     .execute()
-
-  await db.schema
-    .createTable("job_subscription_payment")
-    .addColumn("id", "serial", (col) =>
-      col.primaryKey().notNull(),
-    )
-    .addColumn("job_id", "integer", (col) => col.notNull())
-    .addColumn(
-      "subscription_payment_id",
-      "integer",
-      (col) => col.notNull(),
-    )
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull(),
-    )
-    .execute()
-
-  await db.schema
-    .alterTable("job_subscription_payment")
-    .addForeignKeyConstraint(
-      "job_subscription_payment_job_id_job_id_fk",
-      ["job_id"],
-      "job",
-      ["id"],
-    )
-    .execute()
-  await db.schema
-    .alterTable("job_subscription_payment")
-    .addForeignKeyConstraint(
-      "job_subscription_payment_sp_id_sp_id_fk",
-      ["subscription_payment_id"],
-      "subscription_payment",
-      ["id"],
-    )
-    .execute()
-
-  await db.schema
-    .createIndex("idx_job_subscription_payment_job_id")
-    .on("job_subscription_payment")
-    .column("job_id")
-    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema
-    .dropTable("job_subscription_payment")
-    .ifExists()
-    .execute()
   await db.schema
     .dropTable("subscription_payment")
     .ifExists()

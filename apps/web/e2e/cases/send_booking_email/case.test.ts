@@ -9,7 +9,14 @@ import {
   TEST_LANDLORD,
 } from "../../helpers/auth"
 import { fill_location } from "../../helpers/location"
+import {
+  fetch_latest_message,
+  parse_message_value,
+  get_message_header,
+  assert_dead_letter_queue_is_empty,
+} from "../../helpers/broker"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { SEND_BOOKING_CONFIRMATION_TOPIC } from "$lib/server/broker/events/send_booking_confirmation"
 import { query_builder } from "../../../db/query_builder"
 
 const MANAGER_EMAIL = "nico@habita.rent"
@@ -154,6 +161,39 @@ test.describe.serial("Send Booking Email", () => {
         'button:has-text("Reservar este horario")',
       )
       await page.waitForURL(/\/properties/)
+
+      // Verify broker received the booking confirmation event
+      const message = await fetch_latest_message(
+        SEND_BOOKING_CONFIRMATION_TOPIC,
+      )
+      expect(message).toBeTruthy()
+
+      const payload = parse_message_value(message!)
+      expect(payload).toMatchObject({
+        visitant: {
+          email: expect.any(String),
+          name: expect.any(String),
+        },
+        host: {
+          email: expect.any(String),
+          name: expect.any(String),
+        },
+        subject: expect.stringContaining("Visita"),
+        visitant_text: expect.any(String),
+        host_text: expect.any(String),
+        content: expect.stringContaining("BEGIN:VCALENDAR"),
+      })
+
+      const message_id = get_message_header(
+        message!,
+        "message-id",
+      )
+      expect(message_id).toBeTruthy()
+
+      await assert_dead_letter_queue_is_empty(
+        SEND_BOOKING_CONFIRMATION_TOPIC,
+      )
+
       // Restore all emails
       await update_user_email(
         manager_id,

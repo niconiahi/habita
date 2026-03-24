@@ -1,9 +1,10 @@
 services:
   nominatim:
     image: mediagis/nominatim:4.4
+    hostname: nominatim
     restart: unless-stopped
     ports:
-      - "8090:8080/tcp"
+      - "8091:8080/tcp"
     environment:
       - PBF_URL=https://download.geofabrik.de/south-america/argentina-latest.osm.pbf
       - REPLICATION_URL=https://download.geofabrik.de/south-america/argentina-updates/

@@ -41,12 +41,7 @@ func main() {
 			"POST /send-email",
 		),
 	)
-	http.Handle("/send-landlord-invite",
-		otelhttp.NewHandler(
-			http.HandlerFunc(smtp.LandlordInviteHandler(logger)),
-			"POST /send-landlord-invite",
-		),
-	)
+
 
 	port := os.Getenv("PORT")
 	if port == "" {

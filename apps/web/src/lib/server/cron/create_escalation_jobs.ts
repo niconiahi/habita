@@ -2,11 +2,9 @@ import { query_builder } from "../../../../db/query_builder"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import * as v from "valibot"
 import { CONTRACT_STATE } from "../../contract_state"
-import { JOB_STATUS } from "../../job_status"
-import { JOB_TYPE } from "../../job_type"
-import { now } from "../now"
 import { logger } from "../../telemetry/logger"
 import { ForceDateSchema } from "../force_date"
+import { publish_calculate_escalation } from "../broker/producer/publish_calculate_escalation"
 
 async function fetch_contracts() {
   return query_builder
@@ -59,31 +57,12 @@ export async function create_escalation_jobs() {
     due_contracts_count: due_contracts.length,
   })
   if (due_contracts.length === 0) {
-    logger.info("no contracts due, skipping job creation")
+    logger.info("no contracts due, skipping event publish")
     return { created: 0 }
   }
-  const job = await query_builder
-    .selectFrom("job")
-    .select("id")
-    .where("type", "=", JOB_TYPE.CALCULATE_PRICES)
-    .where("status", "=", JOB_STATUS.PENDING)
-    .executeTakeFirst()
-  if (job) {
-    logger.info(
-      "pending escalation job already exists, skipping",
-    )
-    return { created: 0 }
-  }
-  await query_builder
-    .insertInto("job")
-    .values({
-      type: JOB_TYPE.CALCULATE_PRICES,
-      status: JOB_STATUS.PENDING,
-      scheduled_at: now,
-      created_at: now,
-      updated_at: now,
-    })
-    .execute()
-  logger.info("created escalation job")
+
+  await publish_calculate_escalation()
+
+  logger.info("published calculate_escalation event")
   return { created: 1 }
 }
