@@ -12,4 +12,7 @@ apps/legacy
 infra/*/.env
 infra/*/scheduler/rclone.conf
 
+# Generated zone data (large, regenerate locally)
+*.tsv
+
 # Encrypted secrets (.enc) are TRACKED - do not add to gitignore
