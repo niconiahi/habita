@@ -81,13 +81,13 @@ logs project service="":
     docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml logs -f {{service}}
   fi
 
-# Restart a specific service
-restart service:
-  docker compose -p {{service}} {{versions_env}} -f {{infra}}/{{service}}/docker-compose.yml restart
+# Restart a project or specific service (e.g., just restart app, just restart app svelte)
+restart project service="":
+  docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml restart {{service}}
 
-# Reload a service (recreates container to pick up new env vars)
-reload service:
-  docker compose -p {{service}} {{versions_env}} -f {{infra}}/{{service}}/docker-compose.yml up -d --force-recreate
+# Reload a project or specific service (e.g., just reload app, just reload app svelte)
+reload project service="":
+  docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml up -d --force-recreate {{service}}
 
 # Run production build locally (for testing auth flows that need ORIGIN)
 preview:
