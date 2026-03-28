@@ -36,6 +36,10 @@ just link                      # Symlink config files from config/ to root
 
 ```bash
 just db shell                  # Open psql shell
+just db migrate                # Run pending migrations
+just db types                  # Regenerate DB types from current schema
+just db seed                   # Run database seeds
+just db make add_users_table   # Create a new migration file
 just db reset                  # Drop, recreate, migrate, seed (development only)
 just db backup                 # Create gzipped database dump
 just db restore-test           # Verify backup integrity
@@ -104,8 +108,6 @@ dco <stack> <service> <subcommand> [args...]
 ### Examples
 
 ```bash
-dco app svelte run pnpm run db:migrate     # Run migrations (no just recipe yet)
-dco app svelte run pnpm run db:types       # Regenerate DB types (no just recipe yet)
 dco app svelte exec sh                     # Shell into running container
 ```
 

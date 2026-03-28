@@ -8,6 +8,22 @@ versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file 
 shell:
   docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
 
+# Run pending migrations
+migrate:
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:latest
+
+# Regenerate database types from current schema
+types:
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:types
+
+# Run database seeds
+seed:
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:seed
+
+# Create a new migration file (e.g., just db make add_users_table)
+make name:
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:make {{name}}
+
 # Reset database: tear down app, remove volumes, restart fresh with migrations and seeds
 # Usage: ENV=production just db reset
 reset:
