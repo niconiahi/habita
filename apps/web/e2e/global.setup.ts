@@ -1,9 +1,9 @@
 import { test as setup } from "@playwright/test"
 import {
-  TEST_MANAGER,
+  authenticate_test_user,
   TEST_CANDIDATE,
   TEST_LANDLORD,
-  authenticate_test_user,
+  TEST_MANAGER,
 } from "./helpers/auth"
 import {
   create_credit_report,

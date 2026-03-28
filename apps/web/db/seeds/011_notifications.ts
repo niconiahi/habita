@@ -7,8 +7,8 @@
 
 import { subDays, subHours } from "date-fns"
 import type { Kysely } from "kysely"
-import type { DB } from "../types"
 import { NOTIFICATION_TYPE } from "../../src/lib/notification_type"
+import type { DB } from "../types"
 
 export async function seed(_db: Kysely<DB>): Promise<void> {
   console.log("seeding notifications")

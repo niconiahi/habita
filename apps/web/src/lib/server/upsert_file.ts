@@ -1,5 +1,6 @@
-import type { Kysely, Transaction } from "kysely"
 import type { DB } from "db/types"
+import type { Kysely, Transaction } from "kysely"
+import { encrypt_buffer } from "$lib/server/encryption"
 import { now } from "$lib/server/now"
 
 export async function upsert_file(
@@ -27,7 +28,7 @@ export async function upsert_file(
     .values({
       mime: file.type,
       basename: file.name,
-      content,
+      content: encrypt_buffer(content),
       created_at: now,
       updated_at: now,
       hash,

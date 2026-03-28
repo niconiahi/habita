@@ -2,6 +2,7 @@ import { createHash } from "node:crypto"
 import { readFile } from "node:fs/promises"
 import * as v from "valibot"
 import { query_builder } from "../../../db/query_builder"
+import { encrypt_buffer } from "../server/encryption"
 
 function get_mime_type(filename: string): string {
   const ext = filename.split(".").pop()?.toLowerCase()
@@ -44,7 +45,7 @@ export async function upload_file(
     .values({
       mime,
       basename,
-      content,
+      content: encrypt_buffer(content),
       size: content.length,
       hash,
       created_at: now,

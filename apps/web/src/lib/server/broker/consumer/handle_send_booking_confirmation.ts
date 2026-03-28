@@ -1,5 +1,5 @@
-import * as v from "valibot"
 import type { EachMessagePayload, Producer } from "kafkajs"
+import * as v from "valibot"
 import { logger } from "../../../telemetry/logger"
 import { send_email } from "../../send_email"
 import { SendBookingConfirmationEvent } from "../events/send_booking_confirmation"

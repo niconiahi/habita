@@ -1,15 +1,15 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ForceNumberSchema } from "$lib/force_number"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { ForceNumberSchema } from "$lib/force_number"
 import {
-  require_edit_access,
   get_accessible_property_ids,
+  require_edit_access,
 } from "$lib/server/property_access"
-import { fetch_candidates } from "./fetchers/candidates.server"
-import { set_tenant } from "./actions/index.server"
-import { ACTION } from "./actions/action"
 import type { Actions, PageServerLoad } from "./$types"
+import { ACTION } from "./actions/action"
+import { set_tenant } from "./actions/index.server"
+import { fetch_candidates } from "./fetchers/candidates.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

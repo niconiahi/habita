@@ -12,23 +12,23 @@
  * and the property editing UI with fully populated data.
  */
 
-import type { Kysely } from "kysely"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { addMonths } from "date-fns"
-import type { DB } from "../types"
+import type { Kysely } from "kysely"
 import { CONTRACT_STATE } from "../../src/lib/contract_state"
 import { CONTRACT_TYPE } from "../../src/lib/contract_type"
 import { COURT } from "../../src/lib/court"
 import { PROPERTY_DESTINY } from "../../src/lib/property_destiny"
 import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
 import { PROPERTY_STATE } from "../../src/lib/property_state"
+import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
 import { ROOM_TYPE } from "../../src/lib/room_type"
-import { SERVICE_TYPE } from "../../src/lib/service"
-import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import * as seeder from "../../src/lib/seeder"
+import { SERVICE_TYPE } from "../../src/lib/service"
+import type { DB } from "../types"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

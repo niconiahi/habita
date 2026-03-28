@@ -1,21 +1,21 @@
 import { createHash, randomUUID } from "node:crypto"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
-import { SIGNATURE_STATUS } from "$lib/signature_status"
+import { publish_send_signing_request } from "$lib/server/broker/producer/publish_send_signing_request"
 import {
-  submit_for_signing,
   API_FETCH_ERROR,
+  submit_for_signing,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
-import { publish_send_signing_request } from "$lib/server/broker/producer/publish_send_signing_request"
 import { fetch_landlord } from "$lib/server/landlord"
-import { fetch_tenant } from "$lib/server/tenant"
-import { get_origin } from "$lib/server/origin"
 import { now } from "$lib/server/now"
+import { get_origin } from "$lib/server/origin"
+import { fetch_tenant } from "$lib/server/tenant"
+import { SIGNATURE_STATUS } from "$lib/signature_status"
 import { logger } from "$lib/telemetry/logger"
-import { query_builder } from "db/query_builder"
 
 const InputSchema = v.object({
   contract_id: ForceNumberSchema,

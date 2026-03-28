@@ -1,17 +1,1 @@
-{
-  "$schema": "https://json.schemastore.org/prettierrc",
-  "useTabs": false,
-  "singleQuote": false,
-  "trailingComma": "all",
-  "printWidth": 60,
-  "semi": false,
-  "plugins": ["prettier-plugin-svelte"],
-  "overrides": [
-    {
-      "files": ["*.svelte", "*.svx"],
-      "options": {
-        "parser": "svelte"
-      }
-    }
-  ]
-}
+config/.prettierrc

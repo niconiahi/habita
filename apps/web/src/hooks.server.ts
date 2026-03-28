@@ -1,7 +1,7 @@
 import type { Handle } from "@sveltejs/kit"
-import { auth } from "$lib/server/auth"
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
+import { auth } from "$lib/server/auth"
 import { decrypt } from "$lib/server/encryption"
 import { fetch_user_subscriptions } from "$lib/server/subscription"
 

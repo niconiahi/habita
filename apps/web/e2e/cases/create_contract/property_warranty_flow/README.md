@@ -11,7 +11,7 @@ The manager creates the property, assigns a landlord, then fills the contract wi
 ### Preconditions
 
 - Three test users seeded and authenticated: manager, candidate, landlord
-- Auth state files exist at `.auth/manager.json`, `.auth/candidate.json`
+- Auth state files exist at `e2e/.auth/manager.json`, `e2e/.auth/candidate.json`
 - Landlord user exists in the database with email `test-landlord@habita.test`
 - Database accessible via `query_builder` for direct access operations
 
@@ -19,8 +19,8 @@ The manager creates the property, assigns a landlord, then fills the contract wi
 
 | Role      | Auth state file          | Description                       |
 | --------- | ------------------------ | --------------------------------- |
-| Manager   | `.auth/manager.json`     | Creates property, contract, slots |
-| Candidate | `.auth/candidate.json`   | Books a visiting slot             |
+| Manager   | `e2e/.auth/manager.json`     | Creates property, contract, slots |
+| Candidate | `e2e/.auth/candidate.json`   | Books a visiting slot             |
 | Landlord  | (DB-only, no UI actions) | Assigned as property owner via DB |
 
 ### Step-by-step Flow

@@ -1,8 +1,8 @@
 import { sql } from "kysely"
 import { query_builder } from "../../../../db/query_builder"
-import { send_email } from "../send_email"
-import { logger } from "../../telemetry/logger"
 import { SUBSCRIPTION_TYPE } from "../../subscription_type"
+import { logger } from "../../telemetry/logger"
+import { send_email } from "../send_email"
 
 const FREELANCE_PRICE_USD = 50
 const REALTOR_SEAT_PRICE_USD = 40

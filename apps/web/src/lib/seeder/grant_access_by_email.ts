@@ -1,5 +1,5 @@
-import { ACCESS_TYPE } from "../access_type"
 import { query_builder } from "../../../db/query_builder"
+import type { ACCESS_TYPE } from "../access_type"
 
 export async function grant_access_by_email(
   property_id: number,
@@ -29,7 +29,7 @@ export async function grant_access_by_email(
 
   if (existing) {
     console.log(
-      `grant_access_by_email: access already exists - skipping`,
+      "grant_access_by_email: access already exists - skipping",
     )
     return
   }

@@ -146,11 +146,11 @@ export async function authenticate_test_user(
   }
 
   // Save the authenticated state
-  const auth_dir = path.join(process.cwd(), ".auth")
+  const auth_dir = path.join(process.cwd(), "e2e", ".auth")
   await fs.mkdir(auth_dir, { recursive: true })
   await page
     .context()
     .storageState({ path: path.join(auth_dir, auth_file) })
 
-  console.log(`Saved auth state to .auth/${auth_file}`)
+  console.log(`Saved auth state to e2e/.auth/${auth_file}`)
 }

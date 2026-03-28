@@ -7,8 +7,8 @@
  */
 
 import type { Kysely } from "kysely"
-import type { DB } from "../types"
 import * as seeder from "../../src/lib/seeder"
+import type { DB } from "../types"
 
 const REAL_USER_EMAIL = "nicolas.accetta@gmail.com"
 

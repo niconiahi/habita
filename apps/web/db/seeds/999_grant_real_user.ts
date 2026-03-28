@@ -14,9 +14,9 @@
  */
 
 import type { Kysely } from "kysely"
-import type { DB } from "../types"
 import { ACCESS_TYPE } from "../../src/lib/access_type"
 import * as seeder from "../../src/lib/seeder"
+import type { DB } from "../types"
 
 const REAL_USER_EMAIL = "nicolas.accetta@gmail.com"
 

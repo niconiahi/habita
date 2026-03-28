@@ -1,10 +1,10 @@
-import { redirect, error } from "@sveltejs/kit"
+import { error, redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
+import type { PageServerLoad } from "./$types"
 import { fetch_candidates } from "./fetchers/candidates.server"
 import { fetch_property } from "./fetchers/property.server"
-import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({
   request,

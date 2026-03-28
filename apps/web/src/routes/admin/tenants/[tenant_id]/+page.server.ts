@@ -1,13 +1,13 @@
-import { redirect, error } from "@sveltejs/kit"
+import { error, redirect } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ForceNumberSchema } from "$lib/force_number"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { ForceNumberSchema } from "$lib/force_number"
 import {
   get_accessible_property_ids,
   is_tenant_accessible,
 } from "$lib/server/property_access"
-import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 import type { PageServerLoad } from "./$types"
+import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 
 export const load: PageServerLoad = async ({
   locals,

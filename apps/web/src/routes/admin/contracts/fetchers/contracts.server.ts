@@ -1,11 +1,11 @@
+import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
+import { ACCESS_TYPE } from "$lib/access_type"
 import {
   type ContractState,
   get_contract_states,
 } from "$lib/contract_state"
-import { query_builder } from "db/query_builder"
 import { decrypt } from "$lib/server/encryption"
-import { ACCESS_TYPE } from "$lib/access_type"
 
 export async function fetch_contracts(
   property_ids: number[],

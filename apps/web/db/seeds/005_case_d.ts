@@ -16,8 +16,8 @@
  */
 
 import type { Kysely } from "kysely"
-import type { DB } from "../types"
 import * as seeder from "../../src/lib/seeder"
+import type { DB } from "../types"
 
 export async function seed(_db: Kysely<DB>): Promise<void> {
   console.log("seeding case_d: fresh manager (empty state)")

@@ -1,7 +1,7 @@
-import { get_producer } from "./producer"
 import { logger } from "../../../telemetry/logger"
-import { SEND_RENEWAL_REMINDER_TOPIC } from "../events/send_renewal_reminder"
 import { MESSAGE_ID_HEADER } from "../consumer/retry"
+import { SEND_RENEWAL_REMINDER_TOPIC } from "../events/send_renewal_reminder"
+import { get_producer } from "./producer"
 
 export async function publish_send_renewal_reminder() {
   const producer = await get_producer()

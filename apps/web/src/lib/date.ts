@@ -41,11 +41,10 @@ export function get_month(
     typeof date === "string" ? new Date(date) : date
   if (as === "number") {
     return _date.getMonth() + 1
-  } else {
-    return _date
-      .toLocaleString("es-AR", { month: "long" })
-      .toLocaleUpperCase()
   }
+  return _date
+    .toLocaleString("es-AR", { month: "long" })
+    .toLocaleUpperCase()
 }
 
 export function get_year(date: Date | string) {

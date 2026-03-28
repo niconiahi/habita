@@ -8,13 +8,13 @@ A manager creates a new property of type "Departamento" (apartment). Unlike hous
 
 ### Preconditions
 
-- Manager user authenticated with state at `.auth/manager.json`
+- Manager user authenticated with state at `e2e/.auth/manager.json`
 
 ### Actors
 
 | Role    | Auth state file      | Description        |
 | ------- | -------------------- | ------------------ |
-| Manager | `.auth/manager.json` | Creates a property |
+| Manager | `e2e/.auth/manager.json` | Creates a property |
 
 ### Step-by-step Flow
 

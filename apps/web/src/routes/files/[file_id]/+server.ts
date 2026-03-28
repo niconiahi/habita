@@ -1,8 +1,9 @@
 import { error } from "@sveltejs/kit"
-import * as v from "valibot"
-import { sql } from "kysely"
-import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
+import { sql } from "kysely"
+import * as v from "valibot"
+import { ForceNumberSchema } from "$lib/force_number"
+import { decrypt_buffer } from "$lib/server/encryption"
 import { kv } from "$lib/server/kv"
 import { require_view_access } from "$lib/server/property_access"
 import { logger } from "$lib/telemetry/logger"
@@ -164,15 +165,18 @@ export const GET: RequestHandler = async ({
   if (!file) {
     error(404, "file not found")
   }
+  const decrypted_content = decrypt_buffer(
+    Buffer.from(file.content),
+  )
   await kv.hmset(key, [
     "basename",
     file.basename,
     "content",
-    file.content.toString("base64"),
+    decrypted_content.toString("base64"),
     "mime",
     file.mime,
   ])
-  return new Response(Uint8Array.from(file.content), {
+  return new Response(Uint8Array.from(decrypted_content), {
     headers: {
       "Content-Type": file.mime,
       "Content-Disposition": `inline; filename="${file.basename}"`,

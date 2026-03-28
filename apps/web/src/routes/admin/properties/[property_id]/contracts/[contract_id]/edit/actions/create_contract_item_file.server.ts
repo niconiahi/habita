@@ -1,10 +1,11 @@
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { normalize_input } from "$lib/server/form"
 import { safe_async } from "$lib/safe_async"
-import { logger } from "$lib/telemetry/logger"
+import { encrypt_buffer } from "$lib/server/encryption"
+import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
-import { query_builder } from "db/query_builder"
+import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
   contract_item_id: ForceNumberSchema,
@@ -56,7 +57,7 @@ export async function create_contract_item_file(
           .values({
             mime: input.file.type,
             basename: input.file.name,
-            content,
+            content: encrypt_buffer(content),
             created_at: now,
             updated_at: now,
             hash,

@@ -1,10 +1,10 @@
 import { Kafka } from "kafkajs"
-import { EXTEND_SUBSCRIPTION_TOPIC } from "../events/extend_subscription"
 import { CALCULATE_ESCALATION_TOPIC } from "../events/calculate_escalation"
-import { SEND_RENEWAL_REMINDER_TOPIC } from "../events/send_renewal_reminder"
+import { EXTEND_SUBSCRIPTION_TOPIC } from "../events/extend_subscription"
 import { SEND_BOOKING_CONFIRMATION_TOPIC } from "../events/send_booking_confirmation"
-import { SEND_SIGNING_REQUEST_TOPIC } from "../events/send_signing_request"
 import { SEND_LANDLORD_INVITE_TOPIC } from "../events/send_landlord_invite"
+import { SEND_RENEWAL_REMINDER_TOPIC } from "../events/send_renewal_reminder"
+import { SEND_SIGNING_REQUEST_TOPIC } from "../events/send_signing_request"
 import { dlq_topic } from "../topic"
 
 const kafka = new Kafka({

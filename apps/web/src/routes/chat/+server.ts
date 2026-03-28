@@ -1,8 +1,8 @@
 import OpenAI from "openai"
 import * as v from "valibot"
 import { logger } from "$lib/telemetry/logger"
-import { compose_system_prompt } from "./context.server"
 import type { RequestHandler } from "./$types"
+import { compose_system_prompt } from "./context.server"
 
 const MessageSchema = v.object({
   role: v.picklist(["user", "assistant"]),
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
   const system_prompt = compose_system_prompt()
 
   const stream = await client.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4o-mini",
     max_tokens: 1024,
     stream: true,
     messages: [

@@ -1,7 +1,7 @@
-import { get_producer } from "./producer"
 import { logger } from "../../../telemetry/logger"
-import { CALCULATE_ESCALATION_TOPIC } from "../events/calculate_escalation"
 import { MESSAGE_ID_HEADER } from "../consumer/retry"
+import { CALCULATE_ESCALATION_TOPIC } from "../events/calculate_escalation"
+import { get_producer } from "./producer"
 
 export async function publish_calculate_escalation() {
   const producer = await get_producer()

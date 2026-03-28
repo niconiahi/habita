@@ -1,16 +1,16 @@
 import type { EachMessagePayload, Producer } from "kafkajs"
 import { logger } from "../../../telemetry/logger"
-import { kv } from "../../kv"
 import { send_renewal_reminder } from "../../cron/send_renewal_reminder"
+import { kv } from "../../kv"
 import { dlq_topic } from "../topic"
 import {
-  MAX_RETRIES,
-  IDEMPOTENCY_LOCK_TTL_SECONDS,
-  get_retry_count,
-  get_message_id,
   compose_idempotency_key,
-  with_incremented_retry,
+  get_message_id,
+  get_retry_count,
+  IDEMPOTENCY_LOCK_TTL_SECONDS,
+  MAX_RETRIES,
   with_failure_reason,
+  with_incremented_retry,
 } from "./retry"
 
 export async function handle_send_renewal_reminder(
@@ -22,7 +22,10 @@ export async function handle_send_renewal_reminder(
   const message_id = get_message_id(message.headers)
 
   if (message_id) {
-    const lock_key = compose_idempotency_key(topic, message_id)
+    const lock_key = compose_idempotency_key(
+      topic,
+      message_id,
+    )
     const is_locked = await kv.get(lock_key)
     if (is_locked) {
       logger.info(
@@ -37,7 +40,10 @@ export async function handle_send_renewal_reminder(
     await send_renewal_reminder()
 
     if (message_id) {
-      const lock_key = compose_idempotency_key(topic, message_id)
+      const lock_key = compose_idempotency_key(
+        topic,
+        message_id,
+      )
       await kv.set(
         lock_key,
         "1",

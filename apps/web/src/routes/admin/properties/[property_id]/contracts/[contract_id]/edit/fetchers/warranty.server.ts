@@ -1,8 +1,8 @@
+import { query_builder } from "db/query_builder"
 import {
   jsonArrayFrom,
   jsonObjectFrom,
 } from "kysely/helpers/postgres"
-import { query_builder } from "db/query_builder"
 
 export async function fetch_warranty(
   warranty_id: number | null,

@@ -1,11 +1,11 @@
 import * as v from "valibot"
-import { get_producer } from "./producer"
 import { logger } from "../../../telemetry/logger"
 import { MESSAGE_ID_HEADER } from "../consumer/retry"
 import {
   SEND_LANDLORD_INVITE_TOPIC,
   SendLandlordInviteEvent,
 } from "../events/send_landlord_invite"
+import { get_producer } from "./producer"
 
 export async function publish_send_landlord_invite(
   property_id: number,

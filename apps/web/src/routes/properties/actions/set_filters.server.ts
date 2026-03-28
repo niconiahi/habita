@@ -1,8 +1,8 @@
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { PropertyTagTypeSchema } from "$lib/property_tag_type"
-import { ServiceTypeSchema } from "$lib/service"
 import { normalize_input } from "$lib/server/form"
+import { ServiceTypeSchema } from "$lib/service"
 
 const RANGE_PARAMS = [
   "ambientes",

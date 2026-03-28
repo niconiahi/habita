@@ -1,12 +1,12 @@
-import { redirect, error } from "@sveltejs/kit"
-import * as v from "valibot"
-import { ForceNumberSchema } from "$lib/force_number"
+import { error, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
-import { SLOT_STATE } from "$lib/slot_state"
+import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { ForceNumberSchema } from "$lib/force_number"
 import { get_accessible_property_ids } from "$lib/server/property_access"
-import { fetch_candidate } from "./fetchers/candidate.server"
+import { SLOT_STATE } from "$lib/slot_state"
 import type { PageServerLoad } from "./$types"
+import { fetch_candidate } from "./fetchers/candidate.server"
 
 export const load: PageServerLoad = async ({
   locals,

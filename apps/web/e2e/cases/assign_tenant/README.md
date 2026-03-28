@@ -18,8 +18,8 @@ The test sets up the full prerequisite chain (property creation, publishing, slo
 
 | Role      | Auth state file        | Description                      |
 | --------- | ---------------------- | -------------------------------- |
-| Manager   | `.auth/manager.json`   | Creates property, assigns tenant |
-| Candidate | `.auth/candidate.json` | Books a slot to become candidate |
+| Manager   | `e2e/.auth/manager.json`   | Creates property, assigns tenant |
+| Candidate | `e2e/.auth/candidate.json` | Books a slot to become candidate |
 
 ### Step-by-step Flow
 

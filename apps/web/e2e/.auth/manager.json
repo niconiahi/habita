@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "__Secure-better-auth.session_token",
+      "value": "8OWOvQcPgU5QcqgIFI5Rsc6t6j5CqP7t.zQeAhct34UlctkvNYEt3AuPnX7D3DPy070IoWnLsc94%3D",
+      "domain": "dev.habita.rent",
+      "path": "/",
+      "expires": 1775310499.209968,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

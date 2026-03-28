@@ -1,12 +1,12 @@
 import * as v from "valibot"
 import {
-  start_onboarding as api_start_onboarding,
   API_FETCH_ERROR,
+  start_onboarding as api_start_onboarding,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
 import { fetch_landlord } from "$lib/server/landlord"
-import { fetch_tenant } from "$lib/server/tenant"
 import { get_origin } from "$lib/server/origin"
+import { fetch_tenant } from "$lib/server/tenant"
 import { logger } from "$lib/telemetry/logger"
 
 const PartySchema = v.picklist(["landlord", "tenant"])

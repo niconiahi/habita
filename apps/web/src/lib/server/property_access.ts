@@ -1,10 +1,10 @@
 import { error } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
-import { auth } from "./auth"
 import {
   ACCESS_TYPE,
   type AccessType,
 } from "$lib/access_type"
+import { auth } from "./auth"
 
 export async function require_property_access(
   headers: Headers,

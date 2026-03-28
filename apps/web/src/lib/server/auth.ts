@@ -2,9 +2,9 @@ import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
 import { Pool } from "pg"
-import { encrypt } from "./encryption"
 import { lazy } from "$lib/server/lazy"
 import { logger } from "$lib/telemetry/logger"
+import { encrypt } from "./encryption"
 
 function get_config() {
   const secret = process.env.BETTER_AUTH_SECRET

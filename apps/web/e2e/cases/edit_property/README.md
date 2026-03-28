@@ -10,13 +10,13 @@ This test covers the full property editing workflow beyond the initial creation 
 
 ### Preconditions
 
-- Manager user authenticated with state at `.auth/manager.json`
+- Manager user authenticated with state at `e2e/.auth/manager.json`
 
 ### Actors
 
 | Role    | Auth state file      | Description                              |
 | ------- | -------------------- | ---------------------------------------- |
-| Manager | `.auth/manager.json` | Creates and edits property configuration |
+| Manager | `e2e/.auth/manager.json` | Creates and edits property configuration |
 
 ### Step-by-step Flow
 

@@ -1,11 +1,11 @@
 import * as v from "valibot"
-import { get_producer } from "./producer"
 import { logger } from "../../../telemetry/logger"
 import { MESSAGE_ID_HEADER } from "../consumer/retry"
 import {
   SEND_SIGNING_REQUEST_TOPIC,
   SendSigningRequestEvent,
 } from "../events/send_signing_request"
+import { get_producer } from "./producer"
 
 export async function publish_send_signing_request(
   contract_id: number,

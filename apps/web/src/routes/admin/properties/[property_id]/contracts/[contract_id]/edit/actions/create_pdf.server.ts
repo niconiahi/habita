@@ -1,21 +1,22 @@
 import { createHash } from "node:crypto"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { normalize_input } from "$lib/server/form"
+import { safe_async } from "$lib/safe_async"
 import {
   compose_html,
   fetch_contract_data,
 } from "$lib/server/contract/compose_html"
 import { validate_contract_requirements } from "$lib/server/contract/validate_contract"
+import { encrypt_buffer } from "$lib/server/encryption"
+import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import {
-  generate_pdf_with_playwright,
   GENERATE_PDF_WITH_PLAYWRIGHT_ERROR,
+  generate_pdf_with_playwright,
 } from "$lib/server/pdf_generator"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
-import { query_builder } from "db/query_builder"
 
 const InputSchema = v.object({
   id: ForceNumberSchema,
@@ -153,7 +154,7 @@ export async function create_pdf(
       const file = await tx
         .insertInto("file")
         .values({
-          content,
+          content: encrypt_buffer(content),
           mime: "application/pdf",
           basename: "contract.pdf",
           created_at: now,
