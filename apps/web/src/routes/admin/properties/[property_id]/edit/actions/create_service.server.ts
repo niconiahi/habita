@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
+import { safe_async } from "$lib/safe_async"
 import { now } from "$lib/server/now"
 import { SERVICE_TYPE } from "$lib/service"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 
 export async function create_service(property_id: number) {

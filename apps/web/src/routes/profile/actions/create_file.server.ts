@@ -1,12 +1,13 @@
 import { createHash } from "node:crypto"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
+import { encrypt_buffer } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
 import { UserFileTypeSchema } from "$lib/user_file_type"
-import { query_builder } from "db/query_builder"
 
 const InputSchema = v.object({
   file: v.instance(File),
@@ -53,7 +54,7 @@ export async function create_file(
           .values({
             mime: input.file.type,
             basename: input.file.name,
-            content,
+            content: encrypt_buffer(content),
             created_at: now,
             updated_at: now,
             hash,

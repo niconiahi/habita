@@ -1,5 +1,5 @@
-import { SLOT_STATE } from "../slot_state"
 import { query_builder } from "../../../db/query_builder"
+import { SLOT_STATE } from "../slot_state"
 
 export async function reserve_slot(
   slot_id: number,

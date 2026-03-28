@@ -1,9 +1,9 @@
 import { redirect } from "@sveltejs/kit"
-import { get_property_types } from "$lib/property_type"
 import { get_property_destinies } from "$lib/property_destiny"
-import { create_property } from "./actions/create_property.server"
+import { get_property_types } from "$lib/property_type"
+import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
-import type { PageServerLoad, Actions } from "./$types"
+import { create_property } from "./actions/create_property.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

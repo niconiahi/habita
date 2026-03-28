@@ -1,12 +1,12 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ContractStateSchema } from "$lib/contract_state"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { ContractStateSchema } from "$lib/contract_state"
 import { get_accessible_property_ids } from "$lib/server/property_access"
-import { fetch_contracts } from "./fetchers/contracts.server"
-import { set_state } from "./actions/set_state.server"
-import { ACTION } from "./actions/action"
 import type { Actions, PageServerLoad } from "./$types"
+import { ACTION } from "./actions/action"
+import { set_state } from "./actions/set_state.server"
+import { fetch_contracts } from "./fetchers/contracts.server"
 
 export const load: PageServerLoad = async ({
   locals,

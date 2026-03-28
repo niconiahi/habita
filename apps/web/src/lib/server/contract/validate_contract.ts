@@ -3,6 +3,7 @@ import type { Contract } from "../../../routes/admin/properties/[property_id]/co
 import type { Property } from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
 import type { Landlord } from "../landlord"
 import type { Tenant } from "../tenant"
+
 type ValidationErrors = Record<string, string>
 type ValidationResult =
   | {

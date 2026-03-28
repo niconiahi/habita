@@ -1,20 +1,20 @@
-import { type Span } from "@opentelemetry/api"
+import type { Span } from "@opentelemetry/api"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { display_location } from "$lib/display_location"
 import { ForceNumberSchema } from "$lib/force_number"
+import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { safe_async } from "$lib/safe_async"
+import { publish_send_booking_confirmation } from "$lib/server/broker/producer/publish_send_booking_confirmation"
+import { decrypt } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
 import {
   escape_ics_text,
   format_ics_date,
 } from "$lib/server/ics"
-import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { SLOT_STATE } from "$lib/slot_state"
-import { publish_send_booking_confirmation } from "$lib/server/broker/producer/publish_send_booking_confirmation"
 import { logger } from "$lib/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
-import { query_builder } from "db/query_builder"
-import { decrypt } from "$lib/server/encryption"
 import { fetch_property } from "../../../fetchers/property.server"
 import { fetch_user_files } from "../../../fetchers/user_files.server"
 

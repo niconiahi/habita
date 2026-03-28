@@ -1,6 +1,6 @@
+import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { CONTRACT_STATE } from "$lib/contract_state"
-import { query_builder } from "db/query_builder"
 
 export function fetch_available_properties(
   manager_property_ids: number[],

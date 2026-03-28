@@ -1,5 +1,5 @@
-import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
+import { jsonObjectFrom } from "kysely/helpers/postgres"
 
 export function fetch_properties(
   manager_property_ids: number[],

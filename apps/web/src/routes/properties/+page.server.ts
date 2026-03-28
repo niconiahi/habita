@@ -1,16 +1,16 @@
 import { redirect } from "@sveltejs/kit"
+import { display_location } from "$lib/display_location"
 import { fetch_properties } from "$lib/server/fetchers/properties"
 import { fetch_zones } from "$lib/server/fetchers/zones"
 import { get_img_props } from "$lib/server/image"
-import { display_location } from "$lib/display_location"
+import type { Actions, PageServerLoad } from "./$types"
+import { ACTION } from "./actions/action"
 import {
   parse_filters,
-  parse_tag_types,
   parse_service_types,
+  parse_tag_types,
   set_filters,
 } from "./actions/set_filters.server"
-import { ACTION } from "./actions/action"
-import type { PageServerLoad, Actions } from "./$types"
 
 export const load: PageServerLoad = async ({ url }) => {
   const filters = parse_filters(url)

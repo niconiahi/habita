@@ -1,10 +1,10 @@
-import { query_builder } from "../../../../db/query_builder"
 import { jsonArrayFrom } from "kysely/helpers/postgres"
 import * as v from "valibot"
+import { query_builder } from "../../../../db/query_builder"
 import { CONTRACT_STATE } from "../../contract_state"
 import { logger } from "../../telemetry/logger"
-import { ForceDateSchema } from "../force_date"
 import { publish_calculate_escalation } from "../broker/producer/publish_calculate_escalation"
+import { ForceDateSchema } from "../force_date"
 
 async function fetch_contracts() {
   return query_builder

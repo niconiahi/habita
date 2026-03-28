@@ -1,12 +1,12 @@
-import { redirect, error } from "@sveltejs/kit"
+import { error, redirect } from "@sveltejs/kit"
 import { get_user_realtor_organization } from "$lib/server/organization"
-import { fetch_organization_details } from "./fetchers/organization.server"
-import { fetch_managers_with_property_counts } from "./fetchers/managers.server"
-import { invite_manager } from "./actions/invite_manager.server"
-import { remove_manager } from "./actions/remove_manager.server"
-import { reassign_property } from "./actions/reassign_property.server"
+import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
-import type { PageServerLoad, Actions } from "./$types"
+import { invite_manager } from "./actions/invite_manager.server"
+import { reassign_property } from "./actions/reassign_property.server"
+import { remove_manager } from "./actions/remove_manager.server"
+import { fetch_managers_with_property_counts } from "./fetchers/managers.server"
+import { fetch_organization_details } from "./fetchers/organization.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

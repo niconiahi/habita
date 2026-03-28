@@ -1,7 +1,7 @@
-import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { query_builder } from "db/query_builder"
-import { SLOT_STATE } from "$lib/slot_state"
+import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { decrypt } from "$lib/server/encryption"
+import { SLOT_STATE } from "$lib/slot_state"
 
 export async function fetch_candidates(
   property_ids: number[],

@@ -39,6 +39,17 @@ v.pipe(v.string(), v.transform((value) => Number(value)))
 
 - Use blank lines to separate imports from code, functions from each other, and logical blocks within functions
 
+- If a variable is only used once and its value is just a function call result, inline it directly. Don't create intermediate variables for single-use function results.
+
+```ts
+// bad
+const encrypted_content = encrypt_buffer(content)
+const inserted = await db.insertInto("file").values({ content: encrypted_content })
+
+// good
+const inserted = await db.insertInto("file").values({ content: encrypt_buffer(content) })
+```
+
 - No magic numbers or magic strings — extract named constants or utility functions. If a value appears in logic (not just a data literal), it must have a name that explains its purpose.
 
 ```ts

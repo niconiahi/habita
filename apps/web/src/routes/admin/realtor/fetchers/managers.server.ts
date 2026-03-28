@@ -1,7 +1,7 @@
-import { decrypt } from "$lib/server/encryption"
 import { query_builder } from "db/query_builder"
 import { sql } from "kysely"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_managers_with_property_counts(
   realtor_id: number,

@@ -1,16 +1,16 @@
 import { addDays, addMonths } from "date-fns"
+import type { Insertable } from "kysely"
+import { jsonArrayFrom } from "kysely/helpers/postgres"
+import * as v from "valibot"
 import { query_builder } from "../../../db/query_builder"
 import type {
   FormulaParameter,
   Period,
 } from "../../../db/types"
-import type { Insertable } from "kysely"
-import { jsonArrayFrom } from "kysely/helpers/postgres"
-import * as v from "valibot"
 import { CONTRACT_STATE } from "../contract_state"
 import type { Duration } from "../duration"
-import { now } from "./now"
 import { ForceDateSchema } from "./force_date"
+import { now } from "./now"
 
 async function fetch_rates() {
   return query_builder

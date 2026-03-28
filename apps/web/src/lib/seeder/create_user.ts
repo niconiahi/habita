@@ -1,5 +1,5 @@
-import { encrypt } from "../server/encryption"
 import { query_builder } from "../../../db/query_builder"
+import { encrypt } from "../server/encryption"
 
 function compute_cuil(document_number: number): string {
   const prefix = 20

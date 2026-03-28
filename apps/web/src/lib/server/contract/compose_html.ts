@@ -1,5 +1,4 @@
 import { render } from "svelte/server"
-import Contract from "./Contract.svx"
 import {
   fetch_landlord,
   type Landlord,
@@ -9,17 +8,18 @@ import {
   type Tenant,
 } from "$lib/server/tenant"
 import {
-  fetch_contract,
   type Contract as ContractType,
+  fetch_contract,
 } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/contract.server"
-import {
-  fetch_property,
-  type Property,
-} from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
 import {
   fetch_warranty,
   type Warranty,
 } from "../../../routes/admin/properties/[property_id]/contracts/[contract_id]/edit/fetchers/warranty.server"
+import {
+  fetch_property,
+  type Property,
+} from "../../../routes/admin/properties/[property_id]/edit/fetchers/property.server"
+import Contract from "./Contract.svx"
 import type { ContractProps } from "./contract_props"
 export async function fetch_contract_data(
   property_id: number,

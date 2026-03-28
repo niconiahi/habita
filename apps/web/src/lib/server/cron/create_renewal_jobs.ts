@@ -1,8 +1,8 @@
 import { sql } from "kysely"
 import { query_builder } from "../../../../db/query_builder"
-import { now } from "../now"
 import { logger } from "../../telemetry/logger"
 import { publish_send_renewal_reminder } from "../broker/producer/publish_send_renewal_reminder"
+import { now } from "../now"
 
 async function fetch_expiring_organization_ids() {
   const seven_days_from_now = new Date()

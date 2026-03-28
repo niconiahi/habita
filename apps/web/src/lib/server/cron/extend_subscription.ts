@@ -1,7 +1,7 @@
 import { sql } from "kysely"
 import { query_builder } from "../../../../db/query_builder"
-import { now } from "../now"
 import { logger } from "../../telemetry/logger"
+import { now } from "../now"
 
 export async function extend_subscription_by_payment_id(
   subscription_payment_id: number,

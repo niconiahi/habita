@@ -1,18 +1,18 @@
 import { createHash } from "node:crypto"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { safe_async } from "$lib/safe_async"
 import {
+  API_FETCH_ERROR,
+  verify_signature as api_verify_signature,
   check_certificate,
   fetch_signed_document,
-  verify_signature as api_verify_signature,
-  API_FETCH_ERROR,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
 import { fetch_landlord } from "$lib/server/landlord"
 import { fetch_tenant } from "$lib/server/tenant"
 import { logger } from "$lib/telemetry/logger"
-import { query_builder } from "db/query_builder"
 
 const PartySchema = v.picklist(["landlord", "tenant"])
 

@@ -1,13 +1,13 @@
-import { redirect, error } from "@sveltejs/kit"
+import { error, redirect } from "@sveltejs/kit"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import {
-  RateTypeSchema,
   get_rate_types,
+  RateTypeSchema,
 } from "$lib/rate_type"
-import { query_builder } from "db/query_builder"
-import { now } from "$lib/server/now"
 import { is_webmaster } from "$lib/server/is_webmaster"
+import { now } from "$lib/server/now"
 import type { Actions, PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({ locals }) => {

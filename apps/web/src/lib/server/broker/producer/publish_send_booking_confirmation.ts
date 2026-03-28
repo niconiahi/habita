@@ -1,11 +1,11 @@
 import * as v from "valibot"
-import { get_producer } from "./producer"
 import { logger } from "../../../telemetry/logger"
 import { MESSAGE_ID_HEADER } from "../consumer/retry"
 import {
   SEND_BOOKING_CONFIRMATION_TOPIC,
   SendBookingConfirmationEvent,
 } from "../events/send_booking_confirmation"
+import { get_producer } from "./producer"
 
 export async function publish_send_booking_confirmation(
   slot_id: number,
@@ -35,12 +35,9 @@ export async function publish_send_booking_confirmation(
     ],
   })
 
-  logger.info(
-    "published send_booking_confirmation event",
-    {
-      slot_id,
-      visitant_email: payload.visitant.email,
-      host_email: payload.host.email,
-    },
-  )
+  logger.info("published send_booking_confirmation event", {
+    slot_id,
+    visitant_email: payload.visitant.email,
+    host_email: payload.host.email,
+  })
 }

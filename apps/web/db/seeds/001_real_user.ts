@@ -10,8 +10,8 @@
  */
 
 import type { Kysely } from "kysely"
-import type { DB } from "../types"
 import { encrypt } from "../../src/lib/server/encryption"
+import type { DB } from "../types"
 
 const REAL_USER_EMAIL = "nicolas.accetta@gmail.com"
 const REAL_USER_NAME = "Nicolas"
@@ -85,7 +85,7 @@ export async function seed(db: Kysely<DB>): Promise<void> {
     })
     .execute()
 
-  console.log(`created membership for user in organization`)
+  console.log("created membership for user in organization")
 
   // Create team (mimicking Better Auth's organization hook)
   const teamId = crypto.randomUUID()

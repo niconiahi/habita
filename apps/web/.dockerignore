@@ -1,13 +1,1 @@
-node_modules
-.svelte-kit
-build
-test-results
-.git
-*.log
-.env
-.env.*
-.claude
-docs
-e2e
-playwright-report
-.DS_Store
+config/.dockerignore

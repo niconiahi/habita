@@ -1,20 +1,20 @@
+import { trace } from "@opentelemetry/api"
+import { logs } from "@opentelemetry/api-logs"
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http"
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http"
+import { resourceFromAttributes } from "@opentelemetry/resources"
+import {
+  BatchLogRecordProcessor,
+  LoggerProvider,
+} from "@opentelemetry/sdk-logs"
 import {
   BasicTracerProvider,
   BatchSpanProcessor,
 } from "@opentelemetry/sdk-trace-base"
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http"
-import {
-  LoggerProvider,
-  BatchLogRecordProcessor,
-} from "@opentelemetry/sdk-logs"
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http"
-import { resourceFromAttributes } from "@opentelemetry/resources"
 import {
   ATTR_SERVICE_NAME,
   SEMRESATTRS_DEPLOYMENT_ENVIRONMENT,
 } from "@opentelemetry/semantic-conventions"
-import { logs } from "@opentelemetry/api-logs"
-import { trace } from "@opentelemetry/api"
 
 let started = false
 

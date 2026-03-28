@@ -1,5 +1,5 @@
-import { ACCESS_TYPE } from "../access_type"
 import { query_builder } from "../../../db/query_builder"
+import { ACCESS_TYPE } from "../access_type"
 
 export async function set_manager(
   property_id: number,

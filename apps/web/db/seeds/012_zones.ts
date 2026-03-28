@@ -13,7 +13,7 @@ import {
   readFileSync,
 } from "node:fs"
 import { resolve } from "node:path"
-import { sql, type Kysely } from "kysely"
+import { type Kysely, sql } from "kysely"
 import type { DB } from "../types"
 
 const EXPECTED_HEADER =

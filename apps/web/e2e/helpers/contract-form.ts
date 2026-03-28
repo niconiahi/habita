@@ -1,5 +1,5 @@
 import { expect, type Page } from "@playwright/test"
-import { fill_location, ADDRESSES } from "./location"
+import { ADDRESSES, fill_location } from "./location"
 
 /**
  * Fill all required contract sections except warranty (section 17)

@@ -100,8 +100,7 @@ export async function assert_dead_letter_queue_is_empty(
   const admin = kafka.admin()
   await admin.connect()
 
-  const offsets =
-    await admin.fetchTopicOffsets(dead_letter)
+  const offsets = await admin.fetchTopicOffsets(dead_letter)
   const latest_offset = Number(offsets[0]?.offset ?? "0")
 
   await admin.disconnect()

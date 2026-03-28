@@ -8,12 +8,12 @@
  * so the escalation job can run successfully.
  */
 
-import type { Kysely } from "kysely"
 import { subMonths } from "date-fns"
-import type { DB } from "../types"
+import type { Kysely } from "kysely"
 import { get_month, get_year } from "../../src/lib/date"
 import { RATE_TYPE } from "../../src/lib/rate_type"
 import * as seeder from "../../src/lib/seeder"
+import type { DB } from "../types"
 
 export async function seed(_db: Kysely<DB>): Promise<void> {
   console.log("seeding rates")

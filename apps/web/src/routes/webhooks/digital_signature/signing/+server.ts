@@ -1,13 +1,16 @@
 import { redirect } from "@sveltejs/kit"
-import * as v from "valibot"
 import { query_builder } from "db/query_builder"
+import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { CONTRACT_STATE } from "$lib/contract_state"
-import { SIGNATURE_STATUS } from "$lib/signature_status"
-import { fetch_signed_document } from "$lib/server/digital_signature"
-import { API_FETCH_ERROR } from "$lib/server/digital_signature"
-import { now } from "$lib/server/now"
 import { ForceNumberSchema } from "$lib/force_number"
+import {
+  API_FETCH_ERROR,
+  fetch_signed_document,
+} from "$lib/server/digital_signature"
+import { encrypt_buffer } from "$lib/server/encryption"
+import { now } from "$lib/server/now"
+import { SIGNATURE_STATUS } from "$lib/signature_status"
 import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
 
@@ -152,7 +155,7 @@ export const GET: RequestHandler = async ({ url }) => {
           const file = await tx
             .insertInto("file")
             .values({
-              content: signed_pdf,
+              content: encrypt_buffer(signed_pdf),
               mime: "application/pdf",
               basename: "contract_signed.pdf",
               hash: signed_document.Datos

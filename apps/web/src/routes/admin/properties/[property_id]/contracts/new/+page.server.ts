@@ -1,11 +1,11 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
-import { ForceNumberSchema } from "$lib/force_number"
 import { get_contract_types } from "$lib/contract_type"
+import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
-import { create_contract } from "./actions/create_contract.server"
+import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
-import type { PageServerLoad, Actions } from "./$types"
+import { create_contract } from "./actions/create_contract.server"
 
 export const load: PageServerLoad = async ({
   request,

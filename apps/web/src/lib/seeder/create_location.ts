@@ -1,5 +1,5 @@
-import { compose_point } from "../server/point"
 import { query_builder } from "../../../db/query_builder"
+import { compose_point } from "../server/point"
 
 export async function create_location(data: {
   address: string

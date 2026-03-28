@@ -1,8 +1,8 @@
 import { redirect } from "@sveltejs/kit"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { get_accessible_property_ids } from "$lib/server/property_access"
-import { fetch_tenants } from "./fetchers/tenants.server"
 import type { PageServerLoad } from "./$types"
+import { fetch_tenants } from "./fetchers/tenants.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

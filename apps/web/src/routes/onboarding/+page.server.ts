@@ -1,7 +1,7 @@
 import { redirect } from "@sveltejs/kit"
-import { select_account_type } from "./actions/select_account_type.server"
-import { ACTION } from "./actions/action"
 import type { Actions, PageServerLoad } from "./$types"
+import { ACTION } from "./actions/action"
+import { select_account_type } from "./actions/select_account_type.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

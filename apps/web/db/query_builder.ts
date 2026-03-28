@@ -4,9 +4,9 @@ import {
   PostgresDialect,
 } from "kysely"
 import pg from "pg"
+import { lazy } from "../src/lib/server/lazy"
 import { TelemetryPlugin } from "./telemetry_plugin"
 import type { DB } from "./types"
-import { lazy } from "../src/lib/server/lazy"
 
 export const query_builder = lazy<Kysely<DB>>(() => {
   if (!process.env.POSTGRES_USER)

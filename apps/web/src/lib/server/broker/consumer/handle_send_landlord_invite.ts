@@ -1,5 +1,5 @@
-import * as v from "valibot"
 import type { EachMessagePayload, Producer } from "kafkajs"
+import * as v from "valibot"
 import { logger } from "../../../telemetry/logger"
 import { send_email } from "../../send_email"
 import { SendLandlordInviteEvent } from "../events/send_landlord_invite"
@@ -18,14 +18,9 @@ export async function handle_send_landlord_invite(
     raw,
   )
   if (!validation.success) {
-    logger.error(
-      "malformed send_landlord_invite event",
-      {
-        issues: JSON.stringify(
-          v.flatten(validation.issues),
-        ),
-      },
-    )
+    logger.error("malformed send_landlord_invite event", {
+      issues: JSON.stringify(v.flatten(validation.issues)),
+    })
     await producer.send({
       topic: dlq_topic(topic),
       messages: [
