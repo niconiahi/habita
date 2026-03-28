@@ -14,6 +14,17 @@ shift 2
 subcommand="$1"
 shift
 
+# Separate flags (start with -) from positional args
+flags=()
+args=()
+for arg in "$@"; do
+  if [[ "$arg" == -* ]]; then
+    flags+=("$arg")
+  else
+    args+=("$arg")
+  fi
+done
+
 ENV_FILE=""
 if [ -f "$INFRA_DIR/versions.env" ]; then
   ENV_FILE="--env-file $INFRA_DIR/versions.env"
@@ -21,10 +32,10 @@ fi
 
 case "$stack" in
   app|gateway|api|media|geo|scheduler)
-    docker compose -p "$stack" $ENV_FILE -f "$INFRA_DIR/$stack/docker-compose.yml" "$subcommand" "$service" "$@"
+    docker compose -p "$stack" $ENV_FILE -f "$INFRA_DIR/$stack/docker-compose.yml" "$subcommand" "${flags[@]+"${flags[@]}"}" "$service" "${args[@]+"${args[@]}"}"
     ;;
   obs|observability)
-    docker compose -p observability $ENV_FILE -f "$INFRA_DIR/observability/docker-compose.yml" "$subcommand" "$service" "$@"
+    docker compose -p observability $ENV_FILE -f "$INFRA_DIR/observability/docker-compose.yml" "$subcommand" "${flags[@]+"${flags[@]}"}" "$service" "${args[@]+"${args[@]}"}"
     ;;
   *)
     echo "Unknown stack: $stack"
