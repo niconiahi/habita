@@ -9,7 +9,8 @@ This document describes the Docker infrastructure architecture for Habita.
 just up
 
 # Or use dco for individual projects
-dco app up -d      # Database, cache, and web app
+dco storage up -d  # Database and cache (stateful)
+dco app up -d      # SvelteKit and consumer (stateless)
 dco api up -d      # Go API service
 dco gateway up -d  # Caddy reverse proxy
 dco media up -d    # imgproxy image service
@@ -44,7 +45,7 @@ dco geo up -d      # Nominatim geocoding (optional, heavy)
 │    │               │               │                                         │
 │    ▼               ▼               ▼                                         │
 │ ┌──────┐      ┌────────┐     ┌──────────┐     ┌───────────┐                 │
-│ │ db   │      │ valkey │     │nominatim │     │  ofelia   │                 │
+│ │ db   │      │  kv    │     │nominatim │     │  ofelia   │                 │
 │ │:5432 │      │ :6379  │     │  :8090   │     │ scheduler │                 │
 │ └──────┘      └────────┘     └──────────┘     └───────────┘                 │
 │                                                                              │
@@ -69,7 +70,8 @@ dco geo up -d      # Nominatim geocoding (optional, heavy)
 ```
 infra/
 ├── development/           # Development environment
-│   ├── app/              # PostgreSQL + Valkey + SvelteKit
+│   ├── storage/          # PostgreSQL + Valkey (stateful)
+│   ├── app/              # SvelteKit + consumer (stateless)
 │   ├── api/              # Go API service
 │   ├── gateway/          # Caddy reverse proxy (dev certs)
 │   ├── media/            # imgproxy image processing
@@ -79,7 +81,8 @@ infra/
 │   └── .env              # Environment variables
 │
 ├── production/           # Production environment
-│   ├── app/              # PostgreSQL + Valkey + SvelteKit
+│   ├── storage/          # PostgreSQL + Valkey (stateful)
+│   ├── app/              # SvelteKit + consumer (stateless)
 │   ├── api/              # Go API service
 │   ├── gateway/          # Caddy (Let's Encrypt)
 │   ├── media/            # imgproxy
@@ -100,7 +103,7 @@ docker network create internal
 
 **Connected services:**
 - db (PostgreSQL)
-- valkey (Redis-compatible cache)
+- kv (Redis-compatible cache)
 - svelte (SvelteKit web app)
 - go (Go API)
 - caddy (Reverse proxy)
@@ -126,7 +129,7 @@ Isolated network for the SigNoz monitoring stack.
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
 | db | postgis/postgis:17-3.4 | 5432 | PostgreSQL with PostGIS |
-| valkey | valkey/valkey:7.2 | 6379 | Redis-compatible cache |
+| kv | valkey/valkey:7.2 | 6379 | Redis-compatible cache |
 | svelte | custom | 5174/3000 | SvelteKit web application |
 | go | custom | 8081 | Go API service |
 
@@ -163,7 +166,7 @@ All services have memory and CPU limits configured:
 | Service | Memory (Dev) | Memory (Prod) | CPU Limit |
 |---------|--------------|---------------|-----------|
 | db | 512M | 1G | 1.0-2.0 |
-| valkey | 256M | 512M | 0.5 |
+| kv | 256M | 512M | 0.5 |
 | svelte | 1G | 2G | 2.0 |
 | go | 256M | 512M | 1.0 |
 | caddy | 128M | 256M | 0.5-1.0 |
@@ -179,7 +182,7 @@ All services have health checks configured:
 | Service | Check Method | Interval |
 |---------|--------------|----------|
 | db | pg_isready | 5-10s |
-| valkey | valkey-cli ping | 5-10s |
+| kv | valkey-cli ping | 5-10s |
 | svelte | HTTP /health | 30s |
 | go | HTTP /health | 10s |
 | caddy | wget localhost:80 | 10s |

@@ -24,7 +24,7 @@ seed:
 make name:
   docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:make {{name}}
 
-# Reset database: tear down app, remove volumes, restart fresh with migrations and seeds
+# Reset database: tear down storage + app, remove volumes, restart fresh with migrations and seeds
 # Usage: ENV=production just db reset
 reset:
   #!/usr/bin/env bash
@@ -32,16 +32,18 @@ reset:
 
   echo "Environment: {{env}}"
 
+  STORAGE_COMPOSE="docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml"
   APP_COMPOSE="docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml"
   RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""
-  echo "=== Tearing down app and removing volumes ==="
+  echo "=== Tearing down app and storage, removing volumes ==="
   $APP_COMPOSE down -v
+  $STORAGE_COMPOSE down -v
 
   echo ""
-  echo "=== Starting infrastructure ==="
-  $APP_COMPOSE up -d db valkey
+  echo "=== Starting storage (db + kv) ==="
+  $STORAGE_COMPOSE up -d
 
   echo ""
   echo "=== Installing dependencies ==="
@@ -49,7 +51,7 @@ reset:
 
   echo ""
   echo "=== Waiting for database to be healthy ==="
-  until $APP_COMPOSE exec db pg_isready -U postgres > /dev/null 2>&1; do
+  until $STORAGE_COMPOSE exec db pg_isready -U postgres > /dev/null 2>&1; do
     sleep 1
   done
 

@@ -398,7 +398,7 @@ Host machine
 ├── Bridge network "internal"
 │   ├── svelte (172.18.0.2)
 │   ├── db (172.18.0.3)
-│   ├── valkey (172.18.0.4)
+│   ├── kv (172.18.0.4)
 │   ├── caddy (172.18.0.5)
 │   ├── go (172.18.0.6)
 │   └── redpanda (172.18.0.7)
@@ -425,7 +425,7 @@ The DNS name is the **service name** from the compose file:
 services:
   db:        # Other containers reach this as "db"
   svelte:    # Other containers reach this as "svelte"
-  valkey:    # Other containers reach this as "valkey"
+  kv:        # Other containers reach this as "kv"
 ```
 
 This is why our `DATABASE_URL` uses `db` as the hostname:
@@ -567,7 +567,7 @@ Our named volumes:
 | Volume | Used by | Purpose |
 |---|---|---|
 | `db` | db | PostgreSQL data files |
-| `kv` | valkey | Redis cache data |
+| `kv` | kv | Redis cache data |
 | `deps` | svelte, consumer, test | Shared node_modules |
 | `backups` | db | Database backup files (external volume) |
 | `broker` | redpanda | Kafka message data |
@@ -706,7 +706,7 @@ test: ["CMD", "valkey-cli", "ping"]
 | Service | Check | What it verifies |
 |---|---|---|
 | db | `pg_isready` | PostgreSQL is accepting connections |
-| valkey | `valkey-cli ping` | Redis responds with PONG |
+| kv | `valkey-cli ping` | Redis responds with PONG |
 | svelte | `curl https://localhost:5174/health` | HTTP server is responding |
 | go | `curl http://localhost:8081/health` | Go API is responding |
 | caddy | `pidof caddy` | Caddy process exists (minimal check) |
@@ -721,8 +721,8 @@ svelte:
   depends_on:
     db:
       condition: service_healthy      # Wait until db's healthcheck passes
-    valkey:
-      condition: service_healthy      # Wait until valkey's healthcheck passes
+    kv:
+      condition: service_healthy      # Wait until kv's healthcheck passes
 ```
 
 Without healthchecks, `depends_on` only waits for the container to **start** — not be ready. PostgreSQL takes 2-3 seconds to initialize after the container starts. If svelte tries to connect during those 2-3 seconds, it crashes.
@@ -790,7 +790,7 @@ Our `just` recipes use labels to find containers without knowing their Docker Co
 docker ps -qf "label=habita.role=database" | head -1
 ```
 
-This returns the container ID. The alternative would be hardcoding `app-db-1`, which breaks if the project name or instance number changes.
+This returns the container ID. The alternative would be hardcoding `storage-db-1`, which breaks if the project name or instance number changes.
 
 ### Label conventions
 
@@ -822,7 +822,7 @@ The gap between reservation and limit is "burst" capacity — the container norm
 | Service | Limit | Reservation | Why |
 |---|---|---|---|
 | db | 512M | 256M | PostgreSQL with PostGIS |
-| valkey | 256M | 128M | In-memory cache |
+| kv | 256M | 128M | In-memory cache |
 | svelte | 1G | 512M | Node.js dev server + hot reload |
 | consumer | 512M | 256M | Message processing |
 | go | 256M | 128M | Compiled binary, very efficient |

@@ -331,7 +331,7 @@ Better Auth expone automáticamente endpoints para:
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **db** | `postgis/postgis:17-3.4` | 5432 | postgres (default) | 1G | 2.0 |
-| **valkey** | `valkey/valkey:7.2` | 6379 | valkey (default) | 512M | 0.5 |
+| **kv** | `valkey/valkey:7.2` | 6379 | valkey (default) | 512M | 0.5 |
 | **svelte** | `niconiahi/habita:svelte-${SHA}` | 3000 | appuser (10001) | 2G | 2.0 |
 
 #### Gateway (`/infra/production/gateway/`)
@@ -382,8 +382,8 @@ Better Auth expone automáticamente endpoints para:
 
 | Contenedor | Servicio | Accesible desde |
 |------------|----------|-----------------|
-| `app-db-1` | PostgreSQL | Red interna |
-| `app-valkey-1` | Valkey/Redis | Red interna |
+| `storage-db-1` | PostgreSQL | Red interna |
+| `storage-kv-1` | Valkey/Redis | Red interna |
 | `app-svelte-1` | SvelteKit App | Red interna |
 | `api-go-1` | Go API | Red interna |
 | `gateway-caddy-1` | Caddy | Host:80,443 |
@@ -428,7 +428,7 @@ INTERNET
 │  ├── svelte:3000 (app)                                          │
 │  ├── go:8081 (email API - NO expuesto a Caddy)                  │
 │  ├── db:5432 (PostgreSQL)                                        │
-│  ├── valkey:6379 (Redis)                                        │
+│  ├── kv:6379 (Redis)                                        │
 │  ├── image:8080 (imgproxy)                                       │
 │  ├── nominatim:8080 (geocoding)                                  │
 │  ├── pdf:8082 (PDF generation)                                   │
@@ -461,12 +461,12 @@ INTERNET
 
 | Endpoint | Servicio | Intervalo | Timeout |
 |----------|----------|-----------|---------|
-| `http://app-svelte-1:3000/health` | Web App | 30s | 10s |
-| `tcp://app-db-1:5432` | PostgreSQL | 10s | 5s |
-| `tcp://app-valkey-1:6379` | Valkey | 10s | 3s |
-| `http://api-go-1:8081/health` | Go API | 10s | 3s |
-| `http://media-image-1:8080/health` | Imgproxy | 10s | 5s |
-| `http://geo-nominatim-1:8080/status` | Nominatim | 60s | 10s |
+| `http://svelte:3000/health` | Web App | 30s | 10s |
+| `tcp://db:5432` | PostgreSQL | 10s | 5s |
+| `tcp://kv:6379` | Valkey | 10s | 3s |
+| `http://go:8081/health` | Go API | 10s | 3s |
+| `http://image:8080/health` | Imgproxy | 10s | 5s |
+| `http://nominatim:8080/status` | Nominatim | 60s | 10s |
 | `http://pdf:8082/health` | PDF Service | 10s | 5s |
 
 ### Dockerfile Security
@@ -531,7 +531,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 | Servicio | Imagen | Propósito |
 |----------|--------|-----------|
-| **Valkey** | valkey/valkey:7.2 | Cache y sesiones (Redis-compatible) |
+| **kv** | valkey/valkey:7.2 | Cache y sesiones (Redis-compatible) |
 | **Imgproxy** | darthsim/imgproxy:v3.24.1 | Optimización de imágenes |
 | **Nominatim** | mediagis/nominatim:4.4 | Geocoding (Argentina) |
 | **Ofelia** | mcuadros/ofelia:v0.3.12 | Cron scheduler |

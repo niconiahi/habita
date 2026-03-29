@@ -195,7 +195,7 @@ Redpanda runs as its own compose project at `infra/{env}/broker/docker-compose.y
 
 Both are on the `internal` network. The Justfile includes `broker` in `up`, `down`, and `status` commands.
 
-The consumer runs as a service in the `app` compose project alongside `svelte`, `db`, and `valkey`. It uses the same image as the SvelteKit app but runs a different entry point (`broker/consumer/consumer.script.ts`). It has its own `OTEL_SERVICE_NAME: consumer` for observability separation.
+The consumer runs as a service in the `app` compose project alongside `svelte`. It uses the same image as the SvelteKit app but runs a different entry point (`broker/consumer/consumer.script.ts`). It has its own `OTEL_SERVICE_NAME: consumer` for observability separation. Storage services (`db`, `kv`) run in the separate `storage` compose project.
 
 ### Topic creation
 

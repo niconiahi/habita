@@ -50,7 +50,7 @@
           ┌─────────┴─────────┐
           ▼                   ▼
     ┌──────────┐        ┌──────────┐
-    │ postgres │        │  valkey  │
+    │ postgres │        │    kv    │
     │   (db)   │        │ (cache)  │
     └──────────┘        └──────────┘
           │
@@ -165,7 +165,7 @@ infra/
 - Prod has no exposed ports (security)
 - Mounts `/backups` volume for backup storage
 
-**valkey** - Redis-compatible cache
+**kv** - Redis-compatible cache
 - Image: `valkey/valkey:7.2`
 - Dev exposes port 6379
 - Used for session storage and caching
@@ -236,7 +236,7 @@ Uses [Ofelia](https://github.com/mcuadros/ofelia) to run scheduled tasks via `do
 
 | Aspect | Development | Production | Reason |
 |--------|-------------|------------|--------|
-| **Exposed ports** | db:5432, valkey:6379, geo:8090 | None | Debug access locally |
+| **Exposed ports** | db:5432, kv:6379, geo:8090 | None | Debug access locally |
 | **Image source** | Build from source | Pre-built images | Hot reload vs speed |
 | **TLS** | mkcert self-signed | Let's Encrypt | No cert authority locally |
 | **svelte start_period** | 60s | 30s | Dev compiles on startup |
@@ -295,7 +295,7 @@ sops -d .env.enc > .env
 # Start all services (order matters for dependencies)
 cd infra/development
 
-# 1. Core app stack (db, valkey, svelte)
+# 1. Storage stack (db, kv)
 docker compose -f app/docker-compose.yml up -d
 
 # 2. Gateway
@@ -339,7 +339,7 @@ docker compose -f app/docker-compose.yml logs -f svelte
 # Access database
 docker exec -it $(docker ps -qf "label=habita.role=database") psql -U $POSTGRES_USER -d $POSTGRES_DB
 
-# Access valkey CLI
+# Access kv CLI
 docker exec -it $(docker ps -qf "label=habita.role=cache") valkey-cli
 
 # Rebuild svelte container
@@ -879,7 +879,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 |-------|-----------|
 | `habita.role=app` | svelte |
 | `habita.role=database` | db |
-| `habita.role=cache` | valkey |
+| `habita.role=cache` | kv |
 | `habita.role=scheduler` | ofelia |
 | `habita.role=backup-worker` | backup-worker |
 | `habita.role=backup-uploader` | backup-uploader |
@@ -890,7 +890,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 |---------|--------------|-----------|
 | svelte | 1G (dev) / 2G (prod) | 2.0 |
 | db | 512M (dev) / 1G (prod) | 1.0 / 2.0 |
-| valkey | 256M / 512M | 0.5 |
+| kv | 256M / 512M | 0.5 |
 | nominatim | 8G | 4.0 |
 | imgproxy | 256M / 512M | 1.0 / 2.0 |
 | caddy | 128M / 256M | 0.5 / 1.0 |

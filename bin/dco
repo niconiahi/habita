@@ -31,7 +31,7 @@ if [ -f "$INFRA_DIR/versions.env" ]; then
 fi
 
 case "$stack" in
-  app|gateway|api|media|geo|scheduler)
+  storage|app|gateway|api|media|geo|scheduler)
     docker compose -p "$stack" $ENV_FILE -f "$INFRA_DIR/$stack/docker-compose.yml" "$subcommand" "${flags[@]+"${flags[@]}"}" "$service" "${args[@]+"${args[@]}"}"
     ;;
   obs|observability)
@@ -39,7 +39,7 @@ case "$stack" in
     ;;
   *)
     echo "Unknown stack: $stack"
-    echo "Available: app, gateway, api, media, geo, scheduler, obs"
+    echo "Available: storage, app, gateway, api, media, geo, scheduler, obs"
     exit 1
     ;;
 esac

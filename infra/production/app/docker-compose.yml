@@ -1,64 +1,4 @@
 services:
-  db:
-    image: postgis/postgis:17-3.4
-    restart: unless-stopped
-    env_file:
-      - ../.env
-    labels:
-      - "habita.role=database"
-    volumes:
-      - db:/var/lib/postgresql/data
-      - backups:/backups
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "5"
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: "2.0"
-        reservations:
-          memory: 512M
-          cpus: "0.5"
-    networks:
-      - internal
-
-  valkey:
-    image: valkey/valkey:7.2
-    restart: unless-stopped
-    labels:
-      - "habita.role=cache"
-    volumes:
-      - kv:/data
-    healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: "0.5"
-        reservations:
-          memory: 256M
-          cpus: "0.1"
-    networks:
-      - internal
-
   svelte:
     image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
     restart: unless-stopped
@@ -70,7 +10,7 @@ services:
       PORT: 3000
       NODE_ENV: production
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
-      REDIS_URL: redis://valkey:6379
+      REDIS_URL: redis://kv:6379
       OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
       OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
       OTEL_SERVICE_NAME: svelte
@@ -82,11 +22,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    depends_on:
-      db:
-        condition: service_healthy
-      valkey:
-        condition: service_healthy
     logging:
       driver: "json-file"
       options:
@@ -113,16 +48,13 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
-      REDIS_URL: redis://valkey:6379
+      REDIS_URL: redis://kv:6379
       OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
       OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
       OTEL_SERVICE_NAME: consumer
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
     command: pnpm exec tsx src/lib/server/broker/consumer/consumer.script.ts
-    depends_on:
-      db:
-        condition: service_healthy
     logging:
       driver: "json-file"
       options:
@@ -142,10 +74,3 @@ services:
 networks:
   internal:
     external: true
-
-volumes:
-  db:
-  kv:
-  backups:
-    external: true
-    name: backups
