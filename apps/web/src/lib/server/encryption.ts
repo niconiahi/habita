@@ -31,36 +31,6 @@ export function encrypt(plaintext: string): string {
   return combined.toString("base64")
 }
 
-export function encrypt_buffer(plaintext: Buffer): Buffer {
-  const key = get_encryption_key()
-  const iv = randomBytes(IV_LENGTH)
-  const cipher = createCipheriv(ALGORITHM, key, iv)
-  const encrypted = Buffer.concat([
-    cipher.update(plaintext),
-    cipher.final(),
-  ])
-  const auth_tag = cipher.getAuthTag()
-  return Buffer.concat([iv, encrypted, auth_tag])
-}
-
-export function decrypt_buffer(ciphertext: Buffer): Buffer {
-  const key = get_encryption_key()
-  const iv = ciphertext.subarray(0, IV_LENGTH)
-  const auth_tag = ciphertext.subarray(
-    ciphertext.length - AUTH_TAG_LENGTH,
-  )
-  const encrypted = ciphertext.subarray(
-    IV_LENGTH,
-    ciphertext.length - AUTH_TAG_LENGTH,
-  )
-  const decipher = createDecipheriv(ALGORITHM, key, iv)
-  decipher.setAuthTag(auth_tag)
-  return Buffer.concat([
-    decipher.update(encrypted),
-    decipher.final(),
-  ])
-}
-
 export function decrypt(ciphertext: string): string {
   const key = get_encryption_key()
   const combined = Buffer.from(ciphertext, "base64")

@@ -1,5 +1,4 @@
 import { query_builder } from "db/query_builder"
-import { sql } from "kysely"
 import {
   jsonArrayFrom,
   jsonObjectFrom,
@@ -76,9 +75,7 @@ export async function fetch_contract(id: number) {
                 .select([
                   "file.id",
                   "file.basename",
-                  sql<string>`encode(file.content, 'base64')`.as(
-                    "content",
-                  ),
+                  "file.hash",
                 ])
                 .whereRef(
                   "contract_item_file.contract_item_id",

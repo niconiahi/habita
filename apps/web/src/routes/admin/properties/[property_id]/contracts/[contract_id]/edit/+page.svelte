@@ -181,7 +181,7 @@
                   <img
                     class="photo"
                     alt="Foto del item"
-                    src={`data:image/webp;base64,${file.content}`}
+                    src={`/files/${file.id}`}
                   />
                   <form
                     method="POST"

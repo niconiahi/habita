@@ -8,7 +8,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("basename", "text", (col) => col.notNull())
     .addColumn("mime", "text", (col) => col.notNull())
-    .addColumn("content", "bytea", (col) => col.notNull())
     .addColumn("size", "bigint", (col) => col.notNull())
     .addColumn("hash", "text", (col) =>
       col.notNull().unique(),

@@ -8,8 +8,8 @@ import {
   API_FETCH_ERROR,
   fetch_signed_document,
 } from "$lib/server/digital_signature"
-import { encrypt_buffer } from "$lib/server/encryption"
 import { now } from "$lib/server/now"
+import { upsert_file_from_buffer } from "$lib/server/upsert_file"
 import { SIGNATURE_STATUS } from "$lib/signature_status"
 import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
@@ -152,24 +152,16 @@ export const GET: RequestHandler = async ({ url }) => {
       await query_builder
         .transaction()
         .execute(async (tx) => {
-          const file = await tx
-            .insertInto("file")
-            .values({
-              content: encrypt_buffer(signed_pdf),
-              mime: "application/pdf",
-              basename: "contract_signed.pdf",
-              hash: signed_document.Datos
-                .HashSHA256FirmadoHexadecimal,
-              size: signed_pdf.byteLength,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
+          const file_id = await upsert_file_from_buffer(
+            signed_pdf,
+            "contract_signed.pdf",
+            "application/pdf",
+            tx,
+          )
           await tx
             .insertInto("contract_file")
             .values({
-              file_id: file.id,
+              file_id,
               type: CONTRACT_FILE_TYPE.SIGNED,
               contract_id,
               created_at: now,

@@ -107,7 +107,7 @@ export async function verify_signature(
           "=",
           CONTRACT_FILE_TYPE.CONTRACT,
         )
-        .select(["file.content"])
+        .select(["file.hash"])
         .executeTakeFirst(),
     )
   if (contract_file_error) {
@@ -135,9 +135,7 @@ export async function verify_signature(
       null,
     ] as const
   }
-  const original_hash = createHash("sha256")
-    .update(Buffer.from(contract_file.content))
-    .digest("hex")
+  const original_hash = contract_file.hash
   const [
     [certificate_error, certificate],
     [signed_document_error, signed_document],

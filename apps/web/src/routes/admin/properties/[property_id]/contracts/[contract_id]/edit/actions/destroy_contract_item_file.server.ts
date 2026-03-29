@@ -3,12 +3,8 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
-import { kv } from "$lib/server/kv"
+import { delete_object } from "$lib/server/object_store"
 import { logger } from "$lib/telemetry/logger"
-
-function compose_file_cache_key(id: number) {
-  return `file:${id}`
-}
 
 const InputSchema = v.object({
   id: ForceNumberSchema,
@@ -33,6 +29,12 @@ export async function destroy_contract_item_file(
     ] as const
   }
   const input = input_validation.output
+
+  const file = await query_builder
+    .selectFrom("file")
+    .select("hash")
+    .where("id", "=", input.id)
+    .executeTakeFirst()
 
   const [transaction_error] = await safe_async(
     query_builder.transaction().execute(async (tx) => {
@@ -75,8 +77,16 @@ export async function destroy_contract_item_file(
     ] as const
   }
 
-  const cache_key = compose_file_cache_key(input.id)
-  await kv.del(cache_key)
+  if (file) {
+    const shared = await query_builder
+      .selectFrom("file")
+      .where("hash", "=", file.hash)
+      .select("id")
+      .executeTakeFirst()
+    if (!shared) {
+      await delete_object(`files/${file.hash}`)
+    }
+  }
 
   return [null, null] as const
 }
