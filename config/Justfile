@@ -34,10 +34,12 @@ infra-setup:
 
 # Start all services in correct order
 up: infra-setup
-  @echo "Starting app (db + valkey + svelte)..."
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d
+  @echo "Starting storage (db + kv)..."
+  docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml up -d
   @echo "Waiting for db to be healthy..."
   @until docker inspect --format='{{{{.State.Health.Status}}}}' $(docker ps -qf "label=habita.role=database" | head -1) 2>/dev/null | grep -q healthy; do sleep 2; done
+  @echo "Starting app (svelte + consumer)..."
+  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d
   @echo "Starting api..."
   docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d
   @echo "Starting media..."
@@ -67,6 +69,7 @@ down:
   -docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml down
   -docker compose -p geo -f {{infra}}/geo/docker-compose.yml down
   -docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml down
+  -docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml down
 
 # Start geo (nominatim) - heavy, optional
 geo: infra-setup
@@ -81,9 +84,10 @@ logs service:
   #!/usr/bin/env bash
   case "{{service}}" in
     svelte) docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml logs -f svelte ;;
-    db)     docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml logs -f db ;;
+    db)     docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml logs -f db ;;
+    kv)     docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml logs -f kv ;;
     go)     docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml logs -f go ;;
-    *)      echo "Unknown service: {{service}}. Available: svelte, db, go"; exit 1 ;;
+    *)      echo "Unknown service: {{service}}. Available: svelte, db, kv, go"; exit 1 ;;
   esac
 
 # Restart a project or specific service (e.g., just restart app, just restart app svelte)
@@ -100,7 +104,8 @@ preview:
 
 # Show status of all services
 status:
-  @echo "=== App ===" && docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml ps
+  @echo "=== Storage ===" && docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml ps
+  @echo "\n=== App ===" && docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml ps
   @echo "\n=== API ===" && docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml ps
   @echo "\n=== Gateway ===" && docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml ps
   @echo "\n=== Broker ===" && docker compose -p broker -f {{infra}}/broker/docker-compose.yml ps

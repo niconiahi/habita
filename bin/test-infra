@@ -20,6 +20,7 @@ echo ""
 # 1. Stop any existing containers
 log_info "Stopping existing containers..."
 docker compose -p development down 2>/dev/null || true
+docker compose -p storage down 2>/dev/null || true
 docker compose -p app down 2>/dev/null || true
 docker compose -p api down 2>/dev/null || true
 docker compose -p gateway down 2>/dev/null || true
@@ -32,13 +33,13 @@ log_info "Creating internal network..."
 docker network create internal 2>/dev/null || true
 log_ok "Network ready"
 
-# 3. Start app (db + valkey + svelte)
-log_info "Starting app project (db + valkey + svelte)..."
-docker compose -p app -f infra/development/app/docker-compose.yml up -d
+# 3. Start storage (db + kv)
+log_info "Starting storage project (db + kv)..."
+docker compose -p storage -f infra/development/storage/docker-compose.yml up -d
 
 log_info "Waiting for db to be healthy..."
 for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' app-db-1 2>/dev/null | grep -q healthy; then
+  if docker inspect --format='{{.State.Health.Status}}' storage-db-1 2>/dev/null | grep -q healthy; then
     log_ok "db is healthy"
     break
   fi
@@ -49,18 +50,22 @@ for i in {1..30}; do
   sleep 2
 done
 
-log_info "Waiting for valkey to be healthy..."
+log_info "Waiting for kv to be healthy..."
 for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' app-valkey-1 2>/dev/null | grep -q healthy; then
-    log_ok "valkey is healthy"
+  if docker inspect --format='{{.State.Health.Status}}' storage-kv-1 2>/dev/null | grep -q healthy; then
+    log_ok "kv is healthy"
     break
   fi
   if [ $i -eq 30 ]; then
-    log_fail "valkey did not become healthy"
+    log_fail "kv did not become healthy"
     exit 1
   fi
   sleep 2
 done
+
+# 4. Start app (svelte + consumer)
+log_info "Starting app project (svelte + consumer)..."
+docker compose -p app -f infra/development/app/docker-compose.yml up -d
 
 log_info "Waiting for svelte to start..."
 sleep 5
@@ -72,7 +77,7 @@ else
   exit 1
 fi
 
-# 4. Start api (go)
+# 5. Start api (go)
 log_info "Starting api project (go)..."
 docker compose -p api -f infra/development/api/docker-compose.yml up -d
 
@@ -90,7 +95,7 @@ for i in {1..30}; do
   sleep 2
 done
 
-# 5. Start media (image)
+# 6. Start media (image)
 log_info "Starting media project (image)..."
 docker compose -p media -f infra/development/media/docker-compose.yml up -d
 
@@ -108,7 +113,7 @@ for i in {1..30}; do
   sleep 2
 done
 
-# 6. Start gateway (caddy)
+# 7. Start gateway (caddy)
 log_info "Starting gateway project (caddy)..."
 docker compose -p gateway -f infra/development/gateway/docker-compose.yml up -d
 
@@ -121,7 +126,7 @@ else
   exit 1
 fi
 
-# 7. Start scheduler (ofelia)
+# 8. Start scheduler (ofelia)
 log_info "Starting scheduler project (ofelia)..."
 docker compose -p scheduler -f infra/development/scheduler/docker-compose.yml up -d
 
@@ -137,7 +142,8 @@ fi
 echo ""
 echo "=== Summary ==="
 echo ""
-log_ok "app     (db, valkey, svelte)"
+log_ok "storage (db, kv)"
+log_ok "app     (svelte, consumer)"
 log_ok "api     (go)"
 log_ok "media   (image)"
 log_ok "gateway (caddy)"
@@ -145,7 +151,7 @@ log_ok "scheduler (ofelia)"
 echo ""
 log_info "Skipped: observability, geo (optional)"
 echo ""
-echo "Docker Desktop should show 5 separate project groups."
+echo "Docker Desktop should show 6 separate project groups."
 echo ""
 echo "To stop everything: just down"
 echo ""

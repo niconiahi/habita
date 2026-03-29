@@ -158,7 +158,7 @@ ls -la /var/lib/docker/volumes/app_backups/_data/
 # Or check your R2 bucket
 
 # 3. Restore the backup
-docker exec -i app-db-1 psql -U postgres -d habita < backup_20260118_030000.sql
+docker exec -i storage-db-1 psql -U postgres -d habita < backup_20260118_030000.sql
 
 # 4. Deploy the OLD code version (before the migration)
 just --set env production deploy <old-sha>

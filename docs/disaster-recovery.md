@@ -139,10 +139,10 @@ cd ~/habita
 just --set env production network
 
 # Start only the database
-docker compose -p app -f infra/production/app/docker-compose.yml up -d db
+docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db
 
 # Wait for it to be healthy
-docker compose -p app -f infra/production/app/docker-compose.yml ps
+docker compose -p storage -f infra/production/storage/docker-compose.yml ps
 ```
 
 ### Step 8: Restore Database
@@ -152,10 +152,10 @@ docker compose -p app -f infra/production/app/docker-compose.yml ps
 gunzip /tmp/backups/habita_20260118_030000.sql.gz
 
 # Restore into running database
-docker exec -i app-db-1 psql -U postgres -d habita < /tmp/backups/habita_20260118_030000.sql
+docker exec -i storage-db-1 psql -U postgres -d habita < /tmp/backups/habita_20260118_030000.sql
 
 # Verify data exists
-docker exec -it app-db-1 psql -U postgres -d habita -c "SELECT COUNT(*) FROM users;"
+docker exec -it storage-db-1 psql -U postgres -d habita -c "SELECT COUNT(*) FROM users;"
 ```
 
 ### Step 9: Start Everything Else
@@ -227,13 +227,13 @@ Use this during an actual disaster:
 just --set env production down
 
 # Remove corrupted volume
-docker volume rm app_db
+docker volume rm storage_db
 
 # Start fresh database
-docker compose -p app -f infra/production/app/docker-compose.yml up -d db
+docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db
 
 # Restore from backup
-gunzip -c /path/to/backup.sql.gz | docker exec -i app-db-1 psql -U postgres -d habita
+gunzip -c /path/to/backup.sql.gz | docker exec -i storage-db-1 psql -U postgres -d habita
 
 # Start everything
 just --set env production up

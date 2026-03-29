@@ -8,7 +8,7 @@ ui:
 endpoints:
   - name: Website
     group: Core
-    url: "http://app-svelte-1:3000/health"
+    url: "http://svelte:3000/health"
     interval: 30s
     ui:
       hide-hostname: true
@@ -18,7 +18,7 @@ endpoints:
 
   - name: Database
     group: Core
-    url: "tcp://app-db-1:5432"
+    url: "tcp://db:5432"
     interval: 30s
     ui:
       hide-hostname: true
@@ -27,7 +27,7 @@ endpoints:
 
   - name: Cache (Valkey)
     group: Core
-    url: "tcp://app-valkey-1:6379"
+    url: "tcp://kv:6379"
     interval: 30s
     ui:
       hide-hostname: true
@@ -36,7 +36,7 @@ endpoints:
 
   - name: API (Go)
     group: Services
-    url: "http://api-go-1:8081/health"
+    url: "http://go:8081/health"
     interval: 30s
     ui:
       hide-hostname: true
@@ -45,7 +45,7 @@ endpoints:
 
   - name: Image Proxy
     group: Services
-    url: "http://media-image-1:8080/health"
+    url: "http://image:8080/health"
     interval: 30s
     ui:
       hide-hostname: true
@@ -54,7 +54,7 @@ endpoints:
 
   - name: Geocoding
     group: Services
-    url: "http://geo-nominatim-1:8080/status"
+    url: "http://nominatim:8080/status"
     interval: 60s
     ui:
       hide-hostname: true
@@ -63,7 +63,7 @@ endpoints:
 
   - name: Gateway
     group: Infrastructure
-    url: "http://gateway-caddy-1:80"
+    url: "http://caddy:80"
     interval: 30s
     ui:
       hide-hostname: true
