@@ -3,24 +3,13 @@ import { query_builder } from "db/query_builder"
 import { sql } from "kysely"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { decrypt_buffer } from "$lib/server/encryption"
-import { kv } from "$lib/server/kv"
+import {
+  get_object,
+  OBJECT_STORE_ERROR,
+} from "$lib/server/object_store"
 import { require_view_access } from "$lib/server/property_access"
 import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
-
-const FileSchema = v.object({
-  content: v.pipe(
-    v.string(),
-    v.transform((string) => Buffer.from(string, "base64")),
-  ),
-  mime: v.string(),
-  basename: v.string(),
-})
-
-function compose_file_cache_key(id: number) {
-  return `file:${id}`
-}
 
 async function get_file_property_id(
   file_id: number,
@@ -95,17 +84,10 @@ async function get_file_property_id(
   return result?.property_id
 }
 
-function is_image(url: URL): boolean {
-  const secret = process.env.IMGPROXY_SOURCE_SECRET
-  if (!secret) return false
-  return url.searchParams.get("secret") === secret
-}
-
 export const GET: RequestHandler = async ({
   params,
   locals,
   request,
-  url,
 }) => {
   const file_id = v.parse(
     ForceNumberSchema,
@@ -114,69 +96,55 @@ export const GET: RequestHandler = async ({
       message: "file id should be a number",
     },
   )
-  if (!is_image(url)) {
-    if (!locals.user) {
-      error(401, "Unauthorized")
-    }
-    const property_id = await get_file_property_id(
+  if (!locals.user) {
+    error(401, "Unauthorized")
+  }
+  const property_id = await get_file_property_id(
+    file_id,
+    locals.user.id,
+  )
+  if (!property_id) {
+    logger.warn("file access denied", {
       file_id,
+      user_id: locals.user.id,
+    })
+    error(403, "Forbidden")
+  } else {
+    await require_view_access(
+      request.headers,
       locals.user.id,
-    )
-    if (!property_id) {
-      logger.warn("file access denied", {
-        file_id,
-        user_id: locals.user.id,
-      })
-      error(403, "Forbidden")
-    } else {
-      await require_view_access(
-        request.headers,
-        locals.user.id,
-        property_id,
-        locals.session?.activeOrganizationId,
-      )
-    }
-  }
-  const key = compose_file_cache_key(file_id)
-  const fields_count = await kv.hlen(key)
-  if (fields_count > 0) {
-    const fields = await kv.hgetall(key)
-    if (fields === null) {
-      error(500, "cache fields can't be null")
-    }
-    const cached_file = v.parse(FileSchema, fields)
-    return new Response(
-      Uint8Array.from(cached_file.content),
-      {
-        headers: {
-          "Content-Type": cached_file.mime,
-          "Content-Disposition": `inline; filename="${cached_file.basename}"`,
-          "X-Content-Type-Options": "nosniff",
-          "Cache-Control": "private, no-cache, no-store",
-        },
-      },
+      property_id,
+      locals.session?.activeOrganizationId,
     )
   }
+
   const file = await query_builder
     .selectFrom("file")
-    .select(["content", "basename", "mime"])
+    .select(["hash", "basename", "mime"])
     .where("id", "=", file_id)
     .executeTakeFirst()
   if (!file) {
     error(404, "file not found")
   }
-  const decrypted_content = decrypt_buffer(
-    Buffer.from(file.content),
+
+  const [object_error, content] = await get_object(
+    `files/${file.hash}`,
   )
-  await kv.hmset(key, [
-    "basename",
-    file.basename,
-    "content",
-    decrypted_content.toString("base64"),
-    "mime",
-    file.mime,
-  ])
-  return new Response(Uint8Array.from(decrypted_content), {
+  if (object_error) {
+    if (
+      object_error.type === OBJECT_STORE_ERROR.NOT_FOUND
+    ) {
+      error(404, "file content not found")
+    }
+    if (
+      object_error.type === OBJECT_STORE_ERROR.GET_FAILED
+    ) {
+      error(500, "failed to retrieve file")
+    }
+    error(500, "failed to retrieve file")
+  }
+
+  return new Response(Uint8Array.from(content), {
     headers: {
       "Content-Type": file.mime,
       "Content-Disposition": `inline; filename="${file.basename}"`,

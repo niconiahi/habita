@@ -316,7 +316,7 @@
           <img
             class="photo"
             alt="Foto de la propiedad"
-            src={`data:image/webp;base64,${image.content}`}
+            src={`/files/${image.id}`}
           />
         </li>
       {/each}

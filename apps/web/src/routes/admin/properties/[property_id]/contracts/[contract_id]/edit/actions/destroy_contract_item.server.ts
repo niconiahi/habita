@@ -3,12 +3,8 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
-import { kv } from "$lib/server/kv"
+import { delete_object } from "$lib/server/object_store"
 import { logger } from "$lib/telemetry/logger"
-
-function compose_file_cache_key(id: number) {
-  return `file:${id}`
-}
 
 const InputSchema = v.object({
   id: ForceNumberSchema,
@@ -33,29 +29,29 @@ export async function destroy_contract_item(
   }
   const input = input_validation.output
 
+  const file_hashes = await query_builder
+    .selectFrom("contract_item_file")
+    .innerJoin(
+      "file",
+      "file.id",
+      "contract_item_file.file_id",
+    )
+    .select(["file.id as file_id", "file.hash"])
+    .where("contract_item_id", "=", input.id)
+    .execute()
+
   const [transaction_error] = await safe_async(
     query_builder.transaction().execute(async (tx) => {
-      const contract_item_files = await tx
-        .selectFrom("contract_item_file")
-        .select("file_id")
-        .where("contract_item_id", "=", input.id)
-        .execute()
-
       await tx
         .deleteFrom("contract_item_file")
         .where("contract_item_id", "=", input.id)
         .execute()
 
-      for (const contract_item_file of contract_item_files) {
+      for (const file_hash of file_hashes) {
         await tx
           .deleteFrom("file")
-          .where("id", "=", contract_item_file.file_id)
+          .where("id", "=", file_hash.file_id)
           .execute()
-        await kv.del(
-          compose_file_cache_key(
-            contract_item_file.file_id,
-          ),
-        )
       }
 
       await tx
@@ -79,6 +75,17 @@ export async function destroy_contract_item(
       },
       null,
     ] as const
+  }
+
+  for (const file_hash of file_hashes) {
+    const shared = await query_builder
+      .selectFrom("file")
+      .where("hash", "=", file_hash.hash)
+      .select("id")
+      .executeTakeFirst()
+    if (!shared) {
+      await delete_object(`files/${file_hash.hash}`)
+    }
   }
 
   return [null, null] as const

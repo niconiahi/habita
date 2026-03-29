@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
@@ -9,13 +8,13 @@ import {
   fetch_contract_data,
 } from "$lib/server/contract/compose_html"
 import { validate_contract_requirements } from "$lib/server/contract/validate_contract"
-import { encrypt_buffer } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import {
   GENERATE_PDF_WITH_PLAYWRIGHT_ERROR,
   generate_pdf_with_playwright,
 } from "$lib/server/pdf_generator"
+import { upsert_file_from_buffer } from "$lib/server/upsert_file"
 import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
@@ -148,26 +147,16 @@ export async function create_pdf(
           .where("id", "=", contract_file.file_id)
           .executeTakeFirstOrThrow()
       }
-      const hash = createHash("sha256")
-        .update(content)
-        .digest("hex")
-      const file = await tx
-        .insertInto("file")
-        .values({
-          content: encrypt_buffer(content),
-          mime: "application/pdf",
-          basename: "contract.pdf",
-          created_at: now,
-          updated_at: now,
-          hash: hash,
-          size: content.byteLength,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
+      const file_id = await upsert_file_from_buffer(
+        content,
+        "contract.pdf",
+        "application/pdf",
+        tx,
+      )
       await tx
         .insertInto("contract_file")
         .values({
-          file_id: file.id,
+          file_id,
           type: CONTRACT_FILE_TYPE.CONTRACT,
           contract_id: input.id,
           created_at: now,

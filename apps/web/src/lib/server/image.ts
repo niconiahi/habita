@@ -15,7 +15,7 @@ type GetImgPropsOptions = {
   className?: string
 }
 
-function get_env_var(name: string): string {
+function get_environment_variable(name: string): string {
   const value = process.env[name]
   if (!value) {
     throw new Error(
@@ -26,8 +26,8 @@ function get_env_var(name: string): string {
 }
 
 function sign_path(path: string): string {
-  const key = get_env_var("IMGPROXY_KEY")
-  const salt = get_env_var("IMGPROXY_SALT")
+  const key = get_environment_variable("IMGPROXY_KEY")
+  const salt = get_environment_variable("IMGPROXY_SALT")
   const key_buffer = Buffer.from(key, "hex")
   const salt_buffer = Buffer.from(salt, "hex")
   const hmac = createHmac("sha256", key_buffer)
@@ -55,13 +55,12 @@ function build_processing_options(
 }
 
 function generate_image_url(
-  file_id: number,
   hash: string,
   options: ImageOptions,
 ): string {
   const origin = get_origin()
-  const secret = get_env_var("IMGPROXY_SOURCE_SECRET")
-  const source_url = `${origin}/files/${file_id}?v=${hash}&secret=${secret}`
+  const bucket = process.env.MINIO_BUCKET ?? "habita-files"
+  const source_url = `s3://${bucket}/files/${hash}`
   const encoded_source_url =
     Buffer.from(source_url).toString("base64url")
   const processing_options =
@@ -86,7 +85,7 @@ export function get_img_props(
   )
   return {
     className,
-    src: generate_image_url(file_id, hash, {
+    src: generate_image_url(hash, {
       quality: 100,
       format: "webp",
       ...transformations,
@@ -95,7 +94,7 @@ export function get_img_props(
     srcSet: widths
       .map((width) =>
         [
-          generate_image_url(file_id, hash, {
+          generate_image_url(hash, {
             quality: 100,
             format: "webp",
             ...transformations,

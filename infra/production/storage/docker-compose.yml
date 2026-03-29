@@ -59,6 +59,44 @@ services:
     networks:
       - internal
 
+  object:
+    image: minio/minio:RELEASE.2025-03-12T18-04-18Z
+    restart: unless-stopped
+    labels:
+      - "habita.role=object-store"
+    volumes:
+      - object:/data
+    env_file:
+      - ../.env
+    entrypoint: >
+      /bin/sh -c "
+      minio server /data --console-address ':9001' &
+      until mc ready local; do sleep 1; done &&
+      mc alias set local http://localhost:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
+      mc mb --ignore-existing local/habita-files &&
+      wait
+      "
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+        reservations:
+          memory: 512M
+          cpus: "0.5"
+    networks:
+      - internal
+
 networks:
   internal:
     external: true
@@ -66,6 +104,7 @@ networks:
 volumes:
   db:
   kv:
+  object:
   backups:
     external: true
     name: backups

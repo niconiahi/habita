@@ -11,6 +11,7 @@ import {
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
 import { fetch_landlord } from "$lib/server/landlord"
+import { get_object } from "$lib/server/object_store"
 import { now } from "$lib/server/now"
 import { get_origin } from "$lib/server/origin"
 import { fetch_tenant } from "$lib/server/tenant"
@@ -60,7 +61,7 @@ export async function send_for_signing(
           "=",
           CONTRACT_FILE_TYPE.CONTRACT,
         )
-        .select(["file.content", "file.id as file_id"])
+        .select(["file.hash", "file.id as file_id"])
         .executeTakeFirst(),
     )
   if (contract_file_error) {
@@ -83,6 +84,20 @@ export async function send_for_signing(
       {
         send_for_signing: {
           execution: "No se encontró el PDF del contrato",
+        },
+      },
+      null,
+    ] as const
+  }
+  const [object_error, pdf_content] = await get_object(
+    `files/${contract_file.hash}`,
+  )
+  if (object_error) {
+    return [
+      {
+        send_for_signing: {
+          execution:
+            "Error al obtener el PDF del contrato",
         },
       },
       null,
@@ -113,7 +128,7 @@ export async function send_for_signing(
       null,
     ] as const
   }
-  const pdf_buffer = Buffer.from(contract_file.content)
+  const pdf_buffer = pdf_content
   const document_base64 = pdf_buffer.toString("base64")
   const hash_sha256 = createHash("sha256")
     .update(pdf_buffer)

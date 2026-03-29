@@ -1,5 +1,4 @@
 import { query_builder } from "db/query_builder"
-import { sql } from "kysely"
 import {
   jsonArrayFrom,
   jsonObjectFrom,
@@ -185,9 +184,7 @@ export async function fetch_property(id: number) {
           .select([
             "file.basename",
             "file.id",
-            sql<string>`encode(file.content, 'base64')`.as(
-              "content",
-            ),
+            "file.hash",
             "property_file.type",
           ])
           .whereRef(

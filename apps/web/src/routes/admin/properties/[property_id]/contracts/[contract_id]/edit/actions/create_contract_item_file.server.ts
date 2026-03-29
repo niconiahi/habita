@@ -2,9 +2,9 @@ import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
-import { encrypt_buffer } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
+import { upsert_file } from "$lib/server/upsert_file"
 import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
@@ -33,40 +33,7 @@ export async function create_contract_item_file(
 
   const [transaction_error] = await safe_async(
     query_builder.transaction().execute(async (tx) => {
-      const content = Buffer.from(
-        await input.file.arrayBuffer(),
-      )
-      const hash_buffer = await crypto.subtle.digest(
-        "SHA-256",
-        content,
-      )
-      const hash = Array.from(new Uint8Array(hash_buffer))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("")
-      const existing_file = await tx
-        .selectFrom("file")
-        .select("id")
-        .where("hash", "=", hash)
-        .executeTakeFirst()
-      let file_id: number
-      if (existing_file) {
-        file_id = existing_file.id
-      } else {
-        const file = await tx
-          .insertInto("file")
-          .values({
-            mime: input.file.type,
-            basename: input.file.name,
-            content: encrypt_buffer(content),
-            created_at: now,
-            updated_at: now,
-            hash,
-            size: input.file.size,
-          })
-          .returning("id")
-          .executeTakeFirstOrThrow()
-        file_id = file.id
-      }
+      const file_id = await upsert_file(input.file, tx)
       await tx
         .insertInto("contract_item_file")
         .values({

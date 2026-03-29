@@ -10,6 +10,10 @@ services:
       IMGPROXY_BIND: ":8080"
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_AUTO_WEBP: "true"
+      IMGPROXY_USE_S3: "true"
+      # Required by S3 protocol, not AWS — MinIO defaults to us-east-1
+      AWS_REGION: "us-east-1"
+      IMGPROXY_S3_ENDPOINT: "http://object:9000"
     healthcheck:
       test: ["CMD", "imgproxy", "health"]
       interval: 10s

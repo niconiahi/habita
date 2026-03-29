@@ -107,8 +107,10 @@
           <li>
             <img
               class="photo"
-              alt="Foto de la propiedad"
-              src={`data:image/webp;base64,${image.content}`}
+              alt={image.alt}
+              src={image.props.src}
+              srcset={image.props.srcSet}
+              sizes={image.props.sizes}
             />
           </li>
         {/each}
