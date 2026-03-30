@@ -9,12 +9,15 @@ This document describes the Docker infrastructure architecture for Habita.
 just up
 
 # Or use dco for individual projects
-dco storage up -d  # Database and cache (stateful)
+dco storage up -d  # Database, cache, and object storage (stateful)
 dco app up -d      # SvelteKit and consumer (stateless)
 dco api up -d      # Go API service
+dco broker up -d   # Redpanda message broker
 dco gateway up -d  # Caddy reverse proxy
 dco media up -d    # imgproxy image service
+dco pdf up -d      # PDF generation service
 dco scheduler up -d # Ofelia cron jobs
+dco status up -d   # Gatus uptime monitoring
 dco obs up -d      # Observability stack (optional)
 dco geo up -d      # Nominatim geocoding (optional, heavy)
 ```
@@ -70,24 +73,30 @@ dco geo up -d      # Nominatim geocoding (optional, heavy)
 ```
 infra/
 ├── development/           # Development environment
-│   ├── storage/          # PostgreSQL + Valkey (stateful)
+│   ├── storage/          # PostgreSQL + Valkey + MinIO (stateful)
 │   ├── app/              # SvelteKit + consumer (stateless)
 │   ├── api/              # Go API service
+│   ├── broker/           # Redpanda message broker
 │   ├── gateway/          # Caddy reverse proxy (dev certs)
 │   ├── media/            # imgproxy image processing
+│   ├── pdf/              # PDF generation service
 │   ├── geo/              # Nominatim geocoding
 │   ├── scheduler/        # Ofelia cron jobs
+│   ├── status/           # Gatus uptime monitoring
 │   ├── observability/    # SigNoz stack
 │   └── .env              # Environment variables
 │
 ├── production/           # Production environment
-│   ├── storage/          # PostgreSQL + Valkey (stateful)
+│   ├── storage/          # PostgreSQL + Valkey + MinIO (stateful)
 │   ├── app/              # SvelteKit + consumer (stateless)
 │   ├── api/              # Go API service
+│   ├── broker/           # Redpanda message broker
 │   ├── gateway/          # Caddy (Let's Encrypt)
 │   ├── media/            # imgproxy
+│   ├── pdf/              # PDF generation service
 │   ├── geo/              # Nominatim
 │   ├── scheduler/        # Ofelia + backup containers
+│   ├── status/           # Gatus uptime monitoring
 │   └── .env              # Production secrets
 │
 └── README.md             # This file
@@ -104,11 +113,15 @@ docker network create internal
 **Connected services:**
 - db (PostgreSQL)
 - kv (Redis-compatible cache)
+- object (MinIO object storage)
 - svelte (SvelteKit web app)
 - go (Go API)
 - caddy (Reverse proxy)
 - image (imgproxy)
+- redpanda (Message broker)
+- pdf (PDF generation)
 - nominatim (Geocoding)
+- gatus (Status monitoring)
 - ofelia (Scheduler)
 - otel-collector (bridges to observability)
 
@@ -130,6 +143,7 @@ Isolated network for the SigNoz monitoring stack.
 |---------|-------|------|---------|
 | db | postgis/postgis:17-3.4 | 5432 | PostgreSQL with PostGIS |
 | kv | valkey/valkey:7.2 | 6379 | Redis-compatible cache |
+| object | minio/minio | 9000, 9001 | S3-compatible object storage |
 | svelte | custom | 5174/3000 | SvelteKit web application |
 | go | custom | 8081 | Go API service |
 
@@ -139,7 +153,10 @@ Isolated network for the SigNoz monitoring stack.
 |---------|-------|------|---------|
 | caddy | caddy:2.8 | 80, 443 | Reverse proxy, TLS termination |
 | image | darthsim/imgproxy:v3.24.1 | 8080 | Image optimization & WebP |
+| redpanda | redpandadata/redpanda:v24.3.1 | 9092, 9644 | Kafka-compatible message broker |
+| pdf | custom | 8082 | PDF generation service |
 | nominatim | mediagis/nominatim:4.4 | 8090 | Address geocoding (Argentina) |
+| gatus | twinproduction/gatus:v5.14.0 | - | Uptime and status monitoring |
 | ofelia | mcuadros/ofelia:v0.3.12 | - | Docker-native cron scheduler |
 
 ### Observability (SigNoz)
@@ -167,11 +184,15 @@ All services have memory and CPU limits configured:
 |---------|--------------|---------------|-----------|
 | db | 512M | 1G | 1.0-2.0 |
 | kv | 256M | 512M | 0.5 |
+| object | 512M | 1G | 1.0-2.0 |
 | svelte | 1G | 2G | 2.0 |
 | go | 256M | 512M | 1.0 |
 | caddy | 128M | 256M | 0.5-1.0 |
 | imgproxy | 256M | 512M | 1.0-2.0 |
+| redpanda | 512M | 1G | 1.0 |
+| pdf | 1G | 1G | 1.0 |
 | nominatim | 8G | 8G | 4.0 |
+| gatus | 128M | 128M | 0.25 |
 | ofelia | 64M | 128M | 0.25 |
 | clickhouse | 2G | - | - |
 
@@ -181,12 +202,15 @@ All services have health checks configured:
 
 | Service | Check Method | Interval |
 |---------|--------------|----------|
-| db | pg_isready | 5-10s |
-| kv | valkey-cli ping | 5-10s |
+| db | pg_isready | 10s |
+| kv | valkey-cli ping | 10s |
+| object | mc ready local | 10s |
 | svelte | HTTP /health | 30s |
 | go | HTTP /health | 10s |
 | caddy | wget localhost:80 | 10s |
 | imgproxy | imgproxy health | 10s |
+| redpanda | rpk cluster health | 15s |
+| pdf | HTTP /health | 10s |
 | nominatim | HTTP /status | 30s |
 | ofelia | pgrep ofelia | 30s |
 | clickhouse | wget /ping | 30s |
@@ -284,8 +308,8 @@ docker network create internal
 
 ### View service logs
 ```bash
-dco app logs -f svelte
-dco obs logs -f clickhouse
+dco app svelte logs -f
+dco obs clickhouse logs -f
 ```
 
 ### Check health status

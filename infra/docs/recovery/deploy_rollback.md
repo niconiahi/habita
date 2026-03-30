@@ -86,44 +86,21 @@ curl -I https://habita.rent
 
 You changed a secret or config value and broke something.
 
+See [`secrets.md`](../secrets.md) for available commands. Two approaches:
+
 ### If you remember the old value
 
-```bash
-# SSH into server
-ssh user@your-server
-cd habita
-
-# Edit the encrypted secrets
-just --set env production secrets edit
-# Fix the value, save, exit
-
-# Restart the affected service
-just --set env production restart app
-```
+1. `just --set env production secrets edit` — fix the value, save
+2. `just --set env production restart app`
 
 ### If you don't remember the old value
 
-Check git history for the encrypted file:
+Restore the encrypted file from git history:
+
 ```bash
-# See recent changes to production secrets
 git log --oneline -10 -- infra/production/.env.enc
-
-# Show the diff
-git show <commit>:infra/production/.env.enc > /tmp/old.env.enc
-
-# Decrypt the old version to see values
-sops -d --input-type dotenv --output-type dotenv /tmp/old.env.enc
-```
-
-Or restore the entire file:
-```bash
-# Restore .env.enc from specific commit
 git checkout <commit> -- infra/production/.env.enc
-
-# Decrypt it
 just --set env production secrets decrypt
-
-# Restart
 just --set env production restart app
 ```
 
@@ -147,25 +124,12 @@ docker exec app-svelte-1 bun run db:rollback
 
 ### Option B: Restore from backup
 
-If the migration corrupted data or isn't reversible:
+If the migration corrupted data or is not reversible:
 
-```bash
-# 1. Stop the application (prevent further writes)
-just --set env production down
-
-# 2. Find a backup from before the migration
-ls -la /var/lib/docker/volumes/app_backups/_data/
-# Or check your R2 bucket
-
-# 3. Restore the backup
-docker exec -i storage-db-1 psql -U postgres -d habita < backup_20260118_030000.sql
-
-# 4. Deploy the OLD code version (before the migration)
-just --set env production deploy <old-sha>
-
-# 5. Start everything
-just --set env production up
-```
+1. Stop the application: `just --set env production down`
+2. Restore the database following [`backups.md`](backups.md#restore)
+3. Deploy the old code version: `just --set env production deploy <old-sha>`
+4. Start everything: `just --set env production up`
 
 ### Prevention is better than cure
 
@@ -225,7 +189,7 @@ just --set env production restart app
 ### "Database is corrupted"
 ```bash
 just --set env production down
-# restore backup
+# restore backup — see backups.md
 just --set env production deploy <old-sha>
 just --set env production up
 ```
