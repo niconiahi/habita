@@ -103,7 +103,7 @@ dco <stack> <service> <subcommand> [args...]
 
 ### Available stacks
 
-`app`, `gateway`, `api`, `media`, `geo`, `scheduler`, `obs` (observability)
+`storage`, `app`, `api`, `broker`, `gateway`, `media`, `pdf`, `geo`, `scheduler`, `status`, `obs` (observability)
 
 ### Examples
 
@@ -116,6 +116,10 @@ dco app svelte exec sh                     # Shell into running container
 1. **`just`** — always check `just --list` first
 2. **`dco`** — only if no `just` recipe exists and you need Docker
 3. **Raw CLI** — never for project operations
+
+## Bash conventions
+
+- Never add `2>&1` to redirect stderr into stdout. Keep stderr separate so errors are visible and distinguishable from normal output.
 
 ## What NOT to do
 

@@ -56,5 +56,6 @@
 	"outputStyle": "Learning",
 	"spinnerTipsEnabled": true,
 	"enableAllProjectMcpServers": true,
-	"enabledMcpjsonServers": ["svelte"]
+	"enabledMcpjsonServers": ["svelte"],
+	"autoMemoryEnabled": false
 }

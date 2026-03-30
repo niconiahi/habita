@@ -1,6 +1,6 @@
-# Disaster Recovery
+# Production Environment Setup
 
-Your production server is gone. Hard drive failed, datacenter burned down, you accidentally ran `rm -rf /`. This doc gets you back online.
+How to provision and configure a production server from scratch. Use this when setting up a new server, migrating to a different provider, or replacing a failed machine.
 
 ---
 
@@ -95,20 +95,13 @@ cd habita
 
 ### Step 5: Restore Secrets
 
+Follow the "First-Time Setup > On the VPS" section in [`secrets.md`](secrets.md#first-time-setup) to install the age key from KeePassXC, then decrypt:
+
 ```bash
-# Create age key directory
-mkdir -p ~/.config/sops/age
-
-# Paste your private key from KeePassXC
-nano ~/.config/sops/age/keys.txt
-# Paste the full content including AGE-SECRET-KEY-... line
-chmod 600 ~/.config/sops/age/keys.txt
-
-# Decrypt production secrets
 just --set env production secrets decrypt
 ```
 
-### Step 6: Restore Database Backup
+### Step 6: Get Database Backup
 
 **If backups are in R2:**
 ```bash
@@ -126,7 +119,6 @@ ls -la /tmp/backups/  # find latest file
 
 **If backups are local (you copied them somewhere):**
 ```bash
-# Copy backup file to server
 scp backup_20260118_030000.sql.gz root@NEW_IP:/tmp/
 ```
 
@@ -134,27 +126,16 @@ scp backup_20260118_030000.sql.gz root@NEW_IP:/tmp/
 
 ```bash
 cd ~/habita
-
-# Create network
 just --set env production network
-
-# Start only the database
 docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db
-
-# Wait for it to be healthy
 docker compose -p storage -f infra/production/storage/docker-compose.yml ps
 ```
 
 ### Step 8: Restore Database
 
+Follow the restore procedure in [`recovery/backups.md`](recovery/backups.md#restore). Then verify:
+
 ```bash
-# Decompress backup
-gunzip /tmp/backups/habita_20260118_030000.sql.gz
-
-# Restore into running database
-docker exec -i storage-db-1 psql -U postgres -d habita < /tmp/backups/habita_20260118_030000.sql
-
-# Verify data exists
 docker exec -it storage-db-1 psql -U postgres -d habita -c "SELECT COUNT(*) FROM users;"
 ```
 
@@ -222,22 +203,11 @@ Use this during an actual disaster:
 
 ### Only database volume corrupted
 
-```bash
-# Stop app
-just --set env production down
-
-# Remove corrupted volume
-docker volume rm storage_db
-
-# Start fresh database
-docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db
-
-# Restore from backup
-gunzip -c /path/to/backup.sql.gz | docker exec -i storage-db-1 psql -U postgres -d habita
-
-# Start everything
-just --set env production up
-```
+1. `just --set env production down`
+2. `docker volume rm storage_db`
+3. `docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db`
+4. Restore from backup — see [`recovery/backups.md`](recovery/backups.md#restore)
+5. `just --set env production up`
 
 ### Only application broken (database fine)
 

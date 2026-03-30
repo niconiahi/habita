@@ -25,3 +25,14 @@ docker compose -f infra/development/docker-compose.yml up
 ```
 
 The environment variable handles the file path automatically.
+
+## Service naming
+
+Docker service names describe their **function**, not their technology. Examples:
+
+- `db` not `postgres` — the database role matters, the engine is an implementation detail
+- `kv` not `valkey` or `redis` — it is a key-value cache
+- `object` not `minio` — it is object storage
+- `broker` not `redpanda` or `kafka` — it is a message broker
+
+This convention allows swapping implementations without renaming services across the entire stack.
