@@ -1,5 +1,8 @@
 export const ACTION = {
   UPDATE_LOCATION: "update_location",
+  CREATE_FLOOR: "create_floor",
+  UPDATE_FLOOR: "update_floor",
+  DESTROY_FLOOR: "destroy_floor",
   CREATE_ROOM: "create_room",
   UPDATE_ROOM: "update_room",
   UPDATE_ROOM_POSITIONS: "update_room_positions",

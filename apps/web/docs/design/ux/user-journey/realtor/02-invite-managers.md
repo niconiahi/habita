@@ -17,10 +17,12 @@
 **Routes:** `/admin/realtor`
 
 **Actions:**
+
 - Navigates to the "Inmobiliaria" section in the admin sidebar
 - Sees agency details and current team
 
 **Thoughts:**
+
 - "Who's on my team so far?"
 - "How do I add someone?"
 
@@ -33,11 +35,13 @@
 **Routes:** `/admin/realtor`
 
 **Actions:**
+
 - Enters a manager's email address
 - Sends the invitation
 - The manager receives an email and joins the agency
 
 **Thoughts:**
+
 - "Will they get the email right away?"
 - "What access will they have?"
 
@@ -48,10 +52,12 @@
 ## The Output
 
 ### Pain Points
+
 - Invitations are one-at-a-time — no bulk invite
 - No visibility into whether invitations were received or accepted
 - New managers need to sign up before they can accept
 
 ### Opportunities
+
 - Bulk invitation (multiple emails at once)
 - Invitation status tracking (sent, accepted, expired)

@@ -221,11 +221,28 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createTable("room")
+    .createTable("floor")
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
     .addColumn("property_id", "integer", (col) =>
+      col.notNull(),
+    )
+    .addColumn("number", "integer", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
+
+  await db.schema
+    .createTable("room")
+    .addColumn("id", "serial", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("floor_id", "integer", (col) =>
       col.notNull(),
     )
     .addColumn("type", "integer", (col) => col.notNull())
@@ -338,12 +355,23 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .alterTable("room")
+    .alterTable("floor")
     .addForeignKeyConstraint(
-      "room_property_id_property_id_fk",
+      "floor_property_id_property_id_fk",
       ["property_id"],
       "property",
       ["id"],
+    )
+    .execute()
+
+  await db.schema
+    .alterTable("room")
+    .addForeignKeyConstraint(
+      "room_floor_id_floor_id_fk",
+      ["floor_id"],
+      "floor",
+      ["id"],
+      (cb) => cb.onDelete("cascade"),
     )
     .execute()
 
@@ -415,9 +443,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .column("user_id")
     .execute()
   await db.schema
-    .createIndex("idx_room_property_id")
-    .on("room")
+    .createIndex("idx_floor_property_id")
+    .on("floor")
     .column("property_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_room_floor_id")
+    .on("room")
+    .column("floor_id")
     .execute()
 }
 
@@ -434,6 +467,7 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable("session").ifExists().execute()
   await db.schema.dropTable("service").ifExists().execute()
   await db.schema.dropTable("room").ifExists().execute()
+  await db.schema.dropTable("floor").ifExists().execute()
   await db.schema.dropTable("period").ifExists().execute()
   await db.schema.dropTable("contract").ifExists().execute()
   await db.schema.dropTable("property").ifExists().execute()

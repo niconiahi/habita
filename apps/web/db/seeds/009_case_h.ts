@@ -25,6 +25,7 @@ import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
+import { FLOOR_NUMBER } from "../../src/lib/floor_number"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import * as seeder from "../../src/lib/seeder"
 import { SERVICE_TYPE } from "../../src/lib/service"
@@ -79,9 +80,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     destinies: [PROPERTY_DESTINY.RESIDENTIAL],
   })
 
-  // Add 5 rooms with dimensions
-  const living_room_id = await seeder.add_room(
+  // Add ground floor and 5 rooms with dimensions
+  const ground_floor_id = await seeder.add_floor(
     property_id,
+    { number: FLOOR_NUMBER.GROUND },
+  )
+
+  const living_room_id = await seeder.add_room(
+    ground_floor_id,
     {
       type: ROOM_TYPE.LIVING_ROOM,
       width: "7.0",
@@ -89,29 +95,41 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     },
   )
 
-  const bedroom1_id = await seeder.add_room(property_id, {
-    type: ROOM_TYPE.BEDROOM,
-    width: "5.0",
-    length: "4.5",
-  })
+  const bedroom1_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.BEDROOM,
+      width: "5.0",
+      length: "4.5",
+    },
+  )
 
-  const bedroom2_id = await seeder.add_room(property_id, {
-    type: ROOM_TYPE.BEDROOM,
-    width: "4.5",
-    length: "4.0",
-  })
+  const bedroom2_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.BEDROOM,
+      width: "4.5",
+      length: "4.0",
+    },
+  )
 
-  const bathroom_id = await seeder.add_room(property_id, {
-    type: ROOM_TYPE.BATHROOM,
-    width: "3.0",
-    length: "2.5",
-  })
+  const bathroom_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.BATHROOM,
+      width: "3.0",
+      length: "2.5",
+    },
+  )
 
-  const kitchen_id = await seeder.add_room(property_id, {
-    type: ROOM_TYPE.KITCHEN,
-    width: "4.5",
-    length: "3.5",
-  })
+  const kitchen_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.KITCHEN,
+      width: "4.5",
+      length: "3.5",
+    },
+  )
 
   // Position all rooms on the map (creating a logical floor plan layout)
   // Living room at center

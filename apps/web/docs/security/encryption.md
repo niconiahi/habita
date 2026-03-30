@@ -33,16 +33,16 @@ These are the Buffer equivalents of the existing `encrypt(string): string` and `
 
 Every `insertInto("file")` in the codebase encrypts content before storing. The full list:
 
-| File | What it stores |
-|------|---------------|
-| `src/lib/server/upsert_file.ts` | Generic file upload (dedup + insert) |
-| `src/lib/seeder/upload_file.ts` | Seed data files |
-| `src/routes/profile/actions/create_file.server.ts` | User profile documents (DNI, income proof) |
-| `src/routes/admin/.../edit/actions/create_file.server.ts` | Contract files |
-| `src/routes/admin/.../edit/actions/create_pdf.server.ts` | Generated contract PDFs |
-| `src/routes/admin/.../edit/actions/create_contract_item_file.server.ts` | Contract item attachments |
-| `src/routes/admin/.../tenant/actions/upload_receipt.server.ts` | Payment receipts |
-| `src/routes/webhooks/digital_signature/signing/+server.ts` | Digitally signed PDF contracts |
+| File                                                                    | What it stores                             |
+| ----------------------------------------------------------------------- | ------------------------------------------ |
+| `src/lib/server/upsert_file.ts`                                         | Generic file upload (dedup + insert)       |
+| `src/lib/seeder/upload_file.ts`                                         | Seed data files                            |
+| `src/routes/profile/actions/create_file.server.ts`                      | User profile documents (DNI, income proof) |
+| `src/routes/admin/.../edit/actions/create_file.server.ts`               | Contract files                             |
+| `src/routes/admin/.../edit/actions/create_pdf.server.ts`                | Generated contract PDFs                    |
+| `src/routes/admin/.../edit/actions/create_contract_item_file.server.ts` | Contract item attachments                  |
+| `src/routes/admin/.../tenant/actions/upload_receipt.server.ts`          | Payment receipts                           |
+| `src/routes/webhooks/digital_signature/signing/+server.ts`              | Digitally signed PDF contracts             |
 
 ## Decryption on read
 

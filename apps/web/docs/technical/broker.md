@@ -63,21 +63,21 @@ Producers                                Broker (Redpanda)                      
 
 These topics carry a signal or a reference ID. The consumer queries the database and executes business logic.
 
-| Topic | Trigger | Payload | Consumer does |
-|-------|---------|---------|---------------|
-| `extend_subscription` | MercadoPago webhook (approved payment) | `{ subscription_payment_id }` | Looks up org, extends all seats by 1 month |
-| `calculate_escalation` | Cron (every minute, if contracts are due) | `{}` | Calls `calculate_all_due_escalations()` |
-| `send_renewal_reminder` | Cron (8 AM daily, if orgs are expiring) | `{}` | Calls `send_renewal_reminder()` which queries and emails internally |
+| Topic                   | Trigger                                   | Payload                       | Consumer does                                                       |
+| ----------------------- | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------- |
+| `extend_subscription`   | MercadoPago webhook (approved payment)    | `{ subscription_payment_id }` | Looks up org, extends all seats by 1 month                          |
+| `calculate_escalation`  | Cron (every minute, if contracts are due) | `{}`                          | Calls `calculate_all_due_escalations()`                             |
+| `send_renewal_reminder` | Cron (8 AM daily, if orgs are expiring)   | `{}`                          | Calls `send_renewal_reminder()` which queries and emails internally |
 
 ### Email delivery topics
 
 These topics carry fully composed email content. The producer (the action that has all the business context) builds the email subject, body, and recipient list. The consumer is a dumb delivery pipe — it validates the payload and calls the Go SMTP service. No database queries, no business logic.
 
-| Topic | Trigger | Payload | Consumer does |
-|-------|---------|---------|---------------|
-| `send_booking_confirmation` | User books a visit slot | `{ visitant, host, subject, visitant_text, host_text, content }` | Sends 2 emails (visitant + host with ICS calendar) |
-| `send_signing_request` | Admin sends contract for digital signing | `{ recipients, subject, html }` | Sends HTML email to each recipient |
-| `send_landlord_invite` | Admin invites landlord to property | `{ email, subject, html }` | Sends HTML email to landlord |
+| Topic                       | Trigger                                  | Payload                                                          | Consumer does                                      |
+| --------------------------- | ---------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------- |
+| `send_booking_confirmation` | User books a visit slot                  | `{ visitant, host, subject, visitant_text, host_text, content }` | Sends 2 emails (visitant + host with ICS calendar) |
+| `send_signing_request`      | Admin sends contract for digital signing | `{ recipients, subject, html }`                                  | Sends HTML email to each recipient                 |
+| `send_landlord_invite`      | Admin invites landlord to property       | `{ email, subject, html }`                                       | Sends HTML email to landlord                       |
 
 This separation exists because the concerns are different. Business logic topics need database access and domain knowledge. Email topics need none — the producer already computed everything. The consumer just delivers.
 
@@ -130,14 +130,14 @@ Every producer attaches a `message-id` header at publish time. The key is **dete
 
 ### Deterministic keys
 
-| Topic | Key composition | Example lock key |
-|-------|----------------|-----------------|
-| `extend_subscription` | `subscription_payment_id` | `lock:extend_subscription:99` |
-| `calculate_escalation` | today's date | `lock:calculate_escalation:2026-03-24` |
-| `send_renewal_reminder` | today's date | `lock:send_renewal_reminder:2026-03-24` |
-| `send_booking_confirmation` | `slot_id` | `lock:send_booking_confirmation:42` |
-| `send_signing_request` | `contract_id` | `lock:send_signing_request:15` |
-| `send_landlord_invite` | `property_id:invitation_token_id` | `lock:send_landlord_invite:44:7` |
+| Topic                       | Key composition                   | Example lock key                        |
+| --------------------------- | --------------------------------- | --------------------------------------- |
+| `extend_subscription`       | `subscription_payment_id`         | `lock:extend_subscription:99`           |
+| `calculate_escalation`      | today's date                      | `lock:calculate_escalation:2026-03-24`  |
+| `send_renewal_reminder`     | today's date                      | `lock:send_renewal_reminder:2026-03-24` |
+| `send_booking_confirmation` | `slot_id`                         | `lock:send_booking_confirmation:42`     |
+| `send_signing_request`      | `contract_id`                     | `lock:send_signing_request:15`          |
+| `send_landlord_invite`      | `property_id:invitation_token_id` | `lock:send_landlord_invite:44:7`        |
 
 Keys must never contain PII (emails, names, phone numbers). Use opaque IDs or hashes instead. The landlord invite uses `invitation_token_id` (an integer from the DB insert that happens before publishing) rather than the landlord's email.
 
@@ -173,12 +173,12 @@ A random UUID only protects against **broker redelivery** (same message delivere
 
 The codebase uses technology-agnostic names:
 
-| Concept | Name | Not |
-|---------|------|-----|
-| Broker infrastructure | `infra/{env}/broker/` | `redpanda/`, `kafka/` |
-| All broker code | `$lib/server/broker/` | `$lib/server/redpanda/` |
-| Broker address env var | `BROKER_BROKERS` | `REDPANDA_BROKERS` |
-| Topic names | `snake_case` | `kebab-case` |
+| Concept                | Name                  | Not                     |
+| ---------------------- | --------------------- | ----------------------- |
+| Broker infrastructure  | `infra/{env}/broker/` | `redpanda/`, `kafka/`   |
+| All broker code        | `$lib/server/broker/` | `$lib/server/redpanda/` |
+| Broker address env var | `BROKER_BROKERS`      | `REDPANDA_BROKERS`      |
+| Topic names            | `snake_case`          | `kebab-case`            |
 
 The `kafkajs` import is contained to two files: `broker/producer/client.ts` and `broker/consumer/consumer.script.ts`. Everything else speaks in terms of `publish_*`, `handle_*`, and event schemas. If the broker technology changes, two files change.
 

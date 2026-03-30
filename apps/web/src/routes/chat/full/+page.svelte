@@ -58,7 +58,10 @@
       if (!response.ok || !response.body) {
         assistant_message.content =
           "Lo siento, hubo un error. Intentá de nuevo."
-        messages = [...messages.slice(0, -1), assistant_message]
+        messages = [
+          ...messages.slice(0, -1),
+          assistant_message,
+        ]
         is_loading = false
         return
       }
@@ -81,7 +84,10 @@
     } catch {
       assistant_message.content =
         "Lo siento, hubo un error de conexión. Intentá de nuevo."
-      messages = [...messages.slice(0, -1), assistant_message]
+      messages = [
+        ...messages.slice(0, -1),
+        assistant_message,
+      ]
     }
 
     is_loading = false
@@ -105,9 +111,9 @@
   <div class="empty">
     <p class="empty-title">Chat interno</p>
     <p class="empty-hint">
-      Preguntá sobre cualquier aspecto técnico de la plataforma:
-      rutas, acciones, autenticación, base de datos, broker, o
-      firma digital.
+      Preguntá sobre cualquier aspecto técnico de la
+      plataforma: rutas, acciones, autenticación, base de
+      datos, broker, o firma digital.
     </p>
   </div>
 {/snippet}
@@ -133,7 +139,10 @@
         disabled={is_loading}
         autocomplete="off"
       />
-      <Button type="submit" disabled={is_loading || !input.trim()}>
+      <Button
+        type="submit"
+        disabled={is_loading || !input.trim()}
+      >
         {is_loading ? "..." : "Enviar"}
       </Button>
     </form>

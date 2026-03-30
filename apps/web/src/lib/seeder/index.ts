@@ -1,4 +1,5 @@
 export { add_contract_file } from "./add_contract_file"
+export { add_floor } from "./add_floor"
 export { add_contract_item } from "./add_contract_item"
 export { add_contract_item_file } from "./add_contract_item_file"
 export { add_income_guarantor } from "./add_income_guarantor"

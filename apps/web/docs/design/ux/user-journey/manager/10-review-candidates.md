@@ -17,11 +17,13 @@
 **Routes:** `/admin/candidates` or `/admin/properties/[property_id]/candidates`
 
 **Actions:**
+
 - Views the global candidates list across all properties
 - Or views candidates for a specific property
 - Sees names, dates, and property associations
 
 **Thoughts:**
+
 - "Who's interested in my properties?"
 - "How many candidates does each property have?"
 
@@ -34,11 +36,13 @@
 **Routes:** `/admin/candidates/[candidate_id]`
 
 **Actions:**
+
 - Clicks into a candidate's profile
 - Reviews personal information and uploaded documents
 - Evaluates whether they're a good fit
 
 **Thoughts:**
+
 - "Are their documents complete?"
 - "Can they afford the rent?"
 - "Do they seem reliable?"
@@ -50,11 +54,13 @@
 ## The Output
 
 ### Pain Points
+
 - No comparison view between candidates
 - Profile completeness depends on what the tenant uploaded
 - No notes or rating system for candidates
 
 ### Opportunities
+
 - Add side-by-side candidate comparison
 - Show profile completeness indicator
 - Allow managers to add private notes about candidates

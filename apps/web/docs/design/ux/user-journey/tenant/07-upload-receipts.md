@@ -17,11 +17,13 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/tenant`
 
 **Actions:**
+
 - Logs into the platform
 - Navigates to their contract's tenant page
 - Sees the current rent price
 
 **Thoughts:**
+
 - "What's my rent this month?"
 - "How do I get to my contract page?"
 
@@ -34,12 +36,14 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/tenant`
 
 **Actions:**
+
 - Selects receipt type (rent, electricity, gas, water, etc.)
 - Selects the month (current or previous)
 - Uploads the receipt file
 - Sees it appear in the recent receipts list
 
 **Thoughts:**
+
 - "Do I have the receipt file ready?"
 - "Which month does this correspond to?"
 
@@ -52,10 +56,12 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/tenant`
 
 **Actions:**
+
 - Scrolls through receipts from the last two months
 - Downloads a receipt if needed
 
 **Thoughts:**
+
 - "Did I upload everything?"
 - "I need last month's for my records"
 
@@ -66,11 +72,13 @@
 ## The Output
 
 ### Pain Points
+
 - Only 2 months of receipts are visible — no full history
 - Deep navigation path to reach the tenant contract page
 - No reminders to upload receipts
 
 ### Opportunities
+
 - Full receipt history view
 - Shortcut/dashboard entry point for tenants
 - Monthly upload reminders

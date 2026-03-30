@@ -12,8 +12,8 @@ A manager creates a new property of type "Departamento" (apartment). Unlike hous
 
 ### Actors
 
-| Role    | Auth state file      | Description        |
-| ------- | -------------------- | ------------------ |
+| Role    | Auth state file          | Description        |
+| ------- | ------------------------ | ------------------ |
 | Manager | `e2e/.auth/manager.json` | Creates a property |
 
 ### Step-by-step Flow

@@ -17,11 +17,13 @@
 **Routes:** `/admin/properties/[property_id]/calendar`
 
 **Actions:**
+
 - Navigates to the property's calendar page
 - Creates a new time slot by selecting a date and time range
 - Repeats for multiple dates and times
 
 **Thoughts:**
+
 - "When am I free to show the property?"
 - "How many slots should I create per day?"
 - "How long should each slot be?"
@@ -35,10 +37,12 @@
 **Routes:** `/admin/properties/[property_id]/calendar`
 
 **Actions:**
+
 - Reviews existing time slots
 - Removes slots that are no longer available
 
 **Thoughts:**
+
 - "I need to cancel this slot — something came up"
 - "Are any of these already booked?"
 
@@ -49,11 +53,13 @@
 ## The Output
 
 ### Pain Points
+
 - No visual calendar view — slots are likely shown as a list
 - Can't distinguish between free and booked slots at a glance
 - No recurring slot creation (e.g., "every Tuesday 10-12")
 
 ### Opportunities
+
 - Add a visual calendar interface
 - Show booking status per slot
 - Allow recurring/batch slot creation

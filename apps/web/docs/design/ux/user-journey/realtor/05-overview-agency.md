@@ -17,11 +17,13 @@
 **Routes:** `/admin/realtor`
 
 **Actions:**
+
 - Views agency details (name, information)
 - Sees all managers with how many properties each handles
 - Identifies imbalances or gaps
 
 **Thoughts:**
+
 - "Is the workload balanced?"
 - "Does anyone need help?"
 - "Do we need to hire another manager?"
@@ -33,9 +35,11 @@
 ## The Output
 
 ### Pain Points
+
 - Only property counts are visible — no deeper metrics (visits scheduled, contracts active, etc.)
 - No activity feed showing what managers are doing
 
 ### Opportunities
+
 - Add per-manager metrics (properties by state, contracts by state, upcoming visits)
 - Add an activity feed or timeline for agency-wide actions

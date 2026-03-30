@@ -17,6 +17,11 @@
     get_property_destiny_label,
   } from "$lib/property_destiny"
   import {
+    display_floor_number,
+    get_floor_numbers,
+    FLOOR_NUMBER,
+  } from "$lib/floor_number"
+  import {
     display_room_type,
     ROOM_TYPE,
   } from "$lib/room_type"
@@ -135,127 +140,206 @@
   </Content.Section>
 {/snippet}
 
-{#snippet Rooms()}
+{#snippet Floors()}
   <Content.Section>
     <Section.Header>
-      <Section.Title>ambientes</Section.Title>
+      <Section.Title>pisos</Section.Title>
       <Section.Actions>
         <form
           method="POST"
-          action={compose_action(ACTION.CREATE_ROOM)}
+          action={compose_action(ACTION.CREATE_FLOOR)}
           use:enhance
         >
-          <Button type="submit">Agregar ambiente</Button>
+          <Button type="submit">Agregar piso</Button>
         </form>
       </Section.Actions>
     </Section.Header>
-    <ul>
-      {#each data.property.rooms as room (room.id)}
-        <li>
-          <Formulary.Root method="POST">
+    {#each data.property.floors as floor (floor.id)}
+      <div class="floor-section">
+        <Formulary.Root method="POST">
+          <Formulary.Fields>
+            <input
+              type="hidden"
+              value={floor.id}
+              name="id"
+            />
+            <Formulary.Field>
+              <Formulary.Label
+                for={`floor_number_${floor.id}`}
+                >piso</Formulary.Label
+              >
+              <Formulary.Select
+                name="number"
+                id={`floor_number_${floor.id}`}
+                value={floor.number}
+              >
+                {#each get_floor_numbers() as number}
+                  <option value={number}
+                    >{display_floor_number(
+                      number,
+                    )}</option
+                  >
+                {/each}
+              </Formulary.Select>
+            </Formulary.Field>
+          </Formulary.Fields>
+          <Formulary.Actions>
+            <Button
+              type="submit"
+              formaction={compose_action(
+                ACTION.UPDATE_FLOOR,
+              )}>Guardar piso</Button
+            >
+            {#if floor.number !== FLOOR_NUMBER.GROUND}
+              <Button
+                type="submit"
+                formaction={compose_action(
+                  ACTION.DESTROY_FLOOR,
+                )}>Eliminar piso</Button
+              >
+            {/if}
+          </Formulary.Actions>
+        </Formulary.Root>
+        <Section.Header>
+          <Section.Title
+            >{display_floor_number(
+              floor.number,
+            )}</Section.Title
+          >
+          <Section.Actions>
+            <form
+              method="POST"
+              action={compose_action(ACTION.CREATE_ROOM)}
+              use:enhance
+            >
+              <input
+                type="hidden"
+                name="floor_id"
+                value={floor.id}
+              />
+              <Button type="submit"
+                >Agregar ambiente</Button
+              >
+            </form>
+          </Section.Actions>
+        </Section.Header>
+        <ul>
+          {#each floor.rooms as room (room.id)}
+            <li>
+              <Formulary.Root method="POST">
+                <Formulary.Fields>
+                  <input
+                    type="hidden"
+                    value={room.id}
+                    name="id"
+                  />
+                  <Formulary.Field>
+                    <Formulary.Label for={`type_${room.id}`}
+                      >tipo</Formulary.Label
+                    >
+                    <Formulary.Select
+                      name="type"
+                      id={`type_${room.id}`}
+                      value={room.type}
+                    >
+                      {#each Object.values(ROOM_TYPE) as type}
+                        <option value={type}
+                          >{display_room_type(type)}</option
+                        >
+                      {/each}
+                    </Formulary.Select>
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      for={`length_${room.id}`}
+                      >largo</Formulary.Label
+                    >
+                    <input
+                      id={`length_${room.id}`}
+                      type="number"
+                      name="length"
+                      step="0.1"
+                      value={room.length}
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      for={`width_${room.id}`}
+                      >ancho</Formulary.Label
+                    >
+                    <input
+                      id={`width_${room.id}`}
+                      type="number"
+                      name="width"
+                      value={room.width}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button
+                    type="submit"
+                    formaction={compose_action(
+                      ACTION.UPDATE_ROOM,
+                    )}>Guardar ambiente</Button
+                  >
+                  <Button
+                    type="submit"
+                    formaction={compose_action(
+                      ACTION.DESTROY_ROOM,
+                    )}>Eliminar ambiente</Button
+                  >
+                </Formulary.Actions>
+              </Formulary.Root>
+            </li>
+          {/each}
+        </ul>
+        {#if floor.rooms.length > 0}
+          <Formulary.Root
+            method="POST"
+            action={compose_action(
+              ACTION.UPDATE_ROOM_POSITIONS,
+            )}
+          >
             <Formulary.Fields>
               <input
                 type="hidden"
-                value={room.id}
-                name="id"
+                name="positions"
+                value={JSON.stringify(
+                  floor.rooms
+                    .filter((room) => {
+                      const pos = room_positions.get(
+                        room.id,
+                      )
+                      return pos !== undefined
+                    })
+                    .map((room) => {
+                      const pos = room_positions.get(
+                        room.id,
+                      )!
+                      return {
+                        room_id: room.id,
+                        position_x: pos.x,
+                        position_y: pos.y,
+                      }
+                    }),
+                )}
               />
-              <Formulary.Field>
-                <Formulary.Label for={`type_${room.id}`}
-                  >tipo</Formulary.Label
-                >
-                <Formulary.Select
-                  name="type"
-                  id={`type_${room.id}`}
-                  value={room.type}
-                >
-                  {#each Object.values(ROOM_TYPE) as type}
-                    <option value={type}
-                      >{display_room_type(type)}</option
-                    >
-                  {/each}
-                </Formulary.Select>
-              </Formulary.Field>
-              <Formulary.Field>
-                <Formulary.Label for={`length_${room.id}`}
-                  >largo</Formulary.Label
-                >
-                <input
-                  id={`length_${room.id}`}
-                  type="number"
-                  name="length"
-                  step="0.1"
-                  value={room.length}
-                />
-              </Formulary.Field>
-              <Formulary.Field>
-                <Formulary.Label for={`width_${room.id}`}
-                  >ancho</Formulary.Label
-                >
-                <input
-                  id={`width_${room.id}`}
-                  type="number"
-                  name="width"
-                  value={room.width}
-                />
-              </Formulary.Field>
+              <RoomMap
+                rooms={floor.rooms}
+                on_positions_change={handle_positions_change}
+              />
             </Formulary.Fields>
             <Formulary.Actions>
               <Button
                 type="submit"
-                formaction={compose_action(
-                  ACTION.UPDATE_ROOM,
-                )}>Guardar ambiente</Button
-              >
-              <Button
-                type="submit"
-                formaction={compose_action(
-                  ACTION.DESTROY_ROOM,
-                )}>Eliminar ambiente</Button
+                disabled={room_positions.size === 0}
+                >Guardar mapa</Button
               >
             </Formulary.Actions>
           </Formulary.Root>
-        </li>
-      {/each}
-    </ul>
-  </Content.Section>
-{/snippet}
-
-{#snippet RoomMapSection()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>mapa</Section.Title>
-    </Section.Header>
-    <Formulary.Root
-      method="POST"
-      action={compose_action(ACTION.UPDATE_ROOM_POSITIONS)}
-    >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          name="positions"
-          value={JSON.stringify(
-            Array.from(room_positions.entries()).map(
-              ([room_id, pos]) => ({
-                room_id,
-                position_x: pos.x,
-                position_y: pos.y,
-              }),
-            ),
-          )}
-        />
-        <RoomMap
-          rooms={data.property.rooms}
-          on_positions_change={handle_positions_change}
-        />
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button
-          type="submit"
-          disabled={room_positions.size === 0}
-          >Guardar mapa</Button
-        >
-      </Formulary.Actions>
-    </Formulary.Root>
+        {/if}
+      </div>
+    {/each}
   </Content.Section>
 {/snippet}
 
@@ -503,8 +587,7 @@
   {@render Destinies()}
   {@render Tags()}
   {@render Building()}
-  {@render Rooms()}
-  {@render RoomMapSection()}
+  {@render Floors()}
   {@render Members()}
   {@render Photos()}
   {@render Services()}
@@ -577,6 +660,12 @@
   .tag-category legend {
     font-weight: bold;
     margin-bottom: 0.5rem;
+  }
+  .floor-section {
+    border: 1px solid rgb(55 65 81);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
   .error {
     color: rgb(239 68 68);

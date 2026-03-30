@@ -17,11 +17,13 @@
 **Routes:** `/admin/realtor`
 
 **Actions:**
+
 - Finds the manager in the team list
 - Clicks the remove action
 - Manager loses access to the agency
 
 **Thoughts:**
+
 - "What happens to their assigned properties?"
 - "Will they lose access immediately?"
 
@@ -32,9 +34,11 @@
 ## The Output
 
 ### Pain Points
+
 - No clarity on what happens to properties the manager was responsible for
 - No confirmation dialog
 
 ### Opportunities
+
 - Show a warning about orphaned properties before removing
 - Prompt to reassign properties during the removal flow

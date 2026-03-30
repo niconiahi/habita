@@ -25,6 +25,7 @@ import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
+import { FLOOR_NUMBER } from "../../src/lib/floor_number"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import * as seeder from "../../src/lib/seeder"
 import { SERVICE_TYPE } from "../../src/lib/service"
@@ -100,28 +101,34 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     destinies: [PROPERTY_DESTINY.RESIDENTIAL],
   })
 
+  // Add floor
+  const ground_floor_id = await seeder.add_floor(
+    property_id,
+    { number: FLOOR_NUMBER.GROUND },
+  )
+
   // Add rooms (property is fully configured)
-  await seeder.add_room(property_id, {
+  await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "6.0",
     length: "5.0",
   })
-  await seeder.add_room(property_id, {
+  await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.5",
     length: "4.0",
   })
-  await seeder.add_room(property_id, {
+  await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",
     length: "3.0",
   })
-  await seeder.add_room(property_id, {
+  await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.BATHROOM,
     width: "2.5",
     length: "2.0",
   })
-  await seeder.add_room(property_id, {
+  await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.KITCHEN,
     width: "3.5",
     length: "3.0",

@@ -17,11 +17,11 @@ The manager creates the property, assigns a landlord, then fills the contract wi
 
 ### Actors
 
-| Role      | Auth state file          | Description                       |
-| --------- | ------------------------ | --------------------------------- |
-| Manager   | `e2e/.auth/manager.json`     | Creates property, contract, slots |
-| Candidate | `e2e/.auth/candidate.json`   | Books a visiting slot             |
-| Landlord  | (DB-only, no UI actions) | Assigned as property owner via DB |
+| Role      | Auth state file            | Description                       |
+| --------- | -------------------------- | --------------------------------- |
+| Manager   | `e2e/.auth/manager.json`   | Creates property, contract, slots |
+| Candidate | `e2e/.auth/candidate.json` | Books a visiting slot             |
+| Landlord  | (DB-only, no UI actions)   | Assigned as property owner via DB |
 
 ### Step-by-step Flow
 

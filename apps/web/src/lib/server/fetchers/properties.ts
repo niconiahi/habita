@@ -40,13 +40,18 @@ export async function fetch_properties(
       jsonArrayFrom(
         eb
           .selectFrom("room")
+          .innerJoin("floor", "floor.id", "room.floor_id")
           .select([
             "room.id",
             "room.type",
             "room.width",
             "room.length",
           ])
-          .whereRef("room.property_id", "=", "property.id"),
+          .whereRef(
+            "floor.property_id",
+            "=",
+            "property.id",
+          ),
       ).as("rooms"),
       jsonObjectFrom(
         eb
@@ -188,13 +193,14 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(
               sql<number>`coalesce(sum(room.width * room.length), 0)`.as(
                 "total",
               ),
             )
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             ),
@@ -209,13 +215,14 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(
               sql<number>`coalesce(sum(room.width * room.length), 0)`.as(
                 "total",
               ),
             )
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             ),
@@ -230,9 +237,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             ),
@@ -247,9 +255,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             ),
@@ -264,9 +273,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             )
@@ -282,9 +292,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             )
@@ -300,9 +311,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             )
@@ -318,9 +330,10 @@ export async function fetch_properties(
         eb(
           eb
             .selectFrom("room")
+            .innerJoin("floor", "floor.id", "room.floor_id")
             .select(eb.fn.countAll<number>().as("cnt"))
             .whereRef(
-              "room.property_id",
+              "floor.property_id",
               "=",
               "property.id",
             )

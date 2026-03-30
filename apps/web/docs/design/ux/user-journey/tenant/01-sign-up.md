@@ -17,11 +17,13 @@
 **Routes:** `/signup`
 
 **Actions:**
+
 - Fills in name, surname, email, and password (min 8 characters)
 - Or clicks "Google" to sign up with their Google account
 - Submits the form
 
 **Thoughts:**
+
 - "Is this platform trustworthy?"
 - "Should I use my Google account or create a separate one?"
 
@@ -34,11 +36,13 @@
 **Routes:** `/onboarding`
 
 **Actions:**
+
 - Sees three options: Tenant, Freelance, Real estate agency
 - Clicks "Tenant" (Inquilino)
 - Gets redirected to `/profile` to complete their personal information
 
 **Thoughts:**
+
 - "I'm just looking for a place — which one is me?"
 - "What do the other options do?"
 
@@ -49,8 +53,10 @@
 ## The Output
 
 ### Pain Points
+
 - The onboarding page shows all three account types equally — a tenant might hesitate wondering if they need a "plan"
 - The tenant option is a link, while the other two are form submissions — inconsistent interaction patterns
 
 ### Opportunities
+
 - Make it clearer that the tenant path is free and doesn't require a subscription

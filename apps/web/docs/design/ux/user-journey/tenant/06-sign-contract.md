@@ -17,11 +17,13 @@
 **Routes:** `/signatures`
 
 **Actions:**
+
 - Navigates to the signatures page
 - Sees a list of contracts requiring their signature
 - Each entry shows the property address and signature status (pending/signed) for both landlord and tenant
 
 **Thoughts:**
+
 - "There's a contract waiting for me"
 - "Has the landlord signed already?"
 
@@ -34,12 +36,14 @@
 **Routes:** `/signatures` → external provider → `/digital_signature/success` or `/digital_signature/rejected` or `/digital_signature/error`
 
 **Actions:**
+
 - Clicks the signing link for their contract
 - Gets redirected to the Alpha2000 Firmador external provider
 - Completes the digital signature process
 - Returns to the platform on the result page
 
 **Thoughts:**
+
 - "I'm leaving the platform — is this safe?"
 - "How do I sign digitally?"
 - "Did it work?"
@@ -53,10 +57,12 @@
 **Routes:** Automatic — no tenant action needed
 
 **Actions:**
+
 - Once both landlord and tenant have signed, the system automatically downloads the signed PDF and activates the contract
 - The tenant can now access their contract's tenant view to upload receipts
 
 **Thoughts:**
+
 - "Is the contract official now?"
 - "Where can I see the signed document?"
 
@@ -67,11 +73,13 @@
 ## The Output
 
 ### Pain Points
+
 - Digital certificate onboarding may be required before signing — if the tenant doesn't have a certificate, the process stalls
 - The external signature provider may be unfamiliar and confusing
 - No in-app notification when the contract is fully activated
 
 ### Opportunities
+
 - Prompt tenants to complete digital certificate onboarding as part of profile setup
 - Add contextual explanation before the external redirect
 - Notify the tenant when the contract is fully signed and active

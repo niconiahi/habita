@@ -17,9 +17,11 @@
 **Routes:** `/` (root layout — SubscriptionBanner on every page)
 
 **Actions:**
+
 - Sees a warning banner showing days remaining in the grace period
 
 **Thoughts:**
+
 - "How many days left?"
 - "What happens if I don't renew?"
 
@@ -32,6 +34,7 @@
 **Routes:** `/subscribe` → Mercado Pago → `/subscribe/success`
 
 **Actions:**
+
 - Goes to the subscription page
 - Reviews the price ($50 USD for freelance)
 - Clicks "Pay"
@@ -39,6 +42,7 @@
 - Returns to success page
 
 **Thoughts:**
+
 - "Same price as last time?"
 - "Did the payment work?"
 
@@ -49,10 +53,12 @@
 ## The Output
 
 ### Pain Points
+
 - No clarity on grace period consequences (what's blocked and when)
 - External payment flow
 
 ### Opportunities
+
 - Clearly communicate what happens at each stage (active → grace → blocked)
 - Consider auto-renewal
 - Send reminder emails before grace period begins

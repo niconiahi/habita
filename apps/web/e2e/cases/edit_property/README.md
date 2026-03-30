@@ -14,8 +14,8 @@ This test covers the full property editing workflow beyond the initial creation 
 
 ### Actors
 
-| Role    | Auth state file      | Description                              |
-| ------- | -------------------- | ---------------------------------------- |
+| Role    | Auth state file          | Description                              |
+| ------- | ------------------------ | ---------------------------------------- |
 | Manager | `e2e/.auth/manager.json` | Creates and edits property configuration |
 
 ### Step-by-step Flow

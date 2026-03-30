@@ -5,12 +5,11 @@ import { put_object } from "$lib/server/object_store"
 
 function compute_hash(content: Buffer): Promise<string> {
   return crypto.subtle
-    .digest("SHA-256", content)
-    .then(
-      (buffer) =>
-        Array.from(new Uint8Array(buffer))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join(""),
+    .digest("SHA-256", new Uint8Array(content))
+    .then((buffer) =>
+      Array.from(new Uint8Array(buffer))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""),
     )
 }
 

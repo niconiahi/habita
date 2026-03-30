@@ -17,6 +17,7 @@
 **Routes:** `/admin/properties/[property_id]/edit`
 
 **Actions:**
+
 - Opens the property edit page
 - Finds the location section
 - Searches for the correct address
@@ -24,6 +25,7 @@
 - Saves the change
 
 **Thoughts:**
+
 - "The address wasn't quite right"
 - "Did the search find the correct location?"
 
@@ -34,7 +36,9 @@
 ## The Output
 
 ### Pain Points
+
 - Location update is on the same dense edit page as everything else — easy to miss
 
 ### Opportunities
+
 - Highlight which sections have been filled vs. which are empty

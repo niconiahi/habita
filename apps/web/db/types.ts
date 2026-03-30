@@ -105,6 +105,14 @@ export interface File {
   updated_at: Timestamp;
 }
 
+export interface Floor {
+  created_at: Timestamp;
+  id: Generated<number>;
+  number: number;
+  property_id: number;
+  updated_at: Timestamp;
+}
+
 export interface FormulaParameter {
   created_at: Timestamp;
   id: Generated<number>;
@@ -328,9 +336,9 @@ export interface Receipt {
 
 export interface Room {
   created_at: Timestamp;
+  floor_id: number;
   id: Generated<number>;
   length: Numeric;
-  property_id: number;
   type: number;
   updated_at: Timestamp;
   width: Numeric;
@@ -1056,6 +1064,7 @@ export interface DB {
   contract_item_file: ContractItemFile;
   digital_signature: DigitalSignature;
   file: File;
+  floor: Floor;
   formula_parameter: FormulaParameter;
   geography_columns: GeographyColumns;
   geometry_columns: GeometryColumns;

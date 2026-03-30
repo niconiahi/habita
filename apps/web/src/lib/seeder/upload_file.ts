@@ -19,10 +19,7 @@ function sha256(data: Buffer): string {
   return createHash("sha256").update(data).digest("hex")
 }
 
-function hmac(
-  key: Buffer | string,
-  data: string,
-): Buffer {
+function hmac(key: Buffer | string, data: string): Buffer {
   return createHmac("sha256", key).update(data).digest()
 }
 
@@ -78,17 +75,20 @@ async function upload_to_minio(
 
   const authorization = `AWS4-HMAC-SHA256 Credential=${access_key}/${scope}, SignedHeaders=${signed_headers}, Signature=${signature}`
 
-  const response = await fetch(`http://${endpoint}${path}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": mime,
-      Host: host,
-      "x-amz-content-sha256": payload_hash,
-      "x-amz-date": amz_date,
-      Authorization: authorization,
+  const response = await fetch(
+    `http://${endpoint}${path}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": mime,
+        Host: host,
+        "x-amz-content-sha256": payload_hash,
+        "x-amz-date": amz_date,
+        Authorization: authorization,
+      },
+      body: new Uint8Array(content),
     },
-    body: content,
-  })
+  )
   if (!response.ok) {
     const error_text = await response.text()
     throw new Error(

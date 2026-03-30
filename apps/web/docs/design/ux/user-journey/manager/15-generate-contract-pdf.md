@@ -17,11 +17,13 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/edit`
 
 **Actions:**
+
 - Clicks the "Generate PDF" action
 - System creates a formatted PDF from the contract data
 - Reviews the generated document
 
 **Thoughts:**
+
 - "Does the PDF include everything?"
 - "Is the formatting correct?"
 - "Should I review this with the landlord first?"
@@ -33,10 +35,12 @@
 ## The Output
 
 ### Pain Points
+
 - No PDF preview before generation
 - No ability to customize the PDF layout or branding
 - If something is wrong, must edit the contract and regenerate
 
 ### Opportunities
+
 - Add PDF preview before final generation
 - Allow basic template customization

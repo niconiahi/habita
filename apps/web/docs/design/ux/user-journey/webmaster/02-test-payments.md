@@ -17,12 +17,14 @@
 **Routes:** `/pay`
 
 **Actions:**
+
 - Navigates to the test payment page
 - Clicks to create a test payment (50 ARS)
 - Gets redirected to Mercado Pago
 - Completes the test transaction
 
 **Thoughts:**
+
 - "Is the integration still working?"
 - "Will the webhook fire?"
 
@@ -35,11 +37,13 @@
 **Routes:** `/pay/success` or `/pay/failure`
 
 **Actions:**
+
 - Returns from Mercado Pago
 - Sees payment status (approved, pending, rejected)
 - Verifies the operation ID
 
 **Thoughts:**
+
 - "Did it go through?"
 - "Is the status updating correctly?"
 
@@ -50,10 +54,12 @@
 ## The Output
 
 ### Pain Points
+
 - Test payments use real money (even if 50 ARS is small)
 - No way to test webhook behavior separately
 - No test log or history of past test payments
 
 ### Opportunities
+
 - Add sandbox/test mode that doesn't process real money
 - Show webhook event log for debugging

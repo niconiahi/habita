@@ -21,22 +21,32 @@ export async function fetch_property(id: number) {
       "property.state",
       jsonArrayFrom(
         eb
-          .selectFrom("room")
-          .leftJoin(
-            "room_map",
-            "room_map.room_id",
-            "room.id",
-          )
-          .select([
-            "room.id",
-            "room.type",
-            "room.width",
-            "room.length",
-            "room_map.position_x",
-            "room_map.position_y",
+          .selectFrom("floor")
+          .select((eb) => [
+            "floor.id",
+            "floor.number",
+            jsonArrayFrom(
+              eb
+                .selectFrom("room")
+                .leftJoin(
+                  "room_map",
+                  "room_map.room_id",
+                  "room.id",
+                )
+                .select([
+                  "room.id",
+                  "room.type",
+                  "room.width",
+                  "room.length",
+                  "room_map.position_x",
+                  "room_map.position_y",
+                ])
+                .whereRef("room.floor_id", "=", "floor.id"),
+            ).as("rooms"),
           ])
-          .whereRef("room.property_id", "=", "property.id"),
-      ).as("rooms"),
+          .whereRef("floor.property_id", "=", "property.id")
+          .orderBy("floor.number", "asc"),
+      ).as("floors"),
       jsonObjectFrom(
         eb
           .selectFrom("location")

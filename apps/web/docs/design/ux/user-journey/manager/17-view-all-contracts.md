@@ -17,11 +17,13 @@
 **Routes:** `/admin/contracts`
 
 **Actions:**
+
 - Opens the contracts section in the admin dashboard
 - Sees all contracts across all managed properties
 - Filters by contract state (active, draft, completed, etc.)
 
 **Thoughts:**
+
 - "How many active contracts do I have?"
 - "Are there any contracts stuck in draft?"
 
@@ -34,9 +36,11 @@
 **Routes:** `/admin/contracts`
 
 **Actions:**
+
 - Changes a contract's state if needed
 
 **Thoughts:**
+
 - "This contract should be marked as completed"
 
 **Emotions:** Administrative → Done
@@ -46,9 +50,11 @@
 ## The Output
 
 ### Pain Points
+
 - No summary statistics (total active, total draft, total revenue)
 - Filtering is state-based only — no search by tenant name or property
 
 ### Opportunities
+
 - Add dashboard summary cards with key metrics
 - Add search by tenant or property name

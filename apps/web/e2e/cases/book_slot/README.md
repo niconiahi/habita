@@ -16,8 +16,8 @@ This test isolates the booking flow — the key moment where a potential tenant 
 
 ### Actors
 
-| Role      | Auth state file        | Description                             |
-| --------- | ---------------------- | --------------------------------------- |
+| Role      | Auth state file            | Description                             |
+| --------- | -------------------------- | --------------------------------------- |
 | Manager   | `e2e/.auth/manager.json`   | Creates property, publishes, adds slots |
 | Candidate | `e2e/.auth/candidate.json` | Books a visiting slot                   |
 

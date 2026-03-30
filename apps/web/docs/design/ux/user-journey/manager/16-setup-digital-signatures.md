@@ -17,10 +17,12 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/edit`
 
 **Actions:**
+
 - Clicks "Check certificates" to verify if landlord and tenant have digital certificates
 - Sees the status for each party
 
 **Thoughts:**
+
 - "Does the landlord have a certificate?"
 - "Does the tenant have a certificate?"
 
@@ -33,10 +35,12 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/edit`
 
 **Actions:**
+
 - If either party doesn't have a certificate, starts the onboarding process for them
 - The party receives a link to complete certificate registration with the external provider
 
 **Thoughts:**
+
 - "How long will onboarding take?"
 - "Will they know what to do?"
 
@@ -49,10 +53,12 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/edit`
 
 **Actions:**
+
 - Once both parties have certificates, sends the contract for digital signing
 - Both parties receive their signing links
 
 **Thoughts:**
+
 - "Is everything ready?"
 - "Will both parties sign promptly?"
 
@@ -65,11 +71,13 @@
 **Routes:** `/admin/properties/[property_id]/contracts/[contract_id]/edit`
 
 **Actions:**
+
 - Checks signature status for landlord and tenant (pending, signed, rejected)
 - Can verify signature status at any time
 - Once both sign, system automatically activates the contract
 
 **Thoughts:**
+
 - "Has anyone signed yet?"
 - "What if someone rejects?"
 
@@ -80,11 +88,13 @@
 ## The Output
 
 ### Pain Points
+
 - Certificate onboarding is an external dependency — can stall the process
 - No notifications when a party signs — must check manually
 - If someone rejects, there's no clear workflow to address concerns and re-send
 
 ### Opportunities
+
 - Push notifications when signatures are completed
 - Show a clear contract lifecycle status bar
 - Add a workflow for handling rejections

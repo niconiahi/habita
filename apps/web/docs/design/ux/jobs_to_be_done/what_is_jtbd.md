@@ -41,6 +41,7 @@ The practical, measurable task. This is the core job that defines whether the pr
 > Example: "Find available properties, evaluate them against personal criteria, visit the best options, get accepted as a tenant, and formalize the rental agreement."
 
 Functional jobs are:
+
 - **Solution-independent** — they never mention a product or feature
 - **Measurable** — you can tell whether the job was done (the tenant signed a contract or didn't)
 - **Stable over time** — the job "formalize a rental agreement legally" has existed for centuries; the solutions changed (handshake → paper contract → digital signature)
@@ -157,16 +158,16 @@ When writing JTBD, use expertise to derive insights from behavior and feature us
 
 ### JTBD vs User Stories
 
-| Dimension | JTBD | User Stories |
-|-----------|------|--------------|
-| **Format** | "When [situation], I want to [goal], so I can [outcome]" | "As a [role], I want [feature], so that [benefit]" |
-| **Purpose** | Strategic — understand *why* users need something | Tactical — describe *what* to build |
-| **Focus** | Situation and context drive the need | Role and feature drive the specification |
-| **Scope** | Entire journey, unmet needs | Single actionable product step |
-| **Timing** | Discovery and strategy phase | Sprint planning and execution |
-| **Solution reference** | Never | Always |
-| **Stability** | Jobs don't change | Stories change as features evolve |
-| **Audience** | Designers, product, strategy | Developers, QA, sprint teams |
+| Dimension              | JTBD                                                     | User Stories                                       |
+| ---------------------- | -------------------------------------------------------- | -------------------------------------------------- |
+| **Format**             | "When [situation], I want to [goal], so I can [outcome]" | "As a [role], I want [feature], so that [benefit]" |
+| **Purpose**            | Strategic — understand _why_ users need something        | Tactical — describe _what_ to build                |
+| **Focus**              | Situation and context drive the need                     | Role and feature drive the specification           |
+| **Scope**              | Entire journey, unmet needs                              | Single actionable product step                     |
+| **Timing**             | Discovery and strategy phase                             | Sprint planning and execution                      |
+| **Solution reference** | Never                                                    | Always                                             |
+| **Stability**          | Jobs don't change                                        | Stories change as features evolve                  |
+| **Audience**           | Designers, product, strategy                             | Developers, QA, sprint teams                       |
 
 These are **complementary**, not competing. JTBD identifies the need → User Need Statements frame the design problem → User Stories go into the backlog. The flow is:
 
@@ -180,11 +181,11 @@ The JTBD is stable — it was true before digital signatures existed. The user s
 
 Nielsen Norman Group's User Need Statement format is: **"[User] needs [need-as-verb] in order to [goal]."** It sits between JTBD and User Stories in specificity — it names the user (like a story) but keeps the need solution-independent (like a job).
 
-| Format | Template | When to use |
-|--------|----------|-------------|
-| **JTBD** | "When [situation], I want to [goal], so I can [outcome]" | Discovery: understanding the problem space |
-| **User Need Statement** | "[User] needs [need] in order to [goal]" | Define: framing the design problem |
-| **User Story** | "As a [role], I want [feature], so that [benefit]" | Build: specifying what to implement |
+| Format                  | Template                                                 | When to use                                |
+| ----------------------- | -------------------------------------------------------- | ------------------------------------------ |
+| **JTBD**                | "When [situation], I want to [goal], so I can [outcome]" | Discovery: understanding the problem space |
+| **User Need Statement** | "[User] needs [need] in order to [goal]"                 | Define: framing the design problem         |
+| **User Story**          | "As a [role], I want [feature], so that [benefit]"       | Build: specifying what to implement        |
 
 ### JTBD and Empathy Maps
 
@@ -214,12 +215,12 @@ Each file in this directory covers one actor: tenant, manager, landlord, or real
 2. **Secondary jobs** — specific goals, each with the "When..., I want to..., so I can..." statement and functional/emotional/social dimensions
 3. **Consumption jobs** — friction points in using the current solution
 
-Emotional and social dimensions that were **inferred from the codebase** (rather than validated with users) are marked with *(validate)*. These are educated guesses based on what the features imply about user motivations — but they need to be confirmed through user research. The functional dimensions are derived directly from the code and are reliable.
+Emotional and social dimensions that were **inferred from the codebase** (rather than validated with users) are marked with _(validate)_. These are educated guesses based on what the features imply about user motivations — but they need to be confirmed through user research. The functional dimensions are derived directly from the code and are reliable.
 
 When using these files for design work:
 
 - **Start with the primary job** to understand the actor's big picture
 - **Use secondary jobs** to identify which part of the experience you're designing for
 - **Check consumption jobs** for quick wins — reducing friction in using the platform itself
-- **Validate the *(validate)* markers** through user interviews, especially the emotional and social dimensions
+- **Validate the _(validate)_ markers** through user interviews, especially the emotional and social dimensions
 - **Never design a feature that doesn't serve a job** — if you can't trace a proposed feature back to a job, question whether it's needed

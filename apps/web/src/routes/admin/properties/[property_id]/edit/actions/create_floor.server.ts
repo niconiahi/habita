@@ -1,29 +1,27 @@
 import { query_builder } from "db/query_builder"
-import { ROOM_TYPE } from "$lib/room_type"
+import { FLOOR_NUMBER } from "$lib/floor_number"
 import { safe_async } from "$lib/safe_async"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
 
-export async function create_room(floor_id: number) {
+export async function create_floor(property_id: number) {
   const [error] = await safe_async(
     query_builder
-      .insertInto("room")
+      .insertInto("floor")
       .values({
-        width: 0,
-        length: 0,
-        type: ROOM_TYPE.BEDROOM,
-        updated_at: now,
+        property_id,
+        number: FLOOR_NUMBER.GROUND,
         created_at: now,
-        floor_id,
+        updated_at: now,
       })
       .execute(),
   )
   if (error) {
-    logger.error(error.message, { floor_id }, error)
+    logger.error(error.message, { property_id }, error)
     return [
       {
-        create_room: {
-          execution: "Error al crear la habitación",
+        create_floor: {
+          execution: "Error al crear el piso",
         },
       },
       null,

@@ -17,6 +17,7 @@
 **Routes:** `/properties/[property_id]`
 
 **Actions:**
+
 - Reads the full address: street, neighborhood, city, province
 - Checks the property's intended use (residential, commercial)
 - Reviews the room list with types and dimensions
@@ -24,6 +25,7 @@
 - Browses the photo gallery
 
 **Thoughts:**
+
 - "Is this neighborhood safe?"
 - "Are the rooms big enough?"
 - "What does the layout look like?"
@@ -38,11 +40,13 @@
 **Routes:** `/properties/[property_id]`
 
 **Actions:**
+
 - If interested, clicks the "Book" button
 - If they haven't uploaded a credit report, the button takes them to a help article instead of the booking page
 - If not interested, goes back to browsing
 
 **Thoughts:**
+
 - "I want to see this place in person"
 - "Wait, I need a credit report? I didn't know that"
 
@@ -53,11 +57,13 @@
 ## The Output
 
 ### Pain Points
+
 - The "Book" button silently redirects to a learn article if the credit report is missing — the tenant doesn't get a clear error message explaining why they can't book
 - Property images are served as inline base64 — may be slow for properties with many photos
 - No way to save/favorite a property for later comparison
 
 ### Opportunities
+
 - Show a clear message when the credit report is missing ("Upload your credit report to book a visit")
 - Add a "save for later" or favorites feature
 - Add a map view showing the property's exact location

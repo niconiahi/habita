@@ -25,6 +25,7 @@ import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
 import { RATE_TYPE } from "../../src/lib/rate_type"
+import { FLOOR_NUMBER } from "../../src/lib/floor_number"
 import { ROOM_TYPE } from "../../src/lib/room_type"
 import * as seeder from "../../src/lib/seeder"
 import { SERVICE_TYPE } from "../../src/lib/service"
@@ -107,17 +108,22 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     destinies: [PROPERTY_DESTINY.RESIDENTIAL],
   })
 
-  await seeder.add_room(property_i1, {
+  const ground_floor_i1 = await seeder.add_floor(
+    property_i1,
+    { number: FLOOR_NUMBER.GROUND },
+  )
+
+  await seeder.add_room(ground_floor_i1, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "4.5",
     length: "4.0",
   })
-  await seeder.add_room(property_i1, {
+  await seeder.add_room(ground_floor_i1, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",
     length: "3.0",
   })
-  await seeder.add_room(property_i1, {
+  await seeder.add_room(ground_floor_i1, {
     type: ROOM_TYPE.BATHROOM,
     width: "2.0",
     length: "1.5",
@@ -268,22 +274,27 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     destinies: [PROPERTY_DESTINY.RESIDENTIAL],
   })
 
-  await seeder.add_room(property_i2, {
+  const ground_floor_i2 = await seeder.add_floor(
+    property_i2,
+    { number: FLOOR_NUMBER.GROUND },
+  )
+
+  await seeder.add_room(ground_floor_i2, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "5.0",
     length: "4.5",
   })
-  await seeder.add_room(property_i2, {
+  await seeder.add_room(ground_floor_i2, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.0",
     length: "3.5",
   })
-  await seeder.add_room(property_i2, {
+  await seeder.add_room(ground_floor_i2, {
     type: ROOM_TYPE.BATHROOM,
     width: "2.5",
     length: "2.0",
   })
-  await seeder.add_room(property_i2, {
+  await seeder.add_room(ground_floor_i2, {
     type: ROOM_TYPE.KITCHEN,
     width: "3.0",
     length: "2.5",
@@ -424,17 +435,22 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     destinies: [PROPERTY_DESTINY.RESIDENTIAL],
   })
 
-  await seeder.add_room(property_i3, {
+  const ground_floor_i3 = await seeder.add_floor(
+    property_i3,
+    { number: FLOOR_NUMBER.GROUND },
+  )
+
+  await seeder.add_room(ground_floor_i3, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "4.5",
     length: "4.0",
   })
-  await seeder.add_room(property_i3, {
+  await seeder.add_room(ground_floor_i3, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",
     length: "3.0",
   })
-  await seeder.add_room(property_i3, {
+  await seeder.add_room(ground_floor_i3, {
     type: ROOM_TYPE.BATHROOM,
     width: "2.0",
     length: "1.8",
