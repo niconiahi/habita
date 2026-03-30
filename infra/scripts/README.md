@@ -71,32 +71,32 @@ All scripts can be run with `bash script_name.sh` (no need to make them executab
 
 ```bash
 # On local machine
-bash infra/scripts/01_generate_ssh_keys.sh
+bash scripts/01_generate_ssh_keys.sh
 
 # Add public key to VPS (via Digital Ocean dashboard or script)
-bash infra/scripts/02_add_ssh_key_to_root.sh
+bash scripts/02_add_ssh_key_to_root.sh
 
 # On VPS as root
-ssh root@209.38.143.22 < infra/scripts/03_initial_server_setup.sh
-ssh root@209.38.143.22 < infra/scripts/04_create_deployment_user.sh
-ssh root@209.38.143.22 < infra/scripts/05_move_ssh_keys.sh
+ssh root@209.38.143.22 < scripts/03_initial_server_setup.sh
+ssh root@209.38.143.22 < scripts/04_create_deployment_user.sh
+ssh root@209.38.143.22 < scripts/05_move_ssh_keys.sh
 
 # Test SSH as habita
 ssh -i ~/.ssh/habita habita@209.38.143.22
 
 # Back on VPS as root (only if test above works!)
 # NOTE: This changes SSH port to 42069
-ssh root@209.38.143.22 < infra/scripts/06_secure_ssh_config.sh
+ssh root@209.38.143.22 < scripts/06_secure_ssh_config.sh
 
 # On VPS as habita (note: use port 42069 after running 06_secure_ssh_config.sh)
-ssh -i ~/.ssh/habita -p 42069 habita@209.38.143.22 < infra/scripts/07_configure_firewall.sh
+ssh -i ~/.ssh/habita -p 42069 habita@209.38.143.22 < scripts/07_configure_firewall.sh
 ```
 
 ### Option 2: All-in-one (Quick setup)
 
 Via Digital Ocean console as root:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/niconiahi/habita/main/infra/scripts/complete_vps_setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/niconiahi/habita/main/scripts/complete_vps_setup.sh | bash
 ```
 
 Or copy/paste the contents of `complete_vps_setup.sh` into the console.
@@ -120,4 +120,4 @@ These scripts implement:
 
 ## Documentation
 
-See `docs/setup_for_secure_vps.md` for detailed explanations and troubleshooting.
+See [`../docs/setup_production_environment.md`](../docs/setup_production_environment.md) for the full production setup guide.
