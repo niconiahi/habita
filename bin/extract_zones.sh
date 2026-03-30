@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/zone/extract.sh
+# bin/extract_zones.sh
 # Description: Extract Argentine administrative boundaries from Nominatim's
 # internal PostgreSQL and output as a TSV file with precomputed
 # label and badge columns.
@@ -12,12 +12,12 @@
 # Prerequisites: The geo stack must be running (dco geo nominatim up -d)
 #
 # Usage:
-#   bin/zone/extract.sh
+#   bin/extract_zones.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 INFRA_DIR="$REPO_ROOT/infra/development"
 ENV_FILE=""

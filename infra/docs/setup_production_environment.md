@@ -56,16 +56,11 @@ Seriously. Take a breath. If you have backups, you'll be fine.
 
 ### Step 3: Basic Server Setup
 
+Run the provisioning scripts in [`../scripts/`](../scripts/README.md). These handle system updates, Docker installation, user creation, SSH hardening, and firewall configuration.
+
+After the scripts complete, install `just`, `sops`, and `age`:
+
 ```bash
-# SSH into new server
-ssh root@NEW_IP
-
-# Update system
-apt update && apt upgrade -y
-
-# Install Docker
-curl -fsSL https://get.docker.com | sh
-
 # Install just
 curl -qL https://just.systems/install.sh | bash -s -- --to /usr/local/bin
 
@@ -77,11 +72,6 @@ mv age/age age/age-keygen /usr/local/bin/
 curl -LO https://github.com/getsops/sops/releases/download/v3.9.0/sops-v3.9.0.linux.amd64
 chmod +x sops-v3.9.0.linux.amd64
 mv sops-v3.9.0.linux.amd64 /usr/local/bin/sops
-
-# Create app user (optional but recommended)
-useradd -m -s /bin/bash habita
-usermod -aG docker habita
-su - habita
 ```
 
 ### Step 4: Clone Repository
