@@ -17,11 +17,13 @@
 **Routes:** `/admin/candidates`
 
 **Actions:**
+
 - Goes to the global candidates list
 - Clicks the action to promote the chosen candidate to tenant
 - System grants the candidate tenant access to the property
 
 **Thoughts:**
+
 - "Am I making the right choice?"
 - "What happens to the other candidates?"
 - "Will the tenant be notified?"
@@ -33,11 +35,13 @@
 ## The Output
 
 ### Pain Points
+
 - No rejection flow for other candidates
 - Unclear if the selected tenant gets notified
 - No undo option if the wrong candidate is promoted
 
 ### Opportunities
+
 - Notify un-selected candidates that the property is taken
 - Send a welcome notification to the selected tenant
 - Add a confirmation step before promoting

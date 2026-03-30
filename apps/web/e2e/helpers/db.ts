@@ -1,6 +1,8 @@
+import { fileURLToPath } from "node:url"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
 import { query_builder } from "../../db/query_builder"
 import { encrypt } from "../../src/lib/server/encryption"
+import * as seeder from "../../src/lib/seeder"
 import type { TestUser } from "./auth"
 
 export interface TestUserRecord {
@@ -189,37 +191,19 @@ export async function cleanup_test_data(): Promise<void> {
 export async function create_credit_report(
   user_id: number,
 ): Promise<number> {
-  const now = new Date().toISOString()
-  const dummy_content = Buffer.from(
-    "dummy credit report content",
+  const file_path = new URL(
+    "../../db/files/credit_report.pdf",
+    import.meta.url,
   )
-
-  const file = await query_builder
-    .insertInto("file")
-    .values({
-      basename: "credit_report.pdf",
-      content: dummy_content,
-      hash: `test_hash_${user_id}_${Date.now()}`,
-      mime: "application/pdf",
-      size: dummy_content.length,
-      created_at: now,
-      updated_at: now,
-    })
-    .returning("id")
-    .executeTakeFirstOrThrow()
-
-  await query_builder
-    .insertInto("user_file")
-    .values({
-      user_id,
-      file_id: file.id,
-      type: USER_FILE_TYPE.CREDIT_REPORT,
-      created_at: now,
-      updated_at: now,
-    })
-    .execute()
-
-  return file.id
+  const file_id = await seeder.upload_file(
+    fileURLToPath(file_path),
+  )
+  await seeder.add_user_file(
+    user_id,
+    file_id,
+    USER_FILE_TYPE.CREDIT_REPORT,
+  )
+  return file_id
 }
 
 export async function assign_property_access(

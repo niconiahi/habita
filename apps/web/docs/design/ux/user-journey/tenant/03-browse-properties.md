@@ -17,11 +17,13 @@
 **Routes:** `/properties`
 
 **Actions:**
+
 - Lands on the properties page
 - Scrolls through property cards showing photos, location, and monthly price
 - Gets a sense of what's available
 
 **Thoughts:**
+
 - "What's the price range in this area?"
 - "Are there many options?"
 
@@ -34,11 +36,13 @@
 **Routes:** `/properties`
 
 **Actions:**
+
 - Types a neighborhood or zone name into the search field
 - Selects a zone from the suggestions
 - Clicks "Search zone" to filter results
 
 **Thoughts:**
+
 - "Will it find my neighborhood?"
 - "How many properties are in this area?"
 
@@ -51,12 +55,14 @@
 **Routes:** `/properties`
 
 **Actions:**
+
 - Toggles property tags by category (features that describe properties)
 - Toggles service types (utilities included)
 - Adjusts range filters: total surface area, construction year, rooms, bedrooms, bathrooms
 - Each filter change submits and refreshes results
 
 **Thoughts:**
+
 - "I need at least 2 bedrooms"
 - "I want something built recently"
 - "Does this place include gas?"
@@ -68,11 +74,13 @@
 ## The Output
 
 ### Pain Points
+
 - Each filter change submits a form and reloads the page — no real-time filtering
 - No result count shown — hard to know if filters are too restrictive
 - No "clear all filters" option visible
 
 ### Opportunities
+
 - Show result count as filters are applied
 - Add a "clear filters" action
 - Consider client-side filtering for faster feedback

@@ -1,7 +1,9 @@
 # /properties/[property_id]/accept-invite
 
 ## Endpoint (`+server.ts` — GET only)
+
 Server-side handler, no page. Validates:
+
 1. User is authenticated (redirects to `/auth/google` otherwise)
 2. `token` query param exists (validated with `v.parse(v.string(), ...)`)
 3. `property_id` param parsed via `ForceNumberSchema`
@@ -13,10 +15,12 @@ Server-side handler, no page. Validates:
 9. Property exists
 
 On success:
+
 - Calls `assign_property_access(property_id, user_id, ACCESS_TYPE.LANDLORD)`
 - Marks token as used (`used_at = now`)
 - Logs the event
 - Redirects to `/properties/{property_id}`
 
 ## Auth
+
 Requires authenticated user. Email must match the invitation.

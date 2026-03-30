@@ -17,12 +17,14 @@
 **Routes:** `/admin/properties/[property_id]/contracts/new` or `/admin/contracts/new`
 
 **Actions:**
+
 - Either navigates directly from a specific property, or goes through the global contracts page and selects a property first
 - Selects the contract type
 - Submits the form
 - Gets redirected to the contract editing page
 
 **Thoughts:**
+
 - "What type of contract is this?"
 - "Is the right property selected?"
 
@@ -33,8 +35,10 @@
 ## The Output
 
 ### Pain Points
+
 - Two entry points (property-specific vs. global) can be confusing
 - Contract type selection is the only thing captured at creation — feels minimal
 
 ### Opportunities
+
 - Unify contract creation to one clear path

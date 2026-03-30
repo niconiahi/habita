@@ -26,8 +26,7 @@ const S3_SIGNING_SUFFIX = "aws4_request"
 
 function get_environment_variable(name: string): string {
   const value = process.env[name]
-  if (!value)
-    throw new Error(`${name} is not set`)
+  if (!value) throw new Error(`${name} is not set`)
   return value
 }
 
@@ -43,18 +42,12 @@ function sha256(data: Buffer | string): string {
   return createHash("sha256").update(data).digest("hex")
 }
 
-function hmac(
-  key: Buffer | string,
-  data: string,
-): Buffer {
+function hmac(key: Buffer | string, data: string): Buffer {
   return createHmac("sha256", key).update(data).digest()
 }
 
 function get_date_stamp(date: Date): string {
-  return date
-    .toISOString()
-    .slice(0, 10)
-    .replace(/-/g, "")
+  return date.toISOString().slice(0, 10).replace(/-/g, "")
 }
 
 function get_amz_date(date: Date): string {
@@ -74,9 +67,7 @@ function get_signing_key(
   return hmac(service_key, S3_SIGNING_SUFFIX)
 }
 
-function get_credential_scope(
-  date_stamp: string,
-): string {
+function get_credential_scope(date_stamp: string): string {
   return `${date_stamp}/${S3_REGION}/${S3_SERVICE}/${S3_SIGNING_SUFFIX}`
 }
 
@@ -118,8 +109,7 @@ function sign_request(
     options.payload_hash,
   ].join("\n")
 
-  const credential_scope =
-    get_credential_scope(date_stamp)
+  const credential_scope = get_credential_scope(date_stamp)
 
   const string_to_sign = [
     S3_ALGORITHM,
@@ -153,11 +143,15 @@ function build_signed_headers(
   content_type?: string,
 ): Record<string, string> {
   const date = new Date()
-  const endpoint = get_environment_variable("MINIO_ENDPOINT")
+  const endpoint = get_environment_variable(
+    "MINIO_ENDPOINT",
+  )
   const host = endpoint.split(":")[0] ?? endpoint
   const port = endpoint.split(":")[1]
   const host_header = port ? `${host}:${port}` : host
-  const payload_hash = content ? sha256(content) : EMPTY_HASH
+  const payload_hash = content
+    ? sha256(content)
+    : EMPTY_HASH
 
   const headers: Record<string, string> = {
     host: host_header,
@@ -176,8 +170,12 @@ function build_signed_headers(
     path,
     headers,
     payload_hash,
-    access_key: get_environment_variable("MINIO_ACCESS_KEY"),
-    secret_key: get_environment_variable("MINIO_SECRET_KEY"),
+    access_key: get_environment_variable(
+      "MINIO_ACCESS_KEY",
+    ),
+    secret_key: get_environment_variable(
+      "MINIO_SECRET_KEY",
+    ),
     date,
   })
 
@@ -202,7 +200,7 @@ export async function put_object(
     fetch(`${get_base_url()}${path}`, {
       method: "PUT",
       headers,
-      body: content,
+      body: new Uint8Array(content),
     }),
   )
   if (fetch_error) {
@@ -295,7 +293,11 @@ export async function get_object(
     response.arrayBuffer(),
   )
   if (buffer_error) {
-    logger.error(buffer_error.message, { key }, buffer_error)
+    logger.error(
+      buffer_error.message,
+      { key },
+      buffer_error,
+    )
     return [
       {
         type: OBJECT_STORE_ERROR.GET_FAILED,

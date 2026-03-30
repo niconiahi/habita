@@ -2,9 +2,7 @@ export type ObjectValues<T> = T[keyof T]
 
 type Type = Record<string, number>
 type UnionToIntersection<U> = (
-  U extends any
-    ? (k: U) => void
-    : never
+  U extends any ? (k: U) => void : never
 ) extends (k: infer I) => void
   ? I
   : never

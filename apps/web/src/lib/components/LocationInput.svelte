@@ -7,9 +7,9 @@
 
 <script lang="ts">
   import { untrack } from "svelte"
+  import { readable } from "svelte/store"
   import { safeParse } from "valibot"
-  import { setup, assign } from "xstate"
-  import { useMachine } from "@xstate/svelte"
+  import { setup, assign, createActor } from "xstate"
   import {
     LocationSchema,
     type Location,
@@ -242,8 +242,21 @@
       },
     },
   })
-  const { snapshot, send } = useMachine(locationMachine, {
+  const actor = createActor(locationMachine, {
     input: { default_value: untrack(() => default_value) },
+  }).start()
+  let current_snapshot = actor.getSnapshot()
+  const snapshot = readable(current_snapshot, (set) => {
+    return actor.subscribe((next_snapshot) => {
+      if (current_snapshot !== next_snapshot) {
+        current_snapshot = next_snapshot
+        set(current_snapshot)
+      }
+    }).unsubscribe
+  })
+  const send = actor.send
+  $effect(() => {
+    return () => actor.stop()
   })
   let abort_controller: AbortController | null = null
   async function handle_input(event: Event) {

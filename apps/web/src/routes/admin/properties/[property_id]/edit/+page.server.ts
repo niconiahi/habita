@@ -5,9 +5,12 @@ import { PROPERTY_STATE } from "$lib/property_state"
 import { require_edit_access } from "$lib/server/property_access"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
+import { create_floor } from "./actions/create_floor.server"
 import { create_property_file } from "./actions/create_property_file.server"
 import { create_room } from "./actions/create_room.server"
 import { create_service } from "./actions/create_service.server"
+import { destroy_floor } from "./actions/destroy_floor.server"
+import { update_floor } from "./actions/update_floor.server"
 import { destroy_room } from "./actions/destroy_room.server"
 import { destroy_service } from "./actions/destroy_service.server"
 import { invite_landlord } from "./actions/invite_landlord.server"
@@ -82,6 +85,83 @@ export const actions: Actions = {
     }
     return null
   },
+  [ACTION.CREATE_FLOOR]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/auth/google")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const [create_floor_errors] =
+      await create_floor(property_id)
+    if (create_floor_errors) {
+      return { errors: create_floor_errors }
+    }
+    return null
+  },
+  [ACTION.DESTROY_FLOOR]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/auth/google")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [destroy_floor_errors] =
+      await destroy_floor(form_data)
+    if (destroy_floor_errors) {
+      return { errors: destroy_floor_errors }
+    }
+    return null
+  },
+  [ACTION.UPDATE_FLOOR]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    if (!locals.user) {
+      redirect(302, "/auth/google")
+    }
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session?.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [update_floor_errors] =
+      await update_floor(form_data)
+    if (update_floor_errors) {
+      return { errors: update_floor_errors }
+    }
+    return null
+  },
   [ACTION.CREATE_ROOM]: async ({
     request,
     locals,
@@ -100,8 +180,12 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const [create_room_errors] =
-      await create_room(property_id)
+    const form_data = await request.formData()
+    const floor_id = v.parse(
+      ForceNumberSchema,
+      form_data.get("floor_id"),
+    )
+    const [create_room_errors] = await create_room(floor_id)
     if (create_room_errors) {
       return { errors: create_room_errors }
     }

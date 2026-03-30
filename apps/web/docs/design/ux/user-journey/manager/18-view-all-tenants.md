@@ -17,11 +17,13 @@
 **Routes:** `/admin/tenants`
 
 **Actions:**
+
 - Opens the tenants section in the admin dashboard
 - Sees all tenants with name, email, and associated property
 - Clicks on a tenant to view their full profile
 
 **Thoughts:**
+
 - "Who's renting what?"
 - "Is everyone's information up to date?"
 
@@ -34,10 +36,12 @@
 **Routes:** `/admin/tenants/[tenant_id]`
 
 **Actions:**
+
 - Views the tenant's full profile
 - Reviews personal information and documents
 
 **Thoughts:**
+
 - "Is this tenant's documentation complete?"
 
 **Emotions:** Reviewing → Satisfied
@@ -47,10 +51,12 @@
 ## The Output
 
 ### Pain Points
+
 - No way to contact tenants from the platform
 - No tenant payment history visible from the manager side
 - Read-only — no management actions available
 
 ### Opportunities
+
 - Add in-app messaging or contact shortcuts
 - Show payment receipt history per tenant

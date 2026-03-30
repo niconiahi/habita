@@ -17,12 +17,14 @@
 **Routes:** `/admin/properties/[property_id]/edit`
 
 **Actions:**
+
 - Finds the "Invite landlord" section on the edit page
 - Enters the landlord's email address
 - Submits the invitation
 - System sends an email with an invitation link
 
 **Thoughts:**
+
 - "What email should I use for the landlord?"
 - "Will they know what to do when they get the email?"
 
@@ -33,10 +35,12 @@
 ## The Output
 
 ### Pain Points
+
 - No visibility into whether the landlord received or opened the invitation
 - The landlord experience after clicking the link is their own journey (see landlord journeys)
 - Can't resend or cancel invitations from the UI
 
 ### Opportunities
+
 - Show invitation status (sent, opened, accepted, expired)
 - Allow resending or canceling invitations

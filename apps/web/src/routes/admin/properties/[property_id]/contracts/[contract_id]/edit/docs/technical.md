@@ -1,7 +1,9 @@
 # /admin/properties/[property_id]/contracts/[contract_id]/edit
 
 ## Loader
+
 Requires auth + `require_edit_access()`. Loads in parallel:
+
 - `contract` via `fetch_contract()`
 - `property` via `fetch_property()`
 - `landlord` via `fetch_landlord()`
@@ -13,6 +15,7 @@ Requires auth + `require_edit_access()`. Loads in parallel:
 Returns 404 if contract or property not found.
 
 ## Actions (18 total)
+
 Contract: `UPDATE_CONTRACT`
 Files: `CREATE_FILE`, `DESTROY_FILE`, `CREATE_PDF`
 Items: `CREATE_CONTRACT_ITEM`, `UPDATE_CONTRACT_ITEM`, `DESTROY_CONTRACT_ITEM`, `CREATE_CONTRACT_ITEM_FILE`, `DESTROY_CONTRACT_ITEM_FILE`
@@ -24,9 +27,11 @@ Digital signatures: `CHECK_CERTIFICATES`, `START_ONBOARDING`, `SEND_FOR_SIGNING`
 All actions require `require_edit_access()`.
 
 ## Auth
+
 Requires authenticated user with edit access (ACL) to the property.
 
 ## Notes
+
 - This is the largest action file in the codebase (~670 lines)
 - Digital signature actions integrate with Alpha2000 Firmador API
 - `fetch_signature()` is defined inline (not in a separate fetcher file)

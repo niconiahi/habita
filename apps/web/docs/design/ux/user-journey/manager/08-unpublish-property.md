@@ -17,6 +17,7 @@
 **Routes:** `/admin/properties`
 
 **Actions:**
+
 - Goes to the properties list
 - Finds the published property
 - Clicks "Unpublish"
@@ -24,6 +25,7 @@
 - The property disappears from the public listing
 
 **Thoughts:**
+
 - "I need to update this before more people see it"
 - "What happens to existing bookings?"
 
@@ -34,9 +36,11 @@
 ## The Output
 
 ### Pain Points
+
 - No clarity on what happens to existing visit bookings when a property is unpublished
 - No confirmation dialog before unpublishing
 
 ### Opportunities
+
 - Show a warning if there are pending visit bookings
 - Add a confirmation step

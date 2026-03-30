@@ -12,8 +12,8 @@ A manager creates a new contract but attempts to generate the PDF without fillin
 
 ### Actors
 
-| Role    | Auth state file      | Description                         |
-| ------- | -------------------- | ----------------------------------- |
+| Role    | Auth state file          | Description                         |
+| ------- | ------------------------ | ----------------------------------- |
 | Manager | `e2e/.auth/manager.json` | Creates property and empty contract |
 
 ### Step-by-step Flow

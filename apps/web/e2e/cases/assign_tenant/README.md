@@ -16,8 +16,8 @@ The test sets up the full prerequisite chain (property creation, publishing, slo
 
 ### Actors
 
-| Role      | Auth state file        | Description                      |
-| --------- | ---------------------- | -------------------------------- |
+| Role      | Auth state file            | Description                      |
+| --------- | -------------------------- | -------------------------------- |
 | Manager   | `e2e/.auth/manager.json`   | Creates property, assigns tenant |
 | Candidate | `e2e/.auth/candidate.json` | Books a slot to become candidate |
 

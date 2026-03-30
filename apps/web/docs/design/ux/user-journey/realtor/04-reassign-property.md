@@ -17,12 +17,14 @@
 **Routes:** `/admin/realtor`
 
 **Actions:**
+
 - Views the list of managers with their property counts
 - Selects a property to reassign
 - Chooses the destination manager
 - Submits the reassignment
 
 **Thoughts:**
+
 - "Which manager has capacity?"
 - "Will the new manager see everything the previous one set up?"
 
@@ -33,9 +35,11 @@
 ## The Output
 
 ### Pain Points
+
 - No visibility into manager workload beyond property counts
 - Can't see property details during reassignment
 
 ### Opportunities
+
 - Show property status (editing/published/rented) during reassignment
 - Display manager availability or workload metrics

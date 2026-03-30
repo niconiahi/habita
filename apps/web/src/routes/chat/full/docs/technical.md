@@ -3,12 +3,14 @@
 ## Loader (`+page.server.ts`)
 
 Auth gate with two checks:
+
 1. `locals.user` — redirects unauthenticated users to `/auth/google`
 2. Email domain — redirects non-@habita.rent users to `/chat`
 
 ## Endpoint (`+server.ts` — POST)
 
 Same streaming pattern as `/chat` but with:
+
 - Auth check: 401 if no session, 403 if wrong email domain
 - Uses `compose_full_system_prompt()` from local `context.server.ts`
 - `max_tokens: 2048` (vs 1024 for public chat)
@@ -18,6 +20,7 @@ Validation: `RequestSchema` with `v.safeParse` — array of `{ role, content }` 
 ## Context (`context.server.ts`)
 
 Loads six documentation categories via `import.meta.glob`:
+
 1. Product docs (`/docs/product/*.md`)
 2. Route descriptions (`/src/routes/**/docs/description.md`)
 3. User journeys (`/docs/product/user-journey/**/*.md`)

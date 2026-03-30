@@ -17,6 +17,7 @@
 **Routes:** `/admin/properties`
 
 **Actions:**
+
 - Goes to the properties list
 - Sees the property in "Editing" state
 - Clicks "Publish"
@@ -24,6 +25,7 @@
 - The property now appears in the public listing at `/properties`
 
 **Thoughts:**
+
 - "Is everything filled in?"
 - "What if I missed something?"
 - "Can I unpublish later?"
@@ -35,11 +37,13 @@
 ## The Output
 
 ### Pain Points
+
 - No preview of how the property will look to tenants before publishing
 - No completeness check — can publish with missing rooms, photos, or services
 - Publish action is on the list page, not the edit page
 
 ### Opportunities
+
 - Add a "preview as tenant" mode
 - Add a completeness indicator before publishing
 - Allow publishing from the edit page

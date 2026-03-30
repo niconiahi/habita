@@ -96,8 +96,7 @@ export async function send_for_signing(
     return [
       {
         send_for_signing: {
-          execution:
-            "Error al obtener el PDF del contrato",
+          execution: "Error al obtener el PDF del contrato",
         },
       },
       null,

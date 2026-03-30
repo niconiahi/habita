@@ -1,7 +1,7 @@
 import { query_builder } from "../../../db/query_builder"
 
 export async function add_room(
-  property_id: number,
+  floor_id: number,
   data: {
     type: number
     width: string
@@ -12,7 +12,7 @@ export async function add_room(
   const room = await query_builder
     .insertInto("room")
     .values({
-      property_id,
+      floor_id,
       type: data.type,
       width: data.width,
       length: data.length,

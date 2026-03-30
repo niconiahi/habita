@@ -4,6 +4,7 @@
   import Button from "$lib/components/Button.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
   import { get_property_destiny_label } from "$lib/property_destiny"
+  import { display_floor_number } from "$lib/floor_number"
   import { display_room_type } from "$lib/room_type"
   import type { PageData } from "./$types"
   let { data }: { data: PageData } = $props()
@@ -62,37 +63,32 @@
   {/if}
 {/snippet}
 
-{#snippet Rooms()}
-  {#if data.property.rooms && data.property.rooms.length > 0}
-    <Content.Section>
-      <Section.Header>
-        <Section.Title>Ambientes</Section.Title>
-      </Section.Header>
-      <ul class="info-list">
-        {#each data.property.rooms as room (room.id)}
-          {@render InfoRow(
-            display_room_type(room.type),
-            room.length && room.width
-              ? `${room.length}m × ${room.width}m`
-              : undefined,
-          )}
-        {/each}
-      </ul>
-    </Content.Section>
-  {/if}
-{/snippet}
-
-{#snippet RoomMapSection()}
-  {#if data.property.rooms && data.property.rooms.length > 0}
-    <Content.Section>
-      <Section.Header>
-        <Section.Title>Mapa de ambientes</Section.Title>
-      </Section.Header>
-      <RoomMap
-        rooms={data.property.rooms}
-        is_readonly={true}
-      />
-    </Content.Section>
+{#snippet Floors()}
+  {#if data.property.floors && data.property.floors.length > 0}
+    {#each data.property.floors as floor (floor.id)}
+      {#if floor.rooms.length > 0}
+        <Content.Section>
+          <Section.Header>
+            <Section.Title
+              >{display_floor_number(
+                floor.number,
+              )}</Section.Title
+            >
+          </Section.Header>
+          <ul class="info-list">
+            {#each floor.rooms as room (room.id)}
+              {@render InfoRow(
+                display_room_type(room.type),
+                room.length && room.width
+                  ? `${room.length}m × ${room.width}m`
+                  : undefined,
+              )}
+            {/each}
+          </ul>
+          <RoomMap rooms={floor.rooms} is_readonly={true} />
+        </Content.Section>
+      {/if}
+    {/each}
   {/if}
 {/snippet}
 
@@ -134,8 +130,7 @@
   </Content.Header>
   {@render Location()}
   {@render Destinies()}
-  {@render Rooms()}
-  {@render RoomMapSection()}
+  {@render Floors()}
   {@render Photos()}
 </Content.Root>
 

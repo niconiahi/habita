@@ -65,6 +65,7 @@ The tenant fills in their profile: name, surname, phone number (Argentine E.164 
 ### Step 4 — Browsing properties
 
 The public property listing page shows all published properties. Tenants can filter by:
+
 - **Zone/neighborhood** — uses PostGIS spatial queries (`ST_Contains`) to match the property's geocoded point against zone boundary geometries.
 - **Tags** — any combination of the 21 property tags across 7 categories.
 - **Service types** — filter by which utilities are connected.
@@ -79,6 +80,7 @@ Each property card shows a photo carousel, location, and monthly price (from the
 The "Book" button leads to a two-step process. First, the tenant picks a date from available options — these are days where the manager has created free time slots in the property's calendar. Then they pick a specific time slot and confirm.
 
 What happens in the system when a slot is reserved:
+
 1. The slot's state changes from FREE to RESERVED, and the tenant's user ID is recorded as the visitant.
 2. A **database notification** is created (type: PROPERTY_VISIT, linking to the candidates page) so the manager sees it in the admin panel.
 3. A **booking confirmation event** is published to the Redpanda broker. The producer composes the full email — including an ICS calendar attachment with the visit date and time — for both the tenant (visitant) and the manager (host). The consumer validates the payload and delivers both emails through the Go SMTP service.
@@ -94,6 +96,7 @@ The manager can click into a candidate's profile to review their personal inform
 ### Step 7 — Promoting a candidate to tenant
 
 When a manager decides to accept a candidate, they promote them to tenant status. This is a transactional operation:
+
 1. All existing TENANT access entries for the property are revoked (a property can only have one active tenant at a time in the access table).
 2. The candidate is granted TENANT access to the property.
 
@@ -106,6 +109,7 @@ Contracts can be created from two entry points: from a specific property's manag
 The manager then configures the contract in the comprehensive edit page, which supports over 20 distinct actions:
 
 **Core contract fields:**
+
 - Contract type (short-term or long-term)
 - Start and end dates
 - Destiny (residential or commercial)
@@ -118,12 +122,14 @@ The manager then configures the contract in the comprehensive edit page, which s
 **Pricing periods** define how rent changes over time. Each period has a price and date range. The manager creates multiple periods to represent rent increases throughout the contract's duration.
 
 **Escalation rules** determine how rent is automatically adjusted based on official Argentine rate indexes. Two escalation types are supported:
+
 - **IPC** (Índice de Precios al Consumidor) — formula: `price × (IPC_current_month / IPC_four_months_ago)`
 - **ICL** (Índice de Contratos de Locación) — formula: `price × (ICL_current_month / ICL_four_months_ago)`
 
 Each contract specifies an escalation type and duration. A cron job runs every minute, checking if any active contracts are due for escalation, and publishes a `calculate_escalation` event to the broker. The consumer recalculates rent based on the current rate values stored in the `rate` table.
 
 **Fines and defaults** handle late payments and contractual breaches:
+
 - Fine type: fixed amount or percentage of rent
 - Default type: fixed amount or percentage of rent
 - Default duration: how long before a default is triggered
@@ -143,6 +149,7 @@ The warranty system uses a polymorphic pattern: a base `warranty` table with a t
 ### Step 9 — PDF generation
 
 Before a contract can be sent for digital signing, it needs to be turned into a PDF. The system:
+
 1. Fetches all contract data (contract, property, landlord, tenant, warranty).
 2. Validates that all required fields are present.
 3. Composes an HTML document with all contract details.
@@ -160,6 +167,7 @@ The digital signature process integrates with Alpha2000 Firmador, an Argentine d
 **Onboarding** — If either party lacks a certificate, the manager can initiate the onboarding process. This redirects the person to Alpha2000's onboarding flow, where they set up their digital identity. The redirect includes callback URLs pointing to the platform's onboarding webhook, which handles success, error, and rejection outcomes.
 
 **Sending for signing** — Once both parties have certificates, the manager sends the contract for signing. The system:
+
 1. Fetches the contract PDF from the file table.
 2. Generates a SHA-256 hash of the PDF content.
 3. Creates a random UUID as the signing group identifier.
@@ -170,6 +178,7 @@ The digital signature process integrates with Alpha2000 Firmador, an Argentine d
 **Signing** — Each party clicks their link, gets redirected to Alpha2000's signing interface, and completes or rejects the process. After signing, Alpha2000 redirects them back to the platform's signing webhook.
 
 **Webhook processing** — The signing webhook receives the party (landlord/tenant), the result (ok/error/rejected), and the contract ID. It updates the corresponding status in the `digital_signature` table. Then it checks: have both parties signed successfully? If yes, the system:
+
 1. Calls Alpha2000 to download the fully signed PDF document.
 2. Encrypts the signed PDF.
 3. In a single transaction: stores the file, creates a contract file record of type SIGNED, and updates the contract state from EDITING to ACTIVE.
@@ -206,6 +215,7 @@ Every person who has booked a visit to any managed property, in one list. Manage
 ### Agency management (realtors only)
 
 Real estate agency owners have an additional management page where they can:
+
 - **Invite managers** — send email invitations to bring new team members into the agency. During the free trial, this is limited to 1 manager beyond the realtor themselves.
 - **Remove managers** — revoke a manager's access. This is a transactional operation that removes both their property access entries and their organization membership.
 - **Reassign properties** — move a property from one manager to another within the agency. This revokes all MANAGER access for the property and optionally assigns a new manager.
@@ -218,7 +228,8 @@ The page also shows a dashboard of all managers with their property counts, givi
 
 Access control in Habita is not a simple role check. It's a two-layer system that must be understood as a whole, because neither layer alone is sufficient:
 
-**Layer 1 — Role permissions (Better Auth RBAC)**: What *type* of action can this role perform? Four roles are defined:
+**Layer 1 — Role permissions (Better Auth RBAC)**: What _type_ of action can this role perform? Four roles are defined:
+
 - **Realtor** — full organization management plus property/contract/tenant read and write.
 - **Manager** — admin-level organization access plus property/contract/tenant read and write.
 - **Landlord** — owner-level organization access plus property/contract/tenant read and write.
@@ -226,9 +237,10 @@ Access control in Habita is not a simple role check. It's a two-layer system tha
 
 These are checked via Better Auth's `hasPermission()` API with permission statements like `{ property: ["read"] }` or `{ property: ["write"] }`.
 
-**Layer 2 — Property assignment (ACL)**: Is this *specific user* linked to this *specific property*? The `property_access` table has three columns that matter: `property_id`, `user_id`, and `type` (0=landlord, 1=manager, 2=tenant). A `granted_by` column maintains an audit trail of who granted the access.
+**Layer 2 — Property assignment (ACL)**: Is this _specific user_ linked to this _specific property_? The `property_access` table has three columns that matter: `property_id`, `user_id`, and `type` (0=landlord, 1=manager, 2=tenant). A `granted_by` column maintains an audit trail of who granted the access.
 
 Both layers must pass for any operation. The system provides convenience wrappers:
+
 - `require_view_access()` — checks LANDLORD, MANAGER, or TENANT access with read permission.
 - `require_edit_access()` — checks LANDLORD or MANAGER access with write permission.
 - `require_landlord_access()` — checks LANDLORD access only.
@@ -343,6 +355,7 @@ Rental contracts in Argentina are legally subject to periodic price adjustments 
 The platform maintains a `rate` table with rate values indexed by type, month, and year. Eight rate types are tracked: IPC, ICL, Casa Propia, CAC, CER, IS, IPIM, and UVA. A webmaster-only page allows updating rate values monthly — if a rate for a given type/month/year doesn't exist, it's created; if it exists, it's updated.
 
 Each contract specifies an escalation type (IPC or ICL) and an escalation duration (how frequently adjustments occur). The escalation formulas compare current month values to values from four months prior:
+
 - **IPC**: `price × (IPC_current / IPC_four_months_ago)`
 - **ICL**: `price × (ICL_current / ICL_four_months_ago)`
 
