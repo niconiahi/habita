@@ -77,6 +77,7 @@ export async function update_slot(
           state: SLOT_STATE.RESERVED,
         })
         .where("slot.id", "=", id)
+        .where("slot.state", "=", SLOT_STATE.FREE)
         .returning([
           "slot.start_date",
           "slot.end_date",
@@ -108,7 +109,8 @@ export async function update_slot(
     return [
       {
         update_slot: {
-          execution: "Error al actualizar la reserva",
+          execution:
+            "El turno ya fue reservado por otro visitante",
         },
       },
       null,
