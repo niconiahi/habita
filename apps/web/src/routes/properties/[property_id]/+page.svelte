@@ -107,6 +107,11 @@
               src={image.props.src}
               srcset={image.props.srcSet}
               sizes={image.props.sizes}
+              onerror={(event) => {
+                const target = event.currentTarget as HTMLImageElement
+                target.srcset = ""
+                target.src = "/placeholder.svg"
+              }}
             />
           </li>
         {/each}

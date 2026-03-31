@@ -3,6 +3,7 @@ import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
+import { publish_delete_object } from "$lib/server/broker/producer/publish_delete_object"
 import { delete_object } from "$lib/server/object_store"
 import { logger } from "$lib/telemetry/logger"
 
@@ -84,7 +85,16 @@ export async function destroy_contract_item(
       .select("id")
       .executeTakeFirst()
     if (!shared) {
-      await delete_object(`files/${file_hash.hash}`)
+      const key = `files/${file_hash.hash}`
+      const [delete_error] = await delete_object(key)
+      if (delete_error) {
+        logger.error(
+          "failed to delete object, requeueing",
+          { key },
+          delete_error.error,
+        )
+        await publish_delete_object(key)
+      }
     }
   }
 

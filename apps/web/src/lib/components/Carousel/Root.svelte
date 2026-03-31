@@ -61,6 +61,11 @@
           srcset={image.srcSet}
           sizes={image.sizes}
           alt={image.alt}
+          onerror={(event) => {
+            const target = event.currentTarget as HTMLImageElement
+            target.srcset = ""
+            target.src = "/placeholder.svg"
+          }}
         />
       </figure>
     {/each}
