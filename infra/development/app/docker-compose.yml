@@ -50,47 +50,6 @@ services:
     networks:
       - internal
 
-  consumer:
-    build:
-      context: ../../../apps/web
-      dockerfile: Dockerfile
-      target: dev
-      pull: false
-      x-bake:
-        provenance: false
-    restart: unless-stopped
-    labels:
-      - "habita.role=consumer"
-    volumes:
-      - ../../../apps/web:/app:delegated
-      - deps:/app/node_modules
-    env_file:
-      - ../.env
-    environment:
-      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
-      REDIS_URL: redis://kv:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
-      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
-      OTEL_SERVICE_NAME: consumer
-      OTEL_ENVIRONMENT: development
-      BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/consumer.script.ts
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "5"
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: "1.0"
-        reservations:
-          memory: 256M
-          cpus: "0.25"
-    networks:
-      - internal
-
   # E2E test runner - uses official Playwright image
   # Run with: docker compose -p app run --rm test
   test:

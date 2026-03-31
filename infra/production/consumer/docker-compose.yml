@@ -1,0 +1,103 @@
+services:
+  email:
+    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    labels:
+      - "habita.role=consumer-email"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://kv:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_SERVICE_NAME: consumer-email
+      OTEL_ENVIRONMENT: production
+      BROKER_BROKERS: redpanda:9092
+    command: pnpm exec tsx src/lib/server/broker/consumer/email.script.ts
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+    networks:
+      - internal
+
+  subscription:
+    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    labels:
+      - "habita.role=consumer-subscription"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://kv:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_SERVICE_NAME: consumer-subscription
+      OTEL_ENVIRONMENT: production
+      BROKER_BROKERS: redpanda:9092
+    command: pnpm exec tsx src/lib/server/broker/consumer/subscription.script.ts
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.15"
+    networks:
+      - internal
+
+  escalation:
+    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    labels:
+      - "habita.role=consumer-escalation"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://kv:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_SERVICE_NAME: consumer-escalation
+      OTEL_ENVIRONMENT: production
+      BROKER_BROKERS: redpanda:9092
+    command: pnpm exec tsx src/lib/server/broker/consumer/escalation.script.ts
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.15"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
