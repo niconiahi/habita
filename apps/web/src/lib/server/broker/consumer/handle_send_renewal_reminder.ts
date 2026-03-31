@@ -4,13 +4,16 @@ import { send_renewal_reminder } from "../../cron/send_renewal_reminder"
 import { kv } from "../../kv"
 import { dlq_topic } from "../topic"
 import {
+  compose_headers,
   compose_idempotency_key,
+  failure_reason,
   get_message_id,
   get_retry_count,
   IDEMPOTENCY_LOCK_TTL_SECONDS,
+  incremented_retry,
   MAX_RETRIES,
-  with_failure_reason,
-  with_incremented_retry,
+  retry_after,
+  is_retry_pending,
 } from "./retry"
 
 export async function handle_send_renewal_reminder(
@@ -20,6 +23,20 @@ export async function handle_send_renewal_reminder(
   const { message, topic } = payload
   const retry_count = get_retry_count(message.headers)
   const message_id = get_message_id(message.headers)
+
+  if (is_retry_pending(message.headers)) {
+    await producer.send({
+      topic,
+      messages: [
+        {
+          key: message.key,
+          value: message.value,
+          headers: message.headers,
+        },
+      ],
+    })
+    return
+  }
 
   if (message_id) {
     const lock_key = compose_idempotency_key(
@@ -65,10 +82,10 @@ export async function handle_send_renewal_reminder(
           {
             key: message.key,
             value: message.value,
-            headers: with_incremented_retry(
-              message.headers,
-              retry_count,
-            ),
+            headers: compose_headers(message.headers, [
+              incremented_retry(retry_count),
+              retry_after(retry_count),
+            ]),
           },
         ],
       })
@@ -82,10 +99,9 @@ export async function handle_send_renewal_reminder(
         messages: [
           {
             value: message.value,
-            headers: with_failure_reason(
-              message.headers,
-              err.message,
-            ),
+            headers: compose_headers(message.headers, [
+              failure_reason(err.message),
+            ]),
           },
         ],
       })
