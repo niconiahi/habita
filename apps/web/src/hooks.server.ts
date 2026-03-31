@@ -1,14 +1,19 @@
-import type { Handle } from "@sveltejs/kit"
+import { error, type Handle } from "@sveltejs/kit"
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
 import { auth } from "$lib/server/auth"
 import { decrypt } from "$lib/server/encryption"
-import { fetch_user_subscriptions } from "$lib/server/subscription"
+import { is_rate_limited } from "$lib/server/rate_limit"
+import { fetch_user_subscriptions_cached } from "$lib/server/subscription"
 
 export const handle: Handle = async ({
   event,
   resolve,
 }) => {
+  if (await is_rate_limited(event)) {
+    error(429, "too many requests")
+  }
+
   const session = await auth.api.getSession({
     headers: event.request.headers,
   })
@@ -44,7 +49,7 @@ export const handle: Handle = async ({
       session.session.activeOrganizationId ?? null,
   }
   event.locals.subscriptions =
-    await fetch_user_subscriptions(user_id)
+    await fetch_user_subscriptions_cached(user_id)
   return svelteKitHandler({
     event,
     resolve,
