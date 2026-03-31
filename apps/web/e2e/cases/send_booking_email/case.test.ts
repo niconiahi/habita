@@ -15,6 +15,7 @@ import {
 } from "../../helpers/broker"
 import {
   assign_property_access,
+  cleanup_test_property,
   get_user_id_by_email,
 } from "../../helpers/db"
 import { fill_location } from "../../helpers/location"
@@ -36,6 +37,10 @@ async function update_user_email(
 }
 
 test.describe.serial("Send Booking Email", () => {
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
+
   test.describe("Manager setup", () => {
     test.use({ storageState: "e2e/.auth/manager.json" })
 

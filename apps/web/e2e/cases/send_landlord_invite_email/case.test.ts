@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { SEND_LANDLORD_INVITE_TOPIC } from "$lib/server/broker/events/send_landlord_invite"
+import { cleanup_test_property } from "../../helpers/db"
 import {
   assert_dead_letter_queue_is_empty,
   fetch_latest_message,
@@ -13,6 +14,10 @@ const LANDLORD_EMAIL = "landlord-invite-test@habita.test"
 let property_id: number
 
 test.describe.serial("Send Landlord Invite Email", () => {
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
+
   test.use({ storageState: "e2e/.auth/manager.json" })
 
   test("1. Creates a property", async ({ page }) => {

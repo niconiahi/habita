@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test"
+import { cleanup_test_property } from "../../../helpers/db"
 import { fill_location } from "../../../helpers/location"
 
 let property_id: number
@@ -7,6 +8,10 @@ let contract_id: number
 test.describe
   .serial("Empty Contract - Validation Errors", () => {
   test.use({ storageState: "e2e/.auth/manager.json" })
+
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
 
   test("1. Creates a property and empty contract", async ({
     page,
