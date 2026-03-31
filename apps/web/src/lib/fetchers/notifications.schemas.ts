@@ -1,7 +1,7 @@
 import * as v from "valibot"
 import { NOTIFICATION_TYPE } from "$lib/notification_type"
 
-const PropertyVisitNotificationSchema = v.object({
+export const PropertyVisitNotificationSchema = v.object({
   id: v.number(),
   type: v.literal(NOTIFICATION_TYPE.PROPERTY_VISIT),
   href: v.string(),
@@ -9,7 +9,7 @@ const PropertyVisitNotificationSchema = v.object({
   created_at: v.string(),
   location: v.object({
     road: v.string(),
-    house_number: v.string(),
+    house_number: v.number(),
   }),
 })
 

@@ -4,6 +4,7 @@
   import { es } from "date-fns/locale"
   import { get_notification_type_label } from "$lib/notification_type"
   import {
+    NotificationSchema,
     NotificationsSchema,
     type Notification,
   } from "$lib/fetchers/notifications.schemas"
@@ -15,20 +16,23 @@
   const id = "notifications"
   const list_id = `${id}_listbox`
 
-  async function fetch_and_update() {
-    const response = await fetch("/api/notifications")
-    const data = await response.json()
-    notifications = v.parse(NotificationsSchema, data)
-  }
-
   onMount(() => {
-    fetch_and_update()
+    fetch("/api/notifications")
+      .then((response) => response.json())
+      .then((data) => {
+        notifications = v.parse(NotificationsSchema, data)
+      })
 
     const event_source = new EventSource(
       "/api/notifications/stream",
     )
-    event_source.onmessage = () => {
-      fetch_and_update()
+    event_source.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      const notification = v.parse(
+        NotificationSchema,
+        data,
+      )
+      notifications = [notification, ...notifications]
     }
     return () => {
       event_source.close()

@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit"
 import { ACCESS_TYPE } from "$lib/access_type"
+import type { Notification } from "$lib/fetchers/notifications.schemas"
 import {
   NOTIFICATION_EVENT,
   notification_emitter,
@@ -24,9 +25,9 @@ export const GET: RequestHandler = async ({
 
   const readable = new ReadableStream({
     start(controller) {
-      function handle_notification(notification: {
-        property_id: number
-      }) {
+      function handle_notification(
+        notification: Notification,
+      ) {
         if (
           !property_ids.includes(notification.property_id)
         ) {
