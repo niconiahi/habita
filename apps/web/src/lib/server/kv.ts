@@ -26,4 +26,15 @@ export const kv = {
   async del(key: string): Promise<number> {
     return await client.del(key)
   },
+
+  async incr(key: string): Promise<number> {
+    return await client.incr(key)
+  },
+
+  async expire(
+    key: string,
+    seconds: number,
+  ): Promise<number> {
+    return await client.expire(key, seconds)
+  },
 }
