@@ -1,19 +1,39 @@
 <script lang="ts">
+  import { onMount } from "svelte"
   import { formatDistanceToNow } from "date-fns"
   import { es } from "date-fns/locale"
   import { get_notification_type_label } from "$lib/notification_type"
-  import type { Notification } from "$lib/fetchers/notifications.server"
+  import {
+    NotificationsSchema,
+    type Notification,
+  } from "$lib/fetchers/notifications.schemas"
+  import * as v from "valibot"
 
-  interface Props {
-    notifications: Notification[]
-  }
-
-  let { notifications }: Props = $props()
-
+  let notifications = $state<Notification[]>([])
   let is_open = $state(false)
 
   const id = "notifications"
   const list_id = `${id}_listbox`
+
+  async function fetch_and_update() {
+    const response = await fetch("/api/notifications")
+    const data = await response.json()
+    notifications = v.parse(NotificationsSchema, data)
+  }
+
+  onMount(() => {
+    fetch_and_update()
+
+    const event_source = new EventSource(
+      "/api/notifications/stream",
+    )
+    event_source.onmessage = () => {
+      fetch_and_update()
+    }
+    return () => {
+      event_source.close()
+    }
+  })
 
   function toggle() {
     is_open = !is_open

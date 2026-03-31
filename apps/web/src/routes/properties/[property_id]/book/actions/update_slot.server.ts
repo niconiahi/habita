@@ -12,6 +12,10 @@ import {
   escape_ics_text,
   format_ics_date,
 } from "$lib/server/ics"
+import {
+  NOTIFICATION_EVENT,
+  notification_emitter,
+} from "$lib/server/notification_emitter"
 import { SLOT_STATE } from "$lib/slot_state"
 import { logger } from "$lib/telemetry/logger"
 import { USER_FILE_TYPE } from "$lib/user_file_type"
@@ -117,6 +121,10 @@ export async function update_slot(
     ] as const
   }
   const slot = tx_result
+
+  notification_emitter.emit(NOTIFICATION_EVENT, {
+    property_id: slot.property_id,
+  })
 
   span.setAttribute(
     "slot.start_date",
