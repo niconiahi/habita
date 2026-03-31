@@ -24,16 +24,14 @@ export const query_builder = lazy<Kysely<DB>>(() => {
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
+      max: 20,
+      connectionTimeoutMillis: 5000,
+      idleTimeoutMillis: 30000,
     }),
   })
 
   return new Kysely<DB>({
     dialect,
-    log(event) {
-      if (event.level === "query") {
-        console.log(`${event.queryDurationMillis} ms`)
-      }
-    },
     plugins: [
       new ParseJSONResultsPlugin(),
       new TelemetryPlugin(),
