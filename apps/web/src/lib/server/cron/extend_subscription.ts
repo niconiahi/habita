@@ -2,6 +2,7 @@ import { sql } from "kysely"
 import { query_builder } from "../../../../db/query_builder"
 import { logger } from "../../telemetry/logger"
 import { now } from "../now"
+import { invalidate_user_subscriptions_cache } from "../subscription"
 
 export async function extend_subscription_by_payment_id(
   subscription_payment_id: number,
@@ -52,6 +53,17 @@ export async function extend_subscription_by_payment_id(
       .where("id", "=", subscription_payment_id)
       .execute()
   })
+
+  const affected_users = await query_builder
+    .selectFrom("subscription")
+    .where("organization_id", "=", organization_id)
+    .select("user_id")
+    .execute()
+  await Promise.all(
+    affected_users.map((row) =>
+      invalidate_user_subscriptions_cache(row.user_id),
+    ),
+  )
 
   logger.info("extended subscriptions for organization", {
     organization_id,

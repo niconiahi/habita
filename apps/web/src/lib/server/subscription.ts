@@ -1,11 +1,10 @@
 import { redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
-import {
-  SUBSCRIPTION_STATUS,
-  type SubscriptionStatus,
-} from "$lib/subscription_status"
+import { SUBSCRIPTION_STATUS, type SubscriptionStatus } from "$lib/subscription_status"
+import { kv } from "$lib/server/kv"
 
 const GRACE_PERIOD_DAYS = 7
+const SUBSCRIPTION_CACHE_TTL_SECONDS = 86400
 
 export function resolve_subscription_status(
   ends_at: Date,
@@ -62,6 +61,39 @@ export async function fetch_user_subscriptions(
     starts_at: String(row.starts_at),
     ends_at: String(row.ends_at),
   }))
+}
+
+function compose_subscription_cache_key(
+  user_id: number,
+) {
+  return `subscriptions:${user_id}`
+}
+
+export async function fetch_user_subscriptions_cached(
+  user_id: number,
+) {
+  const cache_key = compose_subscription_cache_key(user_id)
+  const cached = await kv.get(cache_key)
+  if (cached) {
+    return JSON.parse(cached) as Awaited<
+      ReturnType<typeof fetch_user_subscriptions>
+    >
+  }
+  const subscriptions =
+    await fetch_user_subscriptions(user_id)
+  await kv.set(
+    cache_key,
+    JSON.stringify(subscriptions),
+    SUBSCRIPTION_CACHE_TTL_SECONDS,
+  )
+  return subscriptions
+}
+
+export async function invalidate_user_subscriptions_cache(
+  user_id: number,
+) {
+  const cache_key = compose_subscription_cache_key(user_id)
+  await kv.del(cache_key)
 }
 
 export async function fetch_organization_subscriptions(

@@ -4,6 +4,7 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
+import { invalidate_user_subscriptions_cache } from "$lib/server/subscription"
 import { SUBSCRIPTION_STATUS } from "$lib/subscription_status"
 import { SubscriptionTypeSchema } from "$lib/subscription_type"
 import { logger } from "$lib/telemetry/logger"
@@ -83,6 +84,8 @@ export async function select_account_type(
       null,
     ] as const
   }
+
+  await invalidate_user_subscriptions_cache(user_id)
 
   const redirect_path = "/admin/properties"
 
