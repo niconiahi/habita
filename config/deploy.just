@@ -61,6 +61,10 @@ push +services:
         docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
         docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
         ;;
+      consumer)
+        echo "→ Deploying consumers (email, subscription, escalation)..."
+        docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml up -d --force-recreate --pull always
+        ;;
       api)
         echo "→ Deploying api (pull, restart)..."
         docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull go
