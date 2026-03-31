@@ -2,6 +2,10 @@ import type { Span } from "@opentelemetry/api"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { display_location } from "$lib/display_location"
+import {
+  PropertyVisitNotificationSchema,
+  type PropertyVisitNotification,
+} from "$lib/fetchers/notifications.schemas"
 import { ForceNumberSchema } from "$lib/force_number"
 import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { safe_async } from "$lib/safe_async"
@@ -72,6 +76,7 @@ export async function update_slot(
   span.setAttribute("slot.id", id)
   span.setAttribute("visitant.id", visitant_id)
 
+  const notification_type = NOTIFICATION_TYPE.PROPERTY_VISIT
   const [tx_error, tx_result] = await safe_async(
     query_builder.transaction().execute(async (tx) => {
       const slot = await tx
@@ -91,17 +96,24 @@ export async function update_slot(
         ])
         .executeTakeFirstOrThrow()
       const now = new Date()
-      await tx
+      const notification = await tx
         .insertInto("notification")
         .values({
-          type: NOTIFICATION_TYPE.PROPERTY_VISIT,
+          type: notification_type,
           href: "/admin/candidates",
           property_id: slot.property_id,
           created_at: now,
           updated_at: now,
         })
-        .execute()
-      return slot
+        .returning([
+          "notification.id",
+          "notification.type",
+          "notification.href",
+          "notification.property_id",
+          "notification.created_at",
+        ])
+        .executeTakeFirstOrThrow()
+      return { slot, notification }
     }),
   )
   if (tx_error) {
@@ -120,11 +132,7 @@ export async function update_slot(
       null,
     ] as const
   }
-  const slot = tx_result
-
-  notification_emitter.emit(NOTIFICATION_EVENT, {
-    property_id: slot.property_id,
-  })
+  const { slot, notification } = tx_result
 
   span.setAttribute(
     "slot.start_date",
@@ -172,6 +180,21 @@ export async function update_slot(
       null,
     ] as const
   }
+
+  notification_emitter.emit(
+    NOTIFICATION_EVENT,
+    {
+      id: notification.id,
+      href: notification.href,
+      type: notification_type,
+      property_id: notification.property_id,
+      created_at: notification.created_at.toISOString(),
+      location: {
+        road: property.location.road,
+        house_number: property.location.house_number,
+      },
+    } satisfies PropertyVisitNotification,
+  )
 
   span.setAttribute(
     "property.location",
