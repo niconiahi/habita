@@ -2,10 +2,7 @@ import type { Span } from "@opentelemetry/api"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { display_location } from "$lib/display_location"
-import {
-  PropertyVisitNotificationSchema,
-  type PropertyVisitNotification,
-} from "$lib/fetchers/notifications.schemas"
+import type { PropertyVisitNotification } from "$lib/fetchers/notifications.schemas"
 import { ForceNumberSchema } from "$lib/force_number"
 import { NOTIFICATION_TYPE } from "$lib/notification_type"
 import { safe_async } from "$lib/safe_async"
