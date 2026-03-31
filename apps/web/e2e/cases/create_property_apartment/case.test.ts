@@ -1,8 +1,15 @@
 import { expect, test } from "@playwright/test"
+import { cleanup_test_property } from "../../helpers/db"
 import { fill_location } from "../../helpers/location"
+
+let property_id: number
 
 test.describe.serial("Create Property - Apartment", () => {
   test.use({ storageState: "e2e/.auth/manager.json" })
+
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
 
   test("1. Creates an apartment property", async ({
     page,
@@ -34,8 +41,9 @@ test.describe.serial("Create Property - Apartment", () => {
       /\/admin\/properties\/(\d+)\/edit/,
     )
     expect(match).toBeTruthy()
+    property_id = Number(match![1])
     console.log(
-      `Created apartment property with ID: ${match![1]}`,
+      `Created apartment property with ID: ${property_id}`,
     )
   })
 })

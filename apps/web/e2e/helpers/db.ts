@@ -184,6 +184,102 @@ export async function cleanup_test_sessions(): Promise<void> {
     .execute()
 }
 
+export async function cleanup_test_property(
+  property_id: number,
+): Promise<void> {
+  const contract_ids = await query_builder
+    .selectFrom("contract")
+    .select("id")
+    .where("property_id", "=", property_id)
+    .execute()
+    .then((rows) => rows.map((row) => row.id))
+
+  if (contract_ids.length > 0) {
+    const contract_item_ids = await query_builder
+      .selectFrom("contract_item")
+      .select("id")
+      .where("contract_id", "in", contract_ids)
+      .execute()
+      .then((rows) => rows.map((row) => row.id))
+
+    if (contract_item_ids.length > 0) {
+      await query_builder
+        .deleteFrom("contract_item_file")
+        .where("contract_item_id", "in", contract_item_ids)
+        .execute()
+      await query_builder
+        .deleteFrom("contract_item")
+        .where("id", "in", contract_item_ids)
+        .execute()
+    }
+
+    await query_builder
+      .deleteFrom("contract_file")
+      .where("contract_id", "in", contract_ids)
+      .execute()
+    await query_builder
+      .deleteFrom("digital_signature")
+      .where("contract_id", "in", contract_ids)
+      .execute()
+    await query_builder
+      .deleteFrom("period")
+      .where("contract_id", "in", contract_ids)
+      .execute()
+    await query_builder
+      .deleteFrom("contract")
+      .where("id", "in", contract_ids)
+      .execute()
+  }
+
+  await query_builder
+    .deleteFrom("notification")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("slot")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("property_access")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("property_tag")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("property_file")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("service")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("room_map")
+    .where(
+      "room_id",
+      "in",
+      query_builder
+        .selectFrom("room")
+        .select("id")
+        .where("property_id", "=", property_id),
+    )
+    .execute()
+  await query_builder
+    .deleteFrom("room")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("floor")
+    .where("property_id", "=", property_id)
+    .execute()
+  await query_builder
+    .deleteFrom("property")
+    .where("id", "=", property_id)
+    .execute()
+}
+
 export async function cleanup_test_data(): Promise<void> {
   await cleanup_test_sessions()
 }

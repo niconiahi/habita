@@ -3,6 +3,7 @@ import { ACCESS_TYPE } from "$lib/access_type"
 import { TEST_LANDLORD } from "../../helpers/auth"
 import {
   assign_property_access,
+  cleanup_test_property,
   get_user_id_by_email,
 } from "../../helpers/db"
 import { fill_location } from "../../helpers/location"
@@ -10,6 +11,10 @@ import { fill_location } from "../../helpers/location"
 let property_id: number
 
 test.describe.serial("Book a Slot", () => {
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
+
   test.describe("Manager setup", () => {
     test.use({ storageState: "e2e/.auth/manager.json" })
 

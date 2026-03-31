@@ -1,9 +1,14 @@
 import { expect, test } from "@playwright/test"
+import { cleanup_test_property } from "../../helpers/db"
 import { fill_location } from "../../helpers/location"
 
 let property_id: number
 
 test.describe.serial("Edit Property with Room Map", () => {
+  test.afterAll(async () => {
+    if (property_id) await cleanup_test_property(property_id)
+  })
+
   test.use({ storageState: "e2e/.auth/manager.json" })
 
   test("1. Creates a property to edit", async ({
