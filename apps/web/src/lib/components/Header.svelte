@@ -3,18 +3,15 @@
   import Button from "$lib/components/Button.svelte"
   import Notifications from "$lib/components/Notifications.svelte"
   import OrganizationSelector from "$lib/components/OrganizationSelector.svelte"
-  import type { Notification } from "$lib/fetchers/notifications.server"
   import type { SelectableOrganization } from "$lib/server/organization"
 
   interface Props {
-    notifications: Notification[]
     is_manager: boolean
     organizations: SelectableOrganization[]
     active_organization_id: string | null
   }
 
   let {
-    notifications,
     is_manager,
     organizations,
     active_organization_id,
@@ -55,7 +52,7 @@
       <a class="button" href="/login">Login</a>
     {/if}
     {#if is_manager}
-      <Notifications {notifications} />
+      <Notifications />
     {/if}
   </nav>
 </header>
