@@ -130,7 +130,7 @@ Database, cache, and object storage are grouped in the `storage/` directory as s
 - Used for session storage and caching
 
 **object** - S3-compatible object storage
-- Image: `minio/minio`
+- Image: `rustfs/rustfs`
 - Dev exposes ports 9000 (API) and 9001 (Console)
 - Prod has no exposed ports
 - Auto-creates `habita-files` bucket on startup

@@ -34,18 +34,18 @@ function get_amz_date(date: Date): string {
     .replace(/\.\d+/, "")
 }
 
-async function upload_to_minio(
+async function upload_to_object_store(
   key: string,
   content: Buffer,
   mime: string,
 ): Promise<void> {
-  const endpoint = process.env.MINIO_ENDPOINT
-  const access_key = process.env.MINIO_ACCESS_KEY
-  const secret_key = process.env.MINIO_SECRET_KEY
-  const bucket = process.env.MINIO_BUCKET
+  const endpoint = process.env.OBJECT_STORE_ENDPOINT
+  const access_key = process.env.OBJECT_STORE_ACCESS_KEY
+  const secret_key = process.env.OBJECT_STORE_SECRET_KEY
+  const bucket = process.env.OBJECT_STORE_BUCKET
   if (!endpoint || !access_key || !secret_key || !bucket) {
     throw new Error(
-      "MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, and MINIO_BUCKET must be set",
+      "OBJECT_STORE_ENDPOINT, OBJECT_STORE_ACCESS_KEY, OBJECT_STORE_SECRET_KEY, and OBJECT_STORE_BUCKET must be set",
     )
   }
 
@@ -92,7 +92,7 @@ async function upload_to_minio(
   if (!response.ok) {
     const error_text = await response.text()
     throw new Error(
-      `MinIO PUT failed: ${response.status} - ${error_text}`,
+      `Object store PUT failed: ${response.status} - ${error_text}`,
     )
   }
 }
@@ -122,7 +122,7 @@ export async function upload_file(
     return existing.id
   }
 
-  await upload_to_minio(`files/${hash}`, content, mime)
+  await upload_to_object_store(`files/${hash}`, content, mime)
 
   const file = await query_builder
     .insertInto("file")

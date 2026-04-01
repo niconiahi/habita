@@ -143,7 +143,7 @@ Isolated network for the SigNoz monitoring stack.
 |---------|-------|------|---------|
 | db | postgis/postgis:17-3.4 | 5432 | PostgreSQL with PostGIS |
 | kv | valkey/valkey:7.2 | 6379 | Redis-compatible cache |
-| object | minio/minio | 9000, 9001 | S3-compatible object storage |
+| object | rustfs/rustfs | 9000, 9001 | S3-compatible object storage |
 | svelte | custom | 5174/3000 | SvelteKit web application |
 | go | custom | 8081 | Go API service |
 

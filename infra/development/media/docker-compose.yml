@@ -13,7 +13,7 @@ services:
       IMGPROXY_AUTO_WEBP: "true"
       IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "true"
       IMGPROXY_USE_S3: "true"
-      # Required by S3 protocol, not AWS — MinIO defaults to us-east-1
+      # Required by S3 protocol, not AWS — us-east-1 is the S3 default region
       AWS_REGION: "us-east-1"
       IMGPROXY_S3_ENDPOINT: "http://object:9000"
     extra_hosts:

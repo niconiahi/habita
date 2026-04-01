@@ -1,8 +1,7 @@
 <script lang="ts">
   const QUERY_MINIMUM = 5
   import { untrack } from "svelte"
-  import { setup, assign } from "xstate"
-  import { useMachine } from "@xstate/svelte"
+  import { setup, assign, createActor } from "xstate"
 
   interface ZoneItem {
     id: number
@@ -232,11 +231,26 @@
     },
   })
 
-  const { snapshot, send } = useMachine(zone_machine, {
+  const actor = createActor(zone_machine, {
     input: {
       default_value: untrack(() => default_value),
     },
   })
+  actor.start()
+
+  let snapshot = $state(actor.getSnapshot())
+
+  $effect(() => {
+    const subscription = actor.subscribe((next) => {
+      snapshot = next
+    })
+    return () => {
+      subscription.unsubscribe()
+      actor.stop()
+    }
+  })
+
+  const send = actor.send.bind(actor)
 
   function handle_input(event: Event) {
     const target = event.currentTarget as HTMLInputElement
@@ -259,7 +273,7 @@
 
   function handle_keydown(event: KeyboardEvent) {
     if (
-      !$snapshot.context.items.length &&
+      !snapshot.context.items.length &&
       event.key !== "Escape"
     ) {
       return
@@ -275,11 +289,11 @@
         break
       case "Enter":
         event.preventDefault()
-        if ($snapshot.context.highlighted_index >= 0) {
+        if (snapshot.context.highlighted_index >= 0) {
           send({
             type: "SELECT",
-            item: $snapshot.context.items[
-              $snapshot.context.highlighted_index
+            item: snapshot.context.items[
+              snapshot.context.highlighted_index
             ],
           })
         }
@@ -301,33 +315,33 @@
   <div class="zone">
     <input
       {id}
-      class:navigating={$snapshot.matches("navigating")}
+      class:navigating={snapshot.matches("navigating")}
       role="combobox"
       aria-autocomplete="list"
       aria-haspopup="listbox"
       aria-controls={list_id}
-      aria-expanded={$snapshot.context.items.length > 0}
-      aria-activedescendant={$snapshot.context
+      aria-expanded={snapshot.context.items.length > 0}
+      aria-activedescendant={snapshot.context
         .highlighted_index >= 0
-        ? `${list_id}_option_${$snapshot.context.highlighted_index}`
+        ? `${list_id}_option_${snapshot.context.highlighted_index}`
         : undefined}
-      value={$snapshot.context.query}
+      value={snapshot.context.query}
       oninput={handle_input}
       onkeydown={handle_keydown}
     />
-    {#if $snapshot.context.items.length}
+    {#if snapshot.context.items.length}
       <ul role="listbox" id={list_id} class="listbox">
-        {#each $snapshot.context.items as item, index (item.id)}
+        {#each snapshot.context.items as item, index (item.id)}
           <li
             id={`${list_id}_option_${index}`}
             role="option"
             class="option"
-            class:highlighted={$snapshot.matches(
+            class:highlighted={snapshot.matches(
               "navigating",
             ) &&
-              index === $snapshot.context.highlighted_index}
+              index === snapshot.context.highlighted_index}
             aria-selected={index ===
-              $snapshot.context.highlighted_index}
+              snapshot.context.highlighted_index}
           >
             <button
               type="button"
@@ -341,11 +355,11 @@
       </ul>
     {/if}
   </div>
-  {#if $snapshot.context.selected}
+  {#if snapshot.context.selected}
     <input
       type="hidden"
       name="zone_id"
-      value={$snapshot.context.selected.id}
+      value={snapshot.context.selected.id}
     />
   {/if}
 </div>
