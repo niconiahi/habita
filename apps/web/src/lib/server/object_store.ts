@@ -19,7 +19,7 @@ const EMPTY_HASH =
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 const S3_ALGORITHM = "AWS4-HMAC-SHA256"
-// Required by S3 protocol, not AWS — MinIO defaults to us-east-1
+// Required by S3 protocol, not AWS — us-east-1 is the S3 default region
 const S3_REGION = "us-east-1"
 const S3_SERVICE = "s3"
 const S3_SIGNING_SUFFIX = "aws4_request"
@@ -31,11 +31,11 @@ function get_environment_variable(name: string): string {
 }
 
 function get_base_url(): string {
-  return `http://${get_environment_variable("MINIO_ENDPOINT")}`
+  return `http://${get_environment_variable("OBJECT_STORE_ENDPOINT")}`
 }
 
 function get_bucket(): string {
-  return get_environment_variable("MINIO_BUCKET")
+  return get_environment_variable("OBJECT_STORE_BUCKET")
 }
 
 function sha256(data: Buffer | string): string {
@@ -144,7 +144,7 @@ function build_signed_headers(
 ): Record<string, string> {
   const date = new Date()
   const endpoint = get_environment_variable(
-    "MINIO_ENDPOINT",
+    "OBJECT_STORE_ENDPOINT",
   )
   const host = endpoint.split(":")[0] ?? endpoint
   const port = endpoint.split(":")[1]
@@ -171,10 +171,10 @@ function build_signed_headers(
     headers,
     payload_hash,
     access_key: get_environment_variable(
-      "MINIO_ACCESS_KEY",
+      "OBJECT_STORE_ACCESS_KEY",
     ),
     secret_key: get_environment_variable(
-      "MINIO_SECRET_KEY",
+      "OBJECT_STORE_SECRET_KEY",
     ),
     date,
   })
