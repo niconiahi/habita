@@ -262,13 +262,21 @@ export async function cleanup_test_property(
       "in",
       query_builder
         .selectFrom("room")
-        .select("id")
-        .where("property_id", "=", property_id),
+        .innerJoin("floor", "floor.id", "room.floor_id")
+        .select("room.id")
+        .where("floor.property_id", "=", property_id),
     )
     .execute()
   await query_builder
     .deleteFrom("room")
-    .where("property_id", "=", property_id)
+    .where(
+      "floor_id",
+      "in",
+      query_builder
+        .selectFrom("floor")
+        .select("floor.id")
+        .where("floor.property_id", "=", property_id),
+    )
     .execute()
   await query_builder
     .deleteFrom("floor")
