@@ -71,7 +71,7 @@
 </script>
 
 <div class="root">
-  <Button type="button" onclick={open_dialog}>
+  <Button variant="secondary" type="button" onclick={open_dialog}>
     {label}
   </Button>
   <dialog
@@ -129,7 +129,7 @@
           </span>
         {/if}
       </Formulary.Field>
-      <Button type="button" onclick={handle_search_click}>
+      <Button variant="primary" type="button" onclick={handle_search_click}>
         Buscar archivo
       </Button>
     </div>
@@ -190,20 +190,20 @@
   .content {
     position: relative;
     min-width: 20rem;
-    padding: var(--spacing-6);
-    background-color: var(--gray-700);
-    border: 1px solid var(--gray-400);
-    border-radius: var(--spacing-2);
+    padding: var(--dimension-spacing-6);
+    background-color: var(--color-absolute-white);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--dimension-radius-xl);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
-    color: var(--gray-50);
+    gap: var(--dimension-spacing-4);
+    color: var(--color-text-body);
   }
 
   .close-button {
     position: absolute;
-    top: var(--spacing-2);
-    right: var(--spacing-2);
+    top: var(--dimension-spacing-2);
+    right: var(--dimension-spacing-2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -212,13 +212,17 @@
     padding: 0;
     background: transparent;
     border: none;
-    color: var(--gray-300);
+    color: var(--color-neutrals-300);
     cursor: pointer;
     transition: color 0.15s ease;
   }
 
   .close-button:hover {
-    color: var(--gray-100);
+    color: var(--color-text-heading);
+  }
+
+  .content :global(button) {
+    width: 100%;
   }
 
   .sr-only {

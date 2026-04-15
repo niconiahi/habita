@@ -1,7 +1,12 @@
-import type { Property } from "$lib/server/fetchers/properties"
-
 export function display_location(
-  location: Property["location"],
+  location: {
+    road: string
+    house_number: number
+    suburb: string | null
+    city: string | null
+    town: string | null
+    state: string | null
+  },
 ) {
   const road_and_number = `${location.road} ${location.house_number}`
   if (location.suburb) {
