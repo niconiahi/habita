@@ -5,6 +5,7 @@ import { Pool } from "pg"
 import { lazy } from "$lib/server/lazy"
 import { logger } from "$lib/telemetry/logger"
 import { encrypt } from "./encryption"
+import { send_email } from "./send_email"
 
 function get_config() {
   const secret = process.env.BETTER_AUTH_SECRET
@@ -96,6 +97,25 @@ export const auth = lazy(() => {
     ],
     emailAndPassword: {
       enabled: true,
+      requireEmailVerification: true,
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        // NOTE: log verification URL to stdout so we can verify emails locally via `just logs svelte`
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            `[verification] ${user.email}: ${url}`,
+          )
+          return
+        }
+        void send_email({
+          to: { email: user.email, name: user.name },
+          subject: "Verificá tu email",
+          text: `Hacé clic en el enlace para verificar tu email: ${url}`,
+        })
+      },
     },
     database: new Pool({
       host: config.postgres_host,
@@ -124,7 +144,7 @@ export const auth = lazy(() => {
         updatedAt: "updated_at",
       },
       additionalFields: {
-        surname: { type: "string", required: true },
+        surname: { type: "string", required: false },
         phone_number: { type: "string", required: false },
         document_number: {
           type: "string",
@@ -173,6 +193,8 @@ export const auth = lazy(() => {
         mapProfileToUser: (profile) => ({
           name: profile.given_name,
           surname: profile.family_name,
+          image:
+            profile.picture || "/images/default-avatar.svg",
         }),
       },
     },
@@ -183,6 +205,10 @@ export const auth = lazy(() => {
             return {
               data: {
                 ...user,
+                image:
+                  user.image && user.image.length > 0
+                    ? user.image
+                    : "/images/default-avatar.svg",
                 name:
                   typeof user.name === "string"
                     ? encrypt(user.name)

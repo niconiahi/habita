@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" fill="none">
+  <circle cx="28" cy="28" r="28" fill="#aceaf5"/>
+  <clipPath id="clip">
+    <circle cx="28" cy="28" r="28"/>
+  </clipPath>
+  <g clip-path="url(#clip)">
+    <circle cx="28" cy="20" r="10" fill="#1599ba"/>
+    <ellipse cx="28" cy="50" rx="18" ry="14" fill="#1599ba"/>
+  </g>
+</svg>

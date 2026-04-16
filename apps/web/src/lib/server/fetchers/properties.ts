@@ -84,6 +84,8 @@ export async function fetch_properties(
             "contract.start_date",
             "contract.end_date",
             "contract.state",
+            "contract.escalation_type",
+            "contract.escalation_duration",
             eb
               .selectFrom("period")
               .select("period.price")

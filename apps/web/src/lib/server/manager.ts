@@ -16,6 +16,7 @@ export async function fetch_manager(property_id: number) {
       "user.id",
       "user.name",
       "user.surname",
+      "user.image",
       "user.phone_number",
       "user.document_number",
     ])

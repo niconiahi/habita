@@ -42,6 +42,7 @@ export async function create_user(data: {
     .insertInto("user")
     .values({
       email: data.email,
+      image: "/images/default-avatar.svg",
       name: encrypt(data.name),
       surname: encrypt(data.surname),
       phone_number: encrypt(data.phone_number),
