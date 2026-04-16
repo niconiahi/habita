@@ -95,11 +95,12 @@ just zone argentina            # Extract Argentine boundaries from Nominatim
 
 `dco` (`bin/dco`) wraps `docker compose` with automatic environment detection and compose file resolution. **Only use `dco` when no `just` recipe exists for what you need.**
 
-### Syntax
+### Two modes
 
-```bash
-dco <stack> <service> <subcommand> [args...]
-```
+- **Service-level** — targets a specific service: `dco <stack> <service> <subcommand> [flags...]`
+- **Stack-level** — targets the whole stack (all services): `dco <stack> <subcommand> [flags...]`
+
+`dco` auto-detects which mode by checking if the second argument is a known docker compose subcommand (`up`, `down`, `ps`, etc.). If it is, stack-level. Otherwise, service-level.
 
 ### Available stacks
 
@@ -108,7 +109,8 @@ dco <stack> <service> <subcommand> [args...]
 ### Examples
 
 ```bash
-dco app svelte exec sh                     # Shell into running container
+dco app svelte exec sh                     # Service-level: shell into svelte
+dco storage down --remove-orphans          # Stack-level: tear down all storage services + orphans
 ```
 
 ## Priority order

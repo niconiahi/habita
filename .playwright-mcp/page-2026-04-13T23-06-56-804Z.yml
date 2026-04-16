@@ -1,0 +1,36 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "hábita" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+      - navigation [ref=e14]:
+        - link "Login" [ref=e15] [cursor=pointer]:
+          - /url: /login
+  - generic [ref=e18]:
+    - button "Aplicar filtros" [ref=e20] [cursor=pointer]
+    - list [ref=e21]:
+      - listitem [ref=e22]:
+        - article [ref=e23]:
+          - region "Imagenes de Av. Rivadavia 5678, Caballito, Buenos Aires" [ref=e25]:
+            - generic [ref=e26]:
+              - figure "slide 1 of 2" [ref=e27]:
+                - img "Av. Rivadavia 5678, Caballito, Buenos Aires - imagen 1" [ref=e28]
+              - figure [ref=e29]:
+                - img [ref=e30]
+            - group "Slide navigation" [ref=e31]:
+              - button "Go to slide 1 of 2" [ref=e32] [cursor=pointer]
+              - button "Go to slide 2 of 2" [ref=e33] [cursor=pointer]
+          - generic [ref=e34]:
+            - generic:
+              - generic:
+                - generic [ref=e35]: $480.000/mes
+                - generic [ref=e36]: (Aumento trimestral por ICL)
+              - paragraph: Av. Rivadavia 5678, Caballito, Buenos Aires
+              - generic:
+                - generic [ref=e37]: 4 amb.
+                - generic [ref=e38]: 50 m² tot.
+                - generic [ref=e39]: 1 baño
+            - link "Ver detalle" [ref=e40] [cursor=pointer]:
+              - /url: /properties/3
+              - button "Ver detalle" [ref=e41]

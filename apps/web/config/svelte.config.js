@@ -12,6 +12,7 @@ const config = {
     adapter: adapter(),
     alias: {
       db: "./db",
+      "$icon": "./src/icon",
     },
     router: {
       resolution: "server",
