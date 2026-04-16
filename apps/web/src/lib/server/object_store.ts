@@ -182,6 +182,46 @@ function build_signed_headers(
   return { ...headers, ...signed }
 }
 
+export async function ensure_bucket(): Promise<[ObjectStoreError, null] | [null, null]> {
+  const bucket = get_bucket()
+  const path = `/${bucket}`
+  const headers = build_signed_headers("PUT", path, null)
+
+  const [fetch_error, response] = await safe_async(
+    fetch(`${get_base_url()}${path}`, {
+      method: "PUT",
+      headers,
+    }),
+  )
+  if (fetch_error) {
+    logger.error(fetch_error.message, { bucket }, fetch_error)
+    return [
+      {
+        type: OBJECT_STORE_ERROR.PUT_FAILED,
+        error: fetch_error,
+      },
+      null,
+    ]
+  }
+
+  if (!response.ok && response.status !== 409) {
+    const error_text = await response.text()
+    const bucket_error = new Error(
+      `Bucket creation failed: ${response.status} - ${error_text}`,
+    )
+    logger.error(bucket_error.message, { bucket }, bucket_error)
+    return [
+      {
+        type: OBJECT_STORE_ERROR.PUT_FAILED,
+        error: bucket_error,
+      },
+      null,
+    ]
+  }
+
+  return [null, null]
+}
+
 export async function put_object(
   key: string,
   content: Buffer,

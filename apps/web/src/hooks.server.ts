@@ -1,10 +1,15 @@
-import { error, type Handle } from "@sveltejs/kit"
+import { error, type Handle, type ServerInit } from "@sveltejs/kit"
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
 import { auth } from "$lib/server/auth"
 import { decrypt } from "$lib/server/encryption"
+import { ensure_bucket } from "$lib/server/object_store"
 import { is_rate_limited } from "$lib/server/rate_limit"
 import { fetch_user_subscriptions_cached } from "$lib/server/subscription"
+
+export const init: ServerInit = async () => {
+  await ensure_bucket()
+}
 
 export const handle: Handle = async ({
   event,

@@ -40,6 +40,7 @@ export async function seed(db: Kysely<DB>): Promise<void> {
     .insertInto("user")
     .values({
       email: REAL_USER_EMAIL,
+      image: "/images/default-avatar.svg",
       name: encrypt(REAL_USER_NAME),
       surname: encrypt(REAL_USER_SURNAME),
       email_verified: false,
