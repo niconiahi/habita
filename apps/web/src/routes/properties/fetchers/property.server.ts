@@ -191,6 +191,16 @@ export async function fetch_property(id: number) {
             "property.id",
           ),
       ).as("images"),
+      jsonArrayFrom(
+        eb
+          .selectFrom("property_tag")
+          .select(["property_tag.type"])
+          .whereRef(
+            "property_tag.property_id",
+            "=",
+            "property.id",
+          ),
+      ).as("tags"),
     ])
     .where("property.id", "=", id)
     .executeTakeFirst()

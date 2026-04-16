@@ -1,9 +1,12 @@
 <script lang="ts">
   import { enhance } from "$app/forms"
-  import * as Content from "$lib/components/Content"
-  import * as Section from "$lib/components/Section"
+  import * as Table from "$lib/components/Table"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
+  import Tab from "$lib/components/Tab.svelte"
+  import TabGroup from "$lib/components/TabGroup.svelte"
+  import SegmentedButton from "$lib/components/SegmentedButton.svelte"
+  import Disclosure from "$lib/components/Disclosure.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
   import { has_action_error } from "$lib/has_action_error"
@@ -28,21 +31,48 @@
   import {
     get_service_type_label,
     SERVICE_TYPE,
+    type ServiceType,
   } from "$lib/service"
   import {
     PROPERTY_TAG_CATEGORIES,
     get_property_tag_type_label,
   } from "$lib/property_tag_type"
+  import { get_contract_state_label } from "$lib/contract_state"
+  import { display_date } from "$lib/display_date"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
+
+  const PROPERTY_TAB = {
+    CARACTERISTICAS: "caracteristicas",
+    MIEMBROS: "miembros",
+    VISITAS: "visitas",
+    CONTRATOS: "contratos",
+    DISPOSICION: "disposicion",
+    FOTOS: "fotos",
+  } as const
+
+  const DISPOSICION_VIEW = {
+    DIMENSIONES: "dimensiones",
+    MAPA: "mapa",
+  } as const
+
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
+
+  let active_tab: string = $state(
+    PROPERTY_TAB.CARACTERISTICAS,
+  )
+  let disposicion_view: string = $state(
+    DISPOSICION_VIEW.DIMENSIONES,
+  )
+
   let file_input: HTMLInputElement | undefined = $state()
   let photo_form: HTMLFormElement | undefined = $state()
   let room_positions = $state<
     Map<number, { x: number; y: number }>
   >(new Map())
+
   const property_destinies = get_property_destinies()
   const active_tag_types = $derived(
     new Set(data.property.tags.map((t) => t.type)),
@@ -59,6 +89,7 @@
   const used_service_types = $derived(
     new Set(data.property.services.map((s) => s.type)),
   )
+
   function handle_add_photo_click() {
     file_input?.click()
   }
@@ -72,11 +103,10 @@
   }
 </script>
 
+<!-- caracteristicas tab snippets -->
+
 {#snippet Location()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>ubicación</Section.Title>
-    </Section.Header>
+  <Disclosure title="Ubicación" open>
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_LOCATION)}
@@ -101,14 +131,11 @@
         <Button type="submit">Guardar ubicación</Button>
       </Formulary.Actions>
     </Formulary.Root>
-  </Content.Section>
+  </Disclosure>
 {/snippet}
 
 {#snippet Destinies()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>destino</Section.Title>
-    </Section.Header>
+  <Disclosure title="Destino">
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_DESTINIES)}
@@ -137,23 +164,295 @@
         <Button type="submit">Guardar destino</Button>
       </Formulary.Actions>
     </Formulary.Root>
-  </Content.Section>
+  </Disclosure>
 {/snippet}
 
-{#snippet Floors()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>pisos</Section.Title>
-      <Section.Actions>
-        <form
-          method="POST"
-          action={compose_action(ACTION.CREATE_FLOOR)}
-          use:enhance
+{#snippet Tags()}
+  <Disclosure title="Tags">
+    {#each PROPERTY_TAG_CATEGORIES as category}
+      <fieldset class="tag-category">
+        <legend>{category.label}</legend>
+        <div class="checkbox-list">
+          {#each category.tags as tag_type}
+            {@const is_checked =
+              active_tag_types.has(tag_type)}
+            <form
+              method="POST"
+              action={compose_action(ACTION.TOGGLE_TAG)}
+              use:enhance
+            >
+              <input
+                type="hidden"
+                name="type"
+                value={tag_type}
+              />
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={is_checked}
+                  onchange={(e) =>
+                    e.currentTarget.form?.requestSubmit()}
+                />
+                {get_property_tag_type_label(tag_type)}
+              </label>
+            </form>
+          {/each}
+        </div>
+      </fieldset>
+    {/each}
+  </Disclosure>
+{/snippet}
+
+{#snippet Building()}
+  <Disclosure title="Edificio">
+    <Formulary.Root
+      method="POST"
+      action={compose_action(
+        ACTION.UPDATE_CONSTRUCTION_YEAR,
+      )}
+    >
+      <Formulary.Fields>
+        <Formulary.Field>
+          <Formulary.Label for="construction_year"
+            >año de construcción</Formulary.Label
+          >
+          <input
+            id="construction_year"
+            type="number"
+            name="construction_year"
+            min={1900}
+            max={2026}
+            placeholder="2015"
+            value={data.property.construction_year ?? ""}
+          />
+        </Formulary.Field>
+      </Formulary.Fields>
+      <Formulary.Actions>
+        <Button type="submit">Guardar año</Button>
+      </Formulary.Actions>
+    </Formulary.Root>
+  </Disclosure>
+{/snippet}
+
+{#snippet Services()}
+  <Disclosure title="Servicios">
+    <ul>
+      {#each data.property.services as service (`service_${service.id}`)}
+        <li>
+          <Formulary.Root method="POST">
+            <Formulary.Fields>
+              <input
+                type="hidden"
+                value={service.id}
+                name="id"
+              />
+              <Formulary.Field>
+                <Formulary.Label for={`type_${service.id}`}
+                  >tipo</Formulary.Label
+                >
+                <Formulary.Select
+                  name="type"
+                  id={`type_${service.id}`}
+                  value={service.type}
+                >
+                  {#each Object.values(SERVICE_TYPE) as type}
+                    {#if type === service.type || !used_service_types.has(type)}
+                      <option value={type}
+                        >{get_service_type_label(
+                          type as ServiceType,
+                        )}</option
+                      >
+                    {/if}
+                  {/each}
+                </Formulary.Select>
+              </Formulary.Field>
+              <Formulary.Field>
+                <Formulary.Label for={`code_${service.id}`}
+                  >identificador</Formulary.Label
+                >
+                <input
+                  id={`code_${service.id}`}
+                  type="number"
+                  name="code"
+                  value={service.code}
+                />
+              </Formulary.Field>
+            </Formulary.Fields>
+            <Formulary.Actions>
+              <Button
+                type="submit"
+                formaction={compose_action(
+                  ACTION.UPDATE_SERVICE,
+                )}>Guardar servicio</Button
+              >
+              <Button
+                type="submit"
+                formaction={compose_action(
+                  ACTION.DESTROY_SERVICE,
+                )}>Eliminar servicio</Button
+              >
+            </Formulary.Actions>
+          </Formulary.Root>
+        </li>
+      {/each}
+    </ul>
+    {#if has_action_error(form, "update_service")}
+      <p class="error">{form.errors.update_service}</p>
+    {/if}
+    <form
+      method="POST"
+      action={compose_action(ACTION.CREATE_SERVICE)}
+      use:enhance
+    >
+      <Button
+        variant="secondary"
+        type="submit"
+        disabled={all_services_added}
+        >Agregar servicio</Button
+      >
+    </form>
+  </Disclosure>
+{/snippet}
+
+<!-- tab-level snippets -->
+
+{#snippet CaracteristicasTab()}
+  <h2 class="heading-sm tab-title">Características</h2>
+  {@render Location()}
+  {@render Destinies()}
+  {@render Tags()}
+  {@render Building()}
+  {@render Services()}
+{/snippet}
+
+{#snippet MiembrosTab()}
+  <section id="members">
+    <h2 class="heading-sm tab-title">Miembros</h2>
+    <ul class="member-list">
+      {#each data.property.members as member, index (`member-${member.id}-${index}`)}
+        <li class="member-item">
+          <p>{display_name(member)}</p>
+          <p>{get_access_label(member.type)}</p>
+        </li>
+      {/each}
+    </ul>
+    {#if !has_landlord}
+      <Formulary.Root
+        method="POST"
+        action={compose_action(ACTION.INVITE_LANDLORD)}
+      >
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label for="email"
+              >email</Formulary.Label
+            >
+            <input id="email" name="email" type="email" />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button type="submit">Invitar dueño</Button>
+        </Formulary.Actions>
+      </Formulary.Root>
+    {/if}
+  </section>
+{/snippet}
+
+{#snippet VisitasTab()}
+  <section>
+    <h2 class="heading-sm tab-title">Visitas</h2>
+    {#if data.visits.length > 0}
+      <Table.Root>
+        <Table.Header>
+          <Table.Cell header>Visitante</Table.Cell>
+          <Table.Cell header>Fecha</Table.Cell>
+        </Table.Header>
+        <Table.Body>
+          {#each data.visits as visit (visit.id)}
+            <Table.Row>
+              <Table.Cell>
+                {display_name(visit)}
+              </Table.Cell>
+              <Table.Cell>
+                {display_date(visit.start_date)}
+              </Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+      </Table.Root>
+    {:else}
+      <p class="body-md-medium empty">No hay visitas agendadas</p>
+    {/if}
+  </section>
+{/snippet}
+
+{#snippet ContratosTab()}
+  <section>
+    <div class="tab-header">
+      <h2 class="heading-sm tab-title">Contratos</h2>
+      <a
+        href={`/admin/properties/${data.property.id}/contracts/new`}
+      >
+        <Button variant="secondary">Crear contrato</Button>
+      </a>
+    </div>
+    <Table.Root>
+      <Table.Header>
+        <Table.Cell header>Estado</Table.Cell>
+        <Table.Cell header>Fecha de finalización</Table.Cell
         >
-          <Button type="submit">Agregar piso</Button>
-        </form>
-      </Section.Actions>
-    </Section.Header>
+        <Table.Cell header>Acciones</Table.Cell>
+      </Table.Header>
+      <Table.Body>
+        {#each data.property.contracts as contract (contract.id)}
+          <Table.Row>
+            <Table.Cell>
+              {get_contract_state_label(contract.state)}
+            </Table.Cell>
+            <Table.Cell>
+              {contract.end_date
+                ? display_date(new Date(contract.end_date))
+                : "-"}
+            </Table.Cell>
+            <Table.Cell>
+              <a
+                href={`/admin/properties/${data.property.id}/contracts/${contract.id}/edit`}
+              >
+                <Button>Editar</Button>
+              </a>
+            </Table.Cell>
+          </Table.Row>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  </section>
+{/snippet}
+
+{#snippet DisposicionTab()}
+  <section>
+    <div class="tab-header">
+      <h2 class="heading-sm tab-title">Disposición</h2>
+      <form
+        method="POST"
+        action={compose_action(ACTION.CREATE_FLOOR)}
+        use:enhance
+      >
+        <Button variant="secondary" type="submit">Agregar piso</Button>
+      </form>
+    </div>
+    <SegmentedButton
+      items={[
+        {
+          label: "Dimensiones",
+          value: DISPOSICION_VIEW.DIMENSIONES,
+        },
+        {
+          label: "Mapa",
+          value: DISPOSICION_VIEW.MAPA,
+        },
+      ]}
+      selected={disposicion_view}
+      onchange={(value) => (disposicion_view = value)}
+    />
     {#each data.property.floors as floor (floor.id)}
       <div class="floor-section">
         <Formulary.Root method="POST">
@@ -175,9 +474,7 @@
               >
                 {#each get_floor_numbers() as number}
                   <option value={number}
-                    >{display_floor_number(
-                      number,
-                    )}</option
+                    >{display_floor_number(number)}</option
                   >
                 {/each}
               </Formulary.Select>
@@ -200,13 +497,11 @@
             {/if}
           </Formulary.Actions>
         </Formulary.Root>
-        <Section.Header>
-          <Section.Title
-            >{display_floor_number(
-              floor.number,
-            )}</Section.Title
-          >
-          <Section.Actions>
+        {#if disposicion_view === DISPOSICION_VIEW.DIMENSIONES}
+          <div class="tab-header">
+            <h3 class="body-md-bold tab-title">
+              {display_floor_number(floor.number)}
+            </h3>
             <form
               method="POST"
               action={compose_action(ACTION.CREATE_ROOM)}
@@ -217,83 +512,85 @@
                 name="floor_id"
                 value={floor.id}
               />
-              <Button type="submit"
-                >Agregar ambiente</Button
+              <Button variant="secondary" type="submit"
+                >Agregar habitación</Button
               >
             </form>
-          </Section.Actions>
-        </Section.Header>
-        <ul>
-          {#each floor.rooms as room (room.id)}
-            <li>
-              <Formulary.Root method="POST">
-                <Formulary.Fields>
-                  <input
-                    type="hidden"
-                    value={room.id}
-                    name="id"
-                  />
-                  <Formulary.Field>
-                    <Formulary.Label for={`type_${room.id}`}
-                      >tipo</Formulary.Label
-                    >
-                    <Formulary.Select
-                      name="type"
-                      id={`type_${room.id}`}
-                      value={room.type}
-                    >
-                      {#each Object.values(ROOM_TYPE) as type}
-                        <option value={type}
-                          >{display_room_type(type)}</option
-                        >
-                      {/each}
-                    </Formulary.Select>
-                  </Formulary.Field>
-                  <Formulary.Field>
-                    <Formulary.Label
-                      for={`length_${room.id}`}
-                      >largo</Formulary.Label
-                    >
+          </div>
+          <ul>
+            {#each floor.rooms as room (room.id)}
+              <li>
+                <Formulary.Root method="POST">
+                  <Formulary.Fields>
                     <input
-                      id={`length_${room.id}`}
-                      type="number"
-                      name="length"
-                      step="0.1"
-                      value={room.length}
+                      type="hidden"
+                      value={room.id}
+                      name="id"
                     />
-                  </Formulary.Field>
-                  <Formulary.Field>
-                    <Formulary.Label
-                      for={`width_${room.id}`}
-                      >ancho</Formulary.Label
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`type_${room.id}`}
+                        >tipo</Formulary.Label
+                      >
+                      <Formulary.Select
+                        name="type"
+                        id={`type_${room.id}`}
+                        value={room.type}
+                      >
+                        {#each Object.values(ROOM_TYPE) as type}
+                          <option value={type}
+                            >{display_room_type(
+                              type,
+                            )}</option
+                          >
+                        {/each}
+                      </Formulary.Select>
+                    </Formulary.Field>
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`length_${room.id}`}
+                        >largo</Formulary.Label
+                      >
+                      <input
+                        id={`length_${room.id}`}
+                        type="number"
+                        name="length"
+                        step="0.1"
+                        value={room.length}
+                      />
+                    </Formulary.Field>
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`width_${room.id}`}
+                        >ancho</Formulary.Label
+                      >
+                      <input
+                        id={`width_${room.id}`}
+                        type="number"
+                        name="width"
+                        value={room.width}
+                      />
+                    </Formulary.Field>
+                  </Formulary.Fields>
+                  <Formulary.Actions>
+                    <Button
+                      type="submit"
+                      formaction={compose_action(
+                        ACTION.UPDATE_ROOM,
+                      )}>Guardar habitación</Button
                     >
-                    <input
-                      id={`width_${room.id}`}
-                      type="number"
-                      name="width"
-                      value={room.width}
-                    />
-                  </Formulary.Field>
-                </Formulary.Fields>
-                <Formulary.Actions>
-                  <Button
-                    type="submit"
-                    formaction={compose_action(
-                      ACTION.UPDATE_ROOM,
-                    )}>Guardar ambiente</Button
-                  >
-                  <Button
-                    type="submit"
-                    formaction={compose_action(
-                      ACTION.DESTROY_ROOM,
-                    )}>Eliminar ambiente</Button
-                  >
-                </Formulary.Actions>
-              </Formulary.Root>
-            </li>
-          {/each}
-        </ul>
-        {#if floor.rooms.length > 0}
+                    <Button
+                      type="submit"
+                      formaction={compose_action(
+                        ACTION.DESTROY_ROOM,
+                      )}>Eliminar habitación</Button
+                    >
+                  </Formulary.Actions>
+                </Formulary.Root>
+              </li>
+            {/each}
+          </ul>
+        {:else if floor.rooms.length > 0}
           <Formulary.Root
             method="POST"
             action={compose_action(
@@ -340,60 +637,20 @@
         {/if}
       </div>
     {/each}
-  </Content.Section>
+  </section>
 {/snippet}
 
-{#snippet Members()}
-  <Content.Section id="members">
-    <Section.Header>
-      <Section.Title>miembros</Section.Title>
-    </Section.Header>
-    <ul class="member-list">
-      {#each data.property.members as member, index (`member-${member.id}-${index}`)}
-        <li class="member-item">
-          <input
-            type="hidden"
-            value={member.id}
-            name="id"
-          />
-          <p>{display_name(member)}</p>
-          <p>{get_access_label(member.type)}</p>
-        </li>
-      {/each}
-    </ul>
-    {#if !has_landlord}
-      <Formulary.Root
-        method="POST"
-        action={compose_action(ACTION.INVITE_LANDLORD)}
+{#snippet FotosTab()}
+  <section>
+    <div class="tab-header">
+      <h2 class="heading-sm tab-title">Fotos</h2>
+      <Button
+        variant="secondary"
+        type="button"
+        onclick={handle_add_photo_click}
+        >Agregar foto</Button
       >
-        <Formulary.Fields>
-          <Formulary.Field>
-            <Formulary.Label for="email"
-              >email</Formulary.Label
-            >
-            <input id="email" name="email" type="email" />
-          </Formulary.Field>
-        </Formulary.Fields>
-        <Formulary.Actions>
-          <Button type="submit">Invitar dueño</Button>
-        </Formulary.Actions>
-      </Formulary.Root>
-    {/if}
-  </Content.Section>
-{/snippet}
-
-{#snippet Photos()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>fotos</Section.Title>
-      <Section.Actions>
-        <Button
-          type="button"
-          onclick={handle_add_photo_click}
-          >Agregar foto</Button
-        >
-      </Section.Actions>
-    </Section.Header>
+    </div>
     <ul class="photo-grid">
       {#each data.property.images as image (`image_${image.id}`)}
         <li>
@@ -421,179 +678,59 @@
         class="sr-only"
       />
     </form>
-  </Content.Section>
+  </section>
 {/snippet}
 
-{#snippet Services()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>servicios</Section.Title>
-      <Section.Actions>
-        <form
-          method="POST"
-          action={compose_action(ACTION.CREATE_SERVICE)}
-          use:enhance
-        >
-          <Button
-            type="submit"
-            disabled={all_services_added}
-            >Agregar servicio</Button
-          >
-        </form>
-      </Section.Actions>
-    </Section.Header>
-    <ul>
-      {#each data.property.services as service (`service_${service.id}`)}
-        <li>
-          <Formulary.Root method="POST">
-            <Formulary.Fields>
-              <input
-                type="hidden"
-                value={service.id}
-                name="id"
-              />
-              <Formulary.Field>
-                <Formulary.Label for={`type_${service.id}`}
-                  >tipo</Formulary.Label
-                >
-                <Formulary.Select
-                  name="type"
-                  id={`type_${service.id}`}
-                  value={service.type}
-                >
-                  {#each Object.values(SERVICE_TYPE) as type}
-                    {#if type === service.type || !used_service_types.has(type)}
-                      <option value={type}
-                        >{get_service_type_label(
-                          type,
-                        )}</option
-                      >
-                    {/if}
-                  {/each}
-                </Formulary.Select>
-              </Formulary.Field>
-              <Formulary.Field>
-                <Formulary.Label for={`code_${service.id}`}
-                  >identificador</Formulary.Label
-                >
-                <input
-                  id={`code_${service.id}`}
-                  type="number"
-                  name="code"
-                  value={service.code}
-                />
-              </Formulary.Field>
-            </Formulary.Fields>
-            <Formulary.Actions>
-              <Button
-                type="submit"
-                formaction={compose_action(
-                  ACTION.UPDATE_SERVICE,
-                )}>Guardar servicio</Button
-              >
-              <Button
-                type="submit"
-                formaction={compose_action(
-                  ACTION.DESTROY_SERVICE,
-                )}>Eliminar servicio</Button
-              >
-            </Formulary.Actions>
-          </Formulary.Root>
-        </li>
-      {/each}
-    </ul>
-    {#if has_action_error(form, "update_service")}
-      <p class="error">{form.errors.update_service}</p>
-    {/if}
-  </Content.Section>
-{/snippet}
+<!-- page layout -->
 
-{#snippet Tags()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>tags</Section.Title>
-    </Section.Header>
-    {#each PROPERTY_TAG_CATEGORIES as category}
-      <fieldset class="tag-category">
-        <legend>{category.label}</legend>
-        <div class="checkbox-list">
-          {#each category.tags as tag_type}
-            {@const is_checked =
-              active_tag_types.has(tag_type)}
-            <form
-              method="POST"
-              action={compose_action(ACTION.TOGGLE_TAG)}
-              use:enhance
-            >
-              <input
-                type="hidden"
-                name="type"
-                value={tag_type}
-              />
-              <label class="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={is_checked}
-                  onchange={(e) =>
-                    e.currentTarget.form?.requestSubmit()}
-                />
-                {get_property_tag_type_label(tag_type)}
-              </label>
-            </form>
-          {/each}
-        </div>
-      </fieldset>
+<div class="page">
+  <h1 class="heading-md page-title">propiedad {data.property.id}</h1>
+  <TabGroup>
+    {#each Object.values(PROPERTY_TAB) as tab}
+      <Tab
+        active={active_tab === tab}
+        onclick={() => (active_tab = tab)}
+      >
+        {tab}
+      </Tab>
     {/each}
-  </Content.Section>
-{/snippet}
-
-{#snippet Building()}
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>edificio</Section.Title>
-    </Section.Header>
-    <Formulary.Root
-      method="POST"
-      action={compose_action(
-        ACTION.UPDATE_CONSTRUCTION_YEAR,
-      )}
-    >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label for="construction_year"
-            >año de construcción</Formulary.Label
-          >
-          <input
-            id="construction_year"
-            type="number"
-            name="construction_year"
-            min={1900}
-            max={2026}
-            placeholder="2015"
-            value={data.property.construction_year ?? ""}
-          />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button type="submit">Guardar año</Button>
-      </Formulary.Actions>
-    </Formulary.Root>
-  </Content.Section>
-{/snippet}
-
-<Content.Root>
-  <Content.Title>Edición de propiedad</Content.Title>
-  {@render Location()}
-  {@render Destinies()}
-  {@render Tags()}
-  {@render Building()}
-  {@render Floors()}
-  {@render Members()}
-  {@render Photos()}
-  {@render Services()}
-</Content.Root>
+  </TabGroup>
+  {#if active_tab === PROPERTY_TAB.CARACTERISTICAS}
+    {@render CaracteristicasTab()}
+  {:else if active_tab === PROPERTY_TAB.MIEMBROS}
+    {@render MiembrosTab()}
+  {:else if active_tab === PROPERTY_TAB.VISITAS}
+    {@render VisitasTab()}
+  {:else if active_tab === PROPERTY_TAB.CONTRATOS}
+    {@render ContratosTab()}
+  {:else if active_tab === PROPERTY_TAB.DISPOSICION}
+    {@render DisposicionTab()}
+  {:else if active_tab === PROPERTY_TAB.FOTOS}
+    {@render FotosTab()}
+  {/if}
+</div>
 
 <style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-spacing-6);
+  }
+
+  .page-title {
+    color: var(--color-text-heading);
+  }
+
+  .tab-title {
+    color: var(--color-text-heading);
+  }
+
+  .tab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .checkbox-list {
     display: flex;
     flex-direction: column;
@@ -667,6 +804,10 @@
     padding: 1rem;
     margin-bottom: 1rem;
   }
+  .empty {
+    color: var(--color-text-body);
+  }
+
   .error {
     color: rgb(239 68 68);
   }
