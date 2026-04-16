@@ -65,8 +65,6 @@ just test e2e-visual --grep "book"
 ### Secrets (`just secrets`)
 
 ```bash
-just secrets edit              # Edit development secrets in $EDITOR
-just secrets edit production   # Edit production secrets
 just secrets encrypt           # Encrypt .env → .env.enc
 just secrets decrypt           # Decrypt .env.enc → .env
 just secrets apply             # Decrypt + restart affected services

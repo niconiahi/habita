@@ -90,8 +90,9 @@ See [`secrets.md`](../secrets.md) for available commands. Two approaches:
 
 ### If you remember the old value
 
-1. `just --set env production secrets edit` — fix the value, save
-2. `just --set env production restart app`
+1. Edit `infra/production/.env` directly — fix the value, save
+2. `just --set env production secrets encrypt`
+3. `just --set env production restart app`
 
 ### If you don't remember the old value
 
@@ -182,7 +183,8 @@ just --set env production deploy <previous-sha>
 
 ### "Changed a secret and broke things"
 ```bash
-just --set env production secrets edit  # fix it
+vim infra/production/.env               # fix it
+just --set env production secrets encrypt
 just --set env production restart app
 ```
 

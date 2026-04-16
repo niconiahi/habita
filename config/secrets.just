@@ -37,17 +37,6 @@ decrypt target=env:
     echo "Decrypted: infra/{{target}}/scheduler/rclone.conf"; \
   fi
 
-# Edit encrypted secrets in $EDITOR (e.g., just secrets edit production)
-edit target=env:
-  #!/usr/bin/env bash
-  sops --input-type dotenv --output-type dotenv infra/{{target}}/.env.enc
-  exit_code=$?
-  if [[ $exit_code -eq 200 ]]; then
-    echo "No changes made."
-    exit 0
-  fi
-  exit $exit_code
-
 # Decrypt secrets AND recreate affected services to pick up new env vars
 apply:
   #!/usr/bin/env bash
