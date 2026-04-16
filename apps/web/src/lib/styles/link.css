@@ -1,0 +1,12 @@
+a.link {
+  color: var(--color-blue-500);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-blue-500);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-md);
+  line-height: 1.4;
+}
+
+a.link:hover {
+  opacity: 0.8;
+}

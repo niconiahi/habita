@@ -1,4 +1,6 @@
 @import "./fonts.css";
 @import "./global.css";
 @import "./tokens.css";
+@import "./text_styles.css";
 @import "./button.css";
+@import "./link.css";
