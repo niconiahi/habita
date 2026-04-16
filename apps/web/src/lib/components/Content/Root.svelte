@@ -19,7 +19,6 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-4);
-    gap: var(--spacing-12);
+    gap: var(--spacing-4);
   }
 </style>

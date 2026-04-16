@@ -15,7 +15,7 @@
 
 <style>
   .label {
-    color: var(--gray-100);
+    color: var(--color-text-heading);
     display: block;
   }
 

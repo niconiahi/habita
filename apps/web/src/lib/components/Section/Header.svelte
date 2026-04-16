@@ -15,7 +15,7 @@
     justify-content: flex-start;
     position: sticky;
     top: var(--header-height);
-    background-color: var(--gray-900);
+    background-color: transparent;
     z-index: 5;
     padding-inline: 0;
     padding-block: var(--spacing-4);
