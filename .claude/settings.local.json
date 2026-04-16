@@ -63,7 +63,9 @@
       "mcp__playwright__browser_hover",
       "mcp__playwright__browser_evaluate",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh run:*)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []

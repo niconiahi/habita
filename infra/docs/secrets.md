@@ -60,7 +60,6 @@ The `secrets apply` command decrypts the secrets AND recreates the affected serv
 | `just secrets keygen` | Generate a new age key (one-time setup) |
 | `just secrets encrypt [env]` | Encrypt `.env` → `.env.enc` |
 | `just secrets decrypt [env]` | Decrypt `.env.enc` → `.env` |
-| `just secrets edit [env]` | Edit encrypted file directly in `$EDITOR` |
 | `just secrets apply` | Decrypt AND recreate services |
 | `just secrets pubkey` | Show your public key |
 
