@@ -8,12 +8,14 @@
   let { children }: Props = $props()
 </script>
 
-<h1 class="heading-lg">
+<div class="tab-group">
   {@render children()}
-</h1>
+</div>
 
 <style>
-  h1 {
-    min-height: 36px;
+  .tab-group {
+    display: flex;
+    align-items: flex-start;
+    overflow: clip;
   }
 </style>

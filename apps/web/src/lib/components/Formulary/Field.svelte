@@ -17,6 +17,6 @@
 
   .field :global(.error) {
     color: var(--destructive);
-    font-size: var(--spacing-3);
+    font-size: var(--font-size-body-sm);
   }
 </style>

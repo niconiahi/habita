@@ -311,7 +311,7 @@
 </script>
 
 <div>
-  <label for={id}>Zona</label>
+  <label class="body-sm-medium" for={id}>Zona</label>
   <div class="zone">
     <input
       {id}
@@ -421,7 +421,8 @@
   }
 
   .option.highlighted {
-    outline: 3px solid var(--accent);
-    outline-offset: -3px;
+    outline: var(--focus-ring-width) solid
+      var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
   }
 </style>

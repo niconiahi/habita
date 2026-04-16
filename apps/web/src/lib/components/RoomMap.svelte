@@ -4,6 +4,7 @@
   const PADDING = 20
   const SNAP_THRESHOLD = 1
   const ROOM_STROKE_WIDTH = 2
+  const MIN_HEIGHT = 500
 
   interface Room {
     id: number
@@ -50,6 +51,7 @@
   }: Props = $props()
 
   let canvas_el: HTMLCanvasElement | undefined = $state()
+  let container_el: HTMLDivElement | undefined = $state()
   let room_positions = $state<Map<number, Position>>(
     new Map(),
   )
@@ -298,12 +300,8 @@
       ...room_data.map((r) => r.length),
       1,
     )
-    const default_available_width = 600 - padding * 2
-    const default_available_height = 300 - padding * 2
-    const scale_x =
-      default_available_width / (total_width || 1)
-    const scale_y = default_available_height / max_length
-    const scale = Math.min(scale_x, scale_y)
+    const PIXELS_PER_METER = 50
+    const scale = PIXELS_PER_METER
     let max_x = 0
     let max_y = 0
     let x_offset_calc = 0
@@ -322,8 +320,10 @@
         x_offset_calc += w + 10
       }
     }
-    const display_width = Math.ceil(max_x + padding * 2)
-    const display_height = Math.ceil(max_y + padding * 2)
+    const container_width = container_el?.clientWidth ?? 600
+    const rooms_width = Math.ceil(max_x + padding * 2)
+    const display_width = Math.max(rooms_width, container_width)
+    const display_height = Math.max(Math.ceil(max_y + padding * 2), MIN_HEIGHT)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     canvas_el.width = display_width * device_pixel_ratio
     canvas_el.height = display_height * device_pixel_ratio
@@ -399,7 +399,7 @@
   })
 </script>
 
-<div style="overflow: auto; max-width: 100%;">
+<div class="room-map-container" bind:this={container_el}>
   <canvas
     bind:this={canvas_el}
     style:cursor={is_readonly ? "default" : "grab"}
@@ -409,3 +409,15 @@
     onpointercancel={handle_pointer_up}
   ></canvas>
 </div>
+
+<style>
+  .room-map-container {
+    width: fit-content;
+    min-width: 100%;
+    border-radius: var(--dimension-radius-lg);
+  }
+
+  .room-map-container canvas {
+    display: block;
+  }
+</style>

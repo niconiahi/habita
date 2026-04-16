@@ -9,12 +9,16 @@
     type Notification,
   } from "$lib/fetchers/notifications.schemas"
   import * as v from "valibot"
+  import * as Popover from "$lib/components/Popover"
+  import Bell from "$icon/Bell.svelte"
+
+  interface Props {
+    position?: "bottom" | "right" | "top"
+  }
+
+  let { position = "bottom" }: Props = $props()
 
   let notifications = $state<Notification[]>([])
-  let is_open = $state(false)
-
-  const id = "notifications"
-  const list_id = `${id}_listbox`
 
   onMount(() => {
     fetch("/api/notifications")
@@ -28,68 +32,39 @@
     )
     event_source.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      const notification = v.parse(
-        NotificationSchema,
-        data,
-      )
+      const notification = v.parse(NotificationSchema, data)
       notifications = [notification, ...notifications]
     }
     return () => {
       event_source.close()
     }
   })
-
-  function toggle() {
-    is_open = !is_open
-  }
-
-  function handle_click_outside(event: MouseEvent) {
-    const target = event.target as HTMLElement
-    if (!target.closest(".notifications")) {
-      is_open = false
-    }
-  }
 </script>
 
-<svelte:window onclick={handle_click_outside} />
-
-<div class="notifications">
-  <button
-    type="button"
-    aria-haspopup="listbox"
-    aria-controls={list_id}
-    aria-expanded={is_open}
-    onclick={toggle}
-  >
-    Notificaciones
-    {#if notifications.length > 0}
-      <span class="notifications__badge"
-        >{notifications.length}</span
-      >
-    {/if}
-  </button>
-  {#if is_open && notifications.length > 0}
-    <ul
-      role="listbox"
-      id={list_id}
-      class="notifications__list"
-    >
-      {#each notifications as notification (notification.id)}
-        <li role="option" aria-selected="false">
-          <a
-            href={notification.href}
-            class="notifications__item"
-          >
-            <span class="notifications__type">
+<Popover.Root id="notifications">
+  <Popover.Trigger id="notifications">
+    <span class="bell">
+      <Bell />
+      {#if notifications.length > 0}
+        <span class="badge">{notifications.length}</span>
+      {/if}
+    </span>
+  </Popover.Trigger>
+  <Popover.Content id="notifications" {position}>
+    <div class="list">
+      {#if notifications.length > 0}
+        {#each notifications as notification (notification.id)}
+          <a href={notification.href} class="item">
+            <span class="body-sm-medium type">
               {get_notification_type_label(
                 notification.type,
               )}
             </span>
-            <span class="notifications__location">
+            <span class="body-sm-medium location">
               {notification.location.road}
               {notification.location.house_number}
             </span>
-            <span class="notifications__time">
+            <span class="time">
               {formatDistanceToNow(
                 notification.created_at,
                 {
@@ -99,92 +74,72 @@
               )}
             </span>
           </a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-</div>
+        {/each}
+      {:else}
+        <p class="body-sm-medium empty">Sin notificaciones</p>
+      {/if}
+    </div>
+  </Popover.Content>
+</Popover.Root>
 
 <style>
-  .notifications {
+  .bell {
     position: relative;
-  }
-
-  button {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
-    background-color: transparent;
-    border: 1px solid var(--gray-400);
-    border-radius: var(--spacing-1);
-    color: var(--gray-100);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
   }
 
-  button:hover {
-    background-color: var(--gray-600);
-  }
-
-  .notifications__badge {
+  .badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 var(--spacing-1);
-    background-color: var(--accent);
-    border-radius: 9999px;
+    padding: var(--dimension-spacing-1)
+      var(--dimension-spacing-2);
+    background-color: var(--color-blue-500);
+    border-radius: var(--dimension-radius-full);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--gray-900);
+    color: var(--color-absolute-white);
   }
 
-  .notifications__list {
-    position: absolute;
-    top: calc(100% + var(--spacing-2));
-    right: 0;
-    z-index: 20;
+  .list {
     min-width: 20rem;
     max-height: 24rem;
     overflow-y: auto;
-    margin: 0;
-    padding: var(--spacing-2);
-    background-color: var(--gray-700);
-    border: 1px solid var(--gray-400);
-    border-radius: var(--spacing-2);
-    list-style: none;
   }
 
-  .notifications__item {
+  .item {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
-    padding: var(--spacing-3);
-    border-radius: var(--spacing-1);
+    gap: var(--dimension-spacing-1);
+    padding: var(--dimension-spacing-3);
+    border-radius: var(--dimension-radius-default);
     text-decoration: none;
-    color: var(--gray-100);
+    color: var(--color-text-body);
     transition: background-color 0.15s ease;
   }
 
-  .notifications__item:hover {
-    background-color: var(--gray-600);
+  .item:hover {
+    background-color: var(--popover-bg-hover);
   }
 
-  .notifications__type {
-    font-size: 0.875rem;
-    font-weight: 500;
+  .type {
+    color: var(--color-text-heading);
   }
 
-  .notifications__location {
-    font-size: 0.8125rem;
-    color: var(--gray-300);
+  .location {
+    color: var(--color-text-body);
   }
 
-  .notifications__time {
+  .time {
     font-size: 0.75rem;
-    color: var(--gray-300);
+    color: var(--color-neutrals-400);
+  }
+
+  .empty {
+    padding: var(--dimension-spacing-3);
+    color: var(--color-text-body);
   }
 </style>

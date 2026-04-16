@@ -20,9 +20,9 @@
 
 <style>
   select {
-    color: var(--gray-100);
+    color: var(--color-text-body);
   }
   select::placeholder {
-    color: var(--gray-100);
+    color: var(--color-neutrals-300);
   }
 </style>

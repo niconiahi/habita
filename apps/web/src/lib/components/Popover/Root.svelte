@@ -2,18 +2,19 @@
   import type { Snippet } from "svelte"
 
   interface Props {
+    id: string
     children: Snippet
   }
 
-  let { children }: Props = $props()
+  let { id, children }: Props = $props()
 </script>
 
-<h1 class="heading-lg">
+<div class="root" style:--popover-anchor-name={`--${id}`}>
   {@render children()}
-</h1>
+</div>
 
 <style>
-  h1 {
-    min-height: 36px;
+  .root {
+    position: relative;
   }
 </style>

@@ -23,27 +23,27 @@
   a {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--dimension-spacing-2);
     max-width: 100%;
-    padding: 0.5rem;
+    padding: var(--dimension-spacing-2);
     border: none;
-    border-radius: 0.375rem;
+    border-radius: var(--dimension-radius-lg);
     background: transparent;
-    color: var(--gray-100);
-    font-size: 0.875rem;
+    color: var(--color-text-body);
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.15s ease;
   }
   a:hover {
-    background-color: #23221e;
+    background-color: var(--color-neutrals-150);
   }
   a[aria-current="page"] {
-    background-color: #615f55;
-    font-weight: 500;
+    background-color: var(--color-neutrals-200);
+    color: var(--color-text-heading);
   }
   a:focus-visible {
-    outline: 2px solid #171717;
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid
+      var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
   }
 </style>

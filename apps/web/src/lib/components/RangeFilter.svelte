@@ -18,7 +18,7 @@
 </script>
 
 <fieldset class="range-filter">
-  <legend class="range-label">{label}</legend>
+  <legend class="range-label body-sm-medium">{label}</legend>
   <div class="range-inputs">
     <label class="range-field">
       <span class="range-field-label">Min</span>
@@ -52,9 +52,8 @@
     margin: 0;
   }
   .range-label {
-    color: var(--gray-100);
-    font-size: 0.875rem;
-    margin-bottom: var(--spacing-2);
+    color: var(--color-text-heading);
+    margin-bottom: var(--dimension-spacing-2);
   }
   .range-label::first-letter {
     text-transform: uppercase;
@@ -62,16 +61,16 @@
   .range-inputs {
     display: flex;
     flex-direction: row;
-    gap: var(--spacing-3);
+    gap: var(--dimension-spacing-3);
   }
   .range-field {
     display: flex;
     align-items: center;
-    gap: var(--spacing-3);
+    gap: var(--dimension-spacing-3);
   }
   .range-field-label {
-    color: var(--gray-300);
-    font-size: 0.875rem;
+    color: var(--color-text-body);
+    font-size: var(--font-size-body-sm);
     flex-shrink: 0;
   }
 </style>
