@@ -61,6 +61,7 @@
     "ioredis": "^5.8.2",
     "kafkajs": "^2.2.4",
     "kysely": "^0.28.8",
+    "maplibre-gl": "^5.23.0",
     "marked": "^17.0.1",
     "n2words": "^1.23.1",
     "openai": "^6.32.0",

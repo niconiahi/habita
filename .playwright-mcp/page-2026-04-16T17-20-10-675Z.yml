@@ -1,0 +1,167 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "hábita" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+      - navigation [ref=e14]:
+        - link "Login" [ref=e15] [cursor=pointer]:
+          - /url: /login
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - heading "El hogar del inmueble" [level=1] [ref=e20]
+      - paragraph [ref=e21]: Publicá propiedades, agendá visitas, firmá contratos y cobrá alquileres — todo desde Habita
+      - generic [ref=e22]:
+        - link "Empezar gratis" [ref=e23] [cursor=pointer]:
+          - /url: /signup
+          - button "Empezar gratis" [ref=e24]
+        - link "Solicitar una demo" [ref=e25] [cursor=pointer]:
+          - /url: /signup
+          - button "Solicitar una demo" [ref=e26]
+    - generic [ref=e27]:
+      - heading "Hoy usás 4 herramientas desconectadas para gestionar un solo alquiler" [level=2] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - heading "Publicación" [level=3] [ref=e31]
+          - paragraph [ref=e32]: Zonaprop, Argenprop
+        - generic [ref=e33]:
+          - heading "Gestión" [level=3] [ref=e34]
+          - paragraph [ref=e35]: Tokko, 2clics
+        - generic [ref=e36]:
+          - heading "Documentos" [level=3] [ref=e37]
+          - paragraph [ref=e38]: Google Drive, carpetas en la compu
+        - generic [ref=e39]:
+          - heading "Comunicación" [level=3] [ref=e40]
+          - paragraph [ref=e41]: WhatsApp, email
+    - generic [ref=e42]:
+      - heading "Habita reemplaza todo eso" [level=2] [ref=e43]
+      - list [ref=e44]:
+        - listitem [ref=e45]:
+          - generic [ref=e46]: "1"
+          - paragraph [ref=e47]: Publicá tu propiedad y que los inquilinos la encuentren
+        - listitem [ref=e48]:
+          - generic [ref=e49]: "2"
+          - paragraph [ref=e50]: Recibí reservas de visitas y evaluá candidatos
+        - listitem [ref=e51]:
+          - generic [ref=e52]: "3"
+          - paragraph [ref=e53]: Redactá el contrato con escalación y garantías
+        - listitem [ref=e54]:
+          - generic [ref=e55]: "4"
+          - paragraph [ref=e56]: Firmá digitalmente con validez legal
+        - listitem [ref=e57]:
+          - generic [ref=e58]: "5"
+          - paragraph [ref=e59]: Cobrá y hacé seguimiento de pagos
+    - table [ref=e61]:
+      - rowgroup [ref=e62]:
+        - row "Herramienta Publicación Visitas Contratos Firma digital Pagos" [ref=e63]:
+          - columnheader "Herramienta" [ref=e64]
+          - columnheader "Publicación" [ref=e65]
+          - columnheader "Visitas" [ref=e66]
+          - columnheader "Contratos" [ref=e67]
+          - columnheader "Firma digital" [ref=e68]
+          - columnheader "Pagos" [ref=e69]
+      - rowgroup [ref=e70]:
+        - row "Zonaprop Sí No No No No" [ref=e71]:
+          - cell "Zonaprop" [ref=e72]:
+            - link "Zonaprop" [ref=e73] [cursor=pointer]:
+              - /url: https://www.zonaprop.com.ar
+          - cell "Sí" [ref=e74]
+          - cell "No" [ref=e75]
+          - cell "No" [ref=e76]
+          - cell "No" [ref=e77]
+          - cell "No" [ref=e78]
+        - row "Argenprop Sí No No No No" [ref=e79]:
+          - cell "Argenprop" [ref=e80]:
+            - link "Argenprop" [ref=e81] [cursor=pointer]:
+              - /url: https://gestion.argenprop.com
+          - cell "Sí" [ref=e82]
+          - cell "No" [ref=e83]
+          - cell "No" [ref=e84]
+          - cell "No" [ref=e85]
+          - cell "No" [ref=e86]
+        - row "2clics Sí No No No No" [ref=e87]:
+          - cell "2clics" [ref=e88]:
+            - link "2clics" [ref=e89] [cursor=pointer]:
+              - /url: https://2clics.app
+          - cell "Sí" [ref=e90]
+          - cell "No" [ref=e91]
+          - cell "No" [ref=e92]
+          - cell "No" [ref=e93]
+          - cell "No" [ref=e94]
+        - row "Tokko Broker Sí No No No No" [ref=e95]:
+          - cell "Tokko Broker" [ref=e96]:
+            - link "Tokko Broker" [ref=e97] [cursor=pointer]:
+              - /url: https://www.tokkobroker.com/es-ar
+          - cell "Sí" [ref=e98]
+          - cell "No" [ref=e99]
+          - cell "No" [ref=e100]
+          - cell "No" [ref=e101]
+          - cell "No" [ref=e102]
+        - row "Inmosoft No No Parcial No Sí" [ref=e103]:
+          - cell "Inmosoft" [ref=e104]:
+            - link "Inmosoft" [ref=e105] [cursor=pointer]:
+              - /url: https://www.inmosoft.com.ar
+          - cell "No" [ref=e106]
+          - cell "No" [ref=e107]
+          - cell "Parcial" [ref=e108]:
+            - generic [ref=e109]: Parcial
+          - cell "No" [ref=e110]
+          - cell "Sí" [ref=e111]
+        - row "Barreeo No No Parcial No Sí" [ref=e112]:
+          - cell "Barreeo" [ref=e113]:
+            - link "Barreeo" [ref=e114] [cursor=pointer]:
+              - /url: https://barreeo.com
+          - cell "No" [ref=e115]
+          - cell "No" [ref=e116]
+          - cell "Parcial" [ref=e117]:
+            - generic [ref=e118]: Parcial
+          - cell "No" [ref=e119]
+          - cell "Sí" [ref=e120]
+        - row "Tus Alquileres No No Parcial No Sí" [ref=e121]:
+          - cell "Tus Alquileres" [ref=e122]:
+            - link "Tus Alquileres" [ref=e123] [cursor=pointer]:
+              - /url: https://tusalquileres.com.ar
+          - cell "No" [ref=e124]
+          - cell "No" [ref=e125]
+          - cell "Parcial" [ref=e126]:
+            - generic [ref=e127]: Parcial
+          - cell "No" [ref=e128]
+          - cell "Sí" [ref=e129]
+        - row "RentaControl No No Parcial No Sí" [ref=e130]:
+          - cell "RentaControl" [ref=e131]:
+            - link "RentaControl" [ref=e132] [cursor=pointer]:
+              - /url: https://www.rentacontrol.com.ar
+          - cell "No" [ref=e133]
+          - cell "No" [ref=e134]
+          - cell "Parcial" [ref=e135]:
+            - generic [ref=e136]: Parcial
+          - cell "No" [ref=e137]
+          - cell "Sí" [ref=e138]
+        - row "Ubiquo Parcial No Parcial No Sí" [ref=e139]:
+          - cell "Ubiquo" [ref=e140]:
+            - link "Ubiquo" [ref=e141] [cursor=pointer]:
+              - /url: https://www.ubiquo.com.ar
+          - cell "Parcial" [ref=e142]:
+            - generic [ref=e143]: Parcial
+          - cell "No" [ref=e144]
+          - cell "Parcial" [ref=e145]:
+            - generic [ref=e146]: Parcial
+          - cell "No" [ref=e147]
+          - cell "Sí" [ref=e148]
+        - row "SPOT No No Parcial No Sí" [ref=e149]:
+          - cell "SPOT" [ref=e150]:
+            - link "SPOT" [ref=e151] [cursor=pointer]:
+              - /url: https://spot.net.ar
+          - cell "No" [ref=e152]
+          - cell "No" [ref=e153]
+          - cell "Parcial" [ref=e154]:
+            - generic [ref=e155]: Parcial
+          - cell "No" [ref=e156]
+          - cell "Sí" [ref=e157]
+        - row "Habita Sí Sí Sí Sí Sí" [ref=e158]:
+          - cell "Habita" [ref=e159]
+          - cell "Sí" [ref=e160]
+          - cell "Sí" [ref=e161]
+          - cell "Sí" [ref=e162]
+          - cell "Sí" [ref=e163]
+          - cell "Sí" [ref=e164]
