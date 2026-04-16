@@ -1,0 +1,19 @@
+{
+  "options": {
+    "paths": {
+      "root": "/data",
+      "styles": "styles",
+      "fonts": "fonts"
+    }
+  },
+  "data": {
+    "argentina": {
+      "mbtiles": "argentina.mbtiles"
+    }
+  },
+  "styles": {
+    "positron": {
+      "style": "positron/style.json"
+    }
+  }
+}

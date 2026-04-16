@@ -56,7 +56,7 @@ up: infra-setup
   docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d
   @echo "Starting status page..."
   docker compose -p status -f {{infra}}/status/docker-compose.yml up -d
-  @echo "Starting geo (nominatim)..."
+  @echo "Starting geo (nominatim + tileserver)..."
   docker compose -p geo -f {{infra}}/geo/docker-compose.yml up -d
   @echo "Done!"
 
@@ -93,7 +93,9 @@ logs service:
     consumer-email)        docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f email ;;
     consumer-subscription) docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f subscription ;;
     consumer-escalation)   docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f escalation ;;
-    *)      echo "Unknown service: {{service}}. Available: svelte, db, kv, go, consumer-email, consumer-subscription, consumer-escalation"; exit 1 ;;
+    nominatim)  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml logs -f nominatim ;;
+    tileserver) docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml logs -f tileserver ;;
+    *)      echo "Unknown service: {{service}}. Available: svelte, db, kv, go, consumer-email, consumer-subscription, consumer-escalation, nominatim, tileserver"; exit 1 ;;
   esac
 
 # Restart a project or specific service (e.g., just restart app, just restart app svelte)

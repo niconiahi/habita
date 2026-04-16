@@ -22,6 +22,12 @@ habita.rent {
     reverse_proxy nominatim:8080
   }
 
+  # TileServer GL map tiles
+  handle /tiles/* {
+    uri strip_prefix /tiles
+    reverse_proxy tileserver:8080
+  }
+
   # Main application
   reverse_proxy svelte:3000
 

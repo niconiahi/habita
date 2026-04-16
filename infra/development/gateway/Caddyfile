@@ -11,6 +11,11 @@ dev.habita.rent {
     reverse_proxy nominatim:8080
   }
 
+  handle /tiles/* {
+    uri strip_prefix /tiles
+    reverse_proxy tileserver:8080
+  }
+
   # SvelteKit app - primary, catches all other routes
   reverse_proxy https://svelte:5174 {
     transport http {
