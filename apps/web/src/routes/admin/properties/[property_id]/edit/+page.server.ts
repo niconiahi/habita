@@ -21,6 +21,7 @@ import { update_location } from "./actions/update_location.server"
 import { update_room } from "./actions/update_room.server"
 import { update_room_positions } from "./actions/update_room_positions.server"
 import { update_service } from "./actions/update_service.server"
+import { fetch_visits } from "./fetchers/visits.server"
 import { fetch_property } from "./fetchers/property.server"
 
 export const load: PageServerLoad = async ({
@@ -44,7 +45,10 @@ export const load: PageServerLoad = async ({
     property_id,
     locals.session?.activeOrganizationId,
   )
-  const property = await fetch_property(property_id)
+  const [property, visits] = await Promise.all([
+    fetch_property(property_id),
+    fetch_visits(property_id),
+  ])
   if (!property) {
     error(
       404,
@@ -54,7 +58,7 @@ export const load: PageServerLoad = async ({
   if (property.state === PROPERTY_STATE.RENTED) {
     redirect(302, "/admin/properties")
   }
-  return { property }
+  return { property, visits }
 }
 
 export const actions: Actions = {
