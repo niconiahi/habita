@@ -1,5 +1,5 @@
 :root {
-  /* colors */
+  /* legacy colors */
   --gray-100: #fffada;
   --gray-300: #737373;
   --gray-400: #4a4843;
@@ -12,7 +12,7 @@
   /* layout */
   --header-height: 4.25rem;
 
-  /* spacing */
+  /* legacy spacing */
   --spacing: 0.25rem;
   --spacing-1: calc(var(--spacing) * 1);
   --spacing-2: calc(var(--spacing) * 2);
@@ -29,4 +29,257 @@
   --spacing-16: calc(var(--spacing) * 16);
   --spacing-18: calc(var(--spacing) * 18);
   --spacing-20: calc(var(--spacing) * 20);
+
+  /* ═══════════════════════════════════════════
+     FIGMA TOKENS — primitive collection
+     ═══════════════════════════════════════════ */
+
+  /* primitive: color / orange */
+  --color-orange-50: #fff6eb;
+  --color-orange-100: #ffe9ce;
+  --color-orange-200: #ffd5a2;
+  --color-orange-300: #fdb863;
+  --color-orange-400: #f4931c;
+  --color-orange-500: #cf7200;
+  --color-orange-600: #b76603;
+  --color-orange-700: #94560a;
+  --color-orange-800: #784a12;
+  --color-orange-900: #654114;
+  --color-orange-950: #462906;
+
+  /* primitive: color / red */
+  --color-red-50: #ffeceb;
+  --color-red-100: #ffd0ce;
+  --color-red-200: #ffa5a2;
+  --color-red-300: #fd6863;
+  --color-red-400: #f4231c;
+  --color-red-500: #cf0700;
+  --color-red-600: #b70903;
+  --color-red-700: #940f0a;
+  --color-red-800: #781512;
+  --color-red-900: #651714;
+  --color-red-950: #460806;
+
+  /* primitive: color / green */
+  --color-green-50: #f1fcf9;
+  --color-green-100: #d1f6ec;
+  --color-green-200: #a3ecdb;
+  --color-green-300: #6ddbc4;
+  --color-green-400: #3fc2ab;
+  --color-green-500: #25a18e;
+  --color-green-600: #1c8577;
+  --color-green-700: #1a6b60;
+  --color-green-800: #1a554f;
+  --color-green-900: #1a4742;
+  --color-green-950: #092a28;
+
+  /* primitive: color / neutrals */
+  --color-neutrals-0: #f9fafa;
+  --color-neutrals-50: #f4f6f6;
+  --color-neutrals-100: #eef0f1;
+  --color-neutrals-150: #dee2e3;
+  --color-neutrals-200: #cdd3d4;
+  --color-neutrals-300: #aab3b6;
+  --color-neutrals-400: #808d90;
+  --color-neutrals-500: #6c777a;
+  --color-neutrals-600: #566164;
+  --color-neutrals-700: #495255;
+  --color-neutrals-800: #40474a;
+  --color-neutrals-900: #363f43;
+  --color-neutrals-950: #232729;
+
+  /* primitive: color / blue */
+  --color-blue-50: #edfcfe;
+  --color-blue-100: #d3f5fa;
+  --color-blue-200: #aceaf5;
+  --color-blue-300: #72d8ee;
+  --color-blue-400: #32bede;
+  --color-blue-500: #1599ba;
+  --color-blue-600: #1581a5;
+  --color-blue-700: #186886;
+  --color-blue-800: #1d566d;
+  --color-blue-900: #1c475d;
+  --color-blue-950: #0d2e3f;
+
+  /* primitive: color / absolute */
+  --color-absolute-white: #fcfdfd;
+  --color-absolute-black: #1c1f21;
+  --color-absolute-transparent: rgba(0, 0, 0, 0);
+  --color-absolute-semi-transparent: rgba(0, 0, 0, 0.30);
+
+  /* primitive: font / family */
+  --font-family-body: "DM Sans", sans-serif;
+  --font-family-heading: "DM Sans", sans-serif;
+
+  /* primitive: font / size / body */
+  --font-size-body-sm: 14px;
+  --font-size-body-md: 16px;
+  --font-size-body-lg: 18px;
+
+  /* primitive: font / size / heading */
+  --font-size-heading-sm: 24px;
+  --font-size-heading-md: 28px;
+  --font-size-heading-lg: 32px;
+
+  /* primitive: dimension / screen */
+  --dimension-screen-sm: 640px;
+  --dimension-screen-md: 768px;
+  --dimension-screen-lg: 1024px;
+  --dimension-screen-xl: 1280px;
+  --dimension-screen-2xl: 1536px;
+
+  /* primitive: dimension / spacing */
+  --dimension-spacing-0: 0px;
+  --dimension-spacing-px: 1px;
+  --dimension-spacing-0-5: 2px;
+  --dimension-spacing-1: 4px;
+  --dimension-spacing-1-5: 6px;
+  --dimension-spacing-2: 8px;
+  --dimension-spacing-2-5: 10px;
+  --dimension-spacing-3: 12px;
+  --dimension-spacing-3-5: 14px;
+  --dimension-spacing-4: 16px;
+  --dimension-spacing-5: 20px;
+  --dimension-spacing-6: 24px;
+  --dimension-spacing-7: 28px;
+  --dimension-spacing-8: 32px;
+  --dimension-spacing-9: 36px;
+  --dimension-spacing-10: 40px;
+  --dimension-spacing-11: 44px;
+  --dimension-spacing-12: 48px;
+  --dimension-spacing-14: 56px;
+  --dimension-spacing-16: 64px;
+  --dimension-spacing-20: 80px;
+  --dimension-spacing-24: 96px;
+  --dimension-spacing-28: 112px;
+  --dimension-spacing-32: 128px;
+  --dimension-spacing-36: 144px;
+  --dimension-spacing-40: 160px;
+  --dimension-spacing-44: 176px;
+  --dimension-spacing-48: 192px;
+  --dimension-spacing-52: 208px;
+  --dimension-spacing-56: 224px;
+  --dimension-spacing-60: 240px;
+  --dimension-spacing-64: 256px;
+  --dimension-spacing-72: 288px;
+  --dimension-spacing-80: 320px;
+  --dimension-spacing-96: 384px;
+
+  /* primitive: dimension / radius */
+  --dimension-radius-none: 0px;
+  --dimension-radius-sm: 2px;
+  --dimension-radius-default: 4px;
+  --dimension-radius-md: 6px;
+  --dimension-radius-lg: 8px;
+  --dimension-radius-xl: 12px;
+  --dimension-radius-2xl: 16px;
+  --dimension-radius-3xl: 24px;
+  --dimension-radius-full: 9999px;
+
+  /* ═══════════════════════════════════════════
+     FIGMA TOKENS — semantic collection
+     ═══════════════════════════════════════════ */
+
+  /* semantic: focus */
+  --focus-ring-color: var(--color-blue-500);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* semantic: color */
+  --color-border-primary: var(--color-neutrals-200);
+  --color-border-error: var(--color-red-500);
+  --color-text-body: var(--color-neutrals-600);
+  --color-text-heading: var(--color-absolute-black);
+  --color-text-error: var(--color-red-500);
+  --color-google-blue: #4285f4;
+
+  /* semantic: popover */
+  --popover-bg-default: var(--color-absolute-transparent);
+  --popover-bg-hover: var(--color-neutrals-100);
+  --popover-fg-default: var(--color-neutrals-600);
+  --popover-fg-hover: var(--color-neutrals-600);
+
+  /* semantic: notification */
+  --notification-bg-default: var(--color-absolute-transparent);
+  --notification-bg-hover: var(--color-neutrals-100);
+  --notification-fg-default: var(--color-neutrals-600);
+  --notification-fg-hover: var(--color-neutrals-600);
+
+  /* semantic: card */
+  --card-bg-default: var(--color-absolute-white);
+  --card-border: var(--color-neutrals-200);
+  --card-fg-heading: var(--color-absolute-black);
+  --card-fg-body: var(--color-neutrals-600);
+
+  /* semantic: toggle */
+  --toggle-bg-active: var(--color-blue-200);
+  --toggle-bg-inactive: var(--color-blue-50);
+  --toggle-border: var(--color-blue-200);
+
+  /* ═══════════════════════════════════════════
+     FIGMA TOKENS — components collection
+     ═══════════════════════════════════════════ */
+
+  /* components: button / shared */
+  --button-radius: var(--dimension-radius-lg);
+  --button-padding-x: var(--dimension-spacing-2);
+  --button-padding-y: var(--dimension-spacing-1);
+  --button-gap: var(--dimension-spacing-2);
+  --button-icon-size: var(--dimension-spacing-2);
+  --button-border-width: 2px;
+
+  /* components: button / primary */
+  --button-primary-bg-default: var(--color-blue-500);
+  --button-primary-bg-hover: var(--color-blue-700);
+  --button-primary-bg-disabled: var(--color-neutrals-300);
+  --button-primary-bg-pressed: var(--color-blue-500);
+  --button-primary-fg-default: var(--color-absolute-white);
+  --button-primary-fg-hover: var(--color-absolute-white);
+  --button-primary-fg-disabled: var(--color-neutrals-600);
+  --button-primary-fg-pressed: var(--color-absolute-white);
+
+  /* components: button / secondary */
+  --button-secondary-bg-default: var(--color-blue-100);
+  --button-secondary-bg-hover: var(--color-blue-200);
+  --button-secondary-bg-disabled: var(--color-neutrals-200);
+  --button-secondary-bg-pressed: var(--color-blue-100);
+  --button-secondary-fg-default: var(--color-blue-800);
+  --button-secondary-fg-hover: var(--color-blue-800);
+  --button-secondary-fg-disabled: var(--color-neutrals-600);
+  --button-secondary-fg-pressed: var(--color-blue-800);
+
+  /* components: button / tertiary */
+  --button-tertiary-bg-default: var(--color-absolute-transparent);
+  --button-tertiary-bg-hover: var(--color-neutrals-200);
+  --button-tertiary-bg-disabled: var(--color-absolute-transparent);
+  --button-tertiary-bg-pressed: var(--color-absolute-transparent);
+  --button-tertiary-fg-default: var(--color-blue-800);
+  --button-tertiary-fg-hover: var(--color-blue-800);
+  --button-tertiary-fg-disabled: var(--color-neutrals-400);
+  --button-tertiary-fg-pressed: var(--color-blue-800);
+
+  /* components: badge */
+  --badge-bg: var(--color-neutrals-100);
+  --badge-fg: var(--color-neutrals-500);
+  --badge-size-md: 32px;
+  --badge-size-lg: 40px;
+
+  /* components: avatar */
+  --avatar-size-xs: 24px;
+  --avatar-size-sm: 32px;
+  --avatar-size-md: 40px;
+  --avatar-size-lg: 48px;
+  --avatar-size-xl: 56px;
+
+  /* components: icon */
+  --icon-size-sm: 16px;
+  --icon-size-md: 24px;
+  --icon-size-lg: 32px;
+
+  /* components: segmented button */
+  --segment-button-bg: var(--color-neutrals-150);
+
+  /* components: tab */
+  --tab-border-active: var(--color-blue-500);
+  --tab-border-inactive: var(--color-neutrals-150);
 }
