@@ -133,6 +133,10 @@ You can run commands directly on the production server using `just ssh run`. Use
 just ssh run "docker ps"
 just ssh run "docker logs scheduler-ofelia-1 --tail 50"
 just ssh run "docker exec scheduler-backup-worker-1 ls -la /backups/"
+
+# Combine with just commands — the server has just installed at /opt/habita
+just ssh run "cd /opt/habita && just status"
+just ssh run "cd /opt/habita && just logs svelte"  # note: streaming commands will hang
 ```
 
 When diagnosing production issues, use `just ssh run` proactively to gather information.

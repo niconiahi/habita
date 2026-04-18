@@ -276,9 +276,7 @@
         value_max={data.filters.banos_max}
       />
     </div>
-    <Button variant="primary" type="submit">
-      Filtrar
-    </Button>
+    <Button variant="primary" type="submit">Filtrar</Button>
   </form>
 {/snippet}
 
@@ -319,10 +317,7 @@
       Aplicar filtros
     </Button>
   </div>
-  <dialog
-    bind:this={filters_dialog}
-    class="filters-dialog"
-  >
+  <dialog bind:this={filters_dialog} class="filters-dialog">
     <div class="filters-header">
       <span class="heading-sm">Filtros</span>
       <Button
@@ -433,5 +428,11 @@
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+
+  .property-list:has(:global(.carousel-wrapper):hover)
+    :global(.carousel-wrapper):not(:hover) {
+    filter: brightness(0.45);
+    transition: filter 0.3s ease;
   }
 </style>
