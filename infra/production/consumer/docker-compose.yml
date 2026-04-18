@@ -15,7 +15,7 @@ services:
       OTEL_SERVICE_NAME: consumer-email
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/email.script.ts
+    command: node scripts/broker/consumer/email.script.js
     logging:
       driver: "json-file"
       options:
@@ -48,7 +48,7 @@ services:
       OTEL_SERVICE_NAME: consumer-subscription
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/subscription.script.ts
+    command: node scripts/broker/consumer/subscription.script.js
     logging:
       driver: "json-file"
       options:
@@ -81,7 +81,7 @@ services:
       OTEL_SERVICE_NAME: consumer-escalation
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/escalation.script.ts
+    command: node scripts/broker/consumer/escalation.script.js
     logging:
       driver: "json-file"
       options:
