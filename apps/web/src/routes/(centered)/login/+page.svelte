@@ -91,7 +91,7 @@
       </Button>
       <p class="body-md-medium footer">
         ¿No tenés cuenta?
-        <a class="link" href="/signup">Crear cuenta</a>
+        <a href="/signup">Crear cuenta</a>
       </p>
     </form>
   </div>

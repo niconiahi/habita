@@ -152,11 +152,9 @@
     border: none;
     border-radius: var(--dimension-radius-default);
     background-color: transparent;
-    color: var(--color-text-body);
     font-family: var(--font-family-body);
     font-size: var(--font-size-body-md);
     cursor: pointer;
-    text-decoration: none;
     transition: background-color 0.15s ease;
   }
 

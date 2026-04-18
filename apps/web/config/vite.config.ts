@@ -30,6 +30,9 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 5174,
     allowedHosts: ["dev.habita.rent", "svelte", "app"],
+    fs: {
+      allow: [".."],
+    },
     https: fs.existsSync("/certs/dev.habita.rent.pem")
       ? {
           cert: fs.readFileSync(

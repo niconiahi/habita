@@ -109,9 +109,7 @@
     border: none;
     border-radius: var(--dimension-radius-default);
     background-color: transparent;
-    color: var(--color-text-body);
     cursor: pointer;
-    text-decoration: none;
     transition: background-color 0.15s ease;
   }
 
@@ -120,8 +118,6 @@
   }
 
   .nav-link {
-    color: var(--color-text-body);
-    text-decoration: none;
     padding: var(--dimension-spacing-2)
       var(--dimension-spacing-3);
     border-radius: var(--dimension-radius-lg);

@@ -7,7 +7,7 @@
     </p>
     <p class="footer">
       ¿Ya verificaste?
-      <a class="link" href="/login">Iniciar sesión</a>
+      <a href="/login">Iniciar sesión</a>
     </p>
   </div>
 </div>

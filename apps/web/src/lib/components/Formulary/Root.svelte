@@ -12,6 +12,7 @@
 
 <form
   class="formulary"
+  data-sveltekit-noscroll
   use:enhance={() => {
     return async ({ update }) => {
       await update({ reset: false })

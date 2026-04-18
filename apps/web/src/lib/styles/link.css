@@ -1,4 +1,4 @@
-a.link {
+a:not(:has(*)) {
   color: var(--color-blue-500);
   text-decoration: none;
   border-bottom: 1px solid var(--color-blue-500);
@@ -7,6 +7,12 @@ a.link {
   line-height: 1.4;
 }
 
-a.link:hover {
-  opacity: 0.8;
+a:not(:has(*)):hover {
+  background-color: var(--color-blue-100);
+}
+
+a:focus-visible {
+  outline: var(--focus-ring-width) solid
+    var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }

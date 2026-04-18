@@ -28,7 +28,7 @@
       invitación al calendario
     </p>
     <p class="body-md-medium footer">
-      <a class="link" href="/properties"
+      <a href="/properties"
         >Volver a propiedades</a
       >
     </p>

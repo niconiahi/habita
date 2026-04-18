@@ -247,7 +247,7 @@
         >
         <p class="body-md-medium footer">
           ¿Estás listo para subir tu informe?
-          <a class="link" href="/profile#files"
+          <a href="/profile#files"
             >Subir informe</a
           >
         </p>

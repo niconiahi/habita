@@ -1,0 +1,99 @@
+.markdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dimension-spacing-6);
+  color: var(--color-text-body);
+}
+
+/* headings */
+
+.markdown h1 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-lg);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text-heading);
+}
+
+.markdown h2 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-sm);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text-heading);
+}
+
+/* body text */
+
+.markdown p {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-md);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.markdown strong {
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+/* lists */
+
+.markdown ul,
+.markdown ol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dimension-spacing-2);
+  padding-left: var(--dimension-spacing-6);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-md);
+  line-height: 1.6;
+}
+
+.markdown ul {
+  list-style: disc;
+}
+
+.markdown ol {
+  list-style: decimal;
+}
+
+/* inline code */
+
+.markdown code {
+  font-size: var(--font-size-body-sm);
+  padding: var(--dimension-spacing-0-5) var(--dimension-spacing-1-5);
+  background-color: var(--color-neutrals-100);
+  border-radius: var(--dimension-radius-default);
+}
+
+/* tables */
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown th {
+  text-align: left;
+  padding: var(--dimension-spacing-3);
+  border-bottom: 2px solid var(--color-border-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-sm);
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.markdown td {
+  padding: var(--dimension-spacing-3);
+  border-bottom: 1px solid var(--color-border-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-md);
+}
+
+/* horizontal rule */
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--color-border-primary);
+}

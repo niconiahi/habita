@@ -66,7 +66,7 @@
     display: contents;
   }
 
-  a :global(.variant) {
+  a :global(button) {
     width: 100%;
   }
 </style>

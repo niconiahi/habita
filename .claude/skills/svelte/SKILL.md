@@ -5,62 +5,6 @@ description: Svelte component patterns and conventions. Use when creating Svelte
 
 This skill guides on best practices when creating Svelte-related code. This is how this team writes Svelte, so it should be respected to the detail.
 
-## Schema Colocation Pattern
-
-When a Svelte component needs to export schemas, types, or constants that are used by both the component and external files (like server actions), create a colocated `.schemas.ts` file.
-
-### Why?
-
-Svelte components cannot export non-prop values from their instance `<script>` block. While `<script module>` exists, extracting to a sibling file is cleaner and makes imports more explicit.
-
-### Convention
-
-```
-src/lib/components/
-├── LocationInput.svelte          # The UI component
-└── LocationInput.schemas.ts      # Colocated schemas and types
-```
-
-### Example
-
-**LocationInput.schemas.ts**
-```typescript
-import * as v from "valibot"
-
-export const LocationSchema = v.object({
-  place_id: v.number(),
-  lat: v.number(),
-  lon: v.number(),
-  display_name: v.string(),
-})
-
-export type Location = v.InferOutput<typeof LocationSchema>
-```
-
-**LocationInput.svelte**
-```svelte
-<script lang="ts">
-  import { LocationSchema, type Location } from "./LocationInput.schemas"
-  // Use relative import to make colocation explicit
-</script>
-```
-
-**Server action importing the schema**
-```typescript
-import { LocationSchema } from "$lib/components/LocationInput.schemas"
-```
-
-### When to use `.schemas.ts`
-
-- Component has validation schemas (valibot, zod, etc.)
-- Component has types needed by server code
-- Component has constants shared with other files
-
-### When NOT to use `.schemas.ts`
-
-- Types are only used within the component itself (keep them in the `<script>` block)
-- Simple prop types (use `interface Props` inline)
-
 ## Snippets for Page Organization
 
 When a page component has multiple logical sections, use Svelte 5 snippets to extract them. This mirrors the React pattern of local function components and makes the main render self-documenting.

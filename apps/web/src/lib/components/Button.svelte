@@ -15,11 +15,7 @@
   }: Props = $props()
 
   const class_name = $derived(
-    variant
-      ? `body-md-bold variant ${variant} ${className ?? ""}`
-      : className
-        ? `button ${className}`
-        : "button",
+    `body-md-bold ${variant ?? ""} ${className ?? ""}`.trim(),
   )
 </script>
 
@@ -28,7 +24,7 @@
 </button>
 
 <style>
-  .variant {
+  button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -43,16 +39,16 @@
     transition: background-color 0.15s ease;
   }
 
-  .variant:hover {
+  button:hover {
     cursor: pointer;
   }
 
-  .variant:focus-visible {
+  button:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
   }
 
-  .variant:disabled {
+  button:disabled {
     cursor: not-allowed;
   }
 

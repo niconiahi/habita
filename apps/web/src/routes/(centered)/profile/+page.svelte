@@ -59,12 +59,9 @@
             required
             error={input_errors.surname?.[0]}
           />
-          <Formulary.Input
-            label="Teléfono"
+          <Formulary.PhoneInput
             name="phone_number"
-            type="tel"
             value={data.user_profile.phone_number ?? ""}
-            placeholder="+5491123456789"
             error={input_errors.phone_number?.[0]}
           />
           <Formulary.Input
@@ -74,10 +71,8 @@
             value={data.user_profile.document_number ?? ""}
             error={input_errors.document_number?.[0]}
           />
-          <Formulary.Input
-            label="CUIL"
+          <Formulary.CuilInput
             name="cuil"
-            type="number"
             value={data.user_profile.cuil ?? ""}
             error={input_errors.cuil?.[0]}
           />
