@@ -55,7 +55,7 @@
           </Popover.Content>
         </Popover.Root>
       {:else}
-        <a class="body-md-medium nav-link" href="/login">Login</a>
+        <a class="button body-md-bold secondary" href="/login">Login</a>
       {/if}
       {#if is_manager}
         <Notifications />

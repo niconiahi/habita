@@ -1,4 +1,4 @@
-a:not(:has(*)) {
+a:not(:has(*)):not(.button) {
   color: var(--color-blue-500);
   text-decoration: none;
   border-bottom: 1px solid var(--color-blue-500);
@@ -7,7 +7,7 @@ a:not(:has(*)) {
   line-height: 1.4;
 }
 
-a:not(:has(*)):hover {
+a:not(:has(*)):not(.button):hover {
   background-color: var(--color-blue-100);
 }
 
