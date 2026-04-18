@@ -49,7 +49,7 @@ COPY . .
 RUN pnpm exec svelte-kit sync && pnpm run build
 
 # Pre-compile consumer and cron scripts to standalone JS (no tsx/tsconfig needed at runtime)
-RUN ./node_modules/.bin/esbuild \
+RUN npx esbuild \
   src/lib/server/broker/consumer/email.script.ts \
   src/lib/server/broker/consumer/subscription.script.ts \
   src/lib/server/broker/consumer/escalation.script.ts \
