@@ -6,6 +6,7 @@ build
 temp
 plans
 apps/legacy
+.playwright-mcp
 
 # Secrets: plaintext files are IGNORED
 .env
