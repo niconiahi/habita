@@ -15,15 +15,17 @@
         <Button variant="primary">Empezar gratis</Button>
       </a>
       <a href="/signup" class="cta-link">
-        <Button variant="secondary">Solicitar una demo</Button>
+        <Button variant="secondary"
+          >Solicitar una demo</Button
+        >
       </a>
     </div>
   </section>
 
   <section class="problem">
     <h2 class="heading-md section-title">
-      Hoy usás 4 herramientas desconectadas para gestionar un
-      solo alquiler
+      Hoy usás 4 herramientas desconectadas para gestionar
+      un solo alquiler
     </h2>
     <div class="problem-grid">
       <div class="problem-block">
@@ -55,31 +57,51 @@
       <li class="step">
         <span class="step-number body-md-bold">1</span>
         <p class="body-md-regular">
-          Publicá tu propiedad y que los inquilinos la encuentren
+          Publicá una propiedad y que los inquilinos la
+          encuentren
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">2</span>
         <p class="body-md-regular">
-          Recibí reservas de visitas y evaluá candidatos
+          Recibí reservas de visitas y evaluá candidatos, de
+          sencilla conexión con <a
+            href="https://calendar.google.com"
+            target="_blank"
+            rel="noopener noreferrer">Google calendar</a
+          >
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">3</span>
         <p class="body-md-regular">
-          Redactá el contrato con escalación y garantías
+          Generá el contrato de manera totalmente guiada y
+          simple. Aún con la profusa cantidad de datos que
+          Habita maneja, el proceso es simple e intutivo
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">4</span>
         <p class="body-md-regular">
-          Firmá digitalmente con validez legal
+          Firmá digitalmente con validez legal, utilizando <a
+            href="http://alpha2000.com.ar/v3/firmadigital/"
+            target="_blank"
+            rel="noopener noreferrer">Alpha200</a
+          >
+          (ente
+          <a
+            href="https://www.argentina.gob.ar/jefatura/innovacion-ciencia-y-tecnologia/innovacion/firma-digital/certificadores-licenciados"
+            target="_blank"
+            rel="noopener noreferrer">autorizado</a
+          >)
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">5</span>
         <p class="body-md-regular">
-          Cobrá y hacé seguimiento de pagos
+          Hacé seguimiento y guarda el histórico de pagos
+          del alquiler, servicios e impuestos. Alertas tanto
+          para administradores como para inquilinos
         </p>
       </li>
     </ol>
@@ -149,7 +171,7 @@
         <tr>
           <td class="body-md-medium">
             <a
-              href="https://www.tokkobroker.com/es-ar"
+              href="https://www.tokkobroker.com/es-ar/"
               target="_blank"
               rel="noopener"
             >
@@ -175,7 +197,11 @@
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-inmosoft" content="Administración de contratos. Recibos, liquidaciones, indexación. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-inmosoft"
+              content="Administración de contratos. Recibos, liquidaciones, indexación. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -193,7 +219,11 @@
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-barreeo" content="Carga de contratos existentes. Calcula aumentos IPC/ICL y punitorios. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-barreeo"
+              content="Carga de contratos existentes. Calcula aumentos IPC/ICL y punitorios. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -211,7 +241,11 @@
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-tusalquileres" content="Gestión de contratos existentes. Impresión de pagarés. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-tusalquileres"
+              content="Gestión de contratos existentes. Impresión de pagarés. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -229,7 +263,11 @@
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-rentacontrol" content="Administración de contratos existentes. Liquidaciones y recibos. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-rentacontrol"
+              content="Administración de contratos existentes. Liquidaciones y recibos. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -245,11 +283,19 @@
             </a>
           </td>
           <td class="body-md-regular">
-            <Tooltip id="tip-ubiquo-pub" content="Diseña sitio web de la agencia donde se listan propiedades. No es un marketplace con búsqueda y filtros para inquilinos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-ubiquo-pub"
+              content="Diseña sitio web de la agencia donde se listan propiedades. No es un marketplace con búsqueda y filtros para inquilinos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-ubiquo-con" content="Carga de datos precontractuales. Automatiza índices y pagos. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-ubiquo-con"
+              content="Carga de datos precontractuales. Automatiza índices y pagos. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -267,7 +313,11 @@
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">
-            <Tooltip id="tip-spot" content="Carga de contratos con IA. Extrae datos del PDF. No redacta contratos">Parcial</Tooltip>
+            <Tooltip
+              id="tip-spot"
+              content="Carga de contratos con IA. Extrae datos del PDF. No redacta contratos"
+              >Parcial</Tooltip
+            >
           </td>
           <td class="body-md-regular">No</td>
           <td class="body-md-regular">Sí</td>
@@ -320,10 +370,6 @@
   .ctas {
     display: flex;
     gap: var(--dimension-spacing-3);
-  }
-
-  .cta-link {
-    text-decoration: none;
   }
 
   /* problem */
@@ -421,19 +467,11 @@
     color: var(--color-text-body);
   }
 
-  td a {
-    color: var(--color-blue-600);
-    text-decoration: none;
-  }
-
-  td a:hover {
-    text-decoration: underline;
-  }
-
   .habita-row {
     background-color: var(--color-blue-50);
   }
 
   .habita-row td {
     color: var(--color-blue-700);
-  }</style>
+  }
+</style>

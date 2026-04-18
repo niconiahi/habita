@@ -115,7 +115,7 @@
       </Button>
       <p class="body-md-medium footer">
         ¿Ya tenés cuenta?
-        <a class="link" href="/login"
+        <a href="/login"
           >Ingresar con tu cuenta</a
         >
       </p>

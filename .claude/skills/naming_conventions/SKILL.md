@@ -150,7 +150,6 @@ import * as v from "valibot"
 - `fetchers/` — DB query functions, colocated with route
 - `.server.ts` — Server-only code
 - `.client.ts` — Client-only code
-- `.schemas.ts` — Colocated schemas for Svelte components
 
 ## Timestamps
 

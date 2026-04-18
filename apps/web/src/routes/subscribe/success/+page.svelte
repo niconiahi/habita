@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "$lib/components/Button.svelte"
   import * as Content from "$lib/components/Content"
 </script>
 
@@ -10,8 +11,8 @@
         Tu suscripción fue renovada exitosamente. Ya podés
         continuar usando Habita.
       </p>
-      <a class="button" href="/admin/properties">
-        Ir al panel
+      <a href="/admin/properties">
+        <Button variant="primary">Ir al panel</Button>
       </a>
     </div>
   </Content.Section>
@@ -19,24 +20,12 @@
 
 <style>
   .success-card {
-    padding: var(--spacing-6);
-    border: 2px solid var(--green-500, #22c55e);
-    background-color: var(--gray-700);
-    border-radius: 0.25rem;
+    padding: var(--dimension-spacing-6);
+    border: 2px solid var(--color-green-500);
+    background-color: var(--color-absolute-white);
+    border-radius: var(--dimension-radius-lg);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
-    color: var(--gray-100);
-  }
-
-  .button {
-    display: inline-block;
-    padding: var(--spacing-2) var(--spacing-4);
-    background-color: var(--accent);
-    color: var(--gray-100);
-    border-radius: 0.25rem;
-    text-decoration: none;
-    text-align: center;
-    font-weight: 600;
+    gap: var(--dimension-spacing-4);
   }
 </style>

@@ -83,6 +83,13 @@ just deploy tag-svelte v1.2.3  # Deploy specific svelte version
 just deploy tag-go v1.2.3      # Deploy specific go version
 ```
 
+### SSH (`just ssh`)
+
+```bash
+just ssh run                   # Interactive SSH into the server
+just ssh run "docker ps"       # Run a command remotely and return output
+```
+
 ### Zone (`just zone`)
 
 ```bash
@@ -116,6 +123,19 @@ dco storage down --remove-orphans          # Stack-level: tear down all storage 
 1. **`just`** — always check `just --list` first
 2. **`dco`** — only if no `just` recipe exists and you need Docker
 3. **Raw CLI** — never for project operations
+
+## Remote server access
+
+You can run commands directly on the production server using `just ssh run`. Use this to inspect logs, check container status, debug issues, etc. — no need to ask the user to run commands manually.
+
+```bash
+# Run any command on the server
+just ssh run "docker ps"
+just ssh run "docker logs scheduler-ofelia-1 --tail 50"
+just ssh run "docker exec scheduler-backup-worker-1 ls -la /backups/"
+```
+
+When diagnosing production issues, use `just ssh run` proactively to gather information.
 
 ## Bash conventions
 

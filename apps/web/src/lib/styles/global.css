@@ -6,7 +6,11 @@
   padding: 0;
 }
 
-html,
+html {
+  scrollbar-gutter: stable;
+  height: 100%;
+}
+
 body {
   height: 100%;
 }
@@ -47,13 +51,9 @@ textarea {
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
-button:focus-visible,
-a:focus-visible {
+button:focus-visible {
   outline: var(--focus-ring-width) solid
     var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
 }
 
-td a {
-  margin-right: 0;
-}

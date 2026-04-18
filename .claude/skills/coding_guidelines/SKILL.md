@@ -50,6 +50,8 @@ const inserted = await db.insertInto("file").values({ content: encrypted_content
 const inserted = await db.insertInto("file").values({ content: encrypt_buffer(content) })
 ```
 
+- Schemas, types, and constants live in the file where they are used. No `.schemas.ts` sibling files. If a Svelte component needs to export schemas or types, use `<script module>`. If an action needs a validation schema, define it inline in the action file.
+
 - No magic numbers or magic strings — extract named constants or utility functions. If a value appears in logic (not just a data literal), it must have a name that explains its purpose.
 
 ```ts

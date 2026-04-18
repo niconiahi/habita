@@ -20,7 +20,7 @@
   <div class="toggle">
     <SegmentedButton
       items={SEGMENT_ITEMS}
-      selected={selected}
+      {selected}
       onchange={handle_change}
     />
   </div>
@@ -29,42 +29,48 @@
     <div class="cards">
       <div class="card">
         <h2 class="heading-sm card-title">Freelance</h2>
-        <p class="heading-md price">$35 USD<span class="body-md-regular period">/mes</span></p>
+        <p class="heading-md price">
+          $35 USD<span class="body-md-regular period"
+            >/mes</span
+          >
+        </p>
         <ul class="features">
           <li class="body-md-regular">1 usuario</li>
           <li class="body-md-regular">
             Todas las
-            <a class="link" href="/functionalities">
-              funcionalidades
-            </a>
+            <a href="/functionalities"> funcionalidades </a>
           </li>
           <li class="body-md-regular">
-            30 días gratis. Se cobra automáticamente al finalizar
-            el período de prueba
+            30 días gratis. Se cobra automáticamente al
+            finalizar el período de prueba
           </li>
         </ul>
-        <a href="/signup" class="cta-link">
+        <a href="/signup">
           <Button variant="primary">Empezar gratis</Button>
         </a>
       </div>
 
       <div class="card">
         <h2 class="heading-sm card-title">Inmobiliaria</h2>
-        <p class="heading-md price">$50 USD<span class="body-md-regular period">/puesto/mes</span></p>
+        <p class="heading-md price">
+          $50 USD<span class="body-md-regular period"
+            >/puesto/mes</span
+          >
+        </p>
         <ul class="features">
-          <li class="body-md-regular">Puestos ilimitados</li>
+          <li class="body-md-regular">
+            Puestos ilimitados
+          </li>
           <li class="body-md-regular">
             Todas las
-            <a class="link" href="/functionalities">
-              funcionalidades
-            </a>
+            <a href="/functionalities"> funcionalidades </a>
           </li>
           <li class="body-md-regular">
-            30 días gratis. Se cobra automáticamente al finalizar
-            el período de prueba
+            30 días gratis. Se cobra automáticamente al
+            finalizar el período de prueba
           </li>
         </ul>
-        <a href="/signup" class="cta-link">
+        <a href="/signup">
           <Button variant="primary">Empezar gratis</Button>
         </a>
       </div>
@@ -73,7 +79,11 @@
     <div class="cards">
       <div class="card">
         <h2 class="heading-sm card-title">Freelance</h2>
-        <p class="heading-md price">$350 USD<span class="body-md-regular period">/año</span> <span class="discount body-sm-bold">-17%</span></p>
+        <p class="heading-md price">
+          $350 USD<span class="body-md-regular period"
+            >/año</span
+          > <span class="discount body-sm-bold">-17%</span>
+        </p>
         <ul class="features">
           <li class="body-md-regular badge-item">
             2 meses gratis
@@ -81,40 +91,42 @@
           <li class="body-md-regular">1 usuario</li>
           <li class="body-md-regular">
             Todas las
-            <a class="link" href="/functionalities">
-              funcionalidades
-            </a>
+            <a href="/functionalities"> funcionalidades </a>
           </li>
           <li class="body-md-regular">
-            30 días gratis. Se cobra automáticamente al finalizar
-            el período de prueba
+            30 días gratis. Se cobra automáticamente al
+            finalizar el período de prueba
           </li>
         </ul>
-        <a href="/signup" class="cta-link">
+        <a href="/signup">
           <Button variant="primary">Empezar gratis</Button>
         </a>
       </div>
 
       <div class="card">
         <h2 class="heading-sm card-title">Inmobiliaria</h2>
-        <p class="heading-md price">$500 USD<span class="body-md-regular period">/puesto/año</span> <span class="discount body-sm-bold">-17%</span></p>
+        <p class="heading-md price">
+          $500 USD<span class="body-md-regular period"
+            >/puesto/año</span
+          > <span class="discount body-sm-bold">-17%</span>
+        </p>
         <ul class="features">
           <li class="body-md-regular badge-item">
             2 meses gratis
           </li>
-          <li class="body-md-regular">Puestos ilimitados</li>
+          <li class="body-md-regular">
+            Puestos ilimitados
+          </li>
           <li class="body-md-regular">
             Todas las
-            <a class="link" href="/functionalities">
-              funcionalidades
-            </a>
+            <a href="/functionalities"> funcionalidades </a>
           </li>
           <li class="body-md-regular">
-            30 días gratis. Se cobra automáticamente al finalizar
-            el período de prueba
+            30 días gratis. Se cobra automáticamente al
+            finalizar el período de prueba
           </li>
         </ul>
-        <a href="/signup" class="cta-link">
+        <a href="/signup">
           <Button variant="primary">Empezar gratis</Button>
         </a>
       </div>
@@ -173,7 +185,8 @@
   }
 
   .discount {
-    padding: var(--dimension-spacing-1) var(--dimension-spacing-2);
+    padding: var(--dimension-spacing-1)
+      var(--dimension-spacing-2);
     background-color: var(--color-green-100);
     color: var(--color-green-700);
     border-radius: var(--dimension-radius-full);
@@ -187,9 +200,7 @@
     padding-left: var(--dimension-spacing-6);
   }
 
-  .cta-link {
-    text-decoration: none;
-    margin-top: auto;
+  a :global(button) {
+    width: 100%;
   }
-
 </style>

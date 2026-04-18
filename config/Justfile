@@ -13,6 +13,7 @@ mod test
 mod secrets
 mod deploy
 mod zone
+mod ssh
 
 # Symlink all config files from config/ to their parent directories
 link:

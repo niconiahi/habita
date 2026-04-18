@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Footer from "$lib/components/Footer.svelte"
   import Header from "$lib/components/Header.svelte"
   import type { LayoutData } from "./$types"
 
@@ -17,6 +18,7 @@
     {@render children()}
   </div>
 </div>
+<Footer />
 
 <style>
   .container-centered {

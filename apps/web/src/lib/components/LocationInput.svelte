@@ -14,6 +14,7 @@
     LocationSchema,
     type Location,
   } from "$lib/location"
+  import Button from "$lib/components/Button.svelte"
 
   interface Props {
     default_value?: string
@@ -391,21 +392,19 @@
     </div>
     {#if $snapshot.context.selected}
       <a
-        class="button"
         href={`https://www.google.com/maps?q=${$snapshot.context.selected.lat},${$snapshot.context.selected.lon}`}
         target="_blank"
         rel="noopener noreferrer"
       >
-        View on Google Maps
+        <Button variant="secondary">View on Google Maps</Button>
       </a>
     {:else if default_lat && default_lon}
       <a
-        class="button"
         href={`https://www.google.com/maps?q=${default_lat},${default_lon}`}
         target="_blank"
         rel="noopener noreferrer"
       >
-        View on Google Maps
+        <Button variant="secondary">View on Google Maps</Button>
       </a>
     {/if}
   </div>

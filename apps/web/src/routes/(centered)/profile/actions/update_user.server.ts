@@ -20,12 +20,41 @@ const DocumentNumberSchema = v.pipe(
     "Debe ser un numero valido",
   ),
 )
+const CUIL_LENGTH = 11
+const CUIL_WEIGHTS = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+const VALID_CUIL_PREFIXES = ["20", "23", "24", "27"]
+
 const CuilSchema = v.pipe(
   v.string(),
   v.check(
     (val) => val === "" || /^\d+$/.test(val),
-    "Debe ser un numero valido",
+    "Solo se permiten numeros",
   ),
+  v.check(
+    (val) => val === "" || val.length === CUIL_LENGTH,
+    "El CUIL debe tener 11 digitos",
+  ),
+  v.check(
+    (val) =>
+      val === "" ||
+      VALID_CUIL_PREFIXES.includes(val.slice(0, 2)),
+    "El prefijo debe ser 20, 23, 24 o 27",
+  ),
+  v.check((val) => {
+    if (val === "" || val.length !== CUIL_LENGTH) return true
+    let sum = 0
+    for (let i = 0; i < 10; i++) {
+      sum += Number(val[i]) * CUIL_WEIGHTS[i]
+    }
+    const remainder = sum % 11
+    const expected =
+      remainder === 0
+        ? 0
+        : remainder === 1
+          ? 9
+          : 11 - remainder
+    return expected === Number(val[10])
+  }, "El digito verificador es incorrecto"),
 )
 
 const InputSchema = v.object({

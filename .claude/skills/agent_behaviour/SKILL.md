@@ -25,3 +25,11 @@ Never make implementation decisions on your own. If a change requires a design c
 - Changing function signatures, data shapes, or API contracts
 
 If you're unsure whether something is a decision or a trivial change, ask. The cost of asking is zero. The cost of a wrong assumption is rework and lost trust.
+
+## Never guess
+
+Don't speculate about what might be wrong. If you don't know, investigate — read code, add logs, use the browser, run commands. Saying "maybe it's X" without evidence wastes time and erodes trust. Verify before speaking.
+
+## Always validate with sources
+
+Before proposing a solution, verify it against official docs, articles, or source code. Don't rely on memory or assumptions about APIs — look it up. Use WebSearch, WebFetch, or read the actual library source to confirm the approach works before writing code.
