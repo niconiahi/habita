@@ -48,18 +48,6 @@ ARG COMMIT_SHA
 COPY . .
 RUN pnpm exec svelte-kit sync && pnpm run build
 
-# Pre-compile consumer and cron scripts to standalone JS (no tsx/tsconfig needed at runtime)
-RUN npx esbuild \
-  src/lib/server/broker/consumer/email.script.ts \
-  src/lib/server/broker/consumer/subscription.script.ts \
-  src/lib/server/broker/consumer/escalation.script.ts \
-  src/lib/server/cron/create_escalation_jobs.script.ts \
-  src/lib/server/cron/create_renewal_jobs.script.ts \
-  --bundle --platform=node --format=esm --outdir=scripts \
-  --external:pg --external:ioredis --external:kafkajs \
-  --external:@opentelemetry/* \
-  --alias:$lib=./src/lib --alias:db=./db
-
 # -----------------------------------------------------------------------------
 # Stage: production - Production target with Node.js runtime
 # -----------------------------------------------------------------------------
@@ -75,10 +63,12 @@ COPY package.json pnpm-lock.yaml ./
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY --from=builder /app/build ./build
-COPY --from=builder /app/scripts ./scripts
 
 COPY --from=builder /app/db ./db
 COPY --from=builder /app/kysely.config.ts ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/.svelte-kit/tsconfig.json ./.svelte-kit/tsconfig.json
+COPY --from=builder /app/src/lib ./src/lib
 
 RUN chown -R appuser:appuser /app
 
