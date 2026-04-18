@@ -31,7 +31,7 @@ echo "Generating argentina.mbtiles with Planetiler..."
 echo "This downloads ~700MB from Geofabrik and takes a few minutes."
 
 docker run --rm \
-  -e JAVA_TOOL_OPTIONS="-Xmx1g" \
+  -e JAVA_TOOL_OPTIONS="-Xmx4g" \
   -v "$TILES_DIR":/data \
   ghcr.io/onthegomap/planetiler:latest \
   --download --area=argentina \
