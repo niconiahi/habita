@@ -15,4 +15,5 @@ export const ACTION = {
   UPDATE_DESTINIES: "update_destinies",
   TOGGLE_TAG: "toggle_tag",
   UPDATE_CONSTRUCTION_YEAR: "update_construction_year",
+  REORDER_FLOORS: "reorder_floors",
 } as const
