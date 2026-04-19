@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms"
+  import * as Dialog from "$lib/components/Dialog"
   import Button from "$lib/components/Button.svelte"
   import PropertyCard from "$lib/components/PropertyCard.svelte"
   import ToggleButton from "$lib/components/ToggleButton.svelte"
@@ -22,39 +23,82 @@
   let filters_dialog: HTMLDialogElement | undefined =
     $state()
 
-  function handle_open_filters() {
-    filters_dialog?.showModal()
+  function parse_ids(
+    param: string | undefined,
+  ): Set<number> {
+    if (!param) return new Set()
+    return new Set(
+      param
+        .split(",")
+        .map((s) => Number(s.trim()))
+        .filter((n) => !Number.isNaN(n)),
+    )
   }
 
-  function handle_close_filters() {
-    filters_dialog?.close()
+  function init_filters() {
+    return {
+      zone_id: data.filters.zone_id ?? null,
+      tags: parse_ids(data.filters.tags),
+      services: parse_ids(data.filters.services),
+      total_surface_min: data.filters.total_surface_min,
+      total_surface_max: data.filters.total_surface_max,
+      construction_year_min:
+        data.filters.construction_year_min,
+      construction_year_max:
+        data.filters.construction_year_max,
+      ambientes_min: data.filters.ambientes_min,
+      ambientes_max: data.filters.ambientes_max,
+      dormitorios_min: data.filters.dormitorios_min,
+      dormitorios_max: data.filters.dormitorios_max,
+      banos_min: data.filters.banos_min,
+      banos_max: data.filters.banos_max,
+    }
   }
 
-  const active_tag_ids = $derived(
-    data.filters.tags
-      ? data.filters.tags
-          .split(",")
-          .map((s) => Number(s.trim()))
-          .filter((n) => !Number.isNaN(n))
-      : [],
-  )
-  const active_service_ids = $derived(
-    data.filters.services
-      ? data.filters.services
-          .split(",")
-          .map((s) => Number(s.trim()))
-          .filter((n) => !Number.isNaN(n))
-      : [],
-  )
-  const range_hidden_entries = $derived(
-    Object.entries(data.filters).filter(
-      ([key, value]) =>
-        key !== "zone_id" &&
-        key !== "tags" &&
-        key !== "services" &&
-        value !== undefined,
-    ),
-  )
+  let current_filters = $state(init_filters())
+
+  $effect(() => {
+    current_filters = {
+      zone_id: data.filters.zone_id ?? null,
+      tags: parse_ids(data.filters.tags),
+      services: parse_ids(data.filters.services),
+      total_surface_min: data.filters.total_surface_min,
+      total_surface_max: data.filters.total_surface_max,
+      construction_year_min: data.filters.construction_year_min,
+      construction_year_max: data.filters.construction_year_max,
+      ambientes_min: data.filters.ambientes_min,
+      ambientes_max: data.filters.ambientes_max,
+      dormitorios_min: data.filters.dormitorios_min,
+      dormitorios_max: data.filters.dormitorios_max,
+      banos_min: data.filters.banos_min,
+      banos_max: data.filters.banos_max,
+    }
+  })
+
+  function toggle_tag(id: number) {
+    if (current_filters.tags.has(id)) {
+      current_filters.tags.delete(id)
+    } else {
+      current_filters.tags.add(id)
+    }
+    current_filters.tags = new Set(current_filters.tags)
+  }
+
+  function toggle_service(id: number) {
+    if (current_filters.services.has(id)) {
+      current_filters.services.delete(id)
+    } else {
+      current_filters.services.add(id)
+    }
+    current_filters.services = new Set(
+      current_filters.services,
+    )
+  }
+
+  function reset_filters() {
+    current_filters = init_filters()
+  }
+
   const tag_groups = PROPERTY_TAG_CATEGORIES.map(
     (category) => ({
       label: category.label,
@@ -71,46 +115,32 @@
       label: get_service_type_label(type),
     })),
   }
-
-  function toggle_id(
-    current: number[],
-    id: number,
-  ): string {
-    if (current.includes(id)) {
-      return current.filter((n) => n !== id).join(",")
-    }
-    return [...current, id].join(",")
-  }
 </script>
 
 {#snippet ZoneFilter()}
-  <form
-    class="zone-form"
-    method="POST"
-    action={compose_action(ACTION.SET_FILTERS)}
-    use:enhance
-  >
+  <div class="zone-form">
     <ZoneInput
       items={data.zone_items}
       default_value={data.selected_zone}
     />
-    <input
-      type="hidden"
-      name="tags"
-      value={data.filters.tags ?? ""}
-    />
-    <input
-      type="hidden"
-      name="services"
-      value={data.filters.services ?? ""}
-    />
-    {#each range_hidden_entries as [name, value] (name)}
-      <input type="hidden" {name} value={String(value)} />
-    {/each}
-    <Button variant="secondary" type="submit">
+    <Button
+      variant="secondary"
+      type="button"
+      onclick={() => {
+        const zone_input =
+          document.querySelector<HTMLInputElement>(
+            'input[name="zone_id"]',
+          )
+        if (zone_input) {
+          current_filters.zone_id = zone_input.value
+            ? Number(zone_input.value)
+            : null
+        }
+      }}
+    >
       Buscar zona
     </Button>
-  </form>
+  </div>
 {/snippet}
 
 {#snippet TagFilters()}
@@ -122,40 +152,11 @@
         </span>
         <div class="filter-group-tags">
           {#each group.tags as tag (tag.id)}
-            <form
-              method="POST"
-              action={compose_action(ACTION.SET_FILTERS)}
-              use:enhance
-            >
-              {#if data.filters.zone_id}
-                <input
-                  type="hidden"
-                  name="zone_id"
-                  value={data.filters.zone_id}
-                />
-              {/if}
-              <input
-                type="hidden"
-                name="tags"
-                value={toggle_id(active_tag_ids, tag.id)}
-              />
-              <input
-                type="hidden"
-                name="services"
-                value={data.filters.services ?? ""}
-              />
-              {#each range_hidden_entries as [name, value] (name)}
-                <input
-                  type="hidden"
-                  {name}
-                  value={String(value)}
-                />
-              {/each}
-              <ToggleButton
-                label={tag.label}
-                active={active_tag_ids.includes(tag.id)}
-              />
-            </form>
+            <ToggleButton
+              label={tag.label}
+              active={current_filters.tags.has(tag.id)}
+              onclick={() => toggle_tag(tag.id)}
+            />
           {/each}
         </div>
       </div>
@@ -166,45 +167,13 @@
       </span>
       <div class="filter-group-tags">
         {#each service_group.services as service (service.id)}
-          <form
-            method="POST"
-            action={compose_action(ACTION.SET_FILTERS)}
-            use:enhance
-          >
-            {#if data.filters.zone_id}
-              <input
-                type="hidden"
-                name="zone_id"
-                value={data.filters.zone_id}
-              />
-            {/if}
-            <input
-              type="hidden"
-              name="tags"
-              value={data.filters.tags ?? ""}
-            />
-            <input
-              type="hidden"
-              name="services"
-              value={toggle_id(
-                active_service_ids,
-                service.id,
-              )}
-            />
-            {#each range_hidden_entries as [name, value] (name)}
-              <input
-                type="hidden"
-                {name}
-                value={String(value)}
-              />
-            {/each}
-            <ToggleButton
-              label={service.label}
-              active={active_service_ids.includes(
-                service.id,
-              )}
-            />
-          </form>
+          <ToggleButton
+            label={service.label}
+            active={current_filters.services.has(
+              service.id,
+            )}
+            onclick={() => toggle_service(service.id)}
+          />
         {/each}
       </div>
     </div>
@@ -212,72 +181,48 @@
 {/snippet}
 
 {#snippet RangeFilters()}
-  <form
-    method="POST"
-    action={compose_action(ACTION.SET_FILTERS)}
-    use:enhance
-  >
-    {#if data.filters.zone_id}
-      <input
-        type="hidden"
-        name="zone_id"
-        value={data.filters.zone_id}
-      />
-    {/if}
-    <input
-      type="hidden"
-      name="tags"
-      value={data.filters.tags ?? ""}
+  <div class="filter-ranges-grid">
+    <RangeFilter
+      label="Superficie total"
+      name="total_surface"
+      min={0}
+      max={500}
+      bind:value_min={current_filters.total_surface_min}
+      bind:value_max={current_filters.total_surface_max}
     />
-    <input
-      type="hidden"
-      name="services"
-      value={data.filters.services ?? ""}
+    <RangeFilter
+      label="Antigüedad"
+      name="construction_year"
+      min={1900}
+      max={2026}
+      bind:value_min={current_filters.construction_year_min}
+      bind:value_max={current_filters.construction_year_max}
     />
-    <div class="filter-ranges-grid">
-      <RangeFilter
-        label="Superficie total"
-        name="total_surface"
-        min={0}
-        max={500}
-        value_min={data.filters.total_surface_min}
-        value_max={data.filters.total_surface_max}
-      />
-      <RangeFilter
-        label="Antigüedad"
-        name="construction_year"
-        min={1900}
-        max={2026}
-        value_min={data.filters.construction_year_min}
-        value_max={data.filters.construction_year_max}
-      />
-      <RangeFilter
-        label="Ambientes"
-        name="ambientes"
-        min={0}
-        max={10}
-        value_min={data.filters.ambientes_min}
-        value_max={data.filters.ambientes_max}
-      />
-      <RangeFilter
-        label="Dormitorios"
-        name="dormitorios"
-        min={0}
-        max={8}
-        value_min={data.filters.dormitorios_min}
-        value_max={data.filters.dormitorios_max}
-      />
-      <RangeFilter
-        label="Baños"
-        name="banos"
-        min={0}
-        max={5}
-        value_min={data.filters.banos_min}
-        value_max={data.filters.banos_max}
-      />
-    </div>
-    <Button variant="primary" type="submit">Filtrar</Button>
-  </form>
+    <RangeFilter
+      label="Ambientes"
+      name="ambientes"
+      min={0}
+      max={10}
+      bind:value_min={current_filters.ambientes_min}
+      bind:value_max={current_filters.ambientes_max}
+    />
+    <RangeFilter
+      label="Dormitorios"
+      name="dormitorios"
+      min={0}
+      max={8}
+      bind:value_min={current_filters.dormitorios_min}
+      bind:value_max={current_filters.dormitorios_max}
+    />
+    <RangeFilter
+      label="Baños"
+      name="banos"
+      min={0}
+      max={5}
+      bind:value_min={current_filters.banos_min}
+      bind:value_max={current_filters.banos_max}
+    />
+  </div>
 {/snippet}
 
 {#snippet Filters()}
@@ -313,22 +258,130 @@
     <a href="/properties" class="clear-link">
       <Button variant="secondary">Limpiar filtros</Button>
     </a>
-    <Button variant="primary" onclick={handle_open_filters}>
+    <Button
+      variant="primary"
+      onclick={() => filters_dialog?.showModal()}
+    >
       Aplicar filtros
     </Button>
   </div>
-  <dialog bind:this={filters_dialog} class="filters-dialog">
-    <div class="filters-header">
-      <span class="heading-sm">Filtros</span>
-      <Button
-        variant="tertiary"
-        onclick={handle_close_filters}
-      >
-        Cerrar
-      </Button>
-    </div>
-    {@render Filters()}
-  </dialog>
+  <Dialog.Root bind:element={filters_dialog}>
+    {#snippet children({ close })}
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Filtros</Dialog.Title>
+          <Dialog.Close
+            onclick={() => {
+              reset_filters()
+              close()
+            }}
+          />
+        </Dialog.Header>
+        {@render Filters()}
+        <form
+          method="POST"
+          action={compose_action(ACTION.SET_FILTERS)}
+          use:enhance={() => {
+            close()
+            return async ({ update }) => {
+              await update()
+            }
+          }}
+        >
+          {#if current_filters.zone_id}
+            <input
+              type="hidden"
+              name="zone_id"
+              value={current_filters.zone_id}
+            />
+          {/if}
+          <input
+            type="hidden"
+            name="tags"
+            value={[...current_filters.tags].join(",")}
+          />
+          <input
+            type="hidden"
+            name="services"
+            value={[...current_filters.services].join(",")}
+          />
+          {#if current_filters.total_surface_min !== undefined}
+            <input
+              type="hidden"
+              name="total_surface_min"
+              value={current_filters.total_surface_min}
+            />
+          {/if}
+          {#if current_filters.total_surface_max !== undefined}
+            <input
+              type="hidden"
+              name="total_surface_max"
+              value={current_filters.total_surface_max}
+            />
+          {/if}
+          {#if current_filters.construction_year_min !== undefined}
+            <input
+              type="hidden"
+              name="construction_year_min"
+              value={current_filters.construction_year_min}
+            />
+          {/if}
+          {#if current_filters.construction_year_max !== undefined}
+            <input
+              type="hidden"
+              name="construction_year_max"
+              value={current_filters.construction_year_max}
+            />
+          {/if}
+          {#if current_filters.ambientes_min !== undefined}
+            <input
+              type="hidden"
+              name="ambientes_min"
+              value={current_filters.ambientes_min}
+            />
+          {/if}
+          {#if current_filters.ambientes_max !== undefined}
+            <input
+              type="hidden"
+              name="ambientes_max"
+              value={current_filters.ambientes_max}
+            />
+          {/if}
+          {#if current_filters.dormitorios_min !== undefined}
+            <input
+              type="hidden"
+              name="dormitorios_min"
+              value={current_filters.dormitorios_min}
+            />
+          {/if}
+          {#if current_filters.dormitorios_max !== undefined}
+            <input
+              type="hidden"
+              name="dormitorios_max"
+              value={current_filters.dormitorios_max}
+            />
+          {/if}
+          {#if current_filters.banos_min !== undefined}
+            <input
+              type="hidden"
+              name="banos_min"
+              value={current_filters.banos_min}
+            />
+          {/if}
+          {#if current_filters.banos_max !== undefined}
+            <input
+              type="hidden"
+              name="banos_max"
+              value={current_filters.banos_max}
+            />
+          {/if}
+          <Button variant="primary" type="submit">
+            Aplicar filtros
+          </Button>
+        </form>
+      </Dialog.Content>
+    {/snippet}
+  </Dialog.Root>
   {@render Properties()}
 </div>
 
@@ -347,30 +400,6 @@
 
   .clear-link {
     text-decoration: none;
-  }
-
-  .filters-dialog {
-    border: none;
-    border-radius: var(--dimension-radius-lg);
-    padding: var(--dimension-spacing-6);
-    width: min(90vw, 640px);
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    font-family: var(--font-family-body);
-    color: var(--color-text-body);
-    margin: auto;
-  }
-
-  .filters-dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-
-  .filters-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--dimension-spacing-6);
   }
 
   .zone-form {
@@ -434,5 +463,9 @@
     :global(.carousel-wrapper):not(:hover) {
     filter: brightness(0.45);
     transition: filter 0.3s ease;
+  }
+
+  form :global(.button) {
+    width: 100%;
   }
 </style>
