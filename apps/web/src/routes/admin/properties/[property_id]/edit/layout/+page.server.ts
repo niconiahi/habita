@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
@@ -11,6 +11,7 @@ import { destroy_room } from "../actions/destroy_room.server"
 import { update_floor } from "../actions/update_floor.server"
 import { update_room } from "../actions/update_room.server"
 import { update_room_positions } from "../actions/update_room_positions.server"
+import { reorder_floors } from "../actions/reorder_floors.server"
 
 export const actions: Actions = {
   [ACTION.CREATE_FLOOR]: async ({
@@ -18,9 +19,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -29,10 +28,15 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
+    const form_data = await request.formData()
+    const direction =
+      form_data.get("direction") === "down"
+        ? "down"
+        : "up"
     const [create_floor_errors] =
-      await create_floor(property_id)
+      await create_floor(property_id, direction)
     if (create_floor_errors) {
       return { errors: create_floor_errors }
     }
@@ -43,9 +47,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -54,7 +56,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const [update_floor_errors] =
@@ -69,9 +71,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -80,7 +80,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const [destroy_floor_errors] =
@@ -95,9 +95,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -106,7 +104,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const floor_id = v.parse(
@@ -124,9 +122,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -135,7 +131,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -151,9 +147,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -162,7 +156,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -178,9 +172,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -189,7 +181,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -197,6 +189,30 @@ export const actions: Actions = {
       await destroy_room(form_data)
     if (destroy_room_errors) {
       return { errors: destroy_room_errors }
+    }
+    return null
+  },
+  [ACTION.REORDER_FLOORS]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    require_authentication(locals)
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [reorder_floors_errors] =
+      await reorder_floors(form_data, property_id)
+    if (reorder_floors_errors) {
+      return { errors: reorder_floors_errors }
     }
     return null
   },
