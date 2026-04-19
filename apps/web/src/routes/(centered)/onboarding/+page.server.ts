@@ -1,12 +1,10 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { select_account_type } from "./actions/select_account_type.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/login")
-  }
+  require_authentication(locals)
 }
 
 export const actions: Actions = {
@@ -14,9 +12,7 @@ export const actions: Actions = {
     locals,
     request,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/login")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const [errors, data] = await select_account_type(
       form_data,

@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { is_webmaster } from "$lib/server/is_webmaster"
 import type { Actions, PageServerLoad } from "./$types"
@@ -5,9 +6,7 @@ import { ACTION } from "./actions/action"
 import { create_payment } from "./actions/create_payment.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   if (!is_webmaster(locals.user)) {
     error(403, "forbidden")
   }
@@ -16,9 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   [ACTION.CREATE_PAYMENT]: async ({ locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     if (!is_webmaster(locals.user)) {
       error(403, "forbidden")
     }

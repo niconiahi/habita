@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ContractStateSchema } from "$lib/contract_state"
@@ -12,9 +12,7 @@ export const load: PageServerLoad = async ({
   locals,
   url,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const state_param = url.searchParams.get("state")
   const state =
     state_param !== null
@@ -23,7 +21,7 @@ export const load: PageServerLoad = async ({
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const contracts = await fetch_contracts(
     property_ids,

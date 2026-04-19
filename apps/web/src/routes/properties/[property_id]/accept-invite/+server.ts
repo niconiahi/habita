@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
@@ -25,9 +25,7 @@ export const GET: RequestHandler = async ({
   params,
   locals,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const token = v.parse(
     v.string(),
     url.searchParams.get("token"),

@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { get_contract_types } from "$lib/contract_type"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -12,9 +12,7 @@ export const load: PageServerLoad = async ({
   locals,
   params,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,
@@ -23,7 +21,7 @@ export const load: PageServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const contract_types = get_contract_types()
   return { contract_types }
@@ -35,9 +33,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -46,7 +42,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const [errors, data] = await create_contract(

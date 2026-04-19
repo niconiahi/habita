@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import {
@@ -13,12 +14,10 @@ const FREELANCE_PRICE_USD = 50
 const REALTOR_SEAT_PRICE_USD = 40
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/login")
-  }
+  require_authentication(locals)
 
   const active_organization_id =
-    locals.session?.activeOrganizationId ?? null
+    locals.session.activeOrganizationId ?? null
 
   const subscription = locals.subscriptions.find(
     (s) => s.organization_id === active_organization_id,
@@ -73,11 +72,9 @@ export const actions: Actions = {
   [ACTION.CREATE_SUBSCRIPTION_PAYMENT]: async ({
     locals,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/login")
-    }
+    require_authentication(locals)
     const active_organization_id =
-      locals.session?.activeOrganizationId
+      locals.session.activeOrganizationId
     if (!active_organization_id) {
       error(400, "No hay organización activa")
     }

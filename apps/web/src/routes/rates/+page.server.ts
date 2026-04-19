@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
@@ -11,9 +12,7 @@ import { now } from "$lib/server/now"
 import type { Actions, PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   if (!is_webmaster(locals.user)) {
     error(403, "forbidden")
   }
@@ -37,9 +36,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     if (!is_webmaster(locals.user)) {
       error(403, "forbidden")
     }

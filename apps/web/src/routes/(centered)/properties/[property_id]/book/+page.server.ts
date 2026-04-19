@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { trace } from "@opentelemetry/api"
 import { redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
@@ -16,9 +17,7 @@ export const load: PageServerLoad = async ({
   locals,
   url,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,

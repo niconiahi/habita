@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -12,9 +13,7 @@ export const load: LayoutServerLoad = async ({
   params,
   request,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,
@@ -26,7 +25,7 @@ export const load: LayoutServerLoad = async ({
     request.headers,
     locals.user.id,
     property_id,
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const [property, visits] = await Promise.all([
     fetch_property(property_id),

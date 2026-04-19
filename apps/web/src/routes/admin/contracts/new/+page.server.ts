@@ -1,18 +1,16 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { get_accessible_property_ids } from "$lib/server/property_access"
 import type { Actions, PageServerLoad } from "./$types"
 import { fetch_available_properties } from "./fetchers/available_properties.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const manager_property_ids =
     await get_accessible_property_ids(
       locals.user.id,
       [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
   const available_properties =
     await fetch_available_properties(manager_property_ids)
@@ -21,9 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const property_id = form_data.get("property_id")
     if (!property_id) {

@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -12,13 +12,11 @@ import { set_tenant } from "./actions/index.server"
 import { fetch_candidates } from "./fetchers/candidates.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const candidates = await fetch_candidates(property_ids)
   return { candidates }
@@ -26,9 +24,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   [ACTION.SET_TENANT]: async ({ request, locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
@@ -38,7 +34,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const [set_tenant_errors, set_tenant_data] =
       await set_tenant(form_data)

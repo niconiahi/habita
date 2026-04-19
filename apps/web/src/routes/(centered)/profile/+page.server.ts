@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import { decrypt } from "$lib/server/encryption"
@@ -9,9 +9,7 @@ import { create_file } from "./actions/create_file.server"
 import { update_user } from "./actions/update_user.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
   )
@@ -33,9 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   [ACTION.CREATE_FILE]: async ({ request, locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const [create_file_errors] = await create_file(
       form_data,
@@ -47,9 +43,7 @@ export const actions: Actions = {
     return null
   },
   [ACTION.UPDATE_USER]: async ({ request, locals }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const [update_user_errors] = await update_user(
       form_data,

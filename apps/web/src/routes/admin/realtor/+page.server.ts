@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { get_user_realtor_organization } from "$lib/server/organization"
 import type { Actions, PageServerLoad } from "./$types"
@@ -9,9 +10,7 @@ import { fetch_managers_with_property_counts } from "./fetchers/managers.server"
 import { fetch_organization_details } from "./fetchers/organization.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
 
   const realtor_org = await get_user_realtor_organization(
     locals.user.id,
@@ -30,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   [ACTION.INVITE_MANAGER]: async ({ request, locals }) => {
-    if (!locals.user) redirect(302, "/auth/google")
+    if (!locals.user) redirect(302, "/login")
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )
@@ -49,7 +48,7 @@ export const actions: Actions = {
   },
 
   [ACTION.REMOVE_MANAGER]: async ({ request, locals }) => {
-    if (!locals.user) redirect(302, "/auth/google")
+    if (!locals.user) redirect(302, "/login")
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )
@@ -70,7 +69,7 @@ export const actions: Actions = {
     request,
     locals,
   }) => {
-    if (!locals.user) redirect(302, "/auth/google")
+    if (!locals.user) redirect(302, "/login")
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )

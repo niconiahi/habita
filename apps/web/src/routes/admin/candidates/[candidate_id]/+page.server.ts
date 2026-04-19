@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
@@ -12,9 +13,7 @@ export const load: PageServerLoad = async ({
   locals,
   params,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const candidate_id = v.parse(
     ForceNumberSchema,
     params.candidate_id,
@@ -25,7 +24,7 @@ export const load: PageServerLoad = async ({
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const candidate_slot = await query_builder
     .selectFrom("slot")

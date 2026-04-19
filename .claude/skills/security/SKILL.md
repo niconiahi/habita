@@ -7,17 +7,16 @@ description: Authentication and authorization patterns. Use when implementing au
 
 - Uses **Better Auth** with SvelteKit integration
 - `hooks.server.ts` extracts the session and populates `event.locals.user` and `event.locals.session`
-- Every protected route checks `locals.user` directly — no middleware auth
+- Every protected route uses `require_authentication(locals)` which narrows both `locals.user` and `locals.session` to non-null
 
 ```ts
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
-  // locals.user.id, locals.user.email, locals.user.name, locals.user.surname
+  require_authentication(locals)
+  // locals.user and locals.session are guaranteed non-null after this call
+  // No optional chaining needed: locals.user.id, locals.session.activeOrganizationId
 }
 ```
 
