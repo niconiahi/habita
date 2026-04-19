@@ -1,5 +1,6 @@
 <script lang="ts">
   import { replaceState } from "$app/navigation"
+  import * as Dialog from "$lib/components/Dialog"
   import * as Content from "$lib/components/Content"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
@@ -178,88 +179,85 @@
         >Confirmar visita</Button
       >
     </div>
-    <dialog
-      bind:this={confirmation_dialog_element}
-      class="dialog"
-    >
-      <div class="dialog-content">
-        <p class="body-md-medium confirmation-label">
-          ¿Confirmar visita?
-        </p>
-        <p class="body-md-bold confirmation-date">
-          {format_confirmation(selected_slot.start_date)}
-        </p>
-        {#if has_action_error(form, "update_slot")}
-          {#if form.errors.update_slot.execution}
-            <Formulary.Error>
-              {form.errors.update_slot.execution}
-            </Formulary.Error>
+    <Dialog.Root bind:element={confirmation_dialog_element}>
+      {#snippet children({ close })}
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>¿Confirmar visita?</Dialog.Title>
+            <Dialog.Close onclick={close} />
+          </Dialog.Header>
+          <p class="body-md-bold confirmation-date">
+            {format_confirmation(selected_slot.start_date)}
+          </p>
+          {#if has_action_error(form, "update_slot")}
+            {#if form.errors.update_slot.execution}
+              <Formulary.Error>
+                {form.errors.update_slot.execution}
+              </Formulary.Error>
+            {/if}
           {/if}
-        {/if}
-        <div class="dialog-actions">
-          <form method="dialog">
-            <Button variant="secondary" type="submit"
-              >Cancelar</Button
+          <div class="actions">
+            <Button
+              variant="secondary"
+              type="button"
+              onclick={close}>Cancelar</Button
             >
-          </form>
-          <Formulary.Root
-            method="POST"
-            action={compose_action(ACTION.UPDATE_SLOT)}
-          >
-            <input
-              type="hidden"
-              name="id"
-              value={selected_slot.id}
-            />
-            <input
-              type="hidden"
-              name="visitant_id"
-              value={data.user.id}
-            />
-            <input
-              type="hidden"
-              name="date"
-              value={new Date(
-                selected_slot.start_date,
-              ).toISOString()}
-            />
-            <Button variant="primary" type="submit"
-              >Confirmar</Button
+            <Formulary.Root
+              method="POST"
+              action={compose_action(ACTION.UPDATE_SLOT)}
             >
-          </Formulary.Root>
-        </div>
-      </div>
-    </dialog>
-    <dialog
-      bind:this={credit_confirmation_dialog_element}
-      class="dialog"
+              <input
+                type="hidden"
+                name="id"
+                value={selected_slot.id}
+              />
+              <input
+                type="hidden"
+                name="visitant_id"
+                value={data.user.id}
+              />
+              <input
+                type="hidden"
+                name="date"
+                value={new Date(
+                  selected_slot.start_date,
+                ).toISOString()}
+              />
+              <Button variant="primary" type="submit"
+                >Confirmar</Button
+              >
+            </Formulary.Root>
+          </div>
+        </Dialog.Content>
+      {/snippet}
+    </Dialog.Root>
+    <Dialog.Root
+      bind:element={credit_confirmation_dialog_element}
     >
-      <div class="dialog-content">
-        <p class="body-md-bold confirmation-date">
-          Informe crediticio requerido
-        </p>
-        <p class="body-md-medium confirmation-label">
-          Para agendar una visita necesitás tener un informe
-          crediticio cargado en tu perfil.
-        </p>
-        <a class="body-md-medium link" href="/learn/booking"
-          >¿Qué es un informe crediticio?</a
-        >
-        <p class="body-md-medium footer">
-          ¿Estás listo para subir tu informe?
-          <a href="/profile#files"
-            >Subir informe</a
-          >
-        </p>
-        <div class="dialog-actions">
-          <form method="dialog">
-            <Button variant="secondary" type="submit"
-              >Cerrar</Button
+      {#snippet children({ close })}
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title
+              >Informe crediticio requerido</Dialog.Title
             >
-          </form>
-        </div>
-      </div>
-    </dialog>
+            <Dialog.Close onclick={close} />
+          </Dialog.Header>
+          <p class="body-md-medium confirmation-label">
+            Para agendar una visita necesitás tener un
+            informe crediticio cargado en tu perfil.
+          </p>
+          <a
+            class="body-md-medium link"
+            href="/learn/booking"
+            >¿Qué es un informe crediticio?</a
+          >
+          <p class="body-md-medium footer">
+            ¿Estás listo para subir tu informe?
+            <a href="/profile#files">Subir informe</a>
+          </p>
+        </Dialog.Content>
+      {/snippet}
+    </Dialog.Root>
   {/if}
 {/snippet}
 
@@ -334,34 +332,10 @@
     color: var(--color-neutrals-700);
   }
 
-  .dialog {
-    border: 1px solid var(--color-border-primary);
-    border-radius: var(--dimension-radius-xl);
-    padding: var(--dimension-spacing-6);
-    max-width: 480px;
-    width: 100%;
-  }
-
-  .dialog::backdrop {
-    background-color: var(
-      --color-absolute-semi-transparent
-    );
-  }
-
-  .dialog-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--dimension-spacing-4);
-  }
-
-  .dialog-actions {
+  .actions {
     display: flex;
     justify-content: flex-end;
     gap: var(--dimension-spacing-2);
-  }
-
-  .dialog[open] {
-    margin: auto;
   }
 
   .link {
