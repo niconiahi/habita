@@ -12,8 +12,8 @@
     name,
     min,
     max,
-    value_min,
-    value_max,
+    value_min = $bindable(),
+    value_max = $bindable(),
   }: Props = $props()
 </script>
 
@@ -27,7 +27,7 @@
         name="{name}_min"
         {min}
         {max}
-        value={value_min ?? ""}
+        bind:value={value_min}
         placeholder={String(min)}
       />
     </label>
@@ -38,7 +38,7 @@
         name="{name}_max"
         {min}
         {max}
-        value={value_max ?? ""}
+        bind:value={value_max}
         placeholder={String(max)}
       />
     </label>

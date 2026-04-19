@@ -53,7 +53,7 @@
           placeholder="gestor@ejemplo.com"
         />
       </Formulary.Field>
-      <Button type="submit">Enviar Invitacion</Button>
+      <Button variant="primary" type="submit">Enviar Invitacion</Button>
     </form>
   </Content.Section>
 
@@ -99,7 +99,7 @@
                     name="manager_id"
                     value={manager.id}
                   />
-                  <Button type="submit">Remover</Button>
+                  <Button variant="secondary" type="submit">Remover</Button>
                 </form>
               </Table.Cell>
             </Table.Row>

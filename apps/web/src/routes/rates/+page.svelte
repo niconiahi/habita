@@ -45,7 +45,7 @@
             class="rate-input"
             required
           />
-          <Button type="submit">Guardar</Button>
+          <Button variant="primary" type="submit">Guardar</Button>
         </form>
       {/each}
     </div>

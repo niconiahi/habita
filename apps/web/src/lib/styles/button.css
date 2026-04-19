@@ -57,6 +57,12 @@
     }
   }
 
+  &.squared {
+    aspect-ratio: 1;
+    padding: var(--dimension-spacing-2);
+    border-radius: var(--dimension-radius-default);
+  }
+
   &.tertiary {
     background-color: var(--button-tertiary-bg-default);
     color: var(--button-tertiary-fg-default);

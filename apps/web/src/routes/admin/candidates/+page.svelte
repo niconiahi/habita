@@ -66,7 +66,7 @@
                     name="property_id"
                     value={candidate.property_id}
                   />
-                  <Button type="submit"
+                  <Button variant="primary" type="submit"
                     >Asignar como inquilino</Button
                   >
                 </form>

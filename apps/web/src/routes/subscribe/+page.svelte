@@ -59,7 +59,7 @@
           )}
           method="POST"
         >
-          <Button type="submit">Pagar</Button>
+          <Button variant="primary" type="submit">Pagar</Button>
         </Formulary.Root>
       {/if}
     </div>

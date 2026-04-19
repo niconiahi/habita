@@ -2,15 +2,17 @@
   interface Props {
     label: string
     active: boolean
+    onclick?: () => void
   }
 
-  let { label, active }: Props = $props()
+  let { label, active, onclick }: Props = $props()
 </script>
 
 <button
   class="toggle-button body-md-bold"
   class:active
-  type="submit"
+  type="button"
+  {onclick}
 >
   {label}
 </button>
