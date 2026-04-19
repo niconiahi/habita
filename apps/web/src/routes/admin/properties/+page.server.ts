@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -13,13 +13,11 @@ import { unpublish_property } from "./actions/unpublish_property.server"
 import { fetch_properties } from "./fetchers/properties.server"
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
   const properties = await fetch_properties(property_ids)
   return { properties }
@@ -30,9 +28,7 @@ export const actions: Actions = {
     request,
     locals,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
@@ -42,7 +38,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const [publish_property_errors] =
       await publish_property(form_data)
@@ -55,9 +51,7 @@ export const actions: Actions = {
     request,
     locals,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
@@ -67,7 +61,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const [unpublish_property_errors] =
       await unpublish_property(form_data)

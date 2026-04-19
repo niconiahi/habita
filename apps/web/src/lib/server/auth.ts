@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit"
 import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
@@ -320,3 +321,16 @@ export const auth = lazy(() => {
     ],
   })
 })
+
+interface AuthenticatedLocals {
+  user: NonNullable<App.Locals["user"]>
+  session: NonNullable<App.Locals["session"]>
+}
+
+export function require_authentication(
+  locals: App.Locals,
+): asserts locals is App.Locals & AuthenticatedLocals {
+  if (!locals.user || !locals.session) {
+    redirect(302, "/login")
+  }
+}

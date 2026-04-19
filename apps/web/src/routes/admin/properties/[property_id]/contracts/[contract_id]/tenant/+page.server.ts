@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { startOfMonth, subMonths } from "date-fns"
 import { query_builder } from "db/query_builder"
@@ -20,9 +21,7 @@ export const load: PageServerLoad = async ({
   locals,
   params,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,
@@ -42,7 +41,7 @@ export const load: PageServerLoad = async ({
     locals.user.id,
     property_id,
     [ACCESS_TYPE.TENANT],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
     { property: ["read"] },
   )
   const [contract, property] = await Promise.all([
@@ -111,9 +110,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -126,7 +123,7 @@ export const actions: Actions = {
       locals.user.id,
       property_id,
       [ACCESS_TYPE.TENANT],
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
       { property: ["read"] },
     )
     const form_data = await request.formData()

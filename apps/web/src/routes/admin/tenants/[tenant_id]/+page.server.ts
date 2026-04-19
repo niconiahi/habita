@@ -1,3 +1,4 @@
+import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
@@ -13,9 +14,7 @@ export const load: PageServerLoad = async ({
   locals,
   params,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/auth/google")
-  }
+  require_authentication(locals)
   const tenant_id = v.parse(
     ForceNumberSchema,
     params.tenant_id,
@@ -27,7 +26,7 @@ export const load: PageServerLoad = async ({
     await get_accessible_property_ids(
       locals.user.id,
       [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
   const has_access = await is_tenant_accessible(
     tenant_id,

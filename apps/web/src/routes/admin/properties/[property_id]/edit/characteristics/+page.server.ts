@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
@@ -18,9 +18,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -29,7 +27,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -45,9 +43,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -56,7 +52,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -72,9 +68,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -83,7 +77,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const [toggle_tag_errors] = await toggle_tag(
@@ -100,9 +94,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -111,7 +103,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     const [update_construction_year_errors] =
@@ -126,9 +118,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -137,7 +127,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const [create_service_errors] =
       await create_service(property_id)
@@ -151,9 +141,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -162,7 +150,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
@@ -180,9 +168,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -191,7 +177,7 @@ export const actions: Actions = {
       request.headers,
       locals.user.id,
       property_id,
-      locals.session?.activeOrganizationId,
+      locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
