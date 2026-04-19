@@ -21,7 +21,7 @@
 <div class="root">
   <aside class="sidebar">
     <div class="top">
-      <a href="/admin/properties" class="sidebar-logo">
+      <a href="/admin" class="sidebar-logo">
         <HabitaFull />
       </a>
       <Dashboard.Root label="Admin navigation">
