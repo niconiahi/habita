@@ -199,11 +199,10 @@
     <h2 class="heading-md details-title">Detalles</h2>
     <TabGroup>
       {#each TABS as tab}
-        <Tab
-          active={active_tab === tab}
-          onclick={() => (active_tab = tab)}
-        >
-          {tab}
+        <Tab active={active_tab === tab}>
+          <button type="button" onclick={() => (active_tab = tab)}>
+            {tab}
+          </button>
         </Tab>
       {/each}
     </TabGroup>
