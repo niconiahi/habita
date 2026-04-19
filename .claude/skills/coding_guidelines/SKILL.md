@@ -52,6 +52,23 @@ const inserted = await db.insertInto("file").values({ content: encrypt_buffer(co
 
 - Schemas, types, and constants live in the file where they are used. No `.schemas.ts` sibling files. If a Svelte component needs to export schemas or types, use `<script module>`. If an action needs a validation schema, define it inline in the action file.
 
+- Never use the non-null assertion operator (`!`). It bypasses the type system instead of working with it. "I don't want to see that in my code. They are lazy to me." Narrow the type early with proper conditionals, then use the narrowed value. If TypeScript complains, the code structure is wrong — fix the structure, not the types. What you do after narrowing is a design decision: return, throw, log, error() — whatever fits the context.
+
+```ts
+// bad — bypasses the type system
+const id = data.warranty!.id
+
+// good — narrow the type, then decide what to do
+if (!data.warranty) {
+  // your call: return, throw, log, error() — whatever fits the context
+}
+const id = data.warranty.id
+```
+
+- Never use `void expression`, `JSON.stringify(obj)`, or any other hack to force Svelte reactivity tracking. "They make me wanna vomit." If `$effect` needs to track dependencies, read the actual properties inline — don't hide them inside function calls and then hack around the tracking. If the dependency isn't visible to Svelte, restructure the code so it is.
+
+- Every `<Button>` must have an explicit `variant` prop. No bare `<Button>` without one. ALWAYS.
+
 - No magic numbers or magic strings — extract named constants or utility functions. If a value appears in logic (not just a data literal), it must have a name that explains its purpose.
 
 ```ts
