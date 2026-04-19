@@ -17,6 +17,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull(),
     )
+    .addColumn("read_at", "timestamptz")
     .execute()
 
   await db.schema

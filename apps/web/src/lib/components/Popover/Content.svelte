@@ -4,20 +4,27 @@
   interface Props {
     id: string
     position?: "bottom" | "right" | "top"
-    children: Snippet
+    children: Snippet<[{ close: () => void }]>
   }
 
   let { id, position = "bottom", children }: Props =
     $props()
+
+  let popover_element: HTMLDivElement
+
+  function close() {
+    popover_element?.hidePopover()
+  }
 </script>
 
 <div
+  bind:this={popover_element}
   {id}
   popover="auto"
   class="content {position}"
   style:position-anchor={`--${id}`}
 >
-  {@render children()}
+  {@render children({ close })}
 </div>
 
 <style>

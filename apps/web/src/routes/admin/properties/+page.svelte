@@ -67,11 +67,13 @@
                 <Popover.Content
                   id={`property-actions-${property.id}`}
                 >
+                  {#snippet children({ close })}
                   <div class="actions-menu">
                     {#if property.state === PROPERTY_STATE.EDITING}
                       <a
                         class="body-md-medium action-item"
                         href={`/admin/properties/${property.id}/edit`}
+                        onclick={close}
                       >
                         Editar
                       </a>
@@ -88,6 +90,7 @@
                         <button
                           class="body-md-medium action-item"
                           type="submit"
+                          onclick={close}
                         >
                           Publicar
                         </button>
@@ -97,6 +100,7 @@
                       <a
                         class="body-md-medium action-item"
                         href={`/admin/properties/${property.id}/calendar`}
+                        onclick={close}
                       >
                         Calendario de visitas
                       </a>
@@ -113,12 +117,14 @@
                         <button
                           class="body-md-medium action-item"
                           type="submit"
+                          onclick={close}
                         >
                           Despublicar
                         </button>
                       </form>
                     {/if}
                   </div>
+                  {/snippet}
                 </Popover.Content>
               </Popover.Root>
             {/if}

@@ -211,6 +211,7 @@ export interface Notification {
   href: string;
   id: Generated<number>;
   property_id: number;
+  read_at: Timestamp | null;
   type: number;
   updated_at: Timestamp;
 }

@@ -56,13 +56,15 @@
             id="admin-user-popover"
             position="right"
           >
-            <a href="/profile" class="dropdown-item">
+            {#snippet children({ close })}
+            <a href="/profile" class="dropdown-item" onclick={close}>
               Perfil
             </a>
             <button
               type="button"
               class="dropdown-item"
               onclick={async () => {
+                close()
                 await authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {
@@ -74,6 +76,7 @@
             >
               Cerrar sesión
             </button>
+            {/snippet}
           </Popover.Content>
         </Popover.Root>
       {/if}

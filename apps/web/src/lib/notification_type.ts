@@ -29,6 +29,12 @@ export function get_notification_type_label(
   }
 }
 
+export function compose_property_visit_href(
+  property_id: number,
+) {
+  return `/admin/properties/${property_id}/edit/visits`
+}
+
 export function get_notification_types() {
   return Object.values(NOTIFICATION_TYPE)
 }

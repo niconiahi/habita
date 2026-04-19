@@ -19,6 +19,21 @@
   let { position = "bottom" }: Props = $props()
 
   let notifications = $state<Notification[]>([])
+  let unread_notifications = $derived(
+    notifications.filter((n) => n.read_at === null),
+  )
+
+  function mark_as_read(
+    notification: Notification,
+    close: () => void,
+  ) {
+    close()
+    if (notification.read_at !== null) return
+    notification.read_at = new Date().toISOString()
+    fetch(`/api/notifications/${notification.id}/read`, {
+      method: "POST",
+    })
+  }
 
   onMount(() => {
     fetch("/api/notifications")
@@ -45,40 +60,58 @@
   <Popover.Trigger id="notifications">
     <span class="bell">
       <Bell />
-      {#if notifications.length > 0}
-        <span class="badge">{notifications.length}</span>
+      {#if unread_notifications.length > 0}
+        <span class="badge"
+          >{unread_notifications.length}</span
+        >
       {/if}
     </span>
   </Popover.Trigger>
   <Popover.Content id="notifications" {position}>
-    <div class="list">
-      {#if notifications.length > 0}
-        {#each notifications as notification (notification.id)}
-          <a href={notification.href} class="item">
-            <span class="body-sm-medium type">
-              {get_notification_type_label(
-                notification.type,
-              )}
-            </span>
-            <span class="body-sm-medium location">
-              {notification.location.road}
-              {notification.location.house_number}
-            </span>
-            <span class="time">
-              {formatDistanceToNow(
-                notification.created_at,
-                {
-                  addSuffix: true,
-                  locale: es,
-                },
-              )}
-            </span>
-          </a>
-        {/each}
-      {:else}
-        <p class="body-sm-medium empty">Sin notificaciones</p>
-      {/if}
-    </div>
+    {#snippet children({ close })}
+      <div class="list">
+        {#if unread_notifications.length > 0}
+          {#each unread_notifications as notification (notification.id)}
+            <a
+              href={notification.href}
+              class="item"
+              onclick={() =>
+                mark_as_read(notification, close)}
+            >
+              <span class="body-sm-medium type">
+                {get_notification_type_label(
+                  notification.type,
+                )}
+              </span>
+              <span class="body-sm-medium location">
+                {notification.location.road}
+                {notification.location.house_number}
+              </span>
+              <span class="time">
+                {formatDistanceToNow(
+                  notification.created_at,
+                  {
+                    addSuffix: true,
+                    locale: es,
+                  },
+                )}
+              </span>
+            </a>
+          {/each}
+        {:else}
+          <p class="body-sm-medium empty">
+            Sin notificaciones pendientes
+          </p>
+        {/if}
+        <a
+          href="/admin/notifications"
+          class="view-all body-sm-medium"
+          onclick={close}
+        >
+          Ver todas
+        </a>
+      </div>
+    {/snippet}
   </Popover.Content>
 </Popover.Root>
 
@@ -141,5 +174,18 @@
   .empty {
     padding: var(--dimension-spacing-3);
     color: var(--color-text-body);
+  }
+
+  .view-all {
+    display: block;
+    padding: var(--dimension-spacing-3);
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-blue-500);
+    border-top: 1px solid var(--color-neutrals-200);
+  }
+
+  .view-all:hover {
+    background-color: var(--popover-bg-hover);
   }
 </style>
