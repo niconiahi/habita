@@ -2,7 +2,7 @@
   import { display_room_type } from "$lib/room_type"
 
   const PADDING = 20
-  const SNAP_THRESHOLD = 1
+  const SNAP_THRESHOLD = 10
   const ROOM_STROKE_WIDTH = 2
   const MIN_HEIGHT = 500
 
@@ -36,6 +36,13 @@
     room_start_y: number
   }
 
+  interface PanningState {
+    start_x: number
+    start_y: number
+    scroll_start_x: number
+    scroll_start_y: number
+  }
+
   interface Props {
     rooms: Room[]
     is_readonly?: boolean
@@ -56,6 +63,7 @@
     new Map(),
   )
   let dragging_state = $state<DraggingState | null>(null)
+  let panning_state = $state<PanningState | null>(null)
   let room_bounds = $state<RoomBounds[]>([])
 
   function get_room_at_point(
@@ -189,7 +197,7 @@
   }
 
   function handle_pointer_down(event: PointerEvent): void {
-    if (!canvas_el || is_readonly) return
+    if (!canvas_el || !container_el) return
     const rect = canvas_el.getBoundingClientRect()
     const canvas_x = event.clientX - rect.left
     const canvas_y = event.clientY - rect.top
@@ -199,7 +207,7 @@
       room_bounds,
       PADDING,
     )
-    if (room) {
+    if (room && !is_readonly) {
       canvas_el.setPointerCapture(event.pointerId)
       dragging_state = {
         room_id: room.id,
@@ -209,60 +217,83 @@
         room_start_y: room.y,
       }
       canvas_el.style.cursor = "grabbing"
+    } else {
+      container_el.setPointerCapture(event.pointerId)
+      panning_state = {
+        start_x: event.clientX,
+        start_y: event.clientY,
+        scroll_start_x: container_el.scrollLeft,
+        scroll_start_y: container_el.scrollTop,
+      }
+      container_el.style.cursor = "grabbing"
     }
   }
 
   function handle_pointer_move(event: PointerEvent): void {
-    if (!canvas_el || !dragging_state) return
-    const rect = canvas_el.getBoundingClientRect()
-    const canvas_x = event.clientX - rect.left
-    const canvas_y = event.clientY - rect.top
-    const delta_x = canvas_x - dragging_state.start_x
-    const delta_y = canvas_y - dragging_state.start_y
-    let new_x = dragging_state.room_start_x + delta_x
-    let new_y = dragging_state.room_start_y + delta_y
-    const dragging_room = room_bounds.find(
-      (room) => room.id === dragging_state?.room_id,
-    )
-    if (!dragging_room) return
-    const snapped = get_snapped_position(
-      new_x,
-      new_y,
-      dragging_room,
-      room_bounds,
-      SNAP_THRESHOLD,
-    )
-    new_x = snapped.x
-    new_y = snapped.y
-    new_x = Math.max(0, new_x)
-    new_y = Math.max(0, new_y)
-    const has_collision = check_collision(
-      dragging_room,
-      new_x,
-      new_y,
-      room_bounds,
-    )
-    if (!has_collision) {
-      update_room_position(
-        dragging_state.room_id,
+    if (dragging_state && canvas_el) {
+      const rect = canvas_el.getBoundingClientRect()
+      const canvas_x = event.clientX - rect.left
+      const canvas_y = event.clientY - rect.top
+      const delta_x = canvas_x - dragging_state.start_x
+      const delta_y = canvas_y - dragging_state.start_y
+      let new_x = dragging_state.room_start_x + delta_x
+      let new_y = dragging_state.room_start_y + delta_y
+      const dragging_room = room_bounds.find(
+        (room) => room.id === dragging_state?.room_id,
+      )
+      if (!dragging_room) return
+      const snapped = get_snapped_position(
         new_x,
         new_y,
+        dragging_room,
+        room_bounds,
+        SNAP_THRESHOLD,
       )
+      new_x = snapped.x
+      new_y = snapped.y
+      new_x = Math.max(0, new_x)
+      new_y = Math.max(0, new_y)
+      const has_collision = check_collision(
+        dragging_room,
+        new_x,
+        new_y,
+        room_bounds,
+      )
+      if (!has_collision) {
+        update_room_position(
+          dragging_state.room_id,
+          new_x,
+          new_y,
+        )
+      }
+    } else if (panning_state && container_el) {
+      const delta_x = event.clientX - panning_state.start_x
+      const delta_y = event.clientY - panning_state.start_y
+      container_el.scrollLeft =
+        panning_state.scroll_start_x - delta_x
+      container_el.scrollTop =
+        panning_state.scroll_start_y - delta_y
     }
   }
 
   function handle_pointer_up(event: PointerEvent): void {
-    if (!canvas_el) return
-    if (dragging_state) {
+    if (dragging_state && canvas_el) {
       canvas_el.releasePointerCapture(event.pointerId)
       dragging_state = null
       canvas_el.style.cursor = "grab"
+    }
+    if (panning_state && container_el) {
+      container_el.releasePointerCapture(event.pointerId)
+      panning_state = null
+      container_el.style.cursor = "grab"
     }
   }
 
   // Initialize positions from rooms
   $effect(() => {
     const initial_positions = new Map<number, Position>()
+    const PIXELS_PER_METER = 50
+    let x_offset = 0
     for (const room of rooms) {
       if (
         room.position_x !== null &&
@@ -272,6 +303,13 @@
           x: Number.parseFloat(room.position_x),
           y: Number.parseFloat(room.position_y),
         })
+      } else {
+        const w = Number.parseFloat(room.width) * PIXELS_PER_METER
+        initial_positions.set(room.id, {
+          x: x_offset,
+          y: 0,
+        })
+        x_offset += w + 10
       }
     }
     room_positions = initial_positions
@@ -399,22 +437,30 @@
   })
 </script>
 
-<div class="room-map-container" bind:this={container_el}>
+<div
+  class="room-map-container"
+  bind:this={container_el}
+  onpointerdown={handle_pointer_down}
+  onpointermove={handle_pointer_move}
+  onpointerup={handle_pointer_up}
+  onpointercancel={handle_pointer_up}
+>
   <canvas
     bind:this={canvas_el}
-    style:cursor={is_readonly ? "default" : "grab"}
-    onpointerdown={handle_pointer_down}
-    onpointermove={handle_pointer_move}
-    onpointerup={handle_pointer_up}
-    onpointercancel={handle_pointer_up}
   ></canvas>
 </div>
 
 <style>
   .room-map-container {
-    width: fit-content;
-    min-width: 100%;
-    border-radius: var(--dimension-radius-lg);
+    height: 100%;
+    overflow: auto;
+    cursor: grab;
+    user-select: none;
+    scrollbar-width: none;
+  }
+
+  .room-map-container::-webkit-scrollbar {
+    display: none;
   }
 
   .room-map-container canvas {
