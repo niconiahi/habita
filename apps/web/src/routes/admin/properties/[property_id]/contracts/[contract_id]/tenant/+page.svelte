@@ -92,7 +92,7 @@
                   required
                   accept="image/*,application/pdf"
                 />
-                <Button type="submit">Subir</Button>
+                <Button variant="primary" type="submit">Subir</Button>
               </form>
             {/if}
           </li>

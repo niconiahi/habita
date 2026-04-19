@@ -5,17 +5,19 @@
   interface Props extends HTMLButtonAttributes {
     children: Snippet
     variant?: "primary" | "secondary" | "tertiary"
+    squared?: boolean
   }
 
   let {
     children,
     variant,
+    squared = false,
     class: className,
     ...rest
   }: Props = $props()
 
   const class_name = $derived(
-    `button body-md-bold ${variant ?? ""} ${className ?? ""}`.trim(),
+    `button body-md-bold ${variant ?? ""} ${squared ? "squared" : ""} ${className ?? ""}`.trim(),
   )
 </script>
 
