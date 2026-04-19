@@ -17,9 +17,6 @@
     position = "bottom",
   }: Props = $props()
 
-  let popover_element: HTMLDivElement | undefined =
-    $state()
-
   const active_label = $derived(
     active_organization_id === null
       ? "Personal"
@@ -31,9 +28,10 @@
 
   async function handle_select(
     organization_id: string | null,
+    close: () => void,
   ) {
+    close()
     if (active_organization_id === organization_id) {
-      popover_element?.hidePopover()
       return
     }
     await authClient.organization.setActive({
@@ -49,15 +47,13 @@
     <ChevronDown />
   </Popover.Trigger>
   <Popover.Content id="organization-selector" {position}>
-    <div
-      class="list"
-      bind:this={popover_element}
-    >
+    {#snippet children({ close })}
+    <div class="list">
       <button
         type="button"
         class="body-md-medium item"
         class:active={active_organization_id === null}
-        onclick={() => handle_select(null)}
+        onclick={() => handle_select(null, close)}
       >
         <span>Personal</span>
       </button>
@@ -68,7 +64,7 @@
           class:active={organization.id ===
             active_organization_id}
           onclick={() =>
-            handle_select(organization.id)}
+            handle_select(organization.id, close)}
         >
           {#if organization.logo}
             <img
@@ -81,6 +77,7 @@
         </button>
       {/each}
     </div>
+    {/snippet}
   </Popover.Content>
 </Popover.Root>
 

@@ -34,13 +34,15 @@
             <ChevronDown />
           </Popover.Trigger>
           <Popover.Content id="user-popover">
-            <a href="/profile" class="body-md-medium dropdown-item">
+            {#snippet children({ close })}
+            <a href="/profile" class="body-md-medium dropdown-item" onclick={close}>
               Perfil
             </a>
             <button
               type="button"
               class="body-md-medium dropdown-item"
               onclick={async () => {
+                close()
                 await authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {
@@ -52,6 +54,7 @@
             >
               Cerrar sesión
             </button>
+            {/snippet}
           </Popover.Content>
         </Popover.Root>
       {:else}

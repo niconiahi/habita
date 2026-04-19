@@ -4,7 +4,7 @@ import * as v from "valibot"
 import { display_location } from "$lib/display_location"
 import type { PropertyVisitNotification } from "$lib/fetchers/notifications.schemas"
 import { ForceNumberSchema } from "$lib/force_number"
-import { NOTIFICATION_TYPE } from "$lib/notification_type"
+import { compose_property_visit_href, NOTIFICATION_TYPE } from "$lib/notification_type"
 import { safe_async } from "$lib/safe_async"
 import { publish_send_booking_confirmation } from "$lib/server/broker/producer/publish_send_booking_confirmation"
 import { decrypt } from "$lib/server/encryption"
@@ -97,7 +97,7 @@ export async function update_slot(
         .insertInto("notification")
         .values({
           type: notification_type,
-          href: "/admin/candidates",
+          href: compose_property_visit_href(slot.property_id),
           property_id: slot.property_id,
           created_at: now,
           updated_at: now,

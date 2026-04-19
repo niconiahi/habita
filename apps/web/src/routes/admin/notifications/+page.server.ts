@@ -1,11 +1,10 @@
 import { require_authentication } from "$lib/server/auth"
-import { json, redirect } from "@sveltejs/kit"
 import { ACCESS_TYPE } from "$lib/access_type"
-import { fetch_notifications } from "$lib/fetchers/notifications.server"
+import { fetch_all_notifications } from "$lib/fetchers/notifications.server"
 import { get_accessible_property_ids } from "$lib/server/property_access"
-import type { RequestHandler } from "./$types"
+import type { PageServerLoad } from "./$types"
 
-export const GET: RequestHandler = async ({
+export const load: PageServerLoad = async ({
   locals,
 }) => {
   require_authentication(locals)
@@ -17,11 +16,11 @@ export const GET: RequestHandler = async ({
   )
 
   if (property_ids.length === 0) {
-    return json([])
+    return { notifications: [] }
   }
 
   const notifications =
-    await fetch_notifications(property_ids)
+    await fetch_all_notifications(property_ids)
 
-  return json(notifications)
+  return { notifications }
 }

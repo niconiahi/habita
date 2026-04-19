@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit"
+import { require_authentication } from "$lib/server/auth"
 import { ACCESS_TYPE } from "$lib/access_type"
 import type { Notification } from "$lib/fetchers/notifications.schemas"
 import {
@@ -11,14 +11,12 @@ import type { RequestHandler } from "./$types"
 export const GET: RequestHandler = async ({
   locals,
 }) => {
-  if (!locals.user) {
-    redirect(302, "/login")
-  }
+  require_authentication(locals)
 
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.MANAGER],
-    locals.session?.activeOrganizationId,
+    locals.session.activeOrganizationId,
   )
 
   let cleanup: () => void

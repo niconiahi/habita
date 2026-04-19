@@ -5,45 +5,39 @@
  * appear in the notifications dropdown for the real user.
  */
 
-import { subDays, subHours } from "date-fns"
+import { subDays } from "date-fns"
 import type { Kysely } from "kysely"
-import { NOTIFICATION_TYPE } from "../../src/lib/notification_type"
+import { compose_property_visit_href, NOTIFICATION_TYPE } from "../../src/lib/notification_type"
 import type { DB } from "../types"
 
 export async function seed(_db: Kysely<DB>): Promise<void> {
   console.log("seeding notifications")
   const { query_builder } = await import("../query_builder")
-  const properties = await query_builder
+  const properties_with_visits = await query_builder
     .selectFrom("property")
-    .select("id")
+    .innerJoin("slot", "slot.property_id", "property.id")
+    .select("property.id")
+    .groupBy("property.id")
     .execute()
-  if (properties.length === 0) {
+  if (properties_with_visits.length === 0) {
     console.log(
-      "no properties found - skipping notifications",
+      "no properties with visits found - skipping notifications",
     )
     return
   }
   const now = new Date()
-  const notifications = [
-    {
-      property_id: properties[0].id,
-      created_at: subHours(now, 2),
-    },
-    {
-      property_id: properties[1 % properties.length].id,
-      created_at: subDays(now, 1),
-    },
-    {
-      property_id: properties[2 % properties.length].id,
-      created_at: subDays(now, 3),
-    },
-  ]
+  const notifications = properties_with_visits.map(
+    (p, i) => ({
+      property_id: p.id,
+      created_at: subDays(now, i),
+    }),
+  )
   await query_builder
     .insertInto("notification")
     .values(
       notifications.map((n) => ({
         type: NOTIFICATION_TYPE.PROPERTY_VISIT,
-        href: "/admin/candidates",
+        href: compose_property_visit_href(n.property_id),
         property_id: n.property_id,
         created_at: n.created_at,
         updated_at: n.created_at,

@@ -7,6 +7,7 @@ export const PropertyVisitNotificationSchema = v.object({
   href: v.string(),
   property_id: v.number(),
   created_at: v.string(),
+  read_at: v.nullable(v.string()),
   location: v.object({
     road: v.string(),
     house_number: v.number(),
