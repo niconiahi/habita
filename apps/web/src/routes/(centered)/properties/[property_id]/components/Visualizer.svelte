@@ -23,37 +23,6 @@
   ]
 
   let selected_view = $state("gallery")
-  let content_element: HTMLDivElement | undefined =
-    $state()
-  let is_panning = $state(false)
-  let pan_start_x = 0
-  let pan_start_y = 0
-  let scroll_start_x = 0
-  let scroll_start_y = 0
-
-  function handle_pan_start(event: PointerEvent) {
-    if (selected_view !== "map" || !content_element) return
-    is_panning = true
-    pan_start_x = event.clientX
-    pan_start_y = event.clientY
-    scroll_start_x = content_element.scrollLeft
-    scroll_start_y = content_element.scrollTop
-    content_element.setPointerCapture(event.pointerId)
-  }
-
-  function handle_pan_move(event: PointerEvent) {
-    if (!is_panning || !content_element) return
-    const delta_x = event.clientX - pan_start_x
-    const delta_y = event.clientY - pan_start_y
-    content_element.scrollLeft = scroll_start_x - delta_x
-    content_element.scrollTop = scroll_start_y - delta_y
-  }
-
-  function handle_pan_end(event: PointerEvent) {
-    if (!is_panning || !content_element) return
-    is_panning = false
-    content_element.releasePointerCapture(event.pointerId)
-  }
 </script>
 
 <div class="visualizer">
@@ -64,16 +33,7 @@
       onchange={(value) => (selected_view = value)}
     />
   </div>
-  <div
-    class="content"
-    class:map={selected_view === "map"}
-    class:panning={is_panning}
-    bind:this={content_element}
-    onpointerdown={handle_pan_start}
-    onpointermove={handle_pan_move}
-    onpointerup={handle_pan_end}
-    onpointercancel={handle_pan_end}
-  >
+  <div class="content">
     {#if selected_view === "map"}
       <RoomMap {rooms} is_readonly={true} />
     {:else}
@@ -95,19 +55,10 @@
     height: 500px;
     overflow: auto;
     border-radius: var(--dimension-radius-lg);
-  }
-
-  .content.map {
-    cursor: grab;
     scrollbar-width: none;
   }
 
-  .content.map::-webkit-scrollbar {
+  .content::-webkit-scrollbar {
     display: none;
-  }
-
-  .content.panning {
-    cursor: grabbing;
-    user-select: none;
   }
 </style>

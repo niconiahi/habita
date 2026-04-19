@@ -22,9 +22,7 @@
 
   let { data }: { data: PageData } = $props()
 
-  let layout_view: string = $state(
-    LAYOUT_VIEW.DIMENSIONES,
-  )
+  let layout_view: string = $state(LAYOUT_VIEW.DIMENSIONES)
   let room_positions = $state<
     Map<number, { x: number; y: number }>
   >(new Map())
@@ -71,9 +69,7 @@
     drag_translate_y = 0
   }
 
-  function handle_floor_pointer_move(
-    event: PointerEvent,
-  ) {
+  function handle_floor_pointer_move(event: PointerEvent) {
     if (dragging_floor_id === null) return
     drag_translate_y = event.clientY - drag_start_y
 
@@ -97,9 +93,7 @@
     }
   }
 
-  function handle_floor_pointer_up(
-    event: PointerEvent,
-  ) {
+  function handle_floor_pointer_up(event: PointerEvent) {
     const dragged_id = dragging_floor_id
     const over_id = drag_over_floor_id
 
@@ -137,9 +131,7 @@
       const input = form.querySelector(
         'input[name="floor_ids"]',
       ) as HTMLInputElement
-      input.value = JSON.stringify(
-        floors.map((f) => f.id),
-      )
+      input.value = JSON.stringify(floors.map((f) => f.id))
       form.requestSubmit()
     }
   }
@@ -165,9 +157,11 @@
         <button
           type="button"
           class="floor-button body-md-bold"
-          class:active={floor.number === selected_floor_number()}
+          class:active={floor.number ===
+            selected_floor_number()}
           class:dragging={floor.id === dragging_floor_id}
-          class:drag-over={floor.id === drag_over_floor_id &&
+          class:drag-over={floor.id ===
+            drag_over_floor_id &&
             dragging_floor_id !== null}
           data-floor-id={floor.id}
           style:transform={floor.id === dragging_floor_id
@@ -200,9 +194,6 @@
   </div>
 
   <div class="floor-content">
-    <div class="content-header">
-      <h2 class="heading-sm content-title">Disposición</h2>
-    </div>
     <SegmentedButton
       items={[
         {
@@ -231,8 +222,7 @@
                     name="id"
                   />
                   <Formulary.Field>
-                    <Formulary.Label
-                      for={`type_${room.id}`}
+                    <Formulary.Label for={`type_${room.id}`}
                       >tipo</Formulary.Label
                     >
                     <Formulary.Select
@@ -242,9 +232,7 @@
                     >
                       {#each Object.values(ROOM_TYPE) as type}
                         <option value={type}
-                          >{display_room_type(
-                            type,
-                          )}</option
+                          >{display_room_type(type)}</option
                         >
                       {/each}
                     </Formulary.Select>
@@ -328,15 +316,11 @@
               value={JSON.stringify(
                 selected_floor.rooms
                   .filter((room) => {
-                    const pos = room_positions.get(
-                      room.id,
-                    )
+                    const pos = room_positions.get(room.id)
                     return pos !== undefined
                   })
                   .map((room) => {
-                    const pos = room_positions.get(
-                      room.id,
-                    )!
+                    const pos = room_positions.get(room.id)!
                     return {
                       room_id: room.id,
                       position_x: pos.x,
@@ -375,7 +359,10 @@
   action={compose_action(ACTION.REORDER_FLOORS)}
   use:enhance={() => {
     return async ({ result }) => {
-      if (result.type === "success" && pending_floor_number !== null) {
+      if (
+        result.type === "success" &&
+        pending_floor_number !== null
+      ) {
         await invalidateAll()
         await goto(`?floor=${pending_floor_number}`, {
           replaceState: true,
@@ -393,7 +380,7 @@
 <style>
   .layout {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 13rem 1fr;
     gap: var(--dimension-spacing-6);
   }
 
@@ -471,16 +458,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--dimension-spacing-4);
-  }
-
-  .content-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .content-title {
-    color: var(--color-text-heading);
+    min-width: 0;
+    overflow: hidden;
   }
 
   .room-list {
