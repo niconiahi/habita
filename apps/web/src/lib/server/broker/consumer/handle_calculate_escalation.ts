@@ -13,7 +13,7 @@ import {
   incremented_retry,
   MAX_RETRIES,
   retry_after,
-  is_retry_pending,
+  wait_for_retry,
 } from "./retry"
 
 export async function handle_calculate_escalation(
@@ -24,19 +24,7 @@ export async function handle_calculate_escalation(
   const retry_count = get_retry_count(message.headers)
   const message_id = get_message_id(message.headers)
 
-  if (is_retry_pending(message.headers)) {
-    await producer.send({
-      topic,
-      messages: [
-        {
-          key: message.key,
-          value: message.value,
-          headers: message.headers,
-        },
-      ],
-    })
-    return
-  }
+  await wait_for_retry(message.headers)
 
   if (message_id) {
     const lock_key = compose_idempotency_key(

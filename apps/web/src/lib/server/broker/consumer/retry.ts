@@ -39,12 +39,14 @@ export function failure_reason(reason: string): IHeaders {
   }
 }
 
-export function is_retry_pending(
+export async function wait_for_retry(
   headers: IHeaders | undefined,
-): boolean {
+): Promise<void> {
   const value = headers?.[RETRY_AFTER_HEADER]
-  if (!value) return false
-  return Date.now() < Number(value.toString())
+  if (!value) return
+  const remaining = Number(value.toString()) - Date.now()
+  if (remaining <= 0) return
+  await new Promise((resolve) => setTimeout(resolve, remaining))
 }
 
 export function get_retry_count(
