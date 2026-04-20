@@ -100,17 +100,17 @@
     class:user={message.role === "user"}
     class:assistant={message.role === "assistant"}
   >
-    <span class="role">
+    <span class="body-sm-medium role">
       {message.role === "user" ? "Vos" : "Habita"}
     </span>
-    <p class="content">{message.content}</p>
+    <p class="body-md-medium content">{message.content}</p>
   </div>
 {/snippet}
 
 {#snippet EmptyState()}
   <div class="empty">
-    <p class="empty-title">Preguntá sobre Habita</p>
-    <p class="empty-hint">
+    <p class="heading-md empty-title">Preguntá sobre Habita</p>
+    <p class="body-md-medium empty-hint">
       Podés preguntar qué puede hacer la plataforma, cómo
       funciona para inquilinos, administradores,
       inmobiliarias, o propietarios.
@@ -155,24 +155,24 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    border: 2px solid var(--gray-400);
-    border-radius: 0.25rem;
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--dimension-radius-lg);
     overflow: hidden;
   }
 
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: var(--spacing-4);
+    padding: var(--dimension-spacing-6);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
+    gap: var(--dimension-spacing-4);
   }
 
   .message {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
+    gap: var(--dimension-spacing-1);
     max-width: 80%;
   }
 
@@ -185,8 +185,7 @@
   }
 
   .role {
-    font-size: 0.75rem;
-    color: var(--gray-300);
+    color: var(--color-neutrals-400);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -196,20 +195,20 @@
   }
 
   .content {
-    padding: var(--spacing-3) var(--spacing-4);
-    border-radius: 0.25rem;
+    padding: var(--dimension-spacing-2-5) var(--dimension-spacing-3-5);
+    border-radius: var(--dimension-radius-lg);
     line-height: 1.5;
     white-space: pre-wrap;
   }
 
   .user .content {
-    background-color: var(--accent);
-    color: var(--gray-700);
+    background-color: var(--color-blue-500);
+    color: var(--color-neutrals-0);
   }
 
   .assistant .content {
-    background-color: var(--gray-600);
-    color: var(--gray-100);
+    background-color: var(--color-neutrals-100);
+    color: var(--color-text-body);
   }
 
   .empty {
@@ -218,44 +217,43 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-2);
-    color: var(--gray-300);
+    gap: var(--dimension-spacing-2);
+    color: var(--color-neutrals-400);
   }
 
   .empty-title {
-    font-size: 1.25rem;
-    color: var(--gray-100);
+    color: var(--color-text-heading);
   }
 
   .empty-hint {
-    font-size: 0.875rem;
     text-align: center;
     max-width: 400px;
+    color: var(--color-text-body);
   }
 
   .input-area {
     display: flex;
-    gap: var(--spacing-2);
-    padding: var(--spacing-3);
-    border-top: 2px solid var(--gray-400);
+    gap: var(--dimension-spacing-2);
+    padding: var(--dimension-spacing-3);
+    border-top: 1px solid var(--color-border-primary);
   }
 
   .input {
     flex: 1;
-    padding: var(--spacing-2) var(--spacing-3);
-    border: 2px solid var(--gray-400);
-    border-radius: 0.25rem;
-    background-color: var(--gray-700);
-    color: var(--gray-100);
+    padding: var(--dimension-spacing-2-5) var(--dimension-spacing-3-5);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--dimension-radius-lg);
+    background-color: var(--color-neutrals-50);
+    color: var(--color-text-heading);
   }
 
   .input::placeholder {
-    color: var(--gray-400);
+    color: var(--color-neutrals-300);
   }
 
-  .input:focus {
-    outline: none;
-    border-color: var(--accent);
+  .input:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
   }
 
   .input:disabled {
