@@ -22,8 +22,10 @@
 <div class="container">
   <aside>
     <nav aria-label="Contenido">
-      <div class="section">
-        <span class="body-sm-bold section-label">Aprender</span>
+      <section class="section">
+        <span class="body-sm-bold section-label"
+          >Aprender</span
+        >
         <ul class="link-list">
           {#each learn_articles as article (article.slug)}
             <li>
@@ -33,9 +35,11 @@
             </li>
           {/each}
         </ul>
-      </div>
-      <div class="section">
-        <span class="body-sm-bold section-label">Preguntas frecuentes</span>
+      </section>
+      <section class="section">
+        <span class="body-sm-bold section-label"
+          >Preguntas frecuentes</span
+        >
         <ul class="link-list">
           {#each faq_articles as article (article.slug)}
             <li>
@@ -45,7 +49,7 @@
             </li>
           {/each}
         </ul>
-      </div>
+      </section>
     </nav>
   </aside>
   <main>
@@ -93,6 +97,12 @@
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-spacing-8);
   }
 
   main {

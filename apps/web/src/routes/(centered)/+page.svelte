@@ -68,7 +68,7 @@
           sencilla conexión con <a
             href="https://calendar.google.com"
             target="_blank"
-            rel="noopener noreferrer">Google calendar</a
+            rel="noopener noreferrer">Google Calendar</a
           >
         </p>
       </li>
