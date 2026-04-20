@@ -19,4 +19,6 @@ title: ¿Qué datos pedimos a cada usuario?
 
 - **Informe crediticio**: requerido para agendar visitas a propiedades
 
-Para más detalles sobre cómo completar tu perfil, visitá [información de perfil](/learn/profile-information).
+## Seguridad de tus datos
+
+Sabemos que pedimos informacion sensible. Por eso, toda la informacion personal que guardes en tu perfil se [guarda de forma segura](/learn/user-information).
