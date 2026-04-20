@@ -36,7 +36,7 @@
 
 ### Phase 2: Learn About Requirements
 
-**Routes:** `/learn/profile-information`, `/learn/phone-number`
+**Routes:** `/learn/user-information`, `/learn/phone-number`
 
 **Actions:**
 
