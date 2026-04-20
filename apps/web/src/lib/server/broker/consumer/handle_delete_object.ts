@@ -13,7 +13,7 @@ import {
   get_retry_count,
   IDEMPOTENCY_LOCK_TTL_SECONDS,
   incremented_retry,
-  is_retry_pending,
+  wait_for_retry,
   MAX_RETRIES,
   retry_after,
 } from "./retry"
@@ -26,19 +26,7 @@ export async function handle_delete_object(
   const retry_count = get_retry_count(message.headers)
   const message_id = get_message_id(message.headers)
 
-  if (is_retry_pending(message.headers)) {
-    await producer.send({
-      topic,
-      messages: [
-        {
-          key: message.key,
-          value: message.value,
-          headers: message.headers,
-        },
-      ],
-    })
-    return
-  }
+  await wait_for_retry(message.headers)
 
   if (message_id) {
     const lock_key = compose_idempotency_key(
