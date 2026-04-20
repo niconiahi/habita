@@ -59,7 +59,8 @@
         </p>
         <ul class="features">
           <li class="body-md-regular">
-            Puestos ilimitados
+            Equipos para organizar administradores por zona,
+            sucursal o criterio propio
           </li>
           <li class="body-md-regular">
             Todas las
@@ -85,9 +86,6 @@
           > <span class="discount body-sm-bold">-17%</span>
         </p>
         <ul class="features">
-          <li class="body-md-regular badge-item">
-            2 meses gratis
-          </li>
           <li class="body-md-regular">1 usuario</li>
           <li class="body-md-regular">
             Todas las
@@ -111,11 +109,9 @@
           > <span class="discount body-sm-bold">-17%</span>
         </p>
         <ul class="features">
-          <li class="body-md-regular badge-item">
-            2 meses gratis
-          </li>
           <li class="body-md-regular">
-            Puestos ilimitados
+            Equipos para organizar administradores por zona,
+            sucursal o criterio propio
           </li>
           <li class="body-md-regular">
             Todas las
@@ -198,6 +194,10 @@
     gap: var(--dimension-spacing-2);
     list-style: disc;
     padding-left: var(--dimension-spacing-6);
+  }
+
+  .card > a {
+    margin-top: auto;
   }
 
   a :global(button) {
