@@ -1,6 +1,6 @@
 services:
   email:
-    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
     restart: unless-stopped
     env_file:
       - ../.env
@@ -15,7 +15,7 @@ services:
       OTEL_SERVICE_NAME: consumer-email
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/email.script.ts
+    command: pnpm exec tsx src/consumer/email.script.ts
     logging:
       driver: "json-file"
       options:
@@ -33,7 +33,7 @@ services:
       - internal
 
   subscription:
-    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
     restart: unless-stopped
     env_file:
       - ../.env
@@ -48,7 +48,7 @@ services:
       OTEL_SERVICE_NAME: consumer-subscription
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/subscription.script.ts
+    command: pnpm exec tsx src/consumer/subscription.script.ts
     logging:
       driver: "json-file"
       options:
@@ -66,7 +66,7 @@ services:
       - internal
 
   escalation:
-    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
     restart: unless-stopped
     env_file:
       - ../.env
@@ -81,7 +81,7 @@ services:
       OTEL_SERVICE_NAME: consumer-escalation
       OTEL_ENVIRONMENT: production
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/escalation.script.ts
+    command: pnpm exec tsx src/consumer/escalation.script.ts
     logging:
       driver: "json-file"
       options:

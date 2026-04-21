@@ -123,12 +123,19 @@ push +services:
 pull:
   docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml pull
   docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull
+  docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml pull
 
 # Deploy specific svelte version (production only)
 tag-svelte tag:
   SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
   SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
   @echo "Deployed svelte with tag: {{tag}}"
+
+# Deploy specific broker version (production only)
+tag-broker tag:
+  BROKER_TAG={{tag}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml pull
+  BROKER_TAG={{tag}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml up -d
+  @echo "Deployed broker with tag: {{tag}}"
 
 # Deploy specific go version (production only)
 tag-go tag:

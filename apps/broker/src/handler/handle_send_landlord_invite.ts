@@ -1,10 +1,10 @@
 import type { EachMessagePayload, Producer } from "kafkajs"
 import * as v from "valibot"
-import { logger } from "../../../telemetry/logger"
-import { send_email } from "../../send_email"
-import { SendLandlordInviteEvent } from "../events/send_landlord_invite"
-import { dlq_topic } from "../topic"
-import { deliver_email } from "./deliver_email"
+import { logger } from "../lib/logger"
+import { send_email } from "../lib/send_email"
+import { SendLandlordInviteEvent } from "../event/send_landlord_invite"
+import { dlq_topic } from "../lib/topic"
+import { deliver_email } from "../consumer/deliver_email"
 
 export async function handle_send_landlord_invite(
   payload: EachMessagePayload,

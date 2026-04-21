@@ -1,15 +1,15 @@
 import { Kafka, type Producer } from "kafkajs"
-import { lazy } from "$lib/server/lazy"
 
-const kafka = lazy(
-  () =>
-    new Kafka({
-      clientId: "habita",
-      brokers: (
-        process.env.BROKER_BROKERS ?? "redpanda:9092"
-      ).split(","),
-    }),
-)
+function make_kafka() {
+  return new Kafka({
+    clientId: "habita",
+    brokers: (
+      process.env.BROKER_BROKERS ?? "redpanda:9092"
+    ).split(","),
+  })
+}
+
+const kafka = (globalThis.__kafka ??= make_kafka()) as Kafka
 
 let producer_instance: Producer | null = null
 

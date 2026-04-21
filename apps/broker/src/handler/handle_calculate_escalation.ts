@@ -1,8 +1,8 @@
 import type { EachMessagePayload, Producer } from "kafkajs"
-import { logger } from "../../../telemetry/logger"
-import { calculate_all_due_escalations } from "../../calculate_all_due_escalations"
-import { kv } from "../../kv"
-import { dlq_topic } from "../topic"
+import { logger } from "../lib/logger"
+import { calculate_all_due_escalations } from "../service/calculate_all_due_escalations"
+import { kv } from "../lib/kv"
+import { dlq_topic } from "../lib/topic"
 import {
   compose_headers,
   compose_idempotency_key,
@@ -14,7 +14,7 @@ import {
   MAX_RETRIES,
   retry_after,
   wait_for_retry,
-} from "./retry"
+} from "../consumer/retry"
 
 export async function handle_calculate_escalation(
   payload: EachMessagePayload,

@@ -1,7 +1,7 @@
 import { Kafka, type EachMessagePayload, type Producer } from "kafkajs"
-import { logger } from "../../../telemetry/logger"
-import { init_telemetry } from "../../telemetry/sdk"
-import { dlq_topic } from "../topic"
+import { logger } from "../lib/logger"
+import { init_telemetry } from "./telemetry"
+import { dlq_topic } from "../lib/topic"
 import { compose_headers, failure_reason } from "./retry"
 
 type TopicHandler = (

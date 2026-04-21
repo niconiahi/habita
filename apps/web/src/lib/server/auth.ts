@@ -3,7 +3,6 @@ import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
 import { Pool } from "pg"
-import { lazy } from "$lib/server/lazy"
 import { logger } from "$lib/telemetry/logger"
 import { encrypt } from "./encryption"
 import { send_email } from "./send_email"
@@ -86,7 +85,7 @@ const tenant = ac.newRole({
   contract: ["read"],
 })
 
-export const auth = lazy(() => {
+function make_auth() {
   const config = get_config()
   return betterAuth({
     baseURL: config.base_url,
@@ -320,7 +319,9 @@ export const auth = lazy(() => {
       }),
     ],
   })
-})
+}
+
+export const auth = (globalThis.__auth ??= make_auth()) as ReturnType<typeof make_auth>
 
 interface AuthenticatedLocals {
   user: NonNullable<App.Locals["user"]>
