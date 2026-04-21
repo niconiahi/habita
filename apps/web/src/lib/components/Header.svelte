@@ -7,11 +7,15 @@
 
   interface Props {
     is_manager: boolean
+    user: {
+      name: string | null
+      email: string
+      surname: string | null
+      image: string | null
+    } | null
   }
 
-  let { is_manager }: Props = $props()
-
-  const session = authClient.useSession()
+  let { is_manager, user }: Props = $props()
 </script>
 
 <header>
@@ -20,16 +24,18 @@
       <HabitaFull />
     </a>
     <nav>
-      {#if $session.data}
+      {#if user}
         <Popover.Root id="user-popover">
           <Popover.Trigger id="user-popover">
-            <img
-              class="avatar"
-              src={$session.data.user.image}
-              alt={$session.data.user.name}
-            />
+            {#if user.image}
+              <img
+                class="avatar"
+                src={user.image}
+                alt={user.name ?? user.email}
+              />
+            {/if}
             <span class="body-md-medium email">
-              {$session.data.user.email}
+              {user.email}
             </span>
             <ChevronDown />
           </Popover.Trigger>

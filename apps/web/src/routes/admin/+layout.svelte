@@ -14,8 +14,6 @@
     children,
     data,
   }: { children: Snippet; data: LayoutData } = $props()
-
-  const session = authClient.useSession()
 </script>
 
 <div class="root">
@@ -41,14 +39,14 @@
         />
         <Notifications position="right" />
       </div>
-      {#if $session.data}
+      {#if data.user}
         <Popover.Root id="admin-user-popover">
           <Popover.Trigger id="admin-user-popover">
             <span class="avatar">
               <HabitaBrandmark />
             </span>
             <span class="email">
-              {$session.data.user.email}
+              {data.user.email}
             </span>
             <ChevronDown />
           </Popover.Trigger>
