@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte"
   import type { HTMLButtonAttributes } from "svelte/elements"
+  import { haptic } from "$lib/haptic"
 
   interface Props extends HTMLButtonAttributes {
     children: Snippet
@@ -21,6 +22,6 @@
   )
 </script>
 
-<button class={class_name} {...rest}>
+<button use:haptic class={class_name} {...rest}>
   {@render children()}
 </button>
