@@ -6,11 +6,14 @@ function make_redis() {
   return new Redis(process.env.REDIS_URL)
 }
 
-const client = (globalThis.__redis ??= make_redis()) as Redis
+function get_client(): Redis {
+  const client = (globalThis.__redis ??= make_redis()) as Redis
+  return client
+}
 
 export const kv = {
   async get(key: string): Promise<string | null> {
-    return await client.get(key)
+    return await get_client().get(key)
   },
 
   async set(
@@ -19,23 +22,23 @@ export const kv = {
     seconds?: number,
   ): Promise<string> {
     if (seconds) {
-      return await client.set(key, value, "EX", seconds)
+      return await get_client().set(key, value, "EX", seconds)
     }
-    return await client.set(key, value)
+    return await get_client().set(key, value)
   },
 
   async del(key: string): Promise<number> {
-    return await client.del(key)
+    return await get_client().del(key)
   },
 
   async incr(key: string): Promise<number> {
-    return await client.incr(key)
+    return await get_client().incr(key)
   },
 
   async expire(
     key: string,
     seconds: number,
   ): Promise<number> {
-    return await client.expire(key, seconds)
+    return await get_client().expire(key, seconds)
   },
 }

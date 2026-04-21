@@ -38,7 +38,17 @@ function make_query_builder() {
   })
 }
 
-export const query_builder = (globalThis.__query_builder ??=
-  make_query_builder()) as Kysely<DB>
+// NOTE: deferred via Proxy to avoid eager initialization during SvelteKit build analysis
+let _query_builder: Kysely<DB> | undefined
+
+export const query_builder = new Proxy({} as Kysely<DB>, {
+  get(_, property, receiver) {
+    if (!_query_builder) {
+      _query_builder = (globalThis.__query_builder ??=
+        make_query_builder()) as Kysely<DB>
+    }
+    return Reflect.get(_query_builder, property, receiver)
+  },
+})
 
 export type QueryBuilder = Kysely<DB>

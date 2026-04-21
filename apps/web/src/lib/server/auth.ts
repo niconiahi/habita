@@ -321,7 +321,17 @@ function make_auth() {
   })
 }
 
-export const auth = (globalThis.__auth ??= make_auth()) as ReturnType<typeof make_auth>
+type Auth = ReturnType<typeof make_auth>
+let _auth: Auth | undefined
+
+export const auth = new Proxy({} as Auth, {
+  get(_, property, receiver) {
+    if (!_auth) {
+      _auth = (globalThis.__auth ??= make_auth()) as Auth
+    }
+    return Reflect.get(_auth, property, receiver)
+  },
+})
 
 interface AuthenticatedLocals {
   user: NonNullable<App.Locals["user"]>
