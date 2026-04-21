@@ -12,7 +12,7 @@
   } = $props()
 </script>
 
-<Header is_manager={data.is_manager} />
+<Header is_manager={data.is_manager} user={data.user} />
 <div class="container-centered">
   <div class="content">
     {@render children()}

@@ -13,6 +13,7 @@ declare global {
         email: string
         name: string | null
         surname: string | null
+        image: string | null
       } | null
       session: {
         id: string

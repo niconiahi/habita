@@ -43,6 +43,7 @@ export const handle: Handle = async ({
     surname: session.user.surname
       ? decrypt(session.user.surname)
       : null,
+    image: session.user.image ?? null,
   }
   event.locals.session = {
     id: session.session.id,

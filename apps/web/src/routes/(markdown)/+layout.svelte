@@ -18,7 +18,7 @@
   const faq_articles = fetch_faq_articles()
 </script>
 
-<Header is_manager={data.is_manager} />
+<Header is_manager={data.is_manager} user={data.user} />
 <div class="container">
   <aside>
     <nav aria-label="Contenido">
