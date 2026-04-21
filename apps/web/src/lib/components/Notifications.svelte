@@ -56,21 +56,19 @@
   })
 </script>
 
-<Popover.Root id="notifications">
-  <Popover.Trigger id="notifications">
-    <span class="bell">
-      <Bell />
-      {#if unread_notifications.length > 0}
+{#if unread_notifications.length > 0}
+  <Popover.Root id="notifications">
+    <Popover.Trigger id="notifications">
+      <span class="bell">
+        <Bell />
         <span class="badge"
           >{unread_notifications.length}</span
         >
-      {/if}
-    </span>
-  </Popover.Trigger>
-  <Popover.Content id="notifications" {position}>
-    {#snippet children({ close })}
-      <div class="list">
-        {#if unread_notifications.length > 0}
+      </span>
+    </Popover.Trigger>
+    <Popover.Content id="notifications" {position}>
+      {#snippet children({ close })}
+        <div class="list">
           {#each unread_notifications as notification (notification.id)}
             <a
               href={notification.href}
@@ -98,22 +96,24 @@
               </span>
             </a>
           {/each}
-        {:else}
-          <p class="body-sm-medium empty">
-            Sin notificaciones pendientes
-          </p>
-        {/if}
-        <a
-          href="/admin/notifications"
-          class="view-all body-sm-medium"
-          onclick={close}
-        >
-          Ver todas
-        </a>
-      </div>
-    {/snippet}
-  </Popover.Content>
-</Popover.Root>
+          <a
+            href="/admin/notifications"
+            class="view-all body-sm-medium"
+            onclick={close}
+          >
+            Ver todas
+          </a>
+        </div>
+      {/snippet}
+    </Popover.Content>
+  </Popover.Root>
+{:else}
+  <Popover.Trigger id="notifications" href="/admin/notifications">
+    <span class="bell">
+      <Bell />
+    </span>
+  </Popover.Trigger>
+{/if}
 
 <style>
   .bell {
@@ -188,4 +188,5 @@
   .view-all:hover {
     background-color: var(--popover-bg-hover);
   }
+
 </style>
