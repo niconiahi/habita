@@ -4,19 +4,26 @@
   interface Props {
     id: string
     children: Snippet
+    href?: string
   }
 
-  let { id, children }: Props = $props()
+  let { id, children, href }: Props = $props()
 </script>
 
-<button
-  type="button"
-  class="trigger"
-  popovertarget={id}
-  style:anchor-name={`--${id}`}
->
-  {@render children()}
-</button>
+{#if href}
+  <a {href} class="trigger">
+    {@render children()}
+  </a>
+{:else}
+  <button
+    type="button"
+    class="trigger"
+    popovertarget={id}
+    style:anchor-name={`--${id}`}
+  >
+    {@render children()}
+  </button>
+{/if}
 
 <style>
   .trigger {
@@ -30,7 +37,12 @@
     border-radius: var(--dimension-radius-lg);
     color: var(--popover-fg-default);
     cursor: pointer;
+    text-decoration: none;
     transition: background-color 0.15s ease;
+  }
+
+  a.trigger {
+    width: fit-content;
   }
 
   .trigger:hover {
