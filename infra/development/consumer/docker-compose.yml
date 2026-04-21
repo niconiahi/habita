@@ -1,8 +1,8 @@
 services:
   email:
     build:
-      context: ../../../apps/web
-      dockerfile: Dockerfile
+      context: ../../../apps/broker
+      dockerfile: config/Dockerfile
       target: dev
       pull: false
       x-bake:
@@ -11,7 +11,7 @@ services:
     labels:
       - "habita.role=consumer-email"
     volumes:
-      - ../../../apps/web:/app:delegated
+      - ../../../apps/broker:/app:delegated
       - deps:/app/node_modules
     env_file:
       - ../.env
@@ -23,7 +23,7 @@ services:
       OTEL_SERVICE_NAME: consumer-email
       OTEL_ENVIRONMENT: development
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/email.script.ts
+    command: pnpm exec tsx src/consumer/email.script.ts
     logging:
       driver: "json-file"
       options:
@@ -42,8 +42,8 @@ services:
 
   subscription:
     build:
-      context: ../../../apps/web
-      dockerfile: Dockerfile
+      context: ../../../apps/broker
+      dockerfile: config/Dockerfile
       target: dev
       pull: false
       x-bake:
@@ -52,7 +52,7 @@ services:
     labels:
       - "habita.role=consumer-subscription"
     volumes:
-      - ../../../apps/web:/app:delegated
+      - ../../../apps/broker:/app:delegated
       - deps:/app/node_modules
     env_file:
       - ../.env
@@ -64,7 +64,7 @@ services:
       OTEL_SERVICE_NAME: consumer-subscription
       OTEL_ENVIRONMENT: development
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/subscription.script.ts
+    command: pnpm exec tsx src/consumer/subscription.script.ts
     logging:
       driver: "json-file"
       options:
@@ -83,8 +83,8 @@ services:
 
   escalation:
     build:
-      context: ../../../apps/web
-      dockerfile: Dockerfile
+      context: ../../../apps/broker
+      dockerfile: config/Dockerfile
       target: dev
       pull: false
       x-bake:
@@ -93,7 +93,7 @@ services:
     labels:
       - "habita.role=consumer-escalation"
     volumes:
-      - ../../../apps/web:/app:delegated
+      - ../../../apps/broker:/app:delegated
       - deps:/app/node_modules
     env_file:
       - ../.env
@@ -105,7 +105,7 @@ services:
       OTEL_SERVICE_NAME: consumer-escalation
       OTEL_ENVIRONMENT: development
       BROKER_BROKERS: redpanda:9092
-    command: pnpm exec tsx src/lib/server/broker/consumer/escalation.script.ts
+    command: pnpm exec tsx src/consumer/escalation.script.ts
     logging:
       driver: "json-file"
       options:

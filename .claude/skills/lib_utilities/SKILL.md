@@ -412,7 +412,7 @@ All paths relative to `apps/web/src/lib/server/`
 
 ## auth.ts
 
-BetterAuth server instance (lazy-initialized).
+BetterAuth server instance (HMR-safe singleton via globalThis).
 
 - `auth` — betterAuth instance with organization plugin, email+password, session management
 
@@ -427,12 +427,6 @@ Creates error responses for loaders.
 Normalizes FormData into a plain object for Valibot validation.
 
 - `normalize_input<T extends v.ObjectSchema>(formData: FormData, schema: T): Record<string, unknown>`
-
-## lazy.ts
-
-Lazy initialization helper with HMR support.
-
-- `lazy<T>(create: () => T): T` — creates value on first access, reuses on subsequent calls
 
 ## now.ts
 
@@ -707,21 +701,7 @@ Publish functions that send messages to Kafka topics.
 
 ## Consumers
 
-Message handlers and infrastructure.
-
-- `create_consumer(config: ConsumerConfig): void` — creates Kafka consumer with topic handlers
-- `TopicHandler` — `(payload: EachMessagePayload, producer: Producer) => Promise<void>`
-- `deliver_email(payload, producer, send): Promise<void>` — shared email delivery with retry logic
-- Retry utilities in `retry.ts`:
-  - `MAX_RETRIES` — 3
-  - `compose_headers(base, patches): IHeaders`
-  - `incremented_retry(retry_count): IHeaders`
-  - `retry_after(retry_count): IHeaders`
-  - `is_retry_pending(headers): boolean`
-  - `get_retry_count(headers): number`
-  - `get_message_id(headers): string | undefined`
-  - `compose_idempotency_key(topic, message_id): string`
-- Topic-specific handlers: `handle_calculate_escalation`, `handle_extend_subscription`, `handle_send_renewal_reminder`, `handle_send_booking_confirmation`, `handle_send_signing_request`, `handle_send_landlord_invite`, `handle_delete_object`
+Consumers have been extracted to their own independent package at `apps/broker/`. See that package for consumer handlers, retry logic, and infrastructure. Event schemas are duplicated across both packages — keep in sync.
 
 ## topic.ts
 

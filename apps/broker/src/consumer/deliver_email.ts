@@ -1,10 +1,7 @@
 import type { EachMessagePayload, Producer } from "kafkajs"
-import * as v from "valibot"
-import { logger } from "../../../telemetry/logger"
-import { extend_subscription_by_payment_id } from "../../cron/extend_subscription"
-import { kv } from "../../kv"
-import { ExtendSubscriptionEvent } from "../events/extend_subscription"
-import { dlq_topic } from "../topic"
+import { logger } from "../lib/logger"
+import { kv } from "../lib/kv"
+import { dlq_topic } from "../lib/topic"
 import {
   compose_headers,
   compose_idempotency_key,
@@ -18,9 +15,10 @@ import {
   wait_for_retry,
 } from "./retry"
 
-export async function handle_extend_subscription(
+export async function deliver_email(
   payload: EachMessagePayload,
   producer: Producer,
+  send: () => Promise<void>,
 ) {
   const { message, topic } = payload
   const retry_count = get_retry_count(message.headers)
@@ -36,41 +34,17 @@ export async function handle_extend_subscription(
     const is_locked = await kv.get(lock_key)
     if (is_locked) {
       logger.info(
-        "skipping already processed extend_subscription event",
-        { message_id },
+        `skipping already processed ${topic} event`,
+        {
+          message_id,
+        },
       )
       return
     }
   }
 
-  const raw = JSON.parse(message.value!.toString())
-
-  const validation = v.safeParse(
-    ExtendSubscriptionEvent,
-    raw,
-  )
-  if (!validation.success) {
-    logger.error("malformed extend_subscription event", {
-      issues: JSON.stringify(v.flatten(validation.issues)),
-    })
-    await producer.send({
-      topic: dlq_topic(topic),
-      messages: [
-        {
-          value: message.value,
-          headers: compose_headers(message.headers, [
-            failure_reason("validation"),
-          ]),
-        },
-      ],
-    })
-    return
-  }
-
   try {
-    await extend_subscription_by_payment_id(
-      validation.output.subscription_payment_id,
-    )
+    await send()
 
     if (message_id) {
       const lock_key = compose_idempotency_key(
@@ -84,10 +58,7 @@ export async function handle_extend_subscription(
       )
     }
 
-    logger.info("processed extend_subscription event", {
-      subscription_payment_id:
-        validation.output.subscription_payment_id,
-    })
+    logger.info(`processed ${topic} event`)
   } catch (error) {
     const err =
       error instanceof Error
@@ -108,10 +79,8 @@ export async function handle_extend_subscription(
           },
         ],
       })
-      logger.warn("retrying extend_subscription event", {
+      logger.warn(`retrying ${topic} event`, {
         retry: retry_count + 1,
-        subscription_payment_id:
-          validation.output.subscription_payment_id,
         error: err.message,
       })
     } else {
@@ -127,11 +96,8 @@ export async function handle_extend_subscription(
         ],
       })
       logger.error(
-        "extend_subscription event sent to dead letter queue",
-        {
-          subscription_payment_id:
-            validation.output.subscription_payment_id,
-        },
+        `${topic} event sent to dead letter queue`,
+        {},
         err,
       )
     }

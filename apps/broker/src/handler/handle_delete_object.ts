@@ -1,10 +1,10 @@
 import type { EachMessagePayload, Producer } from "kafkajs"
 import * as v from "valibot"
-import { logger } from "../../../telemetry/logger"
-import { kv } from "../../kv"
-import { delete_object } from "../../object_store"
-import { DeleteObjectEvent } from "../events/delete_object"
-import { dlq_topic } from "../topic"
+import { logger } from "../lib/logger"
+import { kv } from "../lib/kv"
+import { delete_object } from "../lib/object_store"
+import { DeleteObjectEvent } from "../event/delete_object"
+import { dlq_topic } from "../lib/topic"
 import {
   compose_headers,
   compose_idempotency_key,
@@ -16,7 +16,7 @@ import {
   wait_for_retry,
   MAX_RETRIES,
   retry_after,
-} from "./retry"
+} from "../consumer/retry"
 
 export async function handle_delete_object(
   payload: EachMessagePayload,

@@ -1,8 +1,7 @@
 import { PostgresDialect } from "kysely"
 import pg from "pg"
-import { lazy } from "../src/lib/server/lazy"
 
-export const DIALECT = lazy<PostgresDialect>(() => {
+function make_dialect() {
   if (!process.env.POSTGRES_USER)
     throw new Error("POSTGRES_USER is not set")
   if (!process.env.POSTGRES_PASSWORD)
@@ -20,4 +19,6 @@ export const DIALECT = lazy<PostgresDialect>(() => {
       database: process.env.POSTGRES_DB,
     }),
   })
-})
+}
+
+export const DIALECT = (globalThis.__dialect ??= make_dialect()) as PostgresDialect
