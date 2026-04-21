@@ -1,5 +1,5 @@
 import { logger } from "../../../telemetry/logger"
-import { MESSAGE_ID_HEADER } from "../consumer/retry"
+import { MESSAGE_ID_HEADER } from "../topic"
 import { CALCULATE_ESCALATION_TOPIC } from "../events/calculate_escalation"
 import { get_producer } from "./producer"
 

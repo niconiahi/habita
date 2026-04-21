@@ -1,6 +1,6 @@
 import * as v from "valibot"
 import { logger } from "../../../telemetry/logger"
-import { MESSAGE_ID_HEADER } from "../consumer/retry"
+import { MESSAGE_ID_HEADER } from "../topic"
 import {
   EXTEND_SUBSCRIPTION_TOPIC,
   ExtendSubscriptionEvent,
