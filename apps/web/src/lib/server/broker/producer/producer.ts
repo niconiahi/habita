@@ -9,13 +9,15 @@ function make_kafka() {
   })
 }
 
-const kafka = (globalThis.__kafka ??= make_kafka()) as Kafka
+function get_kafka(): Kafka {
+  return (globalThis.__kafka ??= make_kafka()) as Kafka
+}
 
 let producer_instance: Producer | null = null
 
 export async function get_producer() {
   if (!producer_instance) {
-    producer_instance = kafka.producer()
+    producer_instance = get_kafka().producer()
     await producer_instance.connect()
   }
   return producer_instance

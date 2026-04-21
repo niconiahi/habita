@@ -35,6 +35,42 @@ const kafka = (globalThis.__kafka ??= make_kafka()) as Kafka
 - **Don't guard with `NODE_ENV`.** The `??=` is a no-op after first assignment in production anyway. No `if (process.env.NODE_ENV !== "production")` checks — keep it unconditional.
 - **Use `make_*` for non-trivial construction.** If the instance needs env validation or multi-step setup, extract a named `make_*` function. No IIFEs.
 
+## SvelteKit build-time caveat
+
+SvelteKit runs a postbuild `analyse` phase that imports server modules. If a `globalThis.__x ??= make_x()` line is at module scope, `make_x()` executes during build — when no env vars or services are available.
+
+**For modules imported by routes** (query_builder, auth, kv, kafka producer): defer initialization so it only runs on first access, not at import time.
+
+```ts
+// Deferred via Proxy — safe during SvelteKit build
+let _query_builder: Kysely<DB> | undefined
+
+export const query_builder = new Proxy({} as Kysely<DB>, {
+  get(_, property, receiver) {
+    if (!_query_builder) {
+      _query_builder = (globalThis.__query_builder ??=
+        make_query_builder()) as Kysely<DB>
+    }
+    return Reflect.get(_query_builder, property, receiver)
+  },
+})
+```
+
+```ts
+// Deferred via getter function — for objects with method wrappers (like kv)
+function get_client(): Redis {
+  return (globalThis.__redis ??= make_redis()) as Redis
+}
+
+export const kv = {
+  async get(key: string) { return await get_client().get(key) },
+}
+```
+
+**For modules NOT imported by routes** (notification_emitter, dialect): eager `globalThis.__x ??=` is fine.
+
+**For standalone processes** (broker consumers): eager `globalThis.__x ??=` is fine — no SvelteKit build analysis.
+
 ## Anti-patterns
 
 ```ts
