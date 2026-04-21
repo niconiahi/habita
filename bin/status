@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Collect all compose containers with their project, service, status, and ports
+data=$(docker ps -a --format '{{.Label "com.docker.compose.project"}}\t{{.Label "com.docker.compose.service"}}\t{{.Status}}\t{{.Ports}}' \
+  --filter "label=com.docker.compose.project" | sort)
+
+if [ -z "$data" ]; then
+  echo "No services running."
+  exit 0
+fi
+
+# Known habita projects in display order
+projects="storage app consumer api gateway broker scheduler pdf media status geo"
+
+current_group=""
+
+while IFS=$'\t' read -r project service status ports; do
+  # Skip non-habita projects
+  case " $projects " in
+    *" $project "*) ;;
+    *) continue ;;
+  esac
+
+  # Normalize status to a short symbol
+  if [[ "$status" == *"(healthy)"* ]]; then
+    symbol="●"
+    short_status="healthy"
+  elif [[ "$status" == *"(unhealthy)"* ]]; then
+    symbol="✖"
+    short_status="unhealthy"
+  elif [[ "$status" == *"Up"* ]]; then
+    symbol="◐"
+    short_status="running"
+  elif [[ "$status" == *"Exited"* ]]; then
+    symbol="○"
+    short_status="exited"
+  else
+    symbol="?"
+    short_status="$status"
+  fi
+
+  # Clean up ports: strip 0.0.0.0: and [::]: prefixes, deduplicate, show host ports only
+  clean_ports=""
+  if [ -n "$ports" ]; then
+    clean_ports=$(echo "$ports" | tr ',' '\n' | grep -oE '0\.0\.0\.0:[0-9]+' | sed 's/0\.0\.0\.0:/:/g' | sort -u | tr '\n' ' ' | xargs || true)
+  fi
+
+  # Print group header when project changes
+  if [ "$project" != "$current_group" ]; then
+    [ -n "$current_group" ] && echo ""
+    printf "\033[1m%s\033[0m\n" "$project"
+    current_group="$project"
+  fi
+
+  # Print service line
+  if [ -n "$clean_ports" ]; then
+    printf "  %s %-20s %-10s %s\n" "$symbol" "$service" "$short_status" "$clean_ports"
+  else
+    printf "  %s %-20s %s\n" "$symbol" "$service" "$short_status"
+  fi
+done <<< "$data"
