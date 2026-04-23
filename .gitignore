@@ -10,8 +10,16 @@ apps/legacy
 
 # Secrets: plaintext files are IGNORED
 .env
-infra/*/.env
+infra/.env.*
+!infra/.env.*.enc
 infra/*/scheduler/rclone.conf
+infra/scheduler/rclone.conf
+
+# Private keys
+*-key.pem
+
+# Deploy log
+infra/deploy.log
 
 # Generated zone data (large, regenerate locally)
 *.tsv
