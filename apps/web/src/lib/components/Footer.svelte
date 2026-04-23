@@ -23,7 +23,7 @@
       </ul>
     </div>
     <div class="group">
-      <h3 class="heading-sm title">Artículos</h3>
+      <h3 class="heading-sm title">Aprendé</h3>
       <ul class="links">
         <li>
           <a href="/learn/booking">
@@ -46,31 +46,49 @@
       <h3 class="heading-sm title">Preguntas frecuentes</h3>
       <ul class="links">
         <li>
-          <a href="/faq/alerts">¿Qué alertas provee Habita?</a>
+          <a href="/faq/alerts"
+            >¿Qué alertas provee Habita?</a
+          >
         </li>
         <li>
-          <a href="/faq/automated-processes">¿Qué procesos están automatizados?</a>
+          <a href="/faq/automated-processes"
+            >¿Qué procesos están automatizados?</a
+          >
         </li>
         <li>
-          <a href="/faq/contract-data">¿Qué datos se piden para un contrato?</a>
+          <a href="/faq/contract-data"
+            >¿Qué datos se piden para un contrato?</a
+          >
         </li>
         <li>
-          <a href="/faq/digital-signature-legality">¿Qué tan legal es la firma digital?</a>
+          <a href="/faq/digital-signature-legality"
+            >¿Qué tan legal es la firma digital?</a
+          >
         </li>
         <li>
-          <a href="/faq/digital-signature-security">¿Es la firma digital segura?</a>
+          <a href="/faq/digital-signature-security"
+            >¿Es la firma digital segura?</a
+          >
         </li>
         <li>
-          <a href="/faq/google-calendar">¿Puedo integrar las visitas a Google Calendar?</a>
+          <a href="/faq/google-calendar"
+            >¿Puedo integrar las visitas a Google Calendar?</a
+          >
         </li>
         <li>
-          <a href="/faq/payment-tracking">¿Cómo funciona el seguimiento de pagos?</a>
+          <a href="/faq/payment-tracking"
+            >¿Cómo funciona el seguimiento de pagos?</a
+          >
         </li>
         <li>
-          <a href="/faq/property-data">¿Qué datos incluye una propiedad?</a>
+          <a href="/faq/property-data"
+            >¿Qué datos incluye una propiedad?</a
+          >
         </li>
         <li>
-          <a href="/faq/user-data">¿Qué datos pedimos a cada usuario?</a>
+          <a href="/faq/user-data"
+            >¿Qué datos pedimos a cada usuario?</a
+          >
         </li>
       </ul>
     </div>

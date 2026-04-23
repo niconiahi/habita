@@ -24,7 +24,7 @@
     <nav aria-label="Contenido">
       <section class="section">
         <span class="body-sm-bold section-label"
-          >Aprender</span
+          >Aprendé</span
         >
         <ul class="link-list">
           {#each learn_articles as article (article.slug)}

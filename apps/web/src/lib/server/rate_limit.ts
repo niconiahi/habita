@@ -22,7 +22,12 @@ function get_max_requests(pathname: string) {
 export async function is_rate_limited(
   event: RequestEvent,
 ): Promise<boolean> {
-  const ip = event.getClientAddress()
+  let ip: string
+  try {
+    ip = event.getClientAddress()
+  } catch {
+    return false
+  }
   const pathname = event.url.pathname
   const max_requests = get_max_requests(pathname)
   const cache_key = `rate_limit:${pathname}:${ip}`
