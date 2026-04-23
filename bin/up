@@ -29,5 +29,7 @@ echo "Starting status..."
 compose status up -d
 echo "Starting geo..."
 compose geo up -d
+echo "Starting autoheal..."
+compose autoheal up -d
 
 echo "Done."
