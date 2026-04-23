@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Build Images
 
 on:
   push:
@@ -6,29 +6,17 @@ on:
     paths:
       - 'apps/web/**'
       - 'apps/go/**'
-      - 'infra/production/**'
-      - '!infra/production/versions.env'
-      - '.github/workflows/deploy.yml'
 
 env:
   REGISTRY: docker.io
   IMAGE_PREFIX: niconiahi/habita
 
 jobs:
-  # Detect what changed to deploy only affected services
   changes:
     runs-on: ubuntu-latest
     outputs:
       app: ${{ steps.filter.outputs.app }}
       api: ${{ steps.filter.outputs.api }}
-      scheduler: ${{ steps.filter.outputs.scheduler }}
-      gateway: ${{ steps.filter.outputs.gateway }}
-      media: ${{ steps.filter.outputs.media }}
-      status: ${{ steps.filter.outputs.status }}
-      geo: ${{ steps.filter.outputs.geo }}
-      secrets: ${{ steps.filter.outputs.secrets }}
-      services: ${{ steps.services.outputs.list }}
-      any: ${{ steps.services.outputs.any }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,64 +26,9 @@ jobs:
           filters: |
             app:
               - 'apps/web/**'
-              - 'infra/production/app/**'
             api:
               - 'apps/go/**'
-              - 'infra/production/api/**'
-            scheduler:
-              - 'infra/production/scheduler/**'
-            gateway:
-              - 'infra/production/gateway/**'
-            media:
-              - 'infra/production/media/**'
-            status:
-              - 'infra/production/status/**'
-            geo:
-              - 'infra/production/geo/**'
 
-      - name: Build services list
-        id: services
-        run: |
-          services=""
-          any="false"
-
-          if [[ "${{ steps.filter.outputs.app }}" == "true" ]]; then
-            services="$services app"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then
-            services="$services api"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.scheduler }}" == "true" ]]; then
-            services="$services scheduler"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.gateway }}" == "true" ]]; then
-            services="$services gateway"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.media }}" == "true" ]]; then
-            services="$services media"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.status }}" == "true" ]]; then
-            services="$services status"
-            any="true"
-          fi
-          if [[ "${{ steps.filter.outputs.geo }}" == "true" ]]; then
-            services="$services geo"
-            any="true"
-          fi
-
-          # Trim leading space
-          services="${services# }"
-
-          echo "list=$services" >> $GITHUB_OUTPUT
-          echo "any=$any" >> $GITHUB_OUTPUT
-          echo "Services to deploy: $services"
-
-  # Build svelte image if app changed
   build-svelte:
     needs: changes
     if: needs.changes.outputs.app == 'true'
@@ -125,7 +58,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Build go image if api changed
   build-go:
     needs: changes
     if: needs.changes.outputs.api == 'true'
@@ -151,53 +83,3 @@ jobs:
           tags: ${{ env.IMAGE_PREFIX }}:go-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # Commit updated version tags to versions.env
-  update-versions:
-    needs: [changes, build-svelte, build-go]
-    if: always() && !failure() && !cancelled() && needs.changes.outputs.any == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - name: Update versions.env
-        run: |
-          if [[ "${{ needs.changes.outputs.app }}" == "true" ]]; then
-            sed -i "s/^SVELTE_TAG=.*/SVELTE_TAG=${{ github.sha }}/" infra/production/versions.env
-          fi
-          if [[ "${{ needs.changes.outputs.api }}" == "true" ]]; then
-            sed -i "s/^GO_TAG=.*/GO_TAG=${{ github.sha }}/" infra/production/versions.env
-          fi
-          echo "Updated versions.env:"
-          cat infra/production/versions.env
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add infra/production/versions.env
-          git diff --staged --quiet && echo "No changes to commit" && exit 0
-          git commit -m "deploy: update versions.env [skip ci]"
-          git push
-
-  # Deploy changed services to VPS
-  deploy:
-    needs: [changes, build-svelte, build-go, update-versions]
-    if: always() && !failure() && !cancelled() && needs.changes.outputs.any == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          script: |
-            cd /opt/habita
-            git fetch origin main && git reset --hard origin/main
-            ENV=production just deploy push ${{ needs.changes.outputs.services }}

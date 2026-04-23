@@ -6,6 +6,20 @@ if [[ $# -eq 0 ]]; then
   set -- app consumer api scheduler gateway media broker pdf status geo
 fi
 
+# If on laptop (dev), delegate to VPS via SSH
+if [[ "$ENV" == "development" ]]; then
+  echo "Deploying to production via SSH..."
+  echo "Services: $*"
+  echo ""
+  ssh habita "cd /opt/habita && git fetch origin main && git reset --hard origin/main && just deploy $*"
+  exit $?
+fi
+
+# Set image tags from git SHA (CI builds images tagged with commit SHA)
+export SVELTE_TAG=$(git rev-parse HEAD)
+export GO_TAG=$(git rev-parse HEAD)
+export BROKER_TAG=$(git rev-parse HEAD)
+
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
 if [[ -f "$LOCK_FILE" ]]; then
