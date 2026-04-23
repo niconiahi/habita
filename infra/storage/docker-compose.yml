@@ -1,12 +1,15 @@
 services:
   db:
-    image: postgis/postgis:17-3.4
+    build:
+      context: .
+      dockerfile: Dockerfile.db
     restart: unless-stopped
     labels:
       - "habita.role=database"
     volumes:
       - db:/var/lib/postgresql/data
       - backups:/backups
+      - ./wal-archive.sh:/wal-archive.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s

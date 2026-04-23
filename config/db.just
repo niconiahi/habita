@@ -74,6 +74,10 @@ reset:
   echo ""
   echo "✅ Database reset complete!"
 
+# Point-in-time recovery from WAL archive (e.g., just db restore '2026-04-22 15:30:00')
+restore timestamp="":
+  ./bin/db-restore {{timestamp}}
+
 # Rollback the last migration
 rollback:
   docker exec $(docker ps -qf "label=habita.role=app" | head -1) npx kysely migrate:down

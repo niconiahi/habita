@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+TIMESTAMP="${1:-}"
+
+echo "=== Database Point-in-Time Recovery ==="
+echo ""
+
+if [[ -z "$TIMESTAMP" ]]; then
+  echo "Usage: just db-restore <timestamp>"
+  echo ""
+  echo "Examples:"
+  echo "  just db-restore '2026-04-22 15:30:00'"
+  echo "  just db-restore latest"
+  echo ""
+  echo "Available backups:"
+  DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
+  docker exec "$DB_CONTAINER" wal-g backup-list 2>/dev/null || echo "  (run from production to see backups)"
+  exit 1
+fi
+
+echo "WARNING: This will stop the database, restore to '$TIMESTAMP', and restart."
+echo "Press Ctrl+C to cancel, or Enter to continue..."
+read -r
+
+DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
+
+echo ""
+echo "1. Stopping app services..."
+compose app down
+compose consumer down
+compose api down
+
+echo ""
+echo "2. Stopping database..."
+compose storage stop db
+
+echo ""
+echo "3. Removing current data volume..."
+docker volume rm storage_db 2>/dev/null || true
+
+echo ""
+echo "4. Starting fresh database container..."
+compose storage up -d db
+echo "   Waiting for db to start..."
+sleep 5
+
+DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
+
+echo ""
+echo "5. Fetching backup and WAL files..."
+if [[ "$TIMESTAMP" == "latest" ]]; then
+  docker exec "$DB_CONTAINER" wal-g backup-fetch LATEST
+else
+  docker exec "$DB_CONTAINER" sh -c "
+    wal-g backup-fetch LATEST
+    cat > /var/lib/postgresql/data/recovery.signal <<EOF
+EOF
+    cat >> /var/lib/postgresql/data/postgresql.auto.conf <<EOF
+restore_command = 'wal-g wal-fetch \"%f\" \"%p\"'
+recovery_target_time = '$TIMESTAMP'
+recovery_target_action = 'promote'
+EOF
+  "
+fi
+
+echo ""
+echo "6. Restarting database with recovery..."
+compose storage restart db
+echo "   Waiting for recovery to complete..."
+wait_healthy database 120 || { echo "Recovery failed — db not healthy"; exit 1; }
+
+echo ""
+echo "7. Restarting app services..."
+compose app up -d
+compose consumer up -d
+compose api up -d
+
+echo ""
+echo "Recovery complete. Verify your data."
