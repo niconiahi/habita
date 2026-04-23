@@ -72,6 +72,21 @@
     "deny": [],
     "ask": []
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit:*)",
+            "command": "jq -r '.tool_input.command' | grep -q '^git commit' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"MANDATORY: Follow .claude/skills/git/SKILL.md conventions. Single line. No body. No trailers (no Co-Authored-By). All lowercase. Format: type(scope): description. Start with verb. Under 72 chars. Review your message NOW before proceeding.\"}}' || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "svelte"
