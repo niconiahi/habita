@@ -74,6 +74,10 @@ reset:
   echo ""
   echo "✅ Database reset complete!"
 
+# Rollback the last migration
+rollback:
+  docker exec $(docker ps -qf "label=habita.role=app" | head -1) npx kysely migrate:down
+
 # Create a gzipped database dump
 backup:
   docker exec $(docker ps -qf "label=habita.role=database" | head -1) sh -c 'pg_dump -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' | gzip > backup_$(date +%Y%m%d_%H%M%S).sql.gz
