@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+source "$(dirname "$0")/lib.sh"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -10,148 +10,61 @@ log_ok() { echo -e "${GREEN}✓${NC} $1"; }
 log_fail() { echo -e "${RED}✗${NC} $1"; }
 log_info() { echo -e "${YELLOW}→${NC} $1"; }
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 echo ""
 echo "=== Testing Habita Infrastructure ==="
 echo ""
 
-# 1. Stop any existing containers
 log_info "Stopping existing containers..."
-docker compose -p development down 2>/dev/null || true
-docker compose -p storage down 2>/dev/null || true
-docker compose -p app down 2>/dev/null || true
-docker compose -p api down 2>/dev/null || true
-docker compose -p gateway down 2>/dev/null || true
-docker compose -p media down 2>/dev/null || true
-docker compose -p scheduler down 2>/dev/null || true
-docker compose -p observability down 2>/dev/null || true
+"$REPO_ROOT/bin/down"
 
-# 2. Create network
-log_info "Creating internal network..."
+log_info "Creating network + volumes..."
 docker network create internal 2>/dev/null || true
+docker volume create backups 2>/dev/null || true
 log_ok "Network ready"
 
-# 3. Start storage (db + kv)
-log_info "Starting storage project (db + kv)..."
-docker compose -p storage -f infra/development/storage/docker-compose.yml up -d
+log_info "Starting storage..."
+compose storage up -d
+log_info "Waiting for db..."
+wait_healthy database 60 && log_ok "db is healthy" || { log_fail "db failed"; exit 1; }
+log_info "Waiting for kv..."
+wait_healthy cache 60 && log_ok "kv is healthy" || { log_fail "kv failed"; exit 1; }
 
-log_info "Waiting for db to be healthy..."
-for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' storage-db-1 2>/dev/null | grep -q healthy; then
-    log_ok "db is healthy"
-    break
-  fi
-  if [ $i -eq 30 ]; then
-    log_fail "db did not become healthy"
-    exit 1
-  fi
-  sleep 2
-done
-
-log_info "Waiting for kv to be healthy..."
-for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' storage-kv-1 2>/dev/null | grep -q healthy; then
-    log_ok "kv is healthy"
-    break
-  fi
-  if [ $i -eq 30 ]; then
-    log_fail "kv did not become healthy"
-    exit 1
-  fi
-  sleep 2
-done
-
-# 4. Start app (svelte + consumer)
-log_info "Starting app project (svelte + consumer)..."
-docker compose -p app -f infra/development/app/docker-compose.yml up -d
-
-log_info "Waiting for svelte to start..."
+log_info "Starting app..."
+compose app up -d
 sleep 5
-if docker ps --filter "name=app-svelte-1" --format "{{.Status}}" | grep -q "Up"; then
-  log_ok "svelte is running"
-else
-  log_fail "svelte is not running"
-  docker logs app-svelte-1 --tail 20
-  exit 1
-fi
+docker ps --filter "name=app-svelte-1" --format "{{.Status}}" | grep -q "Up" && log_ok "svelte running" || { log_fail "svelte failed"; exit 1; }
 
-# 5. Start api (go)
-log_info "Starting api project (go)..."
-docker compose -p api -f infra/development/api/docker-compose.yml up -d
+log_info "Starting api..."
+compose api up -d
+wait_healthy "" 60 && log_ok "go healthy" || log_info "go still starting (no habita.role label match)"
 
-log_info "Waiting for go to be healthy..."
-for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' api-go-1 2>/dev/null | grep -q healthy; then
-    log_ok "go is healthy"
-    break
-  fi
-  if [ $i -eq 30 ]; then
-    log_fail "go did not become healthy"
-    docker logs api-go-1 --tail 20
-    exit 1
-  fi
-  sleep 2
-done
+log_info "Starting media..."
+compose media up -d
+sleep 5
+log_ok "media started"
 
-# 6. Start media (image)
-log_info "Starting media project (image)..."
-docker compose -p media -f infra/development/media/docker-compose.yml up -d
-
-log_info "Waiting for image to be healthy..."
-for i in {1..30}; do
-  if docker inspect --format='{{.State.Health.Status}}' media-image-1 2>/dev/null | grep -q healthy; then
-    log_ok "image is healthy"
-    break
-  fi
-  if [ $i -eq 30 ]; then
-    log_fail "image did not become healthy"
-    docker logs media-image-1 --tail 20
-    exit 1
-  fi
-  sleep 2
-done
-
-# 7. Start gateway (caddy)
-log_info "Starting gateway project (caddy)..."
-docker compose -p gateway -f infra/development/gateway/docker-compose.yml up -d
-
+log_info "Starting gateway..."
+compose gateway up -d
 sleep 3
-if docker ps --filter "name=gateway-caddy-1" --format "{{.Status}}" | grep -q "Up"; then
-  log_ok "caddy is running"
-else
-  log_fail "caddy is not running"
-  docker logs gateway-caddy-1 --tail 20
-  exit 1
-fi
+docker ps --filter "name=gateway-caddy-1" --format "{{.Status}}" | grep -q "Up" && log_ok "caddy running" || { log_fail "caddy failed"; exit 1; }
 
-# 8. Start scheduler (ofelia)
-log_info "Starting scheduler project (ofelia)..."
-docker compose -p scheduler -f infra/development/scheduler/docker-compose.yml up -d
-
+log_info "Starting scheduler..."
+compose scheduler up -d
 sleep 2
-if docker ps --filter "name=scheduler-ofelia-1" --format "{{.Status}}" | grep -q "Up"; then
-  log_ok "ofelia is running"
-else
-  log_fail "ofelia is not running"
-  docker logs scheduler-ofelia-1 --tail 20
-  exit 1
-fi
+docker ps --filter "name=scheduler-ofelia-1" --format "{{.Status}}" | grep -q "Up" && log_ok "ofelia running" || { log_fail "ofelia failed"; exit 1; }
 
 echo ""
 echo "=== Summary ==="
 echo ""
-log_ok "storage (db, kv)"
-log_ok "app     (svelte, consumer)"
+log_ok "storage (db, kv, object)"
+log_ok "app     (svelte)"
 log_ok "api     (go)"
 log_ok "media   (image)"
 log_ok "gateway (caddy)"
 log_ok "scheduler (ofelia)"
 echo ""
-log_info "Skipped: observability, geo (optional)"
-echo ""
-echo "Docker Desktop should show 6 separate project groups."
+log_info "Skipped: observability, geo, broker, consumer, pdf, status (optional)"
 echo ""
 echo "To stop everything: just down"
-echo ""

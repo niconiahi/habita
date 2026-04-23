@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+unhealthy=$(docker ps --filter "health=unhealthy" --format "{{.Names}}\t{{.Status}}" 2>/dev/null || true)
+
+if [[ -z "$unhealthy" ]]; then
+  echo "All containers healthy."
+  exit 0
+fi
+
+echo "Unhealthy containers:"
+echo "$unhealthy" | while IFS=$'\t' read -r name status; do
+  echo "  ✖ $name — $status"
+  docker inspect --format='{{range .State.Health.Log}}{{.Output}}{{end}}' "$name" 2>/dev/null | tail -3
+  echo ""
+done
+exit 1

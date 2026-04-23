@@ -1,134 +1,114 @@
-# Habita Infrastructure Orchestration
+# Habita Infrastructure
+#
+# Environment-agnostic: same commands on laptop and production box.
+# bin/ scripts detect environment automatically.
 
-# Auto-detects production on VPS (/opt/habita), override with: ENV=production just <command>
-env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
-infra := "infra/" + env
+# First-run: create network, volumes, symlinks, secrets, start all
+[group('infra')]
+setup:
+  ./bin/setup
 
-# versions.env: pass --env-file to compose when deploying in production
-versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
-
-mod db
-mod lint
-mod test
-mod secrets
-mod deploy
-mod zone
-mod ssh
-
-# Symlink all config files from config/ to their parent directories
-link:
-  ./bin/symlink-configs.sh
-
-# List available commands
-default:
-  @just --list
-
-# ============================================================================
-# Docker Infrastructure
-# ============================================================================
-
-# Create shared infrastructure (one-time setup)
-infra-setup:
-  docker network create internal 2>/dev/null || true
-  docker volume create backups 2>/dev/null || true
-  @echo "✅ Created network 'internal' and volume 'backups'"
-
-# Start all services in correct order
-up: infra-setup
-  @echo "Starting storage (db + kv)..."
-  docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml up -d
-  @echo "Waiting for db to be healthy..."
-  @until docker inspect --format='{{{{.State.Health.Status}}}}' $(docker ps -qf "label=habita.role=database" | head -1) 2>/dev/null | grep -q healthy; do sleep 2; done
-  @echo "Starting app (svelte)..."
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d
-  @echo "Starting consumers (email, subscription, escalation)..."
-  docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml up -d
-  @echo "Starting api..."
-  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d
-  @echo "Starting media..."
-  docker compose -p media -f {{infra}}/media/docker-compose.yml up -d
-  @echo "Starting gateway..."
-  docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d
-  @echo "Starting scheduler..."
-  docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d
-  @echo "Starting broker..."
-  docker compose -p broker -f {{infra}}/broker/docker-compose.yml up -d
-  @echo "Starting pdf service..."
-  docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d
-  @echo "Starting status page..."
-  docker compose -p status -f {{infra}}/status/docker-compose.yml up -d
-  @echo "Starting geo (nominatim + tileserver)..."
-  docker compose -p geo -f {{infra}}/geo/docker-compose.yml up -d
-  @echo "Done!"
+# Start all services in dependency order
+[group('infra')]
+up:
+  ./bin/up
 
 # Stop all services
+[group('infra')]
 down:
-  -docker compose -p status -f {{infra}}/status/docker-compose.yml down
-  -docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml down
-  -docker compose -p broker -f {{infra}}/broker/docker-compose.yml down
-  -docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml down
-  -docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml down
-  -docker compose -p media -f {{infra}}/media/docker-compose.yml down
-  -docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml down
-  -docker compose -p geo -f {{infra}}/geo/docker-compose.yml down
-  -docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml down
-  -docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml down
-  -docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml down
+  ./bin/down
 
-# Start geo (nominatim) - heavy, optional
-geo: infra-setup
-  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml up -d
+# Deploy services (e.g., just deploy app api)
+[group('infra')]
+deploy +services:
+  ./bin/deploy {{services}}
 
-# Stop geo
-geo-down:
-  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml down
+# Build and push image to DockerHub (svelte, go, consumer)
+[group('infra')]
+build service:
+  ./bin/build {{service}}
 
-# Follow logs for a service (e.g., just logs svelte, just logs db, just logs go)
+# Rollback a service (e.g., just rollback app, just rollback app v1.2.3)
+[group('infra')]
+rollback service version="":
+  ./bin/rollback {{service}} {{version}}
+
+# Show all services with status, image, health
+[group('infra')]
+ps:
+  ./bin/ps
+
+# Follow logs for a service (svelte, db, kv, go, caddy, etc.)
+[group('infra')]
 logs service:
-  #!/usr/bin/env bash
-  case "{{service}}" in
-    svelte) docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml logs -f svelte ;;
-    db)     docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml logs -f db ;;
-    kv)     docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml logs -f kv ;;
-    go)     docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml logs -f go ;;
-    consumer-email)        docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f email ;;
-    consumer-subscription) docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f subscription ;;
-    consumer-escalation)   docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml logs -f escalation ;;
-    nominatim)  docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml logs -f nominatim ;;
-    tileserver) docker compose -p geo {{versions_env}} -f {{infra}}/geo/docker-compose.yml logs -f tileserver ;;
-    *)      echo "Unknown service: {{service}}. Available: svelte, db, kv, go, consumer-email, consumer-subscription, consumer-escalation, nominatim, tileserver"; exit 1 ;;
-  esac
+  ./bin/logs {{service}}
 
-# Restart a project or specific service (e.g., just restart app, just restart app svelte)
-restart project service="":
-  docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml restart {{service}}
+# Exec into a running container (e.g., just exec svelte sh)
+[group('infra')]
+exec service +cmd:
+  ./bin/exec {{service}} {{cmd}}
 
-# Reload a project or specific service (e.g., just reload app, just reload app svelte)
-reload project service="":
-  docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml up -d --force-recreate {{service}}
+# Restart a service (e.g., just restart svelte)
+[group('infra')]
+restart service:
+  ./bin/restart {{service}}
 
-# Run production build locally (for testing auth flows that need ORIGIN)
-preview:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm -p 5174:5174 svelte sh -c "pnpm run build && pnpm run preview --host 0.0.0.0 --port 5174"
+# Recreate a service with latest config (e.g., just reload svelte)
+[group('infra')]
+reload service:
+  ./bin/reload {{service}}
 
-# Show status of all services
-status:
-  @./bin/status
+# Decrypt and write .env file
+[group('infra')]
+env-push:
+  ./bin/env-push
 
-# Refresh node_modules in the svelte container (after adding/removing packages)
-deps:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm install
+# Compare local .env vs encrypted .env.enc
+[group('infra')]
+env-diff:
+  ./bin/env-diff
 
-# Rebuild a service image (after Dockerfile changes)
-rebuild project service="":
-  #!/usr/bin/env bash
-  if [[ -z "{{service}}" ]]; then
-    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache
-  else
-    docker compose -p {{project}} {{versions_env}} -f {{infra}}/{{project}}/docker-compose.yml build --no-cache {{service}}
-  fi
+# Prevent concurrent deploys
+[group('infra')]
+lock:
+  ./bin/lock
 
-# Clean up unused Docker resources
+# Release deploy lock
+[group('infra')]
+unlock:
+  ./bin/unlock
+
+# Show unhealthy containers and why
+[group('infra')]
+health:
+  ./bin/health
+
+# Show recent deploy history
+[group('infra')]
+audit:
+  ./bin/audit
+
+# Remove unused images, containers, volumes
+[group('infra')]
 prune:
-  docker image prune -f
-  docker volume prune -f
+  ./bin/prune
+
+# Tear down + rebuild all stacks, verify health
+[group('infra')]
+test-infra:
+  ./bin/test-infra
+
+[group('project')]
+mod db
+
+[group('project')]
+mod lint
+
+[group('project')]
+mod test
+
+[group('project')]
+mod zone
+
+[group('project')]
+mod ssh

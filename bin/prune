@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+docker image prune -f
+docker volume prune -f

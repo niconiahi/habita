@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 2 ]] && { echo "Usage: just exec <service> <cmd...>"; exit 1; }
+
+service="$1"
+shift
+
+case "$service" in
+  svelte)                compose app exec svelte "$@" ;;
+  db)                    compose storage exec db "$@" ;;
+  kv)                    compose storage exec kv "$@" ;;
+  object)                compose storage exec object "$@" ;;
+  go)                    compose api exec go "$@" ;;
+  consumer-email)        compose consumer exec email "$@" ;;
+  consumer-subscription) compose consumer exec subscription "$@" ;;
+  consumer-escalation)   compose consumer exec escalation "$@" ;;
+  caddy)                 compose gateway exec caddy "$@" ;;
+  image)                 compose media exec image "$@" ;;
+  redpanda)              compose broker exec redpanda "$@" ;;
+  ofelia)                compose scheduler exec ofelia "$@" ;;
+  pdf)                   compose pdf exec pdf "$@" ;;
+  nominatim)             compose geo exec nominatim "$@" ;;
+  tileserver)            compose geo exec tileserver "$@" ;;
+  *) echo "Unknown service: $service"; exit 1 ;;
+esac
