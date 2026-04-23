@@ -249,11 +249,14 @@
           <a
             class="body-md-medium link"
             href="/learn/booking"
+            target="_blank"
             >¿Qué es un informe crediticio?</a
           >
           <p class="body-md-medium footer">
             ¿Estás listo para subir tu informe?
-            <a href="/profile#files">Subir informe</a>
+            <a href="/profile#files" target="_blank"
+              >Subir informe</a
+            >
           </p>
         </Dialog.Content>
       {/snippet}
