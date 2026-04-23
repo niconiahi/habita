@@ -33,3 +33,7 @@ Don't speculate about what might be wrong. If you don't know, investigate — re
 ## Always validate with sources
 
 Before proposing a solution, verify it against official docs, articles, or source code. Don't rely on memory or assumptions about APIs — look it up. Use WebSearch, WebFetch, or read the actual library source to confirm the approach works before writing code.
+
+## Always test after implementing
+
+After implementing anything that produces runnable output — bash scripts, CLI commands, bin/ scripts, just recipes, docker compose configs — proactively run it and verify it works before reporting completion. Don't wait for the user to ask. Smoke test every command you create. If it fails, fix it before committing.
