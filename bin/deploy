@@ -119,14 +119,20 @@ for svc in "$@"; do
 done
 
 echo ""
-echo "Verifying health..."
+echo "Verifying deployed services..."
 sleep 10
-unhealthy=$(docker ps --filter "health=unhealthy" --format "{{.Names}}" 2>/dev/null || true)
-if [[ -n "$unhealthy" ]]; then
-  echo "UNHEALTHY: $unhealthy"
+deploy_failed=false
+for svc in "$@"; do
+  local_unhealthy=$(compose "$svc" ps --format "{{.Name}}\t{{.Health}}" 2>/dev/null | grep -i unhealthy || true)
+  if [[ -n "$local_unhealthy" ]]; then
+    echo "UNHEALTHY in $svc: $local_unhealthy"
+    deploy_failed=true
+  fi
+done
+if [[ "$deploy_failed" == "true" ]]; then
   exit 1
 fi
-echo "All healthy"
+echo "All deployed services healthy"
 
 # Audit log
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) deploy $* ($ENV)" >> "$REPO_ROOT/infra/deploy.log"
