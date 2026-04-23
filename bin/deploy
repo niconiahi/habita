@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 source "$(dirname "$0")/lib.sh"
 
-[[ $# -lt 1 ]] && { echo "Usage: just deploy <services...>"; exit 1; }
+# No args = deploy all
+if [[ $# -eq 0 ]]; then
+  set -- app consumer api scheduler gateway media broker pdf status geo
+fi
 
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
