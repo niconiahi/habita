@@ -18,9 +18,9 @@ up:
 down:
   ./bin/down
 
-# Deploy services (e.g., just deploy app api)
+# Deploy services — no args deploys all (e.g., just deploy, just deploy app api)
 [group('infra')]
-deploy +services:
+deploy *services:
   ./bin/deploy {{services}}
 
 # Build and push image to DockerHub (svelte, go, consumer)
