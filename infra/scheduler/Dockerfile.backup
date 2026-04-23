@@ -1,0 +1,14 @@
+# Backup container with pg_dump and age encryption
+FROM postgres:17-alpine
+
+# Install age for encryption
+RUN apk add --no-cache age
+
+# Create backup script directory
+RUN mkdir -p /scripts
+
+# Non-root user for security
+RUN adduser -D -u 10001 backup
+USER backup
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

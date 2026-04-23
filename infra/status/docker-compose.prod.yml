@@ -1,0 +1,4 @@
+services:
+  gatus:
+    volumes:
+      - ./config.prod.yaml:/config/config.yaml:ro

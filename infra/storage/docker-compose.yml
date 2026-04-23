@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgis/postgis:17-3.4
+    restart: unless-stopped
+    labels:
+      - "habita.role=database"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - internal
+
+  kv:
+    image: valkey/valkey:7.2
+    restart: unless-stopped
+    labels:
+      - "habita.role=cache"
+    volumes:
+      - kv:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - internal
+
+  object:
+    image: rustfs/rustfs:1.0.0-alpha.90
+    restart: unless-stopped
+    labels:
+      - "habita.role=object-store"
+    volumes:
+      - object:/data
+    environment:
+      RUSTFS_VOLUMES: "/data"
+      RUSTFS_ADDRESS: "0.0.0.0:9000"
+      RUSTFS_CONSOLE_ADDRESS: "0.0.0.0:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+
+volumes:
+  db:
+  kv:
+  object:
+  backups:
+    external: true
+    name: backups

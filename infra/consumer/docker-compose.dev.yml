@@ -1,0 +1,67 @@
+services:
+  email:
+    build:
+      context: ../../apps/broker
+      dockerfile: config/Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    volumes:
+      - ../../apps/broker:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env.dev
+    environment:
+      OTEL_ENVIRONMENT: development
+
+  subscription:
+    build:
+      context: ../../apps/broker
+      dockerfile: config/Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    volumes:
+      - ../../apps/broker:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env.dev
+    environment:
+      OTEL_ENVIRONMENT: development
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.15"
+
+  escalation:
+    build:
+      context: ../../apps/broker
+      dockerfile: config/Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    volumes:
+      - ../../apps/broker:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env.dev
+    environment:
+      OTEL_ENVIRONMENT: development
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.15"
+
+volumes:
+  deps:

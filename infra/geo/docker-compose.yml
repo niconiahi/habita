@@ -1,0 +1,44 @@
+services:
+  nominatim:
+    image: mediagis/nominatim:4.4
+    restart: unless-stopped
+    environment:
+      - PBF_URL=https://download.geofabrik.de/south-america/argentina-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/south-america/argentina-updates/
+      - IMPORT_WIKIPEDIA=false
+      - IMPORT_US_POSTCODES=false
+      - IMPORT_GB_POSTCODES=false
+    volumes:
+      - nominatim:/var/lib/postgresql/14/main
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    shm_size: 2gb
+    networks:
+      - internal
+
+  tileserver:
+    image: maptiler/tileserver-gl:v4.4.7
+    restart: unless-stopped
+    volumes:
+      - ./tiles:/data
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+
+volumes:
+  nominatim:

@@ -1,0 +1,21 @@
+services:
+  image:
+    # Root needed for update-ca-certificates (custom certs in dev)
+    user: "0"
+    env_file:
+      - ../.env.dev
+    environment:
+      IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "true"
+    extra_hosts:
+      - "dev.habita.rent:host-gateway"
+    volumes:
+      - ./certs/habita.pem:/usr/local/share/ca-certificates/habita.crt:ro
+    command: sh -c "update-ca-certificates && imgproxy"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+          cpus: "0.25"

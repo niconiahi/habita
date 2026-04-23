@@ -1,0 +1,19 @@
+services:
+  caddy:
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./certs/dev.habita.rent.pem:/etc/ssl/certs/dev.habita.rent.pem:ro
+      - ./certs/dev.habita.rent-key.pem:/etc/ssl/private/dev.habita.rent-key.pem:ro
+      - ./certs/habita.pem:/etc/ssl/certs/habita.pem:ro
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.5"
+        reservations:
+          memory: 64M
+          cpus: "0.1"
+    networks:
+      internal:
+        aliases:
+          - dev.habita.rent
