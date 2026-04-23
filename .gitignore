@@ -19,4 +19,11 @@ infra/*/scheduler/rclone.conf
 # Map tile data (large, download separately)
 *.mbtiles
 
+# OpenTofu
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
+backend.hcl
+
 # Encrypted secrets (.enc) are TRACKED - do not add to gitignore
