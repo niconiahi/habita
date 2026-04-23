@@ -21,7 +21,7 @@
 
 <header>
   <div class="container">
-    <a href="/" class="logo" aria-label="hábita">
+    <a use:haptic href="/" class="logo" aria-label="hábita">
       <HabitaFull />
     </a>
     <nav>
