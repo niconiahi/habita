@@ -15,10 +15,11 @@ if [[ "$ENV" == "development" ]]; then
   exit $?
 fi
 
-# Set image tags from git SHA (CI builds images tagged with commit SHA)
-export SVELTE_TAG=$(git rev-parse HEAD)
-export GO_TAG=$(git rev-parse HEAD)
-export BROKER_TAG=$(git rev-parse HEAD)
+# Set image tags from last commit that touched each service's source
+# CI only builds images when the service's code changes, so the tag must match
+export SVELTE_TAG=$(git log -1 --format=%H -- apps/web/)
+export GO_TAG=$(git log -1 --format=%H -- apps/go/)
+export BROKER_TAG=$(git log -1 --format=%H -- apps/broker/)
 
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
