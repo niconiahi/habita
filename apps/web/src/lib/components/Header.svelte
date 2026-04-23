@@ -4,7 +4,6 @@
   import * as Popover from "$lib/components/Popover"
   import HabitaFull from "$icon/habita/Full.svelte"
   import ChevronDown from "$icon/ChevronDown.svelte"
-  import { haptic } from "$lib/haptic"
 
   interface Props {
     is_manager: boolean
@@ -21,7 +20,7 @@
 
 <header>
   <div class="container">
-    <a use:haptic href="/" class="logo" aria-label="hábita">
+    <a href="/" class="logo" aria-label="hábita">
       <HabitaFull />
     </a>
     <nav>
@@ -65,7 +64,7 @@
           </Popover.Content>
         </Popover.Root>
       {:else}
-        <a use:haptic class="button body-md-bold secondary" href="/login">Login</a>
+        <a class="button body-md-bold secondary" href="/login">Login</a>
       {/if}
       {#if is_manager}
         <Notifications />
