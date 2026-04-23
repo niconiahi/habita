@@ -1,0 +1,20 @@
+services:
+  redpanda:
+    command:
+      - redpanda start
+      - --smp 1
+      - --memory 512M
+      - --advertise-kafka-addr redpanda:9092
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 512M
+          cpus: "0.25"

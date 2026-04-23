@@ -1,0 +1,26 @@
+services:
+  gatus:
+    image: twinproduction/gatus:v5.14.0
+    restart: unless-stopped
+    labels:
+      - "habita.role=status"
+    # No healthcheck - scratch container has no tools, and gatus IS a monitoring tool
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 64M
+          cpus: "0.05"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

@@ -1,0 +1,26 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:v24.3.1
+    restart: unless-stopped
+    labels:
+      - "habita.role=broker"
+    command:
+      - redpanda start
+      - --smp 1
+      - --advertise-kafka-addr redpanda:9092
+    volumes:
+      - broker:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+
+volumes:
+  broker:

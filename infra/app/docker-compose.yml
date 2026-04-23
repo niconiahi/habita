@@ -1,0 +1,31 @@
+services:
+  svelte:
+    restart: unless-stopped
+    labels:
+      - "habita.role=app"
+    environment:
+      DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
+      REDIS_URL: redis://kv:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_SERVICE_NAME: svelte
+      BROKER_BROKERS: redpanda:9092
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2.0"
+        reservations:
+          memory: 1G
+          cpus: "0.5"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

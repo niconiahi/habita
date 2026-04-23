@@ -1,0 +1,9 @@
+services:
+  ofelia:
+    volumes:
+      - ./ofelia.dev.ini:/etc/ofelia/config.ini:ro
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "ofelia"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

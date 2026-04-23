@@ -1,0 +1,35 @@
+services:
+  pdf:
+    build:
+      context: ../../apps/pdf
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 8082
+    healthcheck:
+      test: ["CMD", "sh", "-lc", "curl -fsS http://localhost:8082/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 512M
+          cpus: "0.25"
+    networks:
+      internal:
+        aliases:
+          - pdf
+
+networks:
+  internal:
+    external: true

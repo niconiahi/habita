@@ -1,0 +1,28 @@
+services:
+  ofelia:
+    image: mcuadros/ofelia:0.3.20
+    restart: unless-stopped
+    labels:
+      - "habita.role=scheduler"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: daemon --config /etc/ofelia/config.ini
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 64M
+          cpus: "0.05"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true

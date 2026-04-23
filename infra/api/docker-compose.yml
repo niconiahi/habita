@@ -1,0 +1,25 @@
+services:
+  go:
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      PORT: 8081
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: go
+    healthcheck:
+      test: ["CMD", "sh", "-lc", "curl -fsS http://localhost:8081/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
