@@ -7,7 +7,7 @@ host := "habita"
 run *args:
   #!/usr/bin/env bash
   if [[ -z "{{args}}" ]]; then
-    ssh {{host}}
+    ssh -t {{host}} "cd /opt/habita && exec \$SHELL -l"
   else
-    ssh {{host}} "{{args}}"
+    ssh {{host}} "cd /opt/habita && {{args}}"
   fi
