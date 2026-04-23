@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 1 ]] && { echo "Usage: just logs <service>"; exit 1; }
+
+service="$1"
+shift
+
+case "$service" in
+  svelte)                compose app logs -f svelte "$@" ;;
+  db)                    compose storage logs -f db "$@" ;;
+  kv)                    compose storage logs -f kv "$@" ;;
+  object)                compose storage logs -f object "$@" ;;
+  go)                    compose api logs -f go "$@" ;;
+  consumer-email)        compose consumer logs -f email "$@" ;;
+  consumer-subscription) compose consumer logs -f subscription "$@" ;;
+  consumer-escalation)   compose consumer logs -f escalation "$@" ;;
+  caddy)                 compose gateway logs -f caddy "$@" ;;
+  image)                 compose media logs -f image "$@" ;;
+  redpanda)              compose broker logs -f redpanda "$@" ;;
+  ofelia)                compose scheduler logs -f ofelia "$@" ;;
+  pdf)                   compose pdf logs -f pdf "$@" ;;
+  gatus)                 compose status logs -f gatus "$@" ;;
+  nominatim)             compose geo logs -f nominatim "$@" ;;
+  tileserver)            compose geo logs -f tileserver "$@" ;;
+  *) echo "Unknown service: $service"; exit 1 ;;
+esac

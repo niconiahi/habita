@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+echo "=== Habita Setup ==="
+
+echo "Creating docker network..."
+docker network create internal 2>/dev/null || true
+
+echo "Creating volumes..."
+docker volume create backups 2>/dev/null || true
+
+echo "Symlinking config files..."
+"$REPO_ROOT/bin/symlink-configs.sh"
+
+echo "Decrypting secrets..."
+"$REPO_ROOT/bin/env-push"
+
+echo "Starting all services..."
+"$REPO_ROOT/bin/up"
+
+echo ""
+echo "Setup complete."

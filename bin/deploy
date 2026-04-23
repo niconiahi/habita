@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 1 ]] && { echo "Usage: just deploy <services...>"; exit 1; }
+
+# Check lock
+LOCK_FILE="/tmp/habita-deploy.lock"
+if [[ -f "$LOCK_FILE" ]]; then
+  echo "Deploy already in progress (lock file exists)"
+  exit 1
+fi
+
+notify() {
+  local status="$1" msg="$2"
+  [[ -z "${DEPLOY_WEBHOOK_URL:-}" ]] && return
+  curl -sf -X POST "$DEPLOY_WEBHOOK_URL" \
+    -H "Content-Type: application/json" \
+    -d "{\"content\": \"$status Deploy $msg on habita.rent\"}" || true
+}
+
+trap 'notify "❌" "failed"; rm -f "$LOCK_FILE"' ERR
+trap 'rm -f "$LOCK_FILE"' EXIT
+
+for svc in "$@"; do
+  echo "--- deploying $svc ---"
+
+  case "$svc" in
+    app)
+      compose app pull svelte
+      compose app run --rm svelte npx kysely migrate:latest
+      compose app up -d --force-recreate svelte
+      ;;
+    consumer)
+      compose consumer up -d --force-recreate --pull always
+      ;;
+    api)
+      compose api pull go
+      compose api up -d --force-recreate go
+      ;;
+    pdf)
+      compose pdf up -d --force-recreate --build
+      ;;
+    scheduler|gateway|media|status|geo|broker)
+      compose "$svc" up -d --force-recreate --pull always
+      ;;
+    *)
+      echo "Unknown service: $svc"
+      exit 1
+      ;;
+  esac
+
+  echo "$svc deployed"
+done
+
+echo ""
+echo "Verifying health..."
+sleep 10
+unhealthy=$(docker ps --filter "health=unhealthy" --format "{{.Names}}" 2>/dev/null || true)
+if [[ -n "$unhealthy" ]]; then
+  echo "UNHEALTHY: $unhealthy"
+  exit 1
+fi
+echo "All healthy"
+
+# Audit log
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) deploy $* ($ENV)" >> "$REPO_ROOT/infra/deploy.log"
+
+notify "✅" "succeeded"

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+docker network create internal 2>/dev/null || true
+docker volume create backups 2>/dev/null || true
+
+echo "Starting storage..."
+compose storage up -d
+echo "Waiting for db..."
+wait_healthy database 60 || { echo "db failed health check"; exit 1; }
+
+echo "Starting app..."
+compose app up -d
+echo "Starting consumers..."
+compose consumer up -d
+echo "Starting api..."
+compose api up -d
+echo "Starting media..."
+compose media up -d
+echo "Starting gateway..."
+compose gateway up -d
+echo "Starting scheduler..."
+compose scheduler up -d
+echo "Starting broker..."
+compose broker up -d
+echo "Starting pdf..."
+compose pdf up -d
+echo "Starting status..."
+compose status up -d
+echo "Starting geo..."
+compose geo up -d
+
+echo "Done."

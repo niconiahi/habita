@@ -1,8 +1,6 @@
 services:
   go:
     restart: unless-stopped
-    env_file:
-      - ../.env
     environment:
       PORT: 8081
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318

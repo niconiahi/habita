@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 1 ]] && { echo "Usage: just rollback <service> [image_tag]"; exit 1; }
+
+service="$1"
+tag="${2:-}"
+
+if [[ -n "$tag" ]]; then
+  echo "Rolling back $service to tag: $tag"
+  case "$service" in
+    app)      SVELTE_TAG="$tag" compose app up -d --force-recreate svelte ;;
+    api)      GO_TAG="$tag" compose api up -d --force-recreate go ;;
+    consumer) BROKER_TAG="$tag" compose consumer up -d --force-recreate ;;
+    *)        echo "Tag rollback only supports app, api, consumer"; exit 1 ;;
+  esac
+else
+  echo "Rolling back $service to previous git state..."
+  git revert --no-commit HEAD
+  "$REPO_ROOT/bin/deploy" "$service"
+  echo "Revert applied but NOT committed. Review with 'git diff'"
+fi

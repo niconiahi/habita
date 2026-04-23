@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+local_file="$INFRA/.env.$ENV_SUFFIX"
+enc_file="$INFRA/.env.$ENV_SUFFIX.enc"
+
+if [[ ! -f "$local_file" ]]; then
+  echo "No local .env.$ENV_SUFFIX file. Run 'just env-push' first."
+  exit 1
+fi
+
+echo "Comparing .env.$ENV_SUFFIX vs .env.$ENV_SUFFIX.enc:"
+diff <(sort "$local_file") <(sops decrypt --input-type dotenv --output-type dotenv "$enc_file" 2>/dev/null | sort) || echo "Files differ."

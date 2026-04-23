@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 1 ]] && { echo "Usage: just restart <service>"; exit 1; }
+
+service="$1"
+
+case "$service" in
+  svelte)                compose app restart svelte ;;
+  db)                    compose storage restart db ;;
+  kv)                    compose storage restart kv ;;
+  object)                compose storage restart object ;;
+  go)                    compose api restart go ;;
+  consumer-email)        compose consumer restart email ;;
+  consumer-subscription) compose consumer restart subscription ;;
+  consumer-escalation)   compose consumer restart escalation ;;
+  caddy)                 compose gateway restart caddy ;;
+  image)                 compose media restart image ;;
+  redpanda)              compose broker restart redpanda ;;
+  ofelia)                compose scheduler restart ofelia ;;
+  pdf)                   compose pdf restart pdf ;;
+  gatus)                 compose status restart gatus ;;
+  nominatim)             compose geo restart nominatim ;;
+  tileserver)            compose geo restart tileserver ;;
+  *) echo "Unknown service: $service"; exit 1 ;;
+esac
