@@ -28,11 +28,9 @@
         >
         <ul class="link-list">
           {#each learn_articles as article (article.slug)}
-            <li>
-              <Dashboard.Link href="/learn/{article.slug}">
-                {article.title}
-              </Dashboard.Link>
-            </li>
+            <Dashboard.Link href="/learn/{article.slug}">
+              {article.title}
+            </Dashboard.Link>
           {/each}
         </ul>
       </section>
@@ -42,11 +40,9 @@
         >
         <ul class="link-list">
           {#each faq_articles as article (article.slug)}
-            <li>
-              <Dashboard.Link href="/faq/{article.slug}">
-                {article.title}
-              </Dashboard.Link>
-            </li>
+            <Dashboard.Link href="/faq/{article.slug}">
+              {article.title}
+            </Dashboard.Link>
           {/each}
         </ul>
       </section>
@@ -79,6 +75,12 @@
     gap: var(--dimension-spacing-6);
   }
 
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-spacing-8);
+  }
+
   .section {
     display: flex;
     flex-direction: column;
@@ -93,16 +95,10 @@
   .link-list {
     display: flex;
     flex-direction: column;
-    gap: var(--dimension-spacing-1);
+    gap: var(--dimension-spacing-2);
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-
-  nav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--dimension-spacing-8);
   }
 
   main {

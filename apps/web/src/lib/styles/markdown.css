@@ -21,6 +21,16 @@
   font-weight: 700;
   line-height: 1.4;
   color: var(--color-text-heading);
+  border-left: 3px solid var(--color-blue-500);
+  padding-left: var(--dimension-spacing-3);
+}
+
+.markdown h3 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text-heading);
 }
 
 /* body text */
@@ -35,6 +45,17 @@
 .markdown strong {
   font-weight: 700;
   color: var(--color-text-heading);
+}
+
+/* links */
+
+.markdown a {
+  color: var(--color-blue-500);
+  text-decoration: none;
+}
+
+.markdown a:hover {
+  text-decoration: underline;
 }
 
 /* lists */
@@ -58,6 +79,23 @@
   list-style: decimal;
 }
 
+.markdown li::marker {
+  color: var(--color-blue-500);
+}
+
+/* blockquote */
+
+.markdown blockquote {
+  background-color: var(--color-blue-50);
+  border-left: 3px solid var(--color-blue-500);
+  padding: var(--dimension-spacing-4) var(--dimension-spacing-5);
+  border-radius: 0 var(--dimension-radius-lg) var(--dimension-radius-lg) 0;
+}
+
+.markdown blockquote p {
+  margin: 0;
+}
+
 /* inline code */
 
 .markdown code {
@@ -78,6 +116,7 @@
   text-align: left;
   padding: var(--dimension-spacing-3);
   border-bottom: 2px solid var(--color-border-primary);
+  background-color: var(--color-neutrals-50);
   font-family: var(--font-family-body);
   font-size: var(--font-size-body-sm);
   font-weight: 700;

@@ -8,26 +8,22 @@
 
 html {
   scrollbar-gutter: stable;
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  height: 100%;
+  min-height: 100%;
+  color: var(--color-text-body);
+  font-family: var(--font-family-body);
+  background-color: var(--color-neutrals-0);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 ul,
 ol {
   list-style-type: none;
-}
-
-body {
-  color: var(--color-text-body);
-  font-family: var(--font-family-body);
-  background-color: var(--color-neutrals-0);
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 button,
