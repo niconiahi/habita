@@ -7,7 +7,8 @@ function make_redis() {
 }
 
 function get_client(): Redis {
-  const client = (globalThis.__redis ??= make_redis()) as Redis
+  const client = (globalThis.__redis ??=
+    make_redis()) as Redis
   return client
 }
 
@@ -22,7 +23,12 @@ export const kv = {
     seconds?: number,
   ): Promise<string> {
     if (seconds) {
-      return await get_client().set(key, value, "EX", seconds)
+      return await get_client().set(
+        key,
+        value,
+        "EX",
+        seconds,
+      )
     }
     return await get_client().set(key, value)
   },

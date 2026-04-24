@@ -6,7 +6,8 @@ let property_id: number
 
 test.describe.serial("Edit Property with Room Map", () => {
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test.use({ storageState: "e2e/.auth/manager.json" })

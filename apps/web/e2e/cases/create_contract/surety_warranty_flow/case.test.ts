@@ -20,7 +20,8 @@ let landlord_user_id: number
 
 test.describe.serial("Full Flow - SURETY Warranty", () => {
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test.describe("Manager actions", () => {

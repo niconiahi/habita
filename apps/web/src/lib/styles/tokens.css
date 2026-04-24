@@ -105,7 +105,7 @@
   --color-absolute-white: #fcfdfd;
   --color-absolute-black: #1c1f21;
   --color-absolute-transparent: rgba(0, 0, 0, 0);
-  --color-absolute-semi-transparent: rgba(0, 0, 0, 0.30);
+  --color-absolute-semi-transparent: rgba(0, 0, 0, 0.3);
 
   /* primitive: font / family */
   --font-family-body: "DM Sans", sans-serif;
@@ -200,7 +200,9 @@
   --popover-fg-hover: var(--color-neutrals-600);
 
   /* semantic: notification */
-  --notification-bg-default: var(--color-absolute-transparent);
+  --notification-bg-default: var(
+    --color-absolute-transparent
+  );
   --notification-bg-hover: var(--color-neutrals-100);
   --notification-fg-default: var(--color-neutrals-600);
   --notification-fg-hover: var(--color-neutrals-600);
@@ -249,10 +251,16 @@
   --button-secondary-fg-pressed: var(--color-blue-800);
 
   /* components: button / tertiary */
-  --button-tertiary-bg-default: var(--color-absolute-transparent);
+  --button-tertiary-bg-default: var(
+    --color-absolute-transparent
+  );
   --button-tertiary-bg-hover: var(--color-neutrals-200);
-  --button-tertiary-bg-disabled: var(--color-absolute-transparent);
-  --button-tertiary-bg-pressed: var(--color-absolute-transparent);
+  --button-tertiary-bg-disabled: var(
+    --color-absolute-transparent
+  );
+  --button-tertiary-bg-pressed: var(
+    --color-absolute-transparent
+  );
   --button-tertiary-fg-default: var(--color-blue-800);
   --button-tertiary-fg-hover: var(--color-blue-800);
   --button-tertiary-fg-disabled: var(--color-neutrals-400);

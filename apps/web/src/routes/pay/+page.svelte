@@ -16,7 +16,9 @@
       method="POST"
       action={compose_action(ACTION.CREATE_PAYMENT)}
     >
-      <Button variant="primary" type="submit">Pagar 50 ARS</Button>
+      <Button variant="primary" type="submit"
+        >Pagar 50 ARS</Button
+      >
     </form>
   </Content.Section>
 </Content.Root>

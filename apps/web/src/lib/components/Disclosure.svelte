@@ -43,7 +43,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--dimension-spacing-3) var(--dimension-spacing-4);
+    padding: var(--dimension-spacing-3)
+      var(--dimension-spacing-4);
     cursor: pointer;
     color: var(--color-text-heading);
     list-style: none;
@@ -68,6 +69,7 @@
   }
 
   .content {
-    padding: 0 var(--dimension-spacing-4) var(--dimension-spacing-4);
+    padding: 0 var(--dimension-spacing-4)
+      var(--dimension-spacing-4);
   }
 </style>

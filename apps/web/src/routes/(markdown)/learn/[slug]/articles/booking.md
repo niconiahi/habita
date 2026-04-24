@@ -38,11 +38,11 @@ Hacé clic en la propiedad que te interese. Vas a ver toda la información relev
 
 En el detalle de la propiedad, hacé clic en el botón **Agendar visita**. Se te va a mostrar un calendario con los días y horarios disponibles que el administrador configuró.
 
-| Paso              | Qué hacer                                             |
-| ----------------- | ----------------------------------------------------- |
-| Elegir día        | Seleccioná uno de los días disponibles                |
-| Elegir horario    | Seleccioná el horario que te quede cómodo             |
-| Confirmar         | Hacé clic en **Confirmar visita** en la barra inferior |
+| Paso           | Qué hacer                                              |
+| -------------- | ------------------------------------------------------ |
+| Elegir día     | Seleccioná uno de los días disponibles                 |
+| Elegir horario | Seleccioná el horario que te quede cómodo              |
+| Confirmar      | Hacé clic en **Confirmar visita** en la barra inferior |
 
 ### 4. Confirmá la visita
 

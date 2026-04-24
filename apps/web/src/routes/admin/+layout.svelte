@@ -55,25 +55,29 @@
             position="right"
           >
             {#snippet children({ close })}
-            <a href="/profile" class="dropdown-item" onclick={close}>
-              Perfil
-            </a>
-            <button
-              type="button"
-              class="dropdown-item"
-              onclick={async () => {
-                close()
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      window.location.href = "/"
+              <a
+                href="/profile"
+                class="dropdown-item"
+                onclick={close}
+              >
+                Perfil
+              </a>
+              <button
+                type="button"
+                class="dropdown-item"
+                onclick={async () => {
+                  close()
+                  await authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        window.location.href = "/"
+                      },
                     },
-                  },
-                })
-              }}
-            >
-              Cerrar sesión
-            </button>
+                  })
+                }}
+              >
+                Cerrar sesión
+              </button>
             {/snippet}
           </Popover.Content>
         </Popover.Root>

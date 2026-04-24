@@ -43,9 +43,7 @@
   </Section.Header>
   {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
     <div class="error-block">
-      <p class="error-block-title">
-        Errores de propiedad:
-      </p>
+      <p class="error-block-title">Errores de propiedad:</p>
       {#if errors.property_road}
         <span class="error block"
           >{errors.property_road}</span
@@ -90,17 +88,15 @@
           action={compose_action(ACTION.DESTROY_FILE)}
           use:enhance
         >
-          <input
-            type="hidden"
-            value={file.id}
-            name="id"
-          />
+          <input type="hidden" value={file.id} name="id" />
           <input
             type="hidden"
             value={data.contract.id}
             name="contract_id"
           />
-          <Button variant="secondary" type="submit">Eliminar</Button>
+          <Button variant="secondary" type="submit"
+            >Eliminar</Button
+          >
         </form>
       </li>
     {/each}

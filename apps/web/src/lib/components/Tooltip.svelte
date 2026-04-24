@@ -32,7 +32,8 @@
     translate: -50% 0;
     width: max-content;
     max-width: 240px;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     background-color: var(--color-neutrals-950);
     color: var(--color-absolute-white);
     border-radius: var(--dimension-radius-lg);

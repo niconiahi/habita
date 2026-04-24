@@ -108,7 +108,10 @@
     </Popover.Content>
   </Popover.Root>
 {:else}
-  <Popover.Trigger id="notifications" href="/admin/notifications">
+  <Popover.Trigger
+    id="notifications"
+    href="/admin/notifications"
+  >
     <span class="bell">
       <Bell />
     </span>
@@ -188,5 +191,4 @@
   .view-all:hover {
     background-color: var(--popover-bg-hover);
   }
-
 </style>

@@ -41,30 +41,37 @@
           </Popover.Trigger>
           <Popover.Content id="user-popover">
             {#snippet children({ close })}
-            <a href="/profile" class="body-md-medium dropdown-item" onclick={close}>
-              Perfil
-            </a>
-            <button
-              type="button"
-              class="body-md-medium dropdown-item"
-              onclick={async () => {
-                close()
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      window.location.href = "/"
+              <a
+                href="/profile"
+                class="body-md-medium dropdown-item"
+                onclick={close}
+              >
+                Perfil
+              </a>
+              <button
+                type="button"
+                class="body-md-medium dropdown-item"
+                onclick={async () => {
+                  close()
+                  await authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        window.location.href = "/"
+                      },
                     },
-                  },
-                })
-              }}
-            >
-              Cerrar sesión
-            </button>
+                  })
+                }}
+              >
+                Cerrar sesión
+              </button>
             {/snippet}
           </Popover.Content>
         </Popover.Root>
       {:else}
-        <a class="button body-md-bold secondary" href="/login">Login</a>
+        <a
+          class="button body-md-bold secondary"
+          href="/login">Login</a
+        >
       {/if}
       {#if is_manager}
         <Notifications />

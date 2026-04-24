@@ -10,7 +10,10 @@
 </script>
 
 <div class="field">
-  <label class="body-md-medium label" for={rest.id ?? rest.name}>
+  <label
+    class="body-md-medium label"
+    for={rest.id ?? rest.name}
+  >
     {label}
   </label>
   <input

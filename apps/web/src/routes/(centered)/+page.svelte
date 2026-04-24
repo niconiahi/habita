@@ -30,55 +30,106 @@
     <div class="problem-grid">
       <div class="problem-block">
         <div class="problem-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m3 11 18-5v12L3 13v-2z"/>
-            <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m3 11 18-5v12L3 13v-2z" />
+            <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
           </svg>
         </div>
         <h3 class="body-md-bold">Publicación</h3>
         <p class="body-sm-regular">
-          Cargás la misma propiedad en 2 portales
-          distintos
+          Cargás la misma propiedad en 2 portales distintos
         </p>
       </div>
       <div class="problem-block">
         <div class="problem-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-            <path d="M12 11h4"/><path d="M12 16h4"/>
-            <path d="M8 11h.01"/><path d="M8 16h.01"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect
+              width="8"
+              height="4"
+              x="8"
+              y="2"
+              rx="1"
+              ry="1"
+            />
+            <path
+              d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+            />
+            <path d="M12 11h4" /><path d="M12 16h4" />
+            <path d="M8 11h.01" /><path d="M8 16h.01" />
           </svg>
         </div>
         <h3 class="body-md-bold">Gestión</h3>
         <p class="body-sm-regular">
-          Saltás entre Tokko y 2clics para cada
-          operación
+          Saltás entre Tokko y 2clics para cada operación
         </p>
       </div>
       <div class="problem-block">
         <div class="problem-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"
+            />
           </svg>
         </div>
         <h3 class="body-md-bold">Documentos</h3>
         <p class="body-sm-regular">
-          Buscás contratos entre Google Drive y
-          carpetas sueltas
+          Buscás contratos entre Google Drive y carpetas
+          sueltas
         </p>
       </div>
       <div class="problem-block">
         <div class="problem-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/>
-            <path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
+            <path d="M8 12h.01" /><path
+              d="M12 12h.01"
+            /><path d="M16 12h.01" />
           </svg>
         </div>
         <h3 class="body-md-bold">Comunicación</h3>
         <p class="body-sm-regular">
-          Seguís hilos en WhatsApp, email y no
-          encontrás nada
+          Seguís hilos en WhatsApp, email y no encontrás
+          nada
         </p>
       </div>
     </div>
@@ -91,9 +142,19 @@
     <ol class="steps">
       <li class="step">
         <div class="step-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m3 11 18-5v12L3 13v-2z"/>
-            <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m3 11 18-5v12L3 13v-2z" />
+            <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
           </svg>
         </div>
         <p class="body-md-regular">
@@ -103,12 +164,32 @@
       </li>
       <li class="step">
         <div class="step-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 2v4"/><path d="M16 2v4"/>
-            <rect width="18" height="18" x="3" y="4" rx="2"/>
-            <path d="M3 10h18"/>
-            <path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>
-            <path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M8 2v4" /><path d="M16 2v4" />
+            <rect
+              width="18"
+              height="18"
+              x="3"
+              y="4"
+              rx="2"
+            />
+            <path d="M3 10h18" />
+            <path d="M8 14h.01" /><path
+              d="M12 14h.01"
+            /><path d="M16 14h.01" />
+            <path d="M8 18h.01" /><path
+              d="M12 18h.01"
+            /><path d="M16 18h.01" />
           </svg>
         </div>
         <p class="body-md-regular">
@@ -122,10 +203,22 @@
       </li>
       <li class="step">
         <div class="step-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-            <path d="M10 12h4"/><path d="M10 16h4"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+            />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M10 12h4" /><path d="M10 16h4" />
           </svg>
         </div>
         <p class="body-md-regular">
@@ -136,11 +229,23 @@
       </li>
       <li class="step">
         <div class="step-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m12 19 7-7 3 3-7 7-3-3z"/>
-            <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
-            <path d="m2 2 7.586 7.586"/>
-            <circle cx="11" cy="11" r="2"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m12 19 7-7 3 3-7 7-3-3z" />
+            <path
+              d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"
+            />
+            <path d="m2 2 7.586 7.586" />
+            <circle cx="11" cy="11" r="2" />
           </svg>
         </div>
         <p class="body-md-regular">
@@ -159,10 +264,22 @@
       </li>
       <li class="step">
         <div class="step-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-            <path d="M12 18V6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path
+              d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"
+            />
+            <path d="M12 18V6" />
           </svg>
         </div>
         <p class="body-md-regular">

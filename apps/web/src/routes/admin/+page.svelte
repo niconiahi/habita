@@ -5,7 +5,8 @@
 <div class="page">
   <h1 class="heading-md title">Panel de administración</h1>
   <p class="body-md-medium subtitle">
-    Desde acá podés gestionar todo lo relacionado a tus propiedades, contratos e inquilinos.
+    Desde acá podés gestionar todo lo relacionado a tus
+    propiedades, contratos e inquilinos.
   </p>
 
   <section class="card">
@@ -14,31 +15,36 @@
       <li class="step">
         <span class="step-number body-md-bold">1</span>
         <p class="body-md-medium">
-          Cargá todos los datos de la propiedad: ubicación, fotos, servicios y disposición de ambientes
+          Cargá todos los datos de la propiedad: ubicación,
+          fotos, servicios y disposición de ambientes
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">2</span>
         <p class="body-md-medium">
-          Creá el contrato inicial, el cual incluirá el precio inicial de publicación
+          Creá el contrato inicial, el cual incluirá el
+          precio inicial de publicación
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">3</span>
         <p class="body-md-medium">
-          Publicá la propiedad y empezá a recibir visitas de candidatos interesados
+          Publicá la propiedad y empezá a recibir visitas de
+          candidatos interesados
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">4</span>
         <p class="body-md-medium">
-          Seleccioná a un candidato como inquilino. La publicación de la propiedad pasa a estar inactiva
+          Seleccioná a un candidato como inquilino. La
+          publicación de la propiedad pasa a estar inactiva
         </p>
       </li>
       <li class="step">
         <span class="step-number body-md-bold">5</span>
         <p class="body-md-medium">
-          Inquilino y dueño firman el contrato y el mismo pasa a estar activo. Comienza el trackeo de pagos
+          Inquilino y dueño firman el contrato y el mismo
+          pasa a estar activo. Comienza el trackeo de pagos
         </p>
       </li>
     </ol>

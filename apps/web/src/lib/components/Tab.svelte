@@ -18,9 +18,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--dimension-spacing-0-5) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-0-5)
+      var(--dimension-spacing-3);
     border-bottom: 2px solid var(--tab-border-inactive);
-    border-radius: var(--dimension-radius-default) var(--dimension-radius-default) 0 0;
+    border-radius: var(--dimension-radius-default)
+      var(--dimension-radius-default) 0 0;
     color: var(--color-text-body);
     cursor: pointer;
     transition:

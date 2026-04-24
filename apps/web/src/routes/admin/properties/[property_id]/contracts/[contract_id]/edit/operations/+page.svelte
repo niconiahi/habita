@@ -44,7 +44,9 @@
           value={data.contract.id}
           name="id"
         />
-        <Button variant="primary" type="submit">Generar contrato</Button>
+        <Button variant="primary" type="submit"
+          >Generar contrato</Button
+        >
       </form>
     </Section.Actions>
   </Section.Header>
@@ -85,7 +87,9 @@
               name="party"
               value="landlord"
             />
-            <Button variant="primary" type="submit">Iniciar onboarding</Button>
+            <Button variant="primary" type="submit"
+              >Iniciar onboarding</Button
+            >
           </form>
         </div>
         <div class="signing-party">
@@ -112,7 +116,9 @@
               name="party"
               value="tenant"
             />
-            <Button variant="primary" type="submit">Iniciar onboarding</Button>
+            <Button variant="primary" type="submit"
+              >Iniciar onboarding</Button
+            >
           </form>
         </div>
       </div>
@@ -158,7 +164,9 @@
                 name="contract_id"
                 value={data.contract.id}
               />
-              <Button variant="primary" type="submit">Enviar a firmar</Button>
+              <Button variant="primary" type="submit"
+                >Enviar a firmar</Button
+              >
             </form>
           {/if}
         </div>
@@ -185,7 +193,9 @@
               name="party"
               value="landlord"
             />
-            <Button variant="primary" type="submit">Iniciar onboarding</Button>
+            <Button variant="primary" type="submit"
+              >Iniciar onboarding</Button
+            >
           </form>
         </div>
         <div class="signing-party">
@@ -200,7 +210,9 @@
               name="party"
               value="tenant"
             />
-            <Button variant="primary" type="submit">Iniciar onboarding</Button>
+            <Button variant="primary" type="submit"
+              >Iniciar onboarding</Button
+            >
           </form>
         </div>
       </div>

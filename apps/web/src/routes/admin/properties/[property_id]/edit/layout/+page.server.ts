@@ -32,11 +32,11 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     const direction =
-      form_data.get("direction") === "down"
-        ? "down"
-        : "up"
-    const [create_floor_errors] =
-      await create_floor(property_id, direction)
+      form_data.get("direction") === "down" ? "down" : "up"
+    const [create_floor_errors] = await create_floor(
+      property_id,
+      direction,
+    )
     if (create_floor_errors) {
       return { errors: create_floor_errors }
     }
@@ -209,8 +209,10 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [reorder_floors_errors] =
-      await reorder_floors(form_data, property_id)
+    const [reorder_floors_errors] = await reorder_floors(
+      form_data,
+      property_id,
+    )
     if (reorder_floors_errors) {
       return { errors: reorder_floors_errors }
     }

@@ -77,9 +77,13 @@
             error={input_errors.cuil?.[0]}
           />
           {#if execution_error}
-            <Formulary.Error>{execution_error}</Formulary.Error>
+            <Formulary.Error
+              >{execution_error}</Formulary.Error
+            >
           {/if}
-          <Button variant="primary" type="submit">Guardar información</Button>
+          <Button variant="primary" type="submit"
+            >Guardar información</Button
+          >
         </div>
       </Formulary.Root>
     {/key}
@@ -108,7 +112,8 @@
         <tbody>
           {#each data.user_files as file (file.id)}
             <tr>
-              <td class="body-md-medium">{file.basename}</td>
+              <td class="body-md-medium">{file.basename}</td
+              >
               <td class="body-md-medium">
                 {get_user_file_type_label(file.type)}
               </td>
@@ -180,13 +185,15 @@
 
   .documents-table th {
     text-align: left;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }
 
   .documents-table td {
-    padding: var(--dimension-spacing-3) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-3)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }

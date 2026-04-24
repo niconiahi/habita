@@ -61,7 +61,9 @@
         />
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar ubicación</Button>
+        <Button variant="primary" type="submit"
+          >Guardar ubicación</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -94,7 +96,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar destino</Button>
+        <Button variant="primary" type="submit"
+          >Guardar destino</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -161,7 +165,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar año</Button>
+        <Button variant="primary" type="submit"
+          >Guardar año</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>

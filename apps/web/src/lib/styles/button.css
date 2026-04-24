@@ -6,7 +6,8 @@
   white-space: nowrap;
   border-radius: var(--button-radius);
   height: var(--dimension-spacing-10);
-  padding: var(--button-padding-y) var(--dimension-spacing-3-5);
+  padding: var(--button-padding-y)
+    var(--dimension-spacing-3-5);
   cursor: pointer;
   border: none;
   border-bottom: none;
@@ -19,7 +20,8 @@
   }
 
   &:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline: var(--focus-ring-width) solid
+      var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
   }
 

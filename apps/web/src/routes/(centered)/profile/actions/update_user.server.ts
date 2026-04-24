@@ -41,7 +41,8 @@ const CuilSchema = v.pipe(
     "El prefijo debe ser 20, 23, 24 o 27",
   ),
   v.check((val) => {
-    if (val === "" || val.length !== CUIL_LENGTH) return true
+    if (val === "" || val.length !== CUIL_LENGTH)
+      return true
     let sum = 0
     for (let i = 0; i < 10; i++) {
       sum += Number(val[i]) * CUIL_WEIGHTS[i]

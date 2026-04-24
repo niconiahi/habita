@@ -29,7 +29,8 @@
     data = {},
   }: Props = $props()
 
-  let dialog_element: HTMLDialogElement | undefined = $state()
+  let dialog_element: HTMLDialogElement | undefined =
+    $state()
   let selected_type: string = $state("")
   let error_message: string | null = $state(null)
   let file_input: HTMLInputElement | undefined = $state()
@@ -68,11 +69,13 @@
       <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>Tipo de documento</Dialog.Title>
-          <Dialog.Close onclick={() => {
-            close()
-            error_message = null
-            selected_type = ""
-          }} />
+          <Dialog.Close
+            onclick={() => {
+              close()
+              error_message = null
+              selected_type = ""
+            }}
+          />
         </Dialog.Header>
         <Formulary.Field>
           <Formulary.Label for={select_id}
@@ -83,7 +86,9 @@
             aria-describedby={error_message
               ? error_id
               : undefined}
-            aria-invalid={error_message ? "true" : undefined}
+            aria-invalid={error_message
+              ? "true"
+              : undefined}
             bind:value={selected_type}
             onchange={() => (error_message = null)}
           >

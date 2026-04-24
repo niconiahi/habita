@@ -59,7 +59,8 @@ function generate_image_url(
   options: ImageOptions,
 ): string {
   const origin = get_origin()
-  const bucket = process.env.OBJECT_STORE_BUCKET ?? "habita-files"
+  const bucket =
+    process.env.OBJECT_STORE_BUCKET ?? "habita-files"
   const source_url = `s3://${bucket}/files/${hash}`
   const encoded_source_url =
     Buffer.from(source_url).toString("base64url")

@@ -46,7 +46,9 @@
           </Formulary.Field>
         </Formulary.Fields>
         <Formulary.Actions>
-          <Button variant="primary" type="submit">Continuar</Button>
+          <Button variant="primary" type="submit"
+            >Continuar</Button
+          >
         </Formulary.Actions>
       </Formulary.Root>
     </Content.Section>

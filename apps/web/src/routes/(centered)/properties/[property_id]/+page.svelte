@@ -40,9 +40,7 @@
     new Set(data.property.tags.map((tag) => tag.type)),
   )
 
-  function get_tags_for_category(
-    label: string,
-  ): string[] {
+  function get_tags_for_category(label: string): string[] {
     const category = PROPERTY_TAG_CATEGORIES.find(
       (category) => category.label === label,
     )
@@ -163,7 +161,9 @@
     <DetailRow
       label="Servicios"
       items={data.property.services.map((service) =>
-        get_service_type_label(service.type as import("$lib/service").ServiceType),
+        get_service_type_label(
+          service.type as import("$lib/service").ServiceType,
+        ),
       )}
     />
     <DetailRow
@@ -200,7 +200,10 @@
     <TabGroup>
       {#each TABS as tab}
         <Tab active={active_tab === tab}>
-          <button type="button" onclick={() => (active_tab = tab)}>
+          <button
+            type="button"
+            onclick={() => (active_tab = tab)}
+          >
             {tab}
           </button>
         </Tab>
@@ -229,9 +232,7 @@
       />
     {/if}
     {#if data.organization}
-      <OrganizationCard
-        organization={data.organization}
-      />
+      <OrganizationCard organization={data.organization} />
     {/if}
   </aside>
 {/snippet}
@@ -247,15 +248,13 @@
 {/snippet}
 
 <Content.Root>
-  <Visualizer
-    images={Gallery}
-    rooms={all_rooms}
-  />
+  <Visualizer images={Gallery} rooms={all_rooms} />
   <div class="layout">
     <div class="main">
       <PricingCard
         location={data.property.location}
-        initial_price={active_contract?.initial_price ?? null}
+        initial_price={active_contract?.initial_price ??
+          null}
         expenses={null}
         escalation_type={null}
         escalation_frequency={null}
@@ -352,5 +351,4 @@
   .ubicacion-title {
     color: var(--color-text-heading);
   }
-
 </style>

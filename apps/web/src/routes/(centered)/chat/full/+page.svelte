@@ -139,7 +139,8 @@
         disabled={is_loading}
         autocomplete="off"
       />
-      <Button variant="primary"
+      <Button
+        variant="primary"
         type="submit"
         disabled={is_loading || !input.trim()}
       >

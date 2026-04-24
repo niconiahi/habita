@@ -8,7 +8,8 @@ test.describe.serial("Create Property - Apartment", () => {
   test.use({ storageState: "e2e/.auth/manager.json" })
 
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test("1. Creates an apartment property", async ({

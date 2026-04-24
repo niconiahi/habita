@@ -22,14 +22,21 @@
     }[] = []
 
     for (const notification of notifications) {
-      const label = format(notification.created_at, DAY_FORMAT, {
-        locale: es,
-      })
+      const label = format(
+        notification.created_at,
+        DAY_FORMAT,
+        {
+          locale: es,
+        },
+      )
       const last_group = groups.at(-1)
       if (last_group?.label === label) {
         last_group.notifications.push(notification)
       } else {
-        groups.push({ label, notifications: [notification] })
+        groups.push({
+          label,
+          notifications: [notification],
+        })
       }
     }
 

@@ -57,6 +57,7 @@ Una sola toma continua. Sin cortes. Que quede claro que todo pasa en un solo lug
 **8 millones de personas alquilan en Argentina. 31,000 inmobiliarias los atienden. Ninguna tiene una herramienta completa**
 
 Argentina hoy:
+
 - **7.9 millones de personas** alquilan (Censo 2022, INDEC)
 - **21% de las viviendas** son alquiladas — crece desde 16.1% en 2010
 - **~31,000 inmobiliarias** en todo el país (SRT, 2022)
@@ -65,10 +66,12 @@ Argentina hoy:
 - CUCICBA: **10,000 matriculados, 7,700 activos** solo en CABA
 
 Proyección de ingresos (hipotética — "la matemática si capturamos X% del mercado"):
+
 - 500 inmobiliarias × $50/puesto × 3 puestos promedio = **$900K USD anuales**
 - Más freelancers a $35/mes o $350/año
 
 Contexto global:
+
 - El mercado global de software de property management es de **$6.4B en 2025**, proyectado a **$15.3B en 2035**
 - LATAM específicamente: **$685M en 2024**, hacia **$1.9B en 2033** (11.2% CAGR)
 - No hay un jugador dominante de SaaS puro en LATAM
@@ -87,12 +90,14 @@ Contexto global:
 ### Glosario
 
 ### Instituciones Argentinas
+
 - **SRT** (Superintendencia de Riesgos de Trabajo) — organismo del gobierno que registra empresas por sector
 - **INDEC** (Instituto Nacional de Estadística y Censos) — el organismo oficial de estadísticas de Argentina, ejecuta el censo nacional
 - **CUCICBA** (Colegio Único de Corredores Inmobiliarios de la Ciudad de Buenos Aires) — colegio profesional obligatorio para corredores inmobiliarios en CABA
 - **IDECBA** (Instituto de Estadística y Censos de la Ciudad de Buenos Aires) — organismo de estadísticas de CABA
 
 ### Términos de Negocio
+
 - **ARR** (Annual Recurring Revenue) — ingreso anual recurrente por suscripciones
 - **SaaS** (Software as a Service) — software que se paga mensual/anualmente en vez de comprarse una vez
 - **CAGR** (Compound Annual Growth Rate) — tasa de crecimiento anual compuesta de un mercado
@@ -103,6 +108,7 @@ Contexto global:
 - **Break-even** — punto en el que los ingresos cubren los gastos
 
 ### Términos de Producto
+
 - **IPC** (Índice de Precios al Consumidor) — índice de precios al consumidor, usado para escalación de alquileres
 - **ICL** (Índice de Contratos de Locación) — índice de contratos de alquiler, usado para escalación
 - **CRM** (Customer Relationship Management) — software para gestionar contactos y oportunidades de venta
@@ -113,19 +119,19 @@ Contexto global:
 
 **Cada uno resuelve una parte. Nosotros resolvemos todo**
 
-| Herramienta      | Publicación | Visitas | Contratos | Firma digital | Pagos   |
-|------------------|-------------|---------|-----------|---------------|---------|
-| [Zonaprop](https://www.zonaprop.com.ar)             | Sí      | No  | No      | No  | No  |
-| [Argenprop](https://gestion.argenprop.com)           | Sí      | No  | No      | No  | No  |
-| [2clics](https://2clics.app)                         | Sí      | No  | No      | No  | No  |
-| [Tokko Broker](https://www.tokkobroker.com/es-ar)    | Sí      | No  | No      | No  | No  |
-| [Inmosoft](https://www.inmosoft.com.ar)              | No      | No  | Parcial | No  | Sí  |
-| [Barreeo](https://barreeo.com)                       | No      | No  | Parcial | No  | Sí  |
-| [Tus Alquileres](https://tusalquileres.com.ar)      | No      | No  | Parcial | No  | Sí  |
-| [RentaControl](https://www.rentacontrol.com.ar)      | No      | No  | Parcial | No  | Sí  |
-| [Ubiquo](https://www.ubiquo.com.ar)                  | Parcial | No  | Parcial | No  | Sí  |
-| [SPOT](https://spot.net.ar)                           | No      | No  | Parcial | No  | Sí  |
-| **Habita**                                            | **Sí**  | **Sí** | **Sí** | **Sí** | **Sí** |
+| Herramienta                                       | Publicación | Visitas | Contratos | Firma digital | Pagos  |
+| ------------------------------------------------- | ----------- | ------- | --------- | ------------- | ------ |
+| [Zonaprop](https://www.zonaprop.com.ar)           | Sí          | No      | No        | No            | No     |
+| [Argenprop](https://gestion.argenprop.com)        | Sí          | No      | No        | No            | No     |
+| [2clics](https://2clics.app)                      | Sí          | No      | No        | No            | No     |
+| [Tokko Broker](https://www.tokkobroker.com/es-ar) | Sí          | No      | No        | No            | No     |
+| [Inmosoft](https://www.inmosoft.com.ar)           | No          | No      | Parcial   | No            | Sí     |
+| [Barreeo](https://barreeo.com)                    | No          | No      | Parcial   | No            | Sí     |
+| [Tus Alquileres](https://tusalquileres.com.ar)    | No          | No      | Parcial   | No            | Sí     |
+| [RentaControl](https://www.rentacontrol.com.ar)   | No          | No      | Parcial   | No            | Sí     |
+| [Ubiquo](https://www.ubiquo.com.ar)               | Parcial     | No      | Parcial   | No            | Sí     |
+| [SPOT](https://spot.net.ar)                       | No          | No      | Parcial   | No            | Sí     |
+| **Habita**                                        | **Sí**      | **Sí**  | **Sí**    | **Sí**        | **Sí** |
 
 Los CRM se frenan cuando se firma el contrato. Las herramientas de administración arrancan después. Nadie cubre el medio: visitas, evaluación de candidatos, redacción de contrato, firma digital
 
@@ -136,10 +142,12 @@ Los CRM se frenan cuando se firma el contrato. Las herramientas de administraci�
 **Dos ciclos de facturación: mensual y anual**
 
 Mensual (débito automático vía Mercado Pago):
+
 - Freelancer: **$35 USD/mes** — 1 usuario, todas las funcionalidades
 - Inmobiliaria: **$50 USD/puesto/mes** — puestos ilimitados, todas las funcionalidades
 
 Anual (2 meses gratis respecto al plan mensual):
+
 - Freelancer: **$350 USD/año** — 1 usuario, todas las funcionalidades
 - Inmobiliaria: **$500 USD/puesto/año** — puestos ilimitados, todas las funcionalidades
 
@@ -154,6 +162,7 @@ El plan anual incentiva compromiso y reduce churn. El descuento de 2 meses es el
 **MVP completo. No es un mockup — es una plataforma funcionando**
 
 Funcionalidades listas hoy:
+
 - **Gestión de propiedades**: publicación con planos, habitaciones, fotos, etiquetas y ubicación geográfica
 - **Búsqueda para inquilinos**: filtros por zona, características, servicios. Perfil con documentos verificables
 - **Agenda de visitas**: turnos por calendario, evaluación de candidatos, promoción a inquilino
@@ -176,6 +185,7 @@ Todo esto construido por un solo fundador técnico
 **"Buscamos $20,000 USD para llegar a los primeros 50 usuarios pagos en 6 meses"**
 
 En qué se usa:
+
 - Infraestructura y hosting: $150/mes × 12 meses = $1200
 - Marketing y adquisición de usuarios (ads, contenido, outreach): $6,000
 - Legal (constitución de SAS, términos de servicio, política de privacidad): $3,000
@@ -214,5 +224,3 @@ Cada país al que Habita entre requiere localización (cumplimiento legal, prove
 A largo plazo: ser el Yardi/AppFolio de LATAM — pero cloud-native, moderno, y construido para la región desde el día uno.
 
 ---
-
-

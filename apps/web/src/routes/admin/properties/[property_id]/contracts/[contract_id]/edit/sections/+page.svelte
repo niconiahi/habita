@@ -72,12 +72,12 @@
   <Disclosure title="Sección 2: estado">
     <form
       method="POST"
-      action={compose_action(
-        ACTION.CREATE_CONTRACT_ITEM,
-      )}
+      action={compose_action(ACTION.CREATE_CONTRACT_ITEM)}
       use:enhance
     >
-      <Button variant="primary" type="submit">Agregar item</Button>
+      <Button variant="primary" type="submit"
+        >Agregar item</Button
+      >
     </form>
     <ul class="item-list">
       {#each data.contract.contract_items as contract_item (contract_item.id)}
@@ -176,7 +176,10 @@
                       value={contract_item.id}
                       name="contract_item_id"
                     />
-                    <Button variant="secondary" type="submit">X</Button>
+                    <Button
+                      variant="secondary"
+                      type="submit">X</Button
+                    >
                   </form>
                 </li>
               {/each}
@@ -250,7 +253,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar destino</Button>
+        <Button variant="primary" type="submit"
+          >Guardar destino</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -306,7 +311,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar plazo</Button>
+        <Button variant="primary" type="submit"
+          >Guardar plazo</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -368,7 +375,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar valores</Button>
+        <Button variant="primary" type="submit"
+          >Guardar valores</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -397,7 +406,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar CBU</Button>
+        <Button variant="primary" type="submit"
+          >Guardar CBU</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -431,7 +442,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar porcentaje</Button>
+        <Button variant="primary" type="submit"
+          >Guardar porcentaje</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -462,7 +475,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar porcentaje</Button>
+        <Button variant="primary" type="submit"
+          >Guardar porcentaje</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -527,7 +542,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar cantidad</Button>
+        <Button variant="primary" type="submit"
+          >Guardar cantidad</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -834,7 +851,9 @@
           </Formulary.Field>
         {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
           {#if !data.warranty}
-            <p class="hint">Guardar para agregar garantes</p>
+            <p class="hint">
+              Guardar para agregar garantes
+            </p>
           {/if}
         {/if}
       </Formulary.Fields>
@@ -847,7 +866,8 @@
             <Button
               type="button"
               variant="secondary"
-              onclick={() => add_guarantor_dialog?.showModal()}
+              onclick={() =>
+                add_guarantor_dialog?.showModal()}
               >Agregar garante</Button
             >
           {/if}
@@ -861,72 +881,75 @@
             <div class="guarantors-header">
               <span class="field-label">Garantes</span>
             </div>
-          <ul class="guarantor-list">
-            {#each data.warranty.income_warranty.guarantors as guarantor (guarantor.id)}
-              <li class="item-card">
-                <Formulary.Root
-                  method="POST"
-                  action={compose_action(
-                    ACTION.UPDATE_INCOME_GUARANTOR,
-                  )}
-                >
-                  <Formulary.Fields>
-                    <input
-                      type="hidden"
-                      value={guarantor.id}
-                      name="id"
-                    />
-                    <Formulary.Field>
-                      <Formulary.Label
-                        for={`guarantor_name_${guarantor.id}`}
-                        >nombre</Formulary.Label
-                      >
+            <ul class="guarantor-list">
+              {#each data.warranty.income_warranty.guarantors as guarantor (guarantor.id)}
+                <li class="item-card">
+                  <Formulary.Root
+                    method="POST"
+                    action={compose_action(
+                      ACTION.UPDATE_INCOME_GUARANTOR,
+                    )}
+                  >
+                    <Formulary.Fields>
                       <input
-                        id={`guarantor_name_${guarantor.id}`}
-                        name="guarantor_name"
-                        type="text"
-                        value={guarantor.guarantor_name}
+                        type="hidden"
+                        value={guarantor.id}
+                        name="id"
                       />
-                    </Formulary.Field>
-                    <Formulary.Field>
-                      <Formulary.Label
-                        for={`guarantor_dni_${guarantor.id}`}
-                        >DNI</Formulary.Label
+                      <Formulary.Field>
+                        <Formulary.Label
+                          for={`guarantor_name_${guarantor.id}`}
+                          >nombre</Formulary.Label
+                        >
+                        <input
+                          id={`guarantor_name_${guarantor.id}`}
+                          name="guarantor_name"
+                          type="text"
+                          value={guarantor.guarantor_name}
+                        />
+                      </Formulary.Field>
+                      <Formulary.Field>
+                        <Formulary.Label
+                          for={`guarantor_dni_${guarantor.id}`}
+                          >DNI</Formulary.Label
+                        >
+                        <input
+                          id={`guarantor_dni_${guarantor.id}`}
+                          name="guarantor_dni"
+                          type="text"
+                          value={guarantor.guarantor_dni}
+                        />
+                      </Formulary.Field>
+                      <Formulary.Field>
+                        <Formulary.Label
+                          for={`guarantor_email_${guarantor.id}`}
+                          >email</Formulary.Label
+                        >
+                        <input
+                          id={`guarantor_email_${guarantor.id}`}
+                          name="guarantor_email"
+                          type="email"
+                          value={guarantor.guarantor_email}
+                        />
+                      </Formulary.Field>
+                    </Formulary.Fields>
+                    <Formulary.Actions>
+                      <Button
+                        variant="primary"
+                        type="submit">Guardar</Button
                       >
-                      <input
-                        id={`guarantor_dni_${guarantor.id}`}
-                        name="guarantor_dni"
-                        type="text"
-                        value={guarantor.guarantor_dni}
-                      />
-                    </Formulary.Field>
-                    <Formulary.Field>
-                      <Formulary.Label
-                        for={`guarantor_email_${guarantor.id}`}
-                        >email</Formulary.Label
+                      <Button
+                        variant="secondary"
+                        type="submit"
+                        formaction={compose_action(
+                          ACTION.DESTROY_INCOME_GUARANTOR,
+                        )}>Eliminar</Button
                       >
-                      <input
-                        id={`guarantor_email_${guarantor.id}`}
-                        name="guarantor_email"
-                        type="email"
-                        value={guarantor.guarantor_email}
-                      />
-                    </Formulary.Field>
-                  </Formulary.Fields>
-                  <Formulary.Actions>
-                    <Button variant="primary" type="submit">Guardar</Button>
-                    <Button
-                      variant="secondary"
-                      type="submit"
-                      formaction={compose_action(
-                        ACTION.DESTROY_INCOME_GUARANTOR,
-                      )}>Eliminar</Button
-                    >
-                  </Formulary.Actions>
-                </Formulary.Root>
-              </li>
-            {/each}
-          </ul>
+                    </Formulary.Actions>
+                  </Formulary.Root>
+                </li>
+              {/each}
+            </ul>
           </div>
         {/if}
       {/if}
@@ -982,7 +1005,9 @@
                 </Formulary.Field>
               </Formulary.Fields>
               <Formulary.Actions>
-                <Button variant="primary" type="submit">Agregar</Button>
+                <Button variant="primary" type="submit"
+                  >Agregar</Button
+                >
               </Formulary.Actions>
             </Formulary.Root>
           </Dialog.Content>
@@ -1022,7 +1047,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Guardar jurisdicción</Button>
+        <Button variant="primary" type="submit"
+          >Guardar jurisdicción</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Disclosure>
@@ -1147,5 +1174,4 @@
     flex-direction: column;
     gap: 1rem;
   }
-
 </style>

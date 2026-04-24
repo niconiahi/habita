@@ -25,7 +25,10 @@
     </span>
   </div>
   {#if organization.slug}
-    <a class="body-md-medium link" href={`/organizations/${organization.slug}`}>
+    <a
+      class="body-md-medium link"
+      href={`/organizations/${organization.slug}`}
+    >
       Visitar perfil
     </a>
   {/if}
