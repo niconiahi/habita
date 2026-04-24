@@ -34,7 +34,11 @@
       {#each data.properties as property (property.id)}
         <tr>
           <td class="body-md-medium">
-            {display_location(property.location)}
+            <a
+              href={`/admin/properties/${property.id}/edit`}
+            >
+              {display_location(property.location)}
+            </a>
           </td>
           <td class="body-md-medium">
             {get_property_type_label(property.type)}{property.unit
@@ -70,13 +74,6 @@
                   {#snippet children({ close })}
                   <div class="actions-menu">
                     {#if property.state === PROPERTY_STATE.EDITING}
-                      <a
-                        class="body-md-medium action-item"
-                        href={`/admin/properties/${property.id}/edit`}
-                        onclick={close}
-                      >
-                        Editar
-                      </a>
                       <form
                         method="POST"
                         action={`?/${ACTION.PUBLISH_PROPERTY}`}
@@ -97,13 +94,6 @@
                       </form>
                     {/if}
                     {#if property.state === PROPERTY_STATE.PUBLISHED}
-                      <a
-                        class="body-md-medium action-item"
-                        href={`/admin/properties/${property.id}/calendar`}
-                        onclick={close}
-                      >
-                        Calendario de visitas
-                      </a>
                       <form
                         method="POST"
                         action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
@@ -198,4 +188,5 @@
   .action-item:hover {
     background-color: var(--color-neutrals-150);
   }
+
 </style>
