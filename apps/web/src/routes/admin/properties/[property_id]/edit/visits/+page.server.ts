@@ -4,6 +4,7 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
+import { confirm_slot } from "./actions/confirm_slot.server"
 import { create_slot } from "./actions/create_slot.server"
 import { destroy_slot } from "./actions/destroy_slot.server"
 import { fetch_slots } from "./fetchers/slots.server"
@@ -79,6 +80,30 @@ export const actions: Actions = {
       await destroy_slot(form_data)
     if (destroy_slot_errors) {
       return { errors: destroy_slot_errors }
+    }
+    return null
+  },
+  [ACTION.CONFIRM_SLOT]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    require_authentication(locals)
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [confirm_slot_errors] =
+      await confirm_slot(form_data)
+    if (confirm_slot_errors) {
+      return { errors: confirm_slot_errors }
     }
     return null
   },

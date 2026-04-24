@@ -5,6 +5,7 @@ export const SLOT_STATE = {
   FREE: 0,
   RESERVED: 1,
   CANCELLED: 2,
+  CONFIRMED: 3,
 } as const
 export const SlotStateSchema = v.picklist(
   Object.values(SLOT_STATE),
@@ -24,6 +25,9 @@ export function get_slot_state_label(
     }
     case SLOT_STATE.CANCELLED: {
       return "Cancelado"
+    }
+    case SLOT_STATE.CONFIRMED: {
+      return "Confirmado"
     }
     default: {
       const _exhaustive: never = slot_state

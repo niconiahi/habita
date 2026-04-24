@@ -20,17 +20,15 @@
 
 <div class="centered">
   <div class="card">
-    <h1 class="heading-md title">Visita confirmada</h1>
+    <h1 class="heading-md title">Visita reservada</h1>
     <p class="body-md-medium description">
-      Tu visita fue reservada para el día
-      <strong class="body-md-bold">{formatted_date}</strong
-      >. Te enviamos un email con los detalles y la
-      invitación al calendario
+      Tu visita para el día
+      <strong class="body-md-bold">{formatted_date}</strong>
+      fue reservada. Queda pendiente de aprobación por el administrador.
+      Te enviaremos un email con los detalles una vez confirmada
     </p>
     <p class="body-md-medium footer">
-      <a href="/properties"
-        >Volver a propiedades</a
-      >
+      <a href="/properties">Volver a propiedades</a>
     </p>
   </div>
 </div>
