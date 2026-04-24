@@ -3,6 +3,8 @@ slug: property-data
 title: ¿Qué datos incluye una propiedad?
 ---
 
+# ¿Qué datos incluye una propiedad?
+
 ## Datos obligatorios
 
 - **Ubicación**: dirección completa con geolocalización

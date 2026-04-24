@@ -3,6 +3,8 @@ slug: contract-data
 title: ¿Qué datos se piden para un contrato?
 ---
 
+# ¿Qué datos se piden para un contrato?
+
 ## Datos obligatorios
 
 - **Precio inicial**: el canon locativo mensual con el que se publica la propiedad

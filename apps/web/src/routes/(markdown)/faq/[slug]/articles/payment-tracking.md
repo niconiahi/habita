@@ -3,6 +3,8 @@ slug: payment-tracking
 title: ¿Cómo funciona el seguimiento de pagos?
 ---
 
+# ¿Cómo funciona el seguimiento de pagos?
+
 Una vez que el contrato está firmado y activo, Habita genera automáticamente los períodos de pago según el precio inicial y el tipo de escalación definido.
 
 ## ¿Qué se trackea?

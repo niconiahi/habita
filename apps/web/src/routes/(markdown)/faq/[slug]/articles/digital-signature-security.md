@@ -3,6 +3,8 @@ slug: digital-signature-security
 title: ¿Es la firma digital segura?
 ---
 
+# ¿Es la firma digital segura?
+
 Sí. La firma digital que utiliza Habita está respaldada por certificados digitales emitidos por autoridades certificantes reconocidas.
 
 ## ¿Cómo funciona?
