@@ -68,7 +68,16 @@
               {format_time(slot.end_date)}
             </Table.Cell>
             <Table.Cell>
-              {format_visitant_name(slot)}
+              {#if slot.visitant_id}
+                <a
+                  class="candidate-link"
+                  href={`/admin/candidates/${slot.visitant_id}`}
+                >
+                  {format_visitant_name(slot)}
+                </a>
+              {:else}
+                -
+              {/if}
             </Table.Cell>
             <Table.Cell>
               {slot.visitant_phone_number ?? "-"}
@@ -94,20 +103,37 @@
                 </form>
               {/if}
               {#if slot.state === SLOT_STATE.RESERVED}
-                <form
-                  method="POST"
-                  action={`?/${ACTION.CONFIRM_SLOT}`}
-                  use:enhance
-                >
-                  <input
-                    type="hidden"
-                    name="id"
-                    value={slot.id}
-                  />
-                  <Button variant="primary" type="submit"
-                    >Confirmar</Button
+                <div class="slot-actions">
+                  <form
+                    method="POST"
+                    action={`?/${ACTION.CONFIRM_SLOT}`}
+                    use:enhance
                   >
-                </form>
+                    <input
+                      type="hidden"
+                      name="id"
+                      value={slot.id}
+                    />
+                    <Button variant="primary" type="submit"
+                      >Confirmar</Button
+                    >
+                  </form>
+                  <form
+                    method="POST"
+                    action={`?/${ACTION.REJECT_SLOT}`}
+                    use:enhance
+                  >
+                    <input
+                      type="hidden"
+                      name="id"
+                      value={slot.id}
+                    />
+                    <Button
+                      variant="secondary"
+                      type="submit">Rechazar</Button
+                    >
+                  </form>
+                </div>
               {/if}
             </Table.Cell>
           </Table.Row>
@@ -197,6 +223,15 @@
 
   .tab-title {
     color: var(--color-text-heading);
+  }
+
+  .candidate-link {
+    color: var(--color-blue-500);
+  }
+
+  .slot-actions {
+    display: flex;
+    gap: var(--dimension-spacing-2);
   }
 
   .empty {

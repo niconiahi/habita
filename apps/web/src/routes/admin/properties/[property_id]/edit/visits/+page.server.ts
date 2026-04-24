@@ -7,6 +7,7 @@ import { ACTION } from "./actions/action"
 import { confirm_slot } from "./actions/confirm_slot.server"
 import { create_slot } from "./actions/create_slot.server"
 import { destroy_slot } from "./actions/destroy_slot.server"
+import { reject_slot } from "./actions/reject_slot.server"
 import { fetch_slots } from "./fetchers/slots.server"
 
 export const load: PageServerLoad = async ({
@@ -104,6 +105,30 @@ export const actions: Actions = {
       await confirm_slot(form_data)
     if (confirm_slot_errors) {
       return { errors: confirm_slot_errors }
+    }
+    return null
+  },
+  [ACTION.REJECT_SLOT]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    require_authentication(locals)
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [reject_slot_errors] =
+      await reject_slot(form_data)
+    if (reject_slot_errors) {
+      return { errors: reject_slot_errors }
     }
     return null
   },
