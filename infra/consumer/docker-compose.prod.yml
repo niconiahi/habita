@@ -1,6 +1,6 @@
 services:
   email:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     env_file:
       - ../.env.prod
     environment:
@@ -8,7 +8,7 @@ services:
       OTEL_ENVIRONMENT: production
 
   subscription:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     env_file:
       - ../.env.prod
     environment:
@@ -24,7 +24,7 @@ services:
           cpus: "0.15"
 
   escalation:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     env_file:
       - ../.env.prod
     environment:

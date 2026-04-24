@@ -37,6 +37,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,6 +52,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: ./apps/web
@@ -62,10 +65,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Set image output
+        id: image
+        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
   build-go:
     needs: changes
     if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -79,6 +88,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: ./apps/go
@@ -88,10 +98,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Set image output
+        id: image
+        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
   build-broker:
     needs: changes
     if: needs.changes.outputs.broker == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -105,6 +121,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: ./apps/broker
@@ -113,3 +130,44 @@ jobs:
           tags: ${{ env.IMAGE_PREFIX }}:broker-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Set image output
+        id: image
+        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
+  update-manifest:
+    needs: [build-svelte, build-go, build-broker]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update versions.json
+        run: |
+          SVELTE_IMAGE="${{ needs.build-svelte.outputs.image }}"
+          GO_IMAGE="${{ needs.build-go.outputs.image }}"
+          BROKER_IMAGE="${{ needs.build-broker.outputs.image }}"
+
+          if [[ -n "$SVELTE_IMAGE" ]]; then
+            jq --arg v "$SVELTE_IMAGE" '.svelte = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
+          fi
+          if [[ -n "$GO_IMAGE" ]]; then
+            jq --arg v "$GO_IMAGE" '.go = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
+          fi
+          if [[ -n "$BROKER_IMAGE" ]]; then
+            jq --arg v "$BROKER_IMAGE" '.broker = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
+          fi
+
+          echo "Updated versions.json:"
+          cat infra/manifest.json
+
+      - name: Commit manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add infra/manifest.json
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "chore(deploy): update image manifest [skip ci]"
+          git push

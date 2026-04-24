@@ -1,6 +1,6 @@
 services:
   svelte:
-    image: niconiahi/habita:svelte-${SVELTE_TAG:?SVELTE_TAG required}
+    image: ${SVELTE_IMAGE:?SVELTE_IMAGE required}
     env_file:
       - ../.env.prod
     environment:
