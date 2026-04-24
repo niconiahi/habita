@@ -36,7 +36,8 @@
   }
 
   .badge {
-    padding: var(--dimension-spacing-1) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-1)
+      var(--dimension-spacing-3);
     background-color: var(--badge-bg);
     color: var(--badge-fg);
     border-radius: var(--dimension-radius-full);

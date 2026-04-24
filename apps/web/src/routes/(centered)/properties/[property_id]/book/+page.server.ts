@@ -35,9 +35,17 @@ export const load: PageServerLoad = async ({
       .toISOString()
       .split("T")[0]
     url.searchParams.set("date", first_date)
-    redirect(302, url.pathname + "?" + url.searchParams.toString())
+    redirect(
+      302,
+      url.pathname + "?" + url.searchParams.toString(),
+    )
   }
-  return { slots, date, user: locals.user, has_credit_report }
+  return {
+    slots,
+    date,
+    user: locals.user,
+    has_credit_report,
+  }
 }
 
 export const actions: Actions = {
@@ -79,11 +87,7 @@ function fetch_free_slots(property_id: number) {
     .where("slot.property_id", "=", property_id)
     .where("slot.state", "=", SLOT_STATE.FREE)
     .where("slot.visitant_id", "is", null)
-    .select([
-      "slot.id",
-      "slot.start_date",
-      "slot.end_date",
-    ])
+    .select(["slot.id", "slot.start_date", "slot.end_date"])
     .orderBy("slot.start_date", "asc")
     .execute()
 }

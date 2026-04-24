@@ -109,7 +109,9 @@
 
 {#snippet EmptyState()}
   <div class="empty">
-    <p class="heading-md empty-title">Preguntá sobre Habita</p>
+    <p class="heading-md empty-title">
+      Preguntá sobre Habita
+    </p>
     <p class="body-md-medium empty-hint">
       Podés preguntar qué puede hacer la plataforma, cómo
       funciona para inquilinos, administradores,
@@ -139,7 +141,8 @@
         disabled={is_loading}
         autocomplete="off"
       />
-      <Button variant="primary"
+      <Button
+        variant="primary"
         type="submit"
         disabled={is_loading || !input.trim()}
       >
@@ -195,7 +198,8 @@
   }
 
   .content {
-    padding: var(--dimension-spacing-2-5) var(--dimension-spacing-3-5);
+    padding: var(--dimension-spacing-2-5)
+      var(--dimension-spacing-3-5);
     border-radius: var(--dimension-radius-lg);
     line-height: 1.5;
     white-space: pre-wrap;
@@ -240,7 +244,8 @@
 
   .input {
     flex: 1;
-    padding: var(--dimension-spacing-2-5) var(--dimension-spacing-3-5);
+    padding: var(--dimension-spacing-2-5)
+      var(--dimension-spacing-3-5);
     border: 1px solid var(--color-border-primary);
     border-radius: var(--dimension-radius-lg);
     background-color: var(--color-neutrals-50);
@@ -252,7 +257,8 @@
   }
 
   .input:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline: var(--focus-ring-width) solid
+      var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
   }
 

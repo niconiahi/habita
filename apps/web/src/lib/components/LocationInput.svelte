@@ -396,7 +396,9 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button variant="secondary">View on Google Maps</Button>
+        <Button variant="secondary"
+          >View on Google Maps</Button
+        >
       </a>
     {:else if default_lat && default_lon}
       <a
@@ -404,7 +406,9 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button variant="secondary">View on Google Maps</Button>
+        <Button variant="secondary"
+          >View on Google Maps</Button
+        >
       </a>
     {/if}
   </div>

@@ -32,7 +32,8 @@
     align-items: center;
     width: fit-content;
     align-self: center;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     background-color: var(--segment-button-bg);
     border-radius: 14px;
   }

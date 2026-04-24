@@ -23,7 +23,8 @@
     align-items: center;
     justify-content: center;
     height: var(--dimension-spacing-10);
-    padding: var(--button-padding-y) var(--dimension-spacing-2);
+    padding: var(--button-padding-y)
+      var(--dimension-spacing-2);
     border-radius: var(--button-radius);
     border: none;
     cursor: pointer;
@@ -49,7 +50,8 @@
   }
 
   .toggle-button:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline: var(--focus-ring-width) solid
+      var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
   }
 </style>

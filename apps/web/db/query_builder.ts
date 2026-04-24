@@ -47,7 +47,11 @@ export const query_builder = new Proxy({} as Kysely<DB>, {
       _query_builder = (globalThis.__query_builder ??=
         make_query_builder()) as Kysely<DB>
     }
-    const value = Reflect.get(_query_builder, property, _query_builder)
+    const value = Reflect.get(
+      _query_builder,
+      property,
+      _query_builder,
+    )
     if (typeof value === "function") {
       return value.bind(_query_builder)
     }

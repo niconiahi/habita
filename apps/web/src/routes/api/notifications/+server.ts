@@ -5,9 +5,7 @@ import { fetch_notifications } from "$lib/fetchers/notifications.server"
 import { get_accessible_property_ids } from "$lib/server/property_access"
 import type { RequestHandler } from "./$types"
 
-export const GET: RequestHandler = async ({
-  locals,
-}) => {
+export const GET: RequestHandler = async ({ locals }) => {
   require_authentication(locals)
 
   const property_ids = await get_accessible_property_ids(

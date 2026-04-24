@@ -36,7 +36,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Crear período</Button>
+        <Button variant="primary" type="submit"
+          >Crear período</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   {:else}
@@ -46,9 +48,7 @@
           <li>
             <Formulary.Root
               method="POST"
-              action={compose_action(
-                ACTION.UPDATE_PERIOD,
-              )}
+              action={compose_action(ACTION.UPDATE_PERIOD)}
             >
               <Formulary.Fields>
                 <input

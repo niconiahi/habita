@@ -54,7 +54,8 @@ export const load: PageServerLoad = async ({ url }) => {
       const room_count = property.rooms.length
       const total_surface = Math.round(
         property.rooms.reduce(
-          (sum, room) => sum + Number(room.width) * Number(room.length),
+          (sum, room) =>
+            sum + Number(room.width) * Number(room.length),
           0,
         ),
       )
@@ -78,12 +79,16 @@ export const load: PageServerLoad = async ({ url }) => {
         total_surface,
         bathroom_count,
         images: property.images.map((image, index) => {
-          const props = get_img_props(image.id, image.hash, {
-            widths: [400, 800],
-            sizes: [
-              "(max-width: 600px) 400px, (max-width: 900px) 800px",
-            ],
-          })
+          const props = get_img_props(
+            image.id,
+            image.hash,
+            {
+              widths: [400, 800],
+              sizes: [
+                "(max-width: 600px) 400px, (max-width: 900px) 800px",
+              ],
+            },
+          )
           return {
             src: props.src,
             srcSet: props.srcSet,

@@ -1,4 +1,8 @@
-import { error, type Handle, type ServerInit } from "@sveltejs/kit"
+import {
+  error,
+  type Handle,
+  type ServerInit,
+} from "@sveltejs/kit"
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
 import { auth } from "$lib/server/auth"

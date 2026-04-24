@@ -71,11 +71,10 @@ export const load: LayoutServerLoad = async ({
       `property does not exist for id ${property_id}`,
     )
   }
-  const [warranty, signature] =
-    await Promise.all([
-      fetch_warranty(contract.warranty_id),
-      fetch_signature(contract_id),
-    ])
+  const [warranty, signature] = await Promise.all([
+    fetch_warranty(contract.warranty_id),
+    fetch_signature(contract_id),
+  ])
   const contract_file_types = get_contract_file_types()
   return {
     contract,

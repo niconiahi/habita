@@ -7,9 +7,7 @@ import {
 } from "../events/delete_object"
 import { get_producer } from "./producer"
 
-export async function publish_delete_object(
-  key: string,
-) {
+export async function publish_delete_object(key: string) {
   const validation = v.safeParse(DeleteObjectEvent, {
     key,
   })

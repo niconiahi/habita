@@ -31,7 +31,9 @@
 
 <div class="page">
   <Breadcrumb.Root>
-    <Breadcrumb.Link href="/admin/properties">Propiedades</Breadcrumb.Link>
+    <Breadcrumb.Link href="/admin/properties"
+      >Propiedades</Breadcrumb.Link
+    >
     <Breadcrumb.Current>
       {data.property.location?.road ?? "Sin calle"}
       {data.property.location?.house_number ?? ""}
@@ -43,7 +45,8 @@
   <TabGroup>
     {#each PROPERTY_TABS as tab}
       <Tab active={is_active(tab.route)}>
-        <a href={`${base_path}/${tab.route}`}>{tab.label}</a>
+        <a href={`${base_path}/${tab.route}`}>{tab.label}</a
+        >
       </Tab>
     {/each}
   </TabGroup>

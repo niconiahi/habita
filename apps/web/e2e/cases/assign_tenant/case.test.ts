@@ -12,7 +12,8 @@ let property_id: number
 
 test.describe.serial("Assign Candidate as Tenant", () => {
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test.describe("Manager setup", () => {

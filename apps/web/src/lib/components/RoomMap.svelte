@@ -304,7 +304,8 @@
           y: Number.parseFloat(room.position_y),
         })
       } else {
-        const w = Number.parseFloat(room.width) * PIXELS_PER_METER
+        const w =
+          Number.parseFloat(room.width) * PIXELS_PER_METER
         initial_positions.set(room.id, {
           x: x_offset,
           y: 0,
@@ -360,8 +361,14 @@
     }
     const container_width = container_el?.clientWidth ?? 600
     const rooms_width = Math.ceil(max_x + padding * 2)
-    const display_width = Math.max(rooms_width, container_width)
-    const display_height = Math.max(Math.ceil(max_y + padding * 2), MIN_HEIGHT)
+    const display_width = Math.max(
+      rooms_width,
+      container_width,
+    )
+    const display_height = Math.max(
+      Math.ceil(max_y + padding * 2),
+      MIN_HEIGHT,
+    )
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     canvas_el.width = display_width * device_pixel_ratio
     canvas_el.height = display_height * device_pixel_ratio
@@ -445,9 +452,7 @@
   onpointerup={handle_pointer_up}
   onpointercancel={handle_pointer_up}
 >
-  <canvas
-    bind:this={canvas_el}
-  ></canvas>
+  <canvas bind:this={canvas_el}></canvas>
 </div>
 
 <style>

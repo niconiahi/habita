@@ -64,8 +64,10 @@
       services: parse_ids(data.filters.services),
       total_surface_min: data.filters.total_surface_min,
       total_surface_max: data.filters.total_surface_max,
-      construction_year_min: data.filters.construction_year_min,
-      construction_year_max: data.filters.construction_year_max,
+      construction_year_min:
+        data.filters.construction_year_min,
+      construction_year_max:
+        data.filters.construction_year_max,
       ambientes_min: data.filters.ambientes_min,
       ambientes_max: data.filters.ambientes_max,
       dormitorios_min: data.filters.dormitorios_min,

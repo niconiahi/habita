@@ -29,8 +29,12 @@
 
 <div class="page">
   <Breadcrumb.Root>
-    <Breadcrumb.Link href="/admin/properties">Propiedades</Breadcrumb.Link>
-    <Breadcrumb.Link href="/admin/properties/{data.property.id}/edit">
+    <Breadcrumb.Link href="/admin/properties"
+      >Propiedades</Breadcrumb.Link
+    >
+    <Breadcrumb.Link
+      href="/admin/properties/{data.property.id}/edit"
+    >
       {data.property.location?.road ?? "Sin calle"}
       {data.property.location?.house_number ?? ""}
     </Breadcrumb.Link>
@@ -42,7 +46,8 @@
   <TabGroup>
     {#each CONTRACT_TABS as tab}
       <Tab active={is_active(tab.route)}>
-        <a href={`${base_path}/${tab.route}`}>{tab.label}</a>
+        <a href={`${base_path}/${tab.route}`}>{tab.label}</a
+        >
       </Tab>
     {/each}
   </TabGroup>
@@ -59,5 +64,4 @@
   .page-title {
     color: var(--color-text-heading);
   }
-
 </style>

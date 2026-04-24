@@ -40,7 +40,10 @@
     flex-direction: column;
   }
 
-  .content :global(input:not([type="radio"]):not([type="checkbox"])),
+  .content
+    :global(
+      input:not([type="radio"]):not([type="checkbox"])
+    ),
   .content :global(select),
   .content :global(textarea) {
     background-color: transparent;

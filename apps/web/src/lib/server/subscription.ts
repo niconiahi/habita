@@ -1,6 +1,9 @@
 import { redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
-import { SUBSCRIPTION_STATUS, type SubscriptionStatus } from "$lib/subscription_status"
+import {
+  SUBSCRIPTION_STATUS,
+  type SubscriptionStatus,
+} from "$lib/subscription_status"
 import { kv } from "$lib/server/kv"
 
 const GRACE_PERIOD_DAYS = 7
@@ -63,9 +66,7 @@ export async function fetch_user_subscriptions(
   }))
 }
 
-function compose_subscription_cache_key(
-  user_id: number,
-) {
+function compose_subscription_cache_key(user_id: number) {
   return `subscriptions:${user_id}`
 }
 

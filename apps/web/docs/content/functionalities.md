@@ -51,7 +51,7 @@ Estructura: las mismas 5 etapas del ciclo de la landing page, expandidas. Más u
 - Tipos de comprobante: alquiler, servicios e impuestos
 - El inquilino sube comprobantes desde la plataforma
 - Vista de los últimos 2 meses de comprobantes de servicios e impuestos
-- 
+-
 
 ## 6. Inmobiliaria
 

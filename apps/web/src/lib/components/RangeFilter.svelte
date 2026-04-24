@@ -18,7 +18,8 @@
 </script>
 
 <fieldset class="range-filter">
-  <legend class="range-label body-sm-medium">{label}</legend>
+  <legend class="range-label body-sm-medium">{label}</legend
+  >
   <div class="range-inputs">
     <label class="range-field">
       <span class="range-field-label">Min</span>

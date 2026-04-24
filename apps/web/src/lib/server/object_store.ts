@@ -56,7 +56,9 @@ export async function put_object(
 export async function get_object(
   key: string,
 ): Promise<[ObjectStoreError, null] | [null, Buffer]> {
-  const [error, buffer] = await safe_async(s3.get_object(key))
+  const [error, buffer] = await safe_async(
+    s3.get_object(key),
+  )
   if (error) {
     logger.error(error.message, { key }, error)
     return [

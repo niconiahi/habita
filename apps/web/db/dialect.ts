@@ -21,4 +21,5 @@ function make_dialect() {
   })
 }
 
-export const DIALECT = (globalThis.__dialect ??= make_dialect()) as PostgresDialect
+export const DIALECT = (globalThis.__dialect ??=
+  make_dialect()) as PostgresDialect

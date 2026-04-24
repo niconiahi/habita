@@ -71,7 +71,9 @@
     {@render TypeSection()}
     {@render PriceSection()}
     <Formulary.Actions>
-      <Button variant="primary" type="submit">Crear contrato</Button>
+      <Button variant="primary" type="submit"
+        >Crear contrato</Button
+      >
     </Formulary.Actions>
   </Formulary.Root>
 </Content.Root>

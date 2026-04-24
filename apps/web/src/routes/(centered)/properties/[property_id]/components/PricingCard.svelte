@@ -54,7 +54,9 @@
       <span class="body-md-medium label">/Alquiler</span>
       {#if escalation_type !== null && escalation_frequency !== null}
         <span class="badge body-sm-medium">
-          Ajuste cada {escalation_frequency} meses por {get_escalation_label(escalation_type)}
+          Ajuste cada {escalation_frequency} meses por {get_escalation_label(
+            escalation_type,
+          )}
         </span>
       {/if}
     </div>
@@ -101,7 +103,8 @@
   }
 
   .badge {
-    padding: var(--dimension-spacing-1) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-1)
+      var(--dimension-spacing-3);
     background-color: var(--badge-bg);
     color: var(--badge-fg);
     border-radius: var(--dimension-radius-full);

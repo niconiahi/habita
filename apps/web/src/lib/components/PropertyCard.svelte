@@ -68,7 +68,7 @@
       </span>
     </div>
     <div class="actions">
-      <a href={href}>
+      <a {href}>
         <Button variant="primary">Ver detalle</Button>
       </a>
     </div>

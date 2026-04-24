@@ -41,9 +41,9 @@
             </a>
           </td>
           <td class="body-md-medium">
-            {get_property_type_label(property.type)}{property.unit
-              ? ` - ${property.unit}`
-              : ""}
+            {get_property_type_label(
+              property.type,
+            )}{property.unit ? ` - ${property.unit}` : ""}
           </td>
           <td class="body-md-medium">
             {get_property_state_label(property.state)}
@@ -72,48 +72,48 @@
                   id={`property-actions-${property.id}`}
                 >
                   {#snippet children({ close })}
-                  <div class="actions-menu">
-                    {#if property.state === PROPERTY_STATE.EDITING}
-                      <form
-                        method="POST"
-                        action={`?/${ACTION.PUBLISH_PROPERTY}`}
-                        use:enhance
-                      >
-                        <input
-                          type="hidden"
-                          name="property_id"
-                          value={property.id}
-                        />
-                        <button
-                          class="body-md-medium action-item"
-                          type="submit"
-                          onclick={close}
+                    <div class="actions-menu">
+                      {#if property.state === PROPERTY_STATE.EDITING}
+                        <form
+                          method="POST"
+                          action={`?/${ACTION.PUBLISH_PROPERTY}`}
+                          use:enhance
                         >
-                          Publicar
-                        </button>
-                      </form>
-                    {/if}
-                    {#if property.state === PROPERTY_STATE.PUBLISHED}
-                      <form
-                        method="POST"
-                        action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
-                        use:enhance
-                      >
-                        <input
-                          type="hidden"
-                          name="property_id"
-                          value={property.id}
-                        />
-                        <button
-                          class="body-md-medium action-item"
-                          type="submit"
-                          onclick={close}
+                          <input
+                            type="hidden"
+                            name="property_id"
+                            value={property.id}
+                          />
+                          <button
+                            class="body-md-medium action-item"
+                            type="submit"
+                            onclick={close}
+                          >
+                            Publicar
+                          </button>
+                        </form>
+                      {/if}
+                      {#if property.state === PROPERTY_STATE.PUBLISHED}
+                        <form
+                          method="POST"
+                          action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
+                          use:enhance
                         >
-                          Despublicar
-                        </button>
-                      </form>
-                    {/if}
-                  </div>
+                          <input
+                            type="hidden"
+                            name="property_id"
+                            value={property.id}
+                          />
+                          <button
+                            class="body-md-medium action-item"
+                            type="submit"
+                            onclick={close}
+                          >
+                            Despublicar
+                          </button>
+                        </form>
+                      {/if}
+                    </div>
                   {/snippet}
                 </Popover.Content>
               </Popover.Root>
@@ -149,7 +149,8 @@
 
   .table th {
     text-align: left;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }
@@ -175,7 +176,8 @@
     display: flex;
     align-items: center;
     width: 100%;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     background: none;
     border: none;
     border-radius: var(--dimension-radius-default);
@@ -188,5 +190,4 @@
   .action-item:hover {
     background-color: var(--color-neutrals-150);
   }
-
 </style>

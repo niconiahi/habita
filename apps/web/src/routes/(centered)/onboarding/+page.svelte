@@ -69,7 +69,9 @@
     onclick={() => handle_select(ACCOUNT_TYPE.FREELANCE)}
   >
     <div class="option">
-      <h3 class="heading-sm option-title">Asesor inmobiliario</h3>
+      <h3 class="heading-sm option-title">
+        Asesor inmobiliario
+      </h3>
       <p class="body-md-medium option-description">
         Administro propiedades por mi cuenta y no pertenezco
         a ninguna inmobiliaria
@@ -79,40 +81,42 @@
 {/snippet}
 
 <div class="container">
-    <h1 class="heading-lg title">Quiero una cuenta del tipo</h1>
-    <Formulary.Root
-      action={compose_action(ACTION.SELECT_ACCOUNT_TYPE)}
-      method="POST"
-      onsubmit={(event) => {
-        if (selected_type === ACCOUNT_TYPE.TENANT) {
-          event.preventDefault()
-          goto("/profile")
-        }
-      }}
-    >
-      <div class="types">
-        {@render RealtorOption()}
-        {@render TenantOption()}
-        {@render FreelanceOption()}
-        {#if selected_type && selected_type !== ACCOUNT_TYPE.TENANT}
-          <input
-            type="hidden"
-            name="type"
-            value={get_subscription_type(selected_type)}
-          />
-        {/if}
-        <div class="actions">
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={selected_type === null}
-          >
-            Confirmar tipo de cuenta
-          </Button>
-        </div>
+  <h1 class="heading-lg title">
+    Quiero una cuenta del tipo
+  </h1>
+  <Formulary.Root
+    action={compose_action(ACTION.SELECT_ACCOUNT_TYPE)}
+    method="POST"
+    onsubmit={(event) => {
+      if (selected_type === ACCOUNT_TYPE.TENANT) {
+        event.preventDefault()
+        goto("/profile")
+      }
+    }}
+  >
+    <div class="types">
+      {@render RealtorOption()}
+      {@render TenantOption()}
+      {@render FreelanceOption()}
+      {#if selected_type && selected_type !== ACCOUNT_TYPE.TENANT}
+        <input
+          type="hidden"
+          name="type"
+          value={get_subscription_type(selected_type)}
+        />
+      {/if}
+      <div class="actions">
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={selected_type === null}
+        >
+          Confirmar tipo de cuenta
+        </Button>
       </div>
-    </Formulary.Root>
-  </div>
+    </div>
+  </Formulary.Root>
+</div>
 
 <style>
   .container {

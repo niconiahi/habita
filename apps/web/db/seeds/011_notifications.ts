@@ -7,7 +7,10 @@
 
 import { subDays } from "date-fns"
 import type { Kysely } from "kysely"
-import { compose_property_visit_href, NOTIFICATION_TYPE } from "../../src/lib/notification_type"
+import {
+  compose_property_visit_href,
+  NOTIFICATION_TYPE,
+} from "../../src/lib/notification_type"
 import type { DB } from "../types"
 
 export async function seed(_db: Kysely<DB>): Promise<void> {

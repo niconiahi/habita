@@ -1,6 +1,7 @@
 @font-face {
   font-family: "DM Sans";
-  src: url("../assets/fonts/DMSans-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/DMSans-Regular.ttf")
+    format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -8,7 +9,8 @@
 
 @font-face {
   font-family: "DM Sans";
-  src: url("../assets/fonts/DMSans-Medium.ttf") format("truetype");
+  src: url("../assets/fonts/DMSans-Medium.ttf")
+    format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -16,7 +18,8 @@
 
 @font-face {
   font-family: "DM Sans";
-  src: url("../assets/fonts/DMSans-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/DMSans-Bold.ttf")
+    format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -24,7 +27,8 @@
 
 @font-face {
   font-family: "Geist Mono";
-  src: url("../assets/fonts/GeistMono-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/GeistMono-Regular.ttf")
+    format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -32,7 +36,8 @@
 
 @font-face {
   font-family: "Geist Mono";
-  src: url("../assets/fonts/GeistMono-Medium.ttf") format("truetype");
+  src: url("../assets/fonts/GeistMono-Medium.ttf")
+    format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -40,7 +45,8 @@
 
 @font-face {
   font-family: "Geist Mono";
-  src: url("../assets/fonts/GeistMono-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/GeistMono-Bold.ttf")
+    format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;

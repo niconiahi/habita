@@ -15,7 +15,8 @@ let property_id: number
 
 test.describe.serial("Send Landlord Invite Email", () => {
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test.use({ storageState: "e2e/.auth/manager.json" })

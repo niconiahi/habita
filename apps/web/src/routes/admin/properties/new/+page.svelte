@@ -104,7 +104,9 @@
         {@render Destiny()}
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Crear propiedad</Button>
+        <Button variant="primary" type="submit"
+          >Crear propiedad</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Content.Section>

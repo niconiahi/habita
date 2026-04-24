@@ -7,8 +7,11 @@
     children: Snippet<[{ close: () => void }]>
   }
 
-  let { id, position = "bottom", children }: Props =
-    $props()
+  let {
+    id,
+    position = "bottom",
+    children,
+  }: Props = $props()
 
   let popover_element: HTMLDivElement
 

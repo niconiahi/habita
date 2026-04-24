@@ -6,7 +6,8 @@
 
   let { latitude, longitude }: Props = $props()
 
-  let container_element: HTMLDivElement | undefined = $state()
+  let container_element: HTMLDivElement | undefined =
+    $state()
 
   const MARKER_COLOR = "#1599ba"
   const ZOOM = 14
@@ -21,7 +22,9 @@
 
     const style_url = `${window.location.origin}/tiles/styles/positron/style.json`
 
-    let map: InstanceType<typeof import("maplibre-gl").Map> | undefined
+    let map:
+      | InstanceType<typeof import("maplibre-gl").Map>
+      | undefined
     let cancelled = false
 
     import("maplibre-gl").then(({ Map, Marker }) => {
@@ -52,7 +55,10 @@
   <link rel="stylesheet" href="/maplibre-gl.css" />
 </svelte:head>
 
-<div class="property-map" bind:this={container_element}></div>
+<div
+  class="property-map"
+  bind:this={container_element}
+></div>
 
 <style>
   .property-map {

@@ -73,7 +73,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Crear horario</Button>
+        <Button variant="primary" type="submit"
+          >Crear horario</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   </Content.Section>
@@ -121,7 +123,10 @@
                       name="id"
                       value={slot.id}
                     />
-                    <Button variant="secondary" type="submit">Eliminar</Button>
+                    <Button
+                      variant="secondary"
+                      type="submit">Eliminar</Button
+                    >
                   </Formulary.Root>
                 {:else}
                   <span class="inactive">-</span>

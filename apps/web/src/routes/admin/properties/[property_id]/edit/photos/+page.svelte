@@ -25,8 +25,7 @@
     <Button
       variant="secondary"
       type="button"
-      onclick={handle_add_photo_click}
-      >Agregar foto</Button
+      onclick={handle_add_photo_click}>Agregar foto</Button
     >
   </div>
   <ul class="photo-grid">

@@ -52,16 +52,16 @@ Cada paso: un ícono + una línea. Contraste visual con la sección 2 — de fra
 
 La tabla que cierra el argumento. Una mirada y queda claro
 
-| Herramienta      | Publicación | Visitas | Contratos | Firma digital | Pagos   |
-|------------------|-------------|---------|-----------|---------------|---------|
-| [Zonaprop](https://www.zonaprop.com.ar)             | Sí      | No  | No      | No  | No  |
-| [Argenprop](https://gestion.argenprop.com)           | Sí      | No  | No      | No  | No  |
-| [2clics](https://2clics.app)                         | Sí      | No  | No      | No  | No  |
-| [Tokko Broker](https://www.tokkobroker.com/es-ar)    | Sí      | No  | No      | No  | No  |
-| [Inmosoft](https://www.inmosoft.com.ar)              | No      | No  | Parcial | No  | Sí  |
-| [Barreeo](https://barreeo.com)                       | No      | No  | Parcial | No  | Sí  |
-| [Tus Alquileres](https://tusalquileres.com.ar)      | No      | No  | Parcial | No  | Sí  |
-| [RentaControl](https://www.rentacontrol.com.ar)      | No      | No  | Parcial | No  | Sí  |
-| [Ubiquo](https://www.ubiquo.com.ar)                  | Parcial | No  | Parcial | No  | Sí  |
-| [SPOT](https://spot.net.ar)                           | No      | No  | Parcial | No  | Sí  |
-| **Habita**                                            | **Sí**  | **Sí** | **Sí** | **Sí** | **Sí** |
+| Herramienta                                       | Publicación | Visitas | Contratos | Firma digital | Pagos  |
+| ------------------------------------------------- | ----------- | ------- | --------- | ------------- | ------ |
+| [Zonaprop](https://www.zonaprop.com.ar)           | Sí          | No      | No        | No            | No     |
+| [Argenprop](https://gestion.argenprop.com)        | Sí          | No      | No        | No            | No     |
+| [2clics](https://2clics.app)                      | Sí          | No      | No        | No            | No     |
+| [Tokko Broker](https://www.tokkobroker.com/es-ar) | Sí          | No      | No        | No            | No     |
+| [Inmosoft](https://www.inmosoft.com.ar)           | No          | No      | Parcial   | No            | Sí     |
+| [Barreeo](https://barreeo.com)                    | No          | No      | Parcial   | No            | Sí     |
+| [Tus Alquileres](https://tusalquileres.com.ar)    | No          | No      | Parcial   | No            | Sí     |
+| [RentaControl](https://www.rentacontrol.com.ar)   | No          | No      | Parcial   | No            | Sí     |
+| [Ubiquo](https://www.ubiquo.com.ar)               | Parcial     | No      | Parcial   | No            | Sí     |
+| [SPOT](https://spot.net.ar)                       | No          | No      | Parcial   | No            | Sí     |
+| **Habita**                                        | **Sí**      | **Sí**  | **Sí**    | **Sí**        | **Sí** |

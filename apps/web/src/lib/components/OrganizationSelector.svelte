@@ -48,35 +48,35 @@
   </Popover.Trigger>
   <Popover.Content id="organization-selector" {position}>
     {#snippet children({ close })}
-    <div class="list">
-      <button
-        type="button"
-        class="body-md-medium item"
-        class:active={active_organization_id === null}
-        onclick={() => handle_select(null, close)}
-      >
-        <span>Personal</span>
-      </button>
-      {#each organizations as organization (organization.id)}
+      <div class="list">
         <button
           type="button"
           class="body-md-medium item"
-          class:active={organization.id ===
-            active_organization_id}
-          onclick={() =>
-            handle_select(organization.id, close)}
+          class:active={active_organization_id === null}
+          onclick={() => handle_select(null, close)}
         >
-          {#if organization.logo}
-            <img
-              src={organization.logo}
-              alt=""
-              class="logo"
-            />
-          {/if}
-          <span>{organization.name}</span>
+          <span>Personal</span>
         </button>
-      {/each}
-    </div>
+        {#each organizations as organization (organization.id)}
+          <button
+            type="button"
+            class="body-md-medium item"
+            class:active={organization.id ===
+              active_organization_id}
+            onclick={() =>
+              handle_select(organization.id, close)}
+          >
+            {#if organization.logo}
+              <img
+                src={organization.logo}
+                alt=""
+                class="logo"
+              />
+            {/if}
+            <span>{organization.name}</span>
+          </button>
+        {/each}
+      </div>
     {/snippet}
   </Popover.Content>
 </Popover.Root>

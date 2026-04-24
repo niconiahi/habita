@@ -43,7 +43,9 @@
         </Formulary.Field>
       </Formulary.Fields>
       <Formulary.Actions>
-        <Button variant="primary" type="submit">Invitar dueño</Button>
+        <Button variant="primary" type="submit"
+          >Invitar dueño</Button
+        >
       </Formulary.Actions>
     </Formulary.Root>
   {/if}

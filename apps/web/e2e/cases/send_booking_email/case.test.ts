@@ -38,7 +38,8 @@ async function update_user_email(
 
 test.describe.serial("Send Booking Email", () => {
   test.afterAll(async () => {
-    if (property_id) await cleanup_test_property(property_id)
+    if (property_id)
+      await cleanup_test_property(property_id)
   })
 
   test.describe("Manager setup", () => {
