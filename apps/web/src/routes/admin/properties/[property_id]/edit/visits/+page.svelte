@@ -25,6 +25,14 @@
       minute: "2-digit",
     })
   }
+
+  function format_visitant_name(
+    slot: (typeof data.slots)[number],
+  ): string {
+    if (!slot.visitant_name) return "-"
+    const surname = slot.visitant_surname ?? ""
+    return `${slot.visitant_name} ${surname}`.trim()
+  }
 </script>
 
 <section class="root">
@@ -42,6 +50,8 @@
         <Table.Cell header>Fecha</Table.Cell>
         <Table.Cell header>Hora inicio</Table.Cell>
         <Table.Cell header>Hora fin</Table.Cell>
+        <Table.Cell header>Candidato</Table.Cell>
+        <Table.Cell header>Teléfono</Table.Cell>
         <Table.Cell header>Estado</Table.Cell>
         <Table.Cell header>&nbsp;</Table.Cell>
       </Table.Header>
@@ -56,6 +66,12 @@
             </Table.Cell>
             <Table.Cell>
               {format_time(slot.end_date)}
+            </Table.Cell>
+            <Table.Cell>
+              {format_visitant_name(slot)}
+            </Table.Cell>
+            <Table.Cell>
+              {slot.visitant_phone_number ?? "-"}
             </Table.Cell>
             <Table.Cell>
               {get_slot_state_label(slot.state)}
@@ -74,6 +90,22 @@
                   />
                   <Button variant="secondary" type="submit"
                     >Eliminar</Button
+                  >
+                </form>
+              {/if}
+              {#if slot.state === SLOT_STATE.RESERVED}
+                <form
+                  method="POST"
+                  action={`?/${ACTION.CONFIRM_SLOT}`}
+                  use:enhance
+                >
+                  <input
+                    type="hidden"
+                    name="id"
+                    value={slot.id}
+                  />
+                  <Button variant="primary" type="submit"
+                    >Confirmar</Button
                   >
                 </form>
               {/if}
