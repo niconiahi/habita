@@ -2,4 +2,4 @@
 
 # Extract Argentine administrative boundaries from Nominatim
 argentina:
-  bin/extract_zones.sh
+  bin/extract_zones
