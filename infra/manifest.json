@@ -1,0 +1,5 @@
+{
+  "svelte": "niconiahi/habita:svelte-3d7ae0118afb2db05bcbd767c72e3b61d3709b44",
+  "go": "niconiahi/habita:go-3d7ae0118afb2db05bcbd767c72e3b61d3709b44",
+  "broker": "niconiahi/habita:broker-3d7ae0118afb2db05bcbd767c72e3b61d3709b44"
+}

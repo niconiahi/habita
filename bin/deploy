@@ -11,15 +11,14 @@ if [[ "$ENV" == "development" ]]; then
   echo "deploying to production via ssh"
   echo "services: $*"
   echo ""
-  ssh habita "cd /opt/habita && git fetch origin main && git reset --hard origin/main && just deploy $*"
+  ssh -t habita "cd /opt/habita && git fetch origin main && git reset --hard origin/main && just deploy $*"
   exit $?
 fi
 
-# Set image tags from last commit that touched each service's source
-# CI only builds images when the service's code changes, so the tag must match
-export SVELTE_TAG=$(git log -1 --format=%H -- apps/web/)
-export GO_TAG=$(git log -1 --format=%H -- apps/go/)
-export BROKER_TAG=$(git log -1 --format=%H -- apps/broker/)
+# Read image references from manifest (written by CI)
+export SVELTE_IMAGE=$(jq -r '.svelte' "$REPO_ROOT/infra/manifest.json")
+export GO_IMAGE=$(jq -r '.go' "$REPO_ROOT/infra/manifest.json")
+export BROKER_IMAGE=$(jq -r '.broker' "$REPO_ROOT/infra/manifest.json")
 
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
