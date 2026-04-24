@@ -250,9 +250,9 @@
         </div>
         <p class="body-md-regular">
           Firmá digitalmente con validez legal, utilizando <a
-            href="http://alpha2000.com.ar/v3/firmadigital/"
+            href="https://www.digilogix.com.ar"
             target="_blank"
-            rel="noopener noreferrer">Alpha2000</a
+            rel="noopener noreferrer">Digilogix</a
           >
           (ente
           <a
