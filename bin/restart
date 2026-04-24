@@ -22,5 +22,5 @@ case "$service" in
   gatus)                 compose status restart gatus ;;
   nominatim)             compose geo restart nominatim ;;
   tileserver)            compose geo restart tileserver ;;
-  *) echo "Unknown service: $service"; exit 1 ;;
+  *) echo "unknown service: $service"; exit 1 ;;
 esac

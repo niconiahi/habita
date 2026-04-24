@@ -2,15 +2,15 @@
 source "$(dirname "$0")/lib.sh"
 
 [[ "$ENV" == "development" ]] && {
-  echo "Decrypting .env.dev..."
+  echo "decrypting .env.dev"
   sops decrypt --input-type dotenv --output-type dotenv "$INFRA/.env.dev.enc" > "$INFRA/.env.dev"
-  echo "Done. Written to $INFRA/.env.dev"
+  echo "done. written to $INFRA/.env.dev"
   exit 0
 }
 
 # Production: decrypt locally and push to VPS via scp
-echo "Decrypting .env.prod..."
+echo "decrypting .env.prod"
 sops decrypt --input-type dotenv --output-type dotenv "$INFRA/.env.prod.enc" > "$INFRA/.env.prod"
-echo "Done. Written to $INFRA/.env.prod"
+echo "done. written to $INFRA/.env.prod"
 echo ""
-echo "To push to VPS: scp $INFRA/.env.prod vps:/opt/habita/infra/.env.prod"
+echo "to push to vps: scp $INFRA/.env.prod vps:/opt/habita/infra/.env.prod"

@@ -66,7 +66,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // ==========================================
   // I-1: PROPERTY WARRANTY (Garantía Propietaria)
   // ==========================================
-  console.log("creating I-1: property warranty")
+  console.log("creating i-1: property warranty")
 
   const owner_i1 = await seeder.create_user({
     name: "Adriana",
@@ -232,7 +232,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // ==========================================
   // I-2: INCOME WARRANTY (Recibo de Sueldo)
   // ==========================================
-  console.log("creating I-2: income warranty")
+  console.log("creating i-2: income warranty")
 
   const owner_i2 = await seeder.create_user({
     name: "Beatriz",
@@ -393,7 +393,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   // ==========================================
   // I-3: SURETY WARRANTY (Seguro de Caución)
   // ==========================================
-  console.log("creating I-3: surety warranty")
+  console.log("creating i-3: surety warranty")
 
   const owner_i3 = await seeder.create_user({
     name: "Claudia",

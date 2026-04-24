@@ -4,9 +4,9 @@ source "$(dirname "$0")/lib.sh"
 LOG_FILE="$REPO_ROOT/infra/deploy.log"
 
 if [[ ! -f "$LOG_FILE" ]]; then
-  echo "No deploy history."
+  echo "no deploy history"
   exit 0
 fi
 
-echo "Recent deploys:"
+echo "recent deploys:"
 tail -20 "$LOG_FILE"

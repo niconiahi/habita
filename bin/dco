@@ -49,8 +49,8 @@ case "$stack" in
     docker compose -p observability $ENV_FILE -f "$INFRA_DIR/observability/docker-compose.yml" "$subcommand" "${flags[@]+"${flags[@]}"}" ${service:+"$service"} "${args[@]+"${args[@]}"}"
     ;;
   *)
-    echo "Unknown stack: $stack"
-    echo "Available: storage, app, gateway, api, media, geo, scheduler, obs"
+    echo "unknown stack: $stack"
+    echo "available: storage, app, gateway, api, media, geo, scheduler, obs"
     exit 1
     ;;
 esac

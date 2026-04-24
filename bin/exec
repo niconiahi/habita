@@ -22,5 +22,5 @@ case "$service" in
   pdf)                   compose pdf exec pdf "$@" ;;
   nominatim)             compose geo exec nominatim "$@" ;;
   tileserver)            compose geo exec tileserver "$@" ;;
-  *) echo "Unknown service: $service"; exit 1 ;;
+  *) echo "unknown service: $service"; exit 1 ;;
 esac

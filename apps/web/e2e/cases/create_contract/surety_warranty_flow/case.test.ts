@@ -55,7 +55,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       expect(match).toBeTruthy()
       property_id = Number(match![1])
       console.log(
-        `Created property with ID: ${property_id}`,
+        `created property with id: ${property_id}`,
       )
     })
 
@@ -64,7 +64,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
         TEST_LANDLORD.email,
       ))!
       expect(landlord_user_id).toBeDefined()
-      console.log(`Landlord user ID: ${landlord_user_id}`)
+      console.log(`landlord user id: ${landlord_user_id}`)
 
       await assign_property_access(
         property_id,
@@ -72,7 +72,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
         ACCESS_TYPE.LANDLORD,
       )
       console.log(
-        `Assigned landlord access to property ${property_id}`,
+        `assigned landlord access to property ${property_id}`,
       )
     })
 
@@ -99,7 +99,7 @@ test.describe.serial("Full Flow - SURETY Warranty", () => {
       expect(match).toBeTruthy()
       contract_id = Number(match![1])
       console.log(
-        `Created contract with ID: ${contract_id}`,
+        `created contract with id: ${contract_id}`,
       )
 
       // Verify we're on the contract edit page

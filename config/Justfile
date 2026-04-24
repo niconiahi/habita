@@ -58,6 +58,11 @@ restart service:
 reload service:
   ./bin/reload {{service}}
 
+# Rebuild a service with fresh dependencies (e.g., just rebuild svelte)
+[group('infra')]
+rebuild service:
+  ./bin/rebuild {{service}}
+
 # Decrypt and write .env file
 [group('infra')]
 env-push:

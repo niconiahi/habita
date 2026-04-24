@@ -34,7 +34,7 @@ run_query() {
     su - postgres -c "psql -d nominatim -t -A -F '	' -c \"$query\""
 }
 
-echo "Extracting zones (admin levels 4–10)..."
+echo "extracting zones (admin levels 4–10)"
 QUERY="
 SELECT
   z.admin_level,
@@ -69,7 +69,7 @@ trap 'rm -f "$RAW_FILE" "$MAIN_AWK"' EXIT
 } > "$RAW_FILE"
 
 RAW_COUNT=$(($(wc -l < "$RAW_FILE") - 1))
-echo "Raw extraction complete ($RAW_COUNT rows). Computing label and badge..."
+echo "raw extraction complete ($RAW_COUNT rows). computing label and badge"
 
 cat > "$MAIN_AWK" << 'AWKEOF'
 BEGIN {
@@ -93,5 +93,5 @@ awk -F'\t' \
   "$RAW_FILE" > "$COUNTRY_DIR/data.tsv"
 
 FINAL_COUNT=$(($(wc -l < "$COUNTRY_DIR/data.tsv") - 1))
-echo "Saved $FINAL_COUNT zones to db/zones/argentina/data.tsv"
-echo "Done."
+echo "saved $FINAL_COUNT zones to db/zones/argentina/data.tsv"
+echo "done"

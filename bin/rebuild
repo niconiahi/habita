@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/lib.sh"
+
+[[ $# -lt 1 ]] && { echo "Usage: just rebuild <service>"; exit 1; }
+
+service="$1"
+
+case "$service" in
+  svelte)
+    compose app rm -sf svelte
+    docker volume rm app_deps 2>/dev/null || true
+    compose app up -d --build svelte
+    ;;
+  *) echo "unknown service: $service"; exit 1 ;;
+esac

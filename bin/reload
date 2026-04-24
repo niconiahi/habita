@@ -22,5 +22,5 @@ case "$service" in
   gatus)                 compose status up -d --force-recreate gatus ;;
   nominatim)             compose geo up -d --force-recreate nominatim ;;
   tileserver)            compose geo up -d --force-recreate tileserver ;;
-  *) echo "Unknown service: $service"; exit 1 ;;
+  *) echo "unknown service: $service"; exit 1 ;;
 esac

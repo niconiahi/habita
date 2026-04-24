@@ -22,7 +22,7 @@ link_configs() {
   done
 }
 
-echo "=== Monorepo root ==="
+echo "=== monorepo root ==="
 link_configs "$REPO_ROOT/config"
 
 echo ""

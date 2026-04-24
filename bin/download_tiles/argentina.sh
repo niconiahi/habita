@@ -27,8 +27,8 @@ fi
 
 mkdir -p "$TILES_DIR"
 
-echo "Generating argentina.mbtiles with Planetiler..."
-echo "This downloads ~700MB from Geofabrik and takes a few minutes."
+echo "generating argentina.mbtiles with planetiler"
+echo "this downloads ~700MB from geofabrik and takes a few minutes"
 
 docker run --rm \
   -e JAVA_TOOL_OPTIONS="-Xmx4g" \
@@ -38,4 +38,4 @@ docker run --rm \
   --mbtiles=/data/argentina.mbtiles \
   --force
 
-echo "Done: $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"
+echo "done: $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"

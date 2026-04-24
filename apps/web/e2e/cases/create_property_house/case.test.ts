@@ -38,7 +38,7 @@ test.describe.serial("Create Property - House", () => {
     expect(match).toBeTruthy()
     property_id = Number(match![1])
     console.log(
-      `Created house property with ID: ${property_id}`,
+      `created house property with id: ${property_id}`,
     )
   })
 })

@@ -11,7 +11,7 @@ import {
 } from "./helpers/db"
 
 setup("create manager authentication", async ({ page }) => {
-  console.log("Setting up manager authentication...")
+  console.log("setting up manager authentication")
   await authenticate_test_user(
     page,
     TEST_MANAGER,
@@ -22,7 +22,7 @@ setup("create manager authentication", async ({ page }) => {
 setup(
   "create candidate authentication",
   async ({ page }) => {
-    console.log("Setting up candidate authentication...")
+    console.log("setting up candidate authentication")
     await authenticate_test_user(
       page,
       TEST_CANDIDATE,
@@ -35,7 +35,7 @@ setup(
     )
     if (user_id) {
       await create_credit_report(user_id)
-      console.log("Created credit report for candidate")
+      console.log("created credit report for candidate")
     }
   },
 )
@@ -43,7 +43,7 @@ setup(
 setup(
   "create landlord authentication",
   async ({ page }) => {
-    console.log("Setting up landlord authentication...")
+    console.log("setting up landlord authentication")
     await authenticate_test_user(
       page,
       TEST_LANDLORD,
