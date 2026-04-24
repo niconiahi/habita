@@ -3,6 +3,8 @@ slug: automated-processes
 title: ¿Qué procesos están automatizados?
 ---
 
+# ¿Qué procesos están automatizados?
+
 Habita automatiza los procesos repetitivos para que puedas enfocarte en lo importante.
 
 ## Automatizaciones activas

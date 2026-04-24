@@ -3,6 +3,8 @@ slug: alerts
 title: ¿Qué alertas provee Habita?
 ---
 
+# ¿Qué alertas provee Habita?
+
 Habita envía notificaciones automáticas para que no se te pase nada.
 
 ## Alertas disponibles

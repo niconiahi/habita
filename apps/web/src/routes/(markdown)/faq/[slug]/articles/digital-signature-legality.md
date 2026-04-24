@@ -3,6 +3,8 @@ slug: digital-signature-legality
 title: ¿Qué tan legal es la firma digital?
 ---
 
+# ¿Qué tan legal es la firma digital?
+
 En Argentina, la firma digital tiene plena validez legal desde el año 2001, regulada por la **Ley 25.506 de Firma Digital**.
 
 ## Marco legal

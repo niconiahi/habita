@@ -1,40 +1,40 @@
 ---
 slug: phone-number
-title: Formato de numero de telefono argentino
+title: Formato de número de teléfono argentino
 ---
 
-# Formato de numero de telefono argentino
+# Formato de número de teléfono argentino
 
-Los numeros de telefono argentinos siguen el estandar internacional **E.164** regulado por ENACOM
+Los números de teléfono argentinos siguen el estándar internacional **E.164** regulado por ENACOM
 
-## Obtener tu numbero completo desde WhatsApp
+## Obtener tu número completo desde WhatsApp
 
-1. Ingresa a WhatsApp desde tu telefono
-2. Ingresa a configuracion
-3. Toca tu foto de perfil y veras tu informacion completa, incluyendo tu numero completo
+1. Ingresá a WhatsApp desde tu teléfono
+2. Ingresá a configuración
+3. Tocá tu foto de perfil y verás tu información completa, incluyendo tu número completo
 
 ## Estructura
 
-| Componente        | Descripcion              | Ejemplo           |
+| Componente        | Descripción              | Ejemplo           |
 | ----------------- | ------------------------ | ----------------- |
-| Codigo pais       | Siempre `+54`            | +54               |
-| Codigo de area    | 2-4 digitos segun region | 11 (Buenos Aires) |
-| Numero de abonado | 6-8 digitos              | 12345678          |
+| Código país       | Siempre `+54`            | +54               |
+| Código de área    | 2-4 dígitos según región | 11 (Buenos Aires) |
+| Número de abonado | 6-8 dígitos              | 12345678          |
 
-**Regla clave:** El codigo de area + numero de abonado siempre suman **10 digitos**.
+**Regla clave:** El código de área + número de abonado siempre suman **10 dígitos**.
 
 ## Formato
 
-`+54 9 [area] [numero]`
+`+54 9 [área] [número]`
 
 - Siempre comienza con `+549`
-- Total: **13 digitos**
+- Total: **13 dígitos**
 
 Ejemplos:
 
-- `+5491112345678` - Buenos Aires (area 11)
-- `+5493515123456` - Cordoba (area 351)
-- `+5492614567890` - Mendoza (area 261)
+- `+5491112345678` - Buenos Aires (área 11)
+- `+5493515123456` - Córdoba (área 351)
+- `+5492614567890` - Mendoza (área 261)
 
 ## Referencias
 

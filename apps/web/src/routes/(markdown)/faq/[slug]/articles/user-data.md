@@ -3,6 +3,8 @@ slug: user-data
 title: ¿Qué datos pedimos a cada usuario?
 ---
 
+# ¿Qué datos pedimos a cada usuario?
+
 ## Datos obligatorios
 
 - **Nombre y apellido**
@@ -21,4 +23,4 @@ title: ¿Qué datos pedimos a cada usuario?
 
 ## Seguridad de tus datos
 
-Sabemos que pedimos informacion sensible. Por eso, toda la informacion personal que guardes en tu perfil se [guarda de forma segura](/learn/user-information).
+Sabemos que pedimos información sensible. Por eso, toda la información personal que guardes en tu perfil se [guarda de forma segura](/learn/user-information).
