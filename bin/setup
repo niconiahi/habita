@@ -10,7 +10,7 @@ echo "creating volumes"
 docker volume create backups 2>/dev/null || true
 
 echo "symlinking config files"
-"$REPO_ROOT/bin/symlink-configs.sh"
+"$REPO_ROOT/bin/symlink-configs"
 
 echo "decrypting secrets"
 "$REPO_ROOT/bin/env-push"
