@@ -8,6 +8,7 @@ This skill guides how styling should be implemented across the application
 1. Preference of writting CSS as native `.css` files, within the same `.svelte` files
 2. No BEM, preference for local representative and short class names, like this:
 3. Preference for `.css` nesting for parent/child relationship, as opposed to BEM approach of `Input`/`Input__Icon`
+4. For global link styles and reusable components (Dialog, Table, Formulary), see the `styled_system` skill
 
 ```svelte
 <div>
