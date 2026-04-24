@@ -5,7 +5,7 @@ data=$(docker ps -a --format '{{.Label "com.docker.compose.project"}}\t{{.Label 
   --filter "label=com.docker.compose.project" | sort)
 
 if [ -z "$data" ]; then
-  echo "No services running."
+  echo "no services running"
   exit 0
 fi
 

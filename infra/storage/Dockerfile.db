@@ -4,6 +4,7 @@ FROM postgis/postgis:17-3.4
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl ca-certificates && \
     curl -L https://github.com/wal-g/wal-g/releases/download/v3.0.3/wal-g-pg-ubuntu-20.04-amd64.tar.gz | tar xz -C /usr/local/bin && \
+    mv /usr/local/bin/wal-g-pg-ubuntu-20.04-amd64 /usr/local/bin/wal-g && \
     chmod +x /usr/local/bin/wal-g && \
     apt-get purge -y curl && \
     apt-get autoremove -y && \

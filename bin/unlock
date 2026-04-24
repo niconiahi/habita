@@ -4,9 +4,9 @@ source "$(dirname "$0")/lib.sh"
 LOCK_FILE="/tmp/habita-deploy.lock"
 
 if [[ ! -f "$LOCK_FILE" ]]; then
-  echo "Not locked."
+  echo "not locked"
   exit 0
 fi
 
 rm -f "$LOCK_FILE"
-echo "Unlocked."
+echo "unlocked"

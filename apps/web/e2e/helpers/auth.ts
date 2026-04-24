@@ -49,7 +49,7 @@ export async function signup_test_user(
   page: Page,
   user: TestUser,
 ): Promise<void> {
-  console.log(`Signing up user: ${user.email}`)
+  console.log(`signing up user: ${user.email}`)
   await page.goto("/signup")
 
   // Fill the signup form using input IDs for reliability
@@ -83,7 +83,7 @@ export async function signup_test_user(
     throw new Error(`Signup failed: ${error_text}`)
   }
 
-  console.log(`Signup complete for: ${user.email}`)
+  console.log(`signup complete for: ${user.email}`)
 }
 
 /**
@@ -93,7 +93,7 @@ export async function login_test_user(
   page: Page,
   user: TestUser,
 ): Promise<void> {
-  console.log(`Logging in user: ${user.email}`)
+  console.log(`logging in user: ${user.email}`)
   await page.goto("/login")
 
   // Fill the login form using input IDs for reliability
@@ -109,7 +109,7 @@ export async function login_test_user(
 
   // Wait for redirect to /properties
   await page.waitForURL(/\/properties/, { timeout: 15000 })
-  console.log(`Login complete for: ${user.email}`)
+  console.log(`login complete for: ${user.email}`)
 }
 
 /**
@@ -121,7 +121,7 @@ export async function authenticate_test_user(
   user: TestUser,
   auth_file: string,
 ): Promise<void> {
-  console.log(`Authenticating user: ${user.email}`)
+  console.log(`authenticating user: ${user.email}`)
 
   // Try to login first (user might already exist from a previous run)
   await page.goto("/login")
@@ -139,7 +139,7 @@ export async function authenticate_test_user(
   try {
     await page.waitForURL(/\/properties/, { timeout: 5000 })
     console.log(
-      `User ${user.email} already exists, skipping signup`,
+      `user ${user.email} already exists, skipping signup`,
     )
   } catch {
     await signup_test_user(page, user)
@@ -152,5 +152,5 @@ export async function authenticate_test_user(
     .context()
     .storageState({ path: path.join(auth_dir, auth_file) })
 
-  console.log(`Saved auth state to e2e/.auth/${auth_file}`)
+  console.log(`saved auth state to e2e/.auth/${auth_file}`)
 }

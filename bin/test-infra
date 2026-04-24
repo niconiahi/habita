@@ -13,50 +13,50 @@ log_info() { echo -e "${YELLOW}→${NC} $1"; }
 cd "$REPO_ROOT"
 
 echo ""
-echo "=== Testing Habita Infrastructure ==="
+echo "=== testing habita infrastructure ==="
 echo ""
 
-log_info "Stopping existing containers..."
+log_info "stopping existing containers"
 "$REPO_ROOT/bin/down"
 
-log_info "Creating network + volumes..."
+log_info "creating network + volumes"
 docker network create internal 2>/dev/null || true
 docker volume create backups 2>/dev/null || true
-log_ok "Network ready"
+log_ok "network ready"
 
-log_info "Starting storage..."
+log_info "starting storage"
 compose storage up -d
-log_info "Waiting for db..."
+log_info "waiting for db"
 wait_healthy database 60 && log_ok "db is healthy" || { log_fail "db failed"; exit 1; }
-log_info "Waiting for kv..."
+log_info "waiting for kv"
 wait_healthy cache 60 && log_ok "kv is healthy" || { log_fail "kv failed"; exit 1; }
 
-log_info "Starting app..."
+log_info "starting app"
 compose app up -d
 sleep 5
 docker ps --filter "name=app-svelte-1" --format "{{.Status}}" | grep -q "Up" && log_ok "svelte running" || { log_fail "svelte failed"; exit 1; }
 
-log_info "Starting api..."
+log_info "starting api"
 compose api up -d
 wait_healthy "" 60 && log_ok "go healthy" || log_info "go still starting (no habita.role label match)"
 
-log_info "Starting media..."
+log_info "starting media"
 compose media up -d
 sleep 5
 log_ok "media started"
 
-log_info "Starting gateway..."
+log_info "starting gateway"
 compose gateway up -d
 sleep 3
 docker ps --filter "name=gateway-caddy-1" --format "{{.Status}}" | grep -q "Up" && log_ok "caddy running" || { log_fail "caddy failed"; exit 1; }
 
-log_info "Starting scheduler..."
+log_info "starting scheduler"
 compose scheduler up -d
 sleep 2
 docker ps --filter "name=scheduler-ofelia-1" --format "{{.Status}}" | grep -q "Up" && log_ok "ofelia running" || { log_fail "ofelia failed"; exit 1; }
 
 echo ""
-echo "=== Summary ==="
+echo "=== summary ==="
 echo ""
 log_ok "storage (db, kv, object)"
 log_ok "app     (svelte)"
@@ -65,6 +65,6 @@ log_ok "media   (image)"
 log_ok "gateway (caddy)"
 log_ok "scheduler (ofelia)"
 echo ""
-log_info "Skipped: observability, geo, broker, consumer, pdf, status (optional)"
+log_info "skipped: observability, geo, broker, consumer, pdf, status (optional)"
 echo ""
-echo "To stop everything: just down"
+echo "to stop everything: just down"

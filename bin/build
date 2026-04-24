@@ -8,28 +8,28 @@ TAG=$(git rev-parse --short HEAD)
 
 case "$service" in
   svelte)
-    echo "Building niconiahi/habita:svelte-$TAG..."
+    echo "building niconiahi/habita:svelte-$TAG"
     docker build -t "niconiahi/habita:svelte-$TAG" -f "$REPO_ROOT/apps/web/Dockerfile" "$REPO_ROOT/apps/web"
-    echo "Pushing..."
+    echo "pushing"
     docker push "niconiahi/habita:svelte-$TAG"
-    echo "Done: niconiahi/habita:svelte-$TAG"
+    echo "done: niconiahi/habita:svelte-$TAG"
     ;;
   go)
-    echo "Building niconiahi/habita:go-$TAG..."
+    echo "building niconiahi/habita:go-$TAG"
     docker build -t "niconiahi/habita:go-$TAG" -f "$REPO_ROOT/apps/go/Dockerfile" "$REPO_ROOT/apps/go"
-    echo "Pushing..."
+    echo "pushing"
     docker push "niconiahi/habita:go-$TAG"
-    echo "Done: niconiahi/habita:go-$TAG"
+    echo "done: niconiahi/habita:go-$TAG"
     ;;
   consumer)
-    echo "Building niconiahi/habita:broker-$TAG..."
+    echo "building niconiahi/habita:broker-$TAG"
     docker build -t "niconiahi/habita:broker-$TAG" -f "$REPO_ROOT/apps/broker/config/Dockerfile" "$REPO_ROOT/apps/broker"
-    echo "Pushing..."
+    echo "pushing"
     docker push "niconiahi/habita:broker-$TAG"
-    echo "Done: niconiahi/habita:broker-$TAG"
+    echo "done: niconiahi/habita:broker-$TAG"
     ;;
   *)
-    echo "Unknown service: $service. Available: svelte, go, consumer"
+    echo "unknown service: $service. available: svelte, go, consumer"
     exit 1
     ;;
 esac

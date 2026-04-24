@@ -38,7 +38,7 @@ const server = createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/pdf" })
       res.end(pdf)
     } catch (err) {
-      console.error("PDF generation error:", err)
+      console.error("pdf generation error:", err)
       res.writeHead(500, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ error: "PDF generation failed" }))
     }
@@ -49,5 +49,5 @@ const server = createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`PDF service listening on port ${PORT}`)
+  console.log(`pdf service listening on port ${PORT}`)
 })

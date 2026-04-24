@@ -80,3 +80,33 @@ if (retry_count < 3) { ... }
 const retry_count = get_retry_count(message.headers)
 if (retry_count < MAX_RETRIES) { ... }
 ```
+
+- Verbose log messages (console.log, echo) in scripts, seeds, seeders, and bin commands must follow these rules:
+  - all lowercase
+  - no trailing "..."
+  - no numbered steps (like "1.", "2.")
+  - no contractions ("don't" → "do not", "can't" → "cannot")
+
+```ts
+// bad
+console.log("Creating user...")
+console.log("1. Stopping app services...")
+console.log("Setup complete. Don't forget to restart.")
+
+// good
+console.log(`creating user ${user.id}`)
+console.log("stopping app services")
+console.log("setup complete. do not forget to restart")
+```
+
+```bash
+# bad
+echo "Starting storage..."
+echo "1. Stopping database..."
+echo "Done."
+
+# good
+echo "starting storage"
+echo "stopping database"
+echo "done"
+```

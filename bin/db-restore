@@ -3,7 +3,7 @@ source "$(dirname "$0")/lib.sh"
 
 TIMESTAMP="${1:-}"
 
-echo "=== Database Point-in-Time Recovery ==="
+echo "=== database point-in-time recovery ==="
 echo ""
 
 if [[ -z "$TIMESTAMP" ]]; then
@@ -19,36 +19,36 @@ if [[ -z "$TIMESTAMP" ]]; then
   exit 1
 fi
 
-echo "WARNING: This will stop the database, restore to '$TIMESTAMP', and restart."
-echo "Press Ctrl+C to cancel, or Enter to continue..."
+echo "warning: this will stop the database, restore to '$TIMESTAMP', and restart"
+echo "press ctrl+c to cancel, or enter to continue"
 read -r
 
 DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
 
 echo ""
-echo "1. Stopping app services..."
+echo "stopping app services"
 compose app down
 compose consumer down
 compose api down
 
 echo ""
-echo "2. Stopping database..."
+echo "stopping database"
 compose storage stop db
 
 echo ""
-echo "3. Removing current data volume..."
+echo "removing current data volume"
 docker volume rm storage_db 2>/dev/null || true
 
 echo ""
-echo "4. Starting fresh database container..."
+echo "starting fresh database container"
 compose storage up -d db
-echo "   Waiting for db to start..."
+echo "   waiting for db to start"
 sleep 5
 
 DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
 
 echo ""
-echo "5. Fetching backup and WAL files..."
+echo "fetching backup and wal files"
 if [[ "$TIMESTAMP" == "latest" ]]; then
   docker exec "$DB_CONTAINER" wal-g backup-fetch LATEST
 else
@@ -65,16 +65,16 @@ EOF
 fi
 
 echo ""
-echo "6. Restarting database with recovery..."
+echo "restarting database with recovery"
 compose storage restart db
-echo "   Waiting for recovery to complete..."
-wait_healthy database 120 || { echo "Recovery failed — db not healthy"; exit 1; }
+echo "   waiting for recovery to complete"
+wait_healthy database 120 || { echo "recovery failed — db not healthy"; exit 1; }
 
 echo ""
-echo "7. Restarting app services..."
+echo "restarting app services"
 compose app up -d
 compose consumer up -d
 compose api up -d
 
 echo ""
-echo "Recovery complete. Verify your data."
+echo "recovery complete. verify your data"

@@ -4,32 +4,32 @@ source "$(dirname "$0")/lib.sh"
 docker network create internal 2>/dev/null || true
 docker volume create backups 2>/dev/null || true
 
-echo "Starting storage..."
+echo "starting storage"
 compose storage up -d
-echo "Waiting for db..."
+echo "waiting for db"
 wait_healthy database 60 || { echo "db failed health check"; exit 1; }
 
-echo "Starting app..."
+echo "starting app"
 compose app up -d
-echo "Starting consumers..."
+echo "starting consumers"
 compose consumer up -d
-echo "Starting api..."
+echo "starting api"
 compose api up -d
-echo "Starting media..."
+echo "starting media"
 compose media up -d
-echo "Starting gateway..."
+echo "starting gateway"
 compose gateway up -d
-echo "Starting scheduler..."
+echo "starting scheduler"
 compose scheduler up -d
-echo "Starting broker..."
+echo "starting broker"
 compose broker up -d
-echo "Starting pdf..."
+echo "starting pdf"
 compose pdf up -d
-echo "Starting status..."
+echo "starting status"
 compose status up -d
-echo "Starting geo..."
+echo "starting geo"
 compose geo up -d
-echo "Starting autoheal..."
+echo "starting autoheal"
 compose autoheal up -d
 
-echo "Done."
+echo "done"

@@ -4,7 +4,7 @@ import fs from "fs"
 import devtoolsJson from "vite-plugin-devtools-json"
 import { defineConfig, type Plugin } from "vitest/config"
 
-function fontCachePlugin(): Plugin {
+function font_cache_plugin(): Plugin {
   return {
     name: "font-cache",
     configureServer(server) {
@@ -25,7 +25,7 @@ function fontCachePlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [sveltekit(), devtoolsJson(), fontCachePlugin()],
+  plugins: [sveltekit(), devtoolsJson(), font_cache_plugin()],
   server: {
     host: "0.0.0.0",
     port: 5174,
@@ -35,13 +35,13 @@ export default defineConfig({
     },
     https: fs.existsSync("/certs/dev.habita.rent.pem")
       ? {
-          cert: fs.readFileSync(
-            "/certs/dev.habita.rent.pem",
-          ),
-          key: fs.readFileSync(
-            "/certs/dev.habita.rent-key.pem",
-          ),
-        }
+        cert: fs.readFileSync(
+          "/certs/dev.habita.rent.pem",
+        ),
+        key: fs.readFileSync(
+          "/certs/dev.habita.rent-key.pem",
+        ),
+      }
       : undefined,
 
     hmr: {
