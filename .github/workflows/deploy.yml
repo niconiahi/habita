@@ -38,7 +38,7 @@ jobs:
     if: needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.image.outputs.ref }}
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,14 +67,14 @@ jobs:
 
       - name: Set image output
         id: image
-        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+        run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
 
   build-go:
     needs: changes
     if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.image.outputs.ref }}
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -100,14 +100,14 @@ jobs:
 
       - name: Set image output
         id: image
-        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+        run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
 
   build-broker:
     needs: changes
     if: needs.changes.outputs.broker == 'true'
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.image.outputs.ref }}
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -133,7 +133,7 @@ jobs:
 
       - name: Set image output
         id: image
-        run: echo "ref=${{ env.IMAGE_PREFIX }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+        run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
 
   update-manifest:
     needs: [build-svelte, build-go, build-broker]
@@ -146,9 +146,13 @@ jobs:
 
       - name: Update versions.json
         run: |
-          SVELTE_IMAGE="${{ needs.build-svelte.outputs.image }}"
-          GO_IMAGE="${{ needs.build-go.outputs.image }}"
-          BROKER_IMAGE="${{ needs.build-broker.outputs.image }}"
+          SVELTE_DIGEST="${{ needs.build-svelte.outputs.digest }}"
+          GO_DIGEST="${{ needs.build-go.outputs.digest }}"
+          BROKER_DIGEST="${{ needs.build-broker.outputs.digest }}"
+
+          SVELTE_IMAGE="${SVELTE_DIGEST:+${IMAGE_PREFIX}@${SVELTE_DIGEST}}"
+          GO_IMAGE="${GO_DIGEST:+${IMAGE_PREFIX}@${GO_DIGEST}}"
+          BROKER_IMAGE="${BROKER_DIGEST:+${IMAGE_PREFIX}@${BROKER_DIGEST}}"
 
           if [[ -n "$SVELTE_IMAGE" ]]; then
             jq --arg v "$SVELTE_IMAGE" '.svelte = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
