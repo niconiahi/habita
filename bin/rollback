@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 source "$(dirname "$0")/lib.sh"
 
-[[ $# -lt 1 ]] && { echo "Usage: just rollback <service> [image_tag]"; exit 1; }
+[[ $# -lt 1 ]] && { echo "Usage: just rollback <service> [image]"; exit 1; }
 
 service="$1"
-tag="${2:-}"
+image="${2:-}"
 
-if [[ -n "$tag" ]]; then
-  echo "rolling back $service to tag: $tag"
+if [[ -n "$image" ]]; then
+  echo "rolling back $service to image: $image"
   case "$service" in
-    app)      SVELTE_TAG="$tag" compose app up -d --force-recreate svelte ;;
-    api)      GO_TAG="$tag" compose api up -d --force-recreate go ;;
-    consumer) BROKER_TAG="$tag" compose consumer up -d --force-recreate ;;
-    *)        echo "tag rollback only supports app, api, consumer"; exit 1 ;;
+    app)      SVELTE_IMAGE="$image" compose app up -d --force-recreate svelte ;;
+    api)      GO_IMAGE="$image" compose api up -d --force-recreate go ;;
+    consumer) BROKER_IMAGE="$image" compose consumer up -d --force-recreate ;;
+    *)        echo "image rollback only supports app, api, consumer"; exit 1 ;;
   esac
 else
   echo "rolling back $service to previous git state"

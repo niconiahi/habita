@@ -2,7 +2,7 @@
 
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
-versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
+manifest_env := `bin/load-manifest`
 
 # Open psql shell
 shell:
@@ -10,19 +10,19 @@ shell:
 
 # Run pending migrations
 migrate:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:latest
+  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:latest
 
 # Regenerate database types from current schema
 types:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:types
+  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:types
 
 # Run database seeds
 seed:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:seed
+  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:seed
 
 # Create a new migration file (e.g., just db make add_users_table)
 make name:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:make {{name}}
+  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:make {{name}}
 
 # Reset database: tear down storage + app, remove volumes, restart fresh with migrations and seeds
 # Usage: ENV=production just db reset
@@ -32,8 +32,8 @@ reset:
 
   echo "Environment: {{env}}"
 
-  STORAGE_COMPOSE="docker compose -p storage {{versions_env}} -f {{infra}}/storage/docker-compose.yml"
-  APP_COMPOSE="docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml"
+  STORAGE_COMPOSE="docker compose -p storage {{manifest_env}} -f {{infra}}/storage/docker-compose.yml"
+  APP_COMPOSE="docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml"
   RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""

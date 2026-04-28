@@ -3,7 +3,7 @@
 env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
 infra := "infra/" + env
 
-versions_env := if path_exists(infra + "/versions.env") == "true" { "--env-file " + infra + "/versions.env" } else { "" }
+manifest_env := `bin/load-manifest`
 
 # Deploy specific services: ENV=production just deploy push app api scheduler
 push +services:
@@ -57,18 +57,18 @@ push +services:
     case $svc in
       app)
         echo "→ Deploying app (pull, migrate, restart)..."
-        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml pull svelte
-        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
-        docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
+        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml pull svelte
+        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
+        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
         ;;
       consumer)
         echo "→ Deploying consumers (email, subscription, escalation)..."
-        docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml up -d --force-recreate --pull always
+        docker compose -p consumer {{manifest_env}} -f {{infra}}/consumer/docker-compose.yml up -d --force-recreate --pull always
         ;;
       api)
         echo "→ Deploying api (pull, restart)..."
-        docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull go
-        docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
+        docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml pull go
+        docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
         ;;
       scheduler)
         echo "→ Deploying scheduler..."
@@ -121,27 +121,27 @@ push +services:
 
 # Pull latest images (for production deploys)
 pull:
-  docker compose -p app {{versions_env}} -f {{infra}}/app/docker-compose.yml pull
-  docker compose -p api {{versions_env}} -f {{infra}}/api/docker-compose.yml pull
-  docker compose -p consumer {{versions_env}} -f {{infra}}/consumer/docker-compose.yml pull
+  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml pull
+  docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml pull
+  docker compose -p consumer {{manifest_env}} -f {{infra}}/consumer/docker-compose.yml pull
 
-# Deploy specific svelte version (production only)
-tag-svelte tag:
-  SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
-  SVELTE_TAG={{tag}} docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
-  @echo "Deployed svelte with tag: {{tag}}"
+# Deploy specific svelte image (production only)
+image-svelte image:
+  SVELTE_IMAGE={{image}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
+  SVELTE_IMAGE={{image}} docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+  @echo "Deployed svelte: {{image}}"
 
-# Deploy specific broker version (production only)
-tag-broker tag:
-  BROKER_TAG={{tag}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml pull
-  BROKER_TAG={{tag}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml up -d
-  @echo "Deployed broker with tag: {{tag}}"
+# Deploy specific broker image (production only)
+image-broker image:
+  BROKER_IMAGE={{image}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml pull
+  BROKER_IMAGE={{image}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml up -d
+  @echo "Deployed broker: {{image}}"
 
-# Deploy specific go version (production only)
-tag-go tag:
-  GO_TAG={{tag}} docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
-  GO_TAG={{tag}} docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
-  @echo "Deployed go with tag: {{tag}}"
+# Deploy specific go image (production only)
+image-go image:
+  GO_IMAGE={{image}} docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
+  GO_IMAGE={{image}} docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+  @echo "Deployed go: {{image}}"
 
 # Rollback to previous commit(s) and redeploy
 rollback commits="1" +services="app api":

@@ -995,36 +995,12 @@ All services join the `internal` network, created once by `just infra-setup`. Th
 
 ---
 
-## `dco` — Our compose wrapper
-
-Every `docker compose` command needs `-p <project> -f <path>/docker-compose.yml` and optionally `--env-file`. That's verbose. `dco` wraps it:
-
-```bash
-# Instead of:
-docker compose -p app --env-file infra/development/versions.env -f infra/development/app/docker-compose.yml run --rm svelte pnpm install
-
-# You write:
-dco app svelte run --rm pnpm install
-```
-
-**Syntax:** `dco <stack> <service> <subcommand> [flags] [args]`
-
-`dco` automatically:
-- Detects environment (development vs production based on directory)
-- Finds the correct compose file for the stack
-- Loads `versions.env` if it exists
-- Places flags before the service name (so `--rm`, `-f`, `-e` go in the right position)
-
-**Available stacks:** `app`, `api`, `gateway`, `media`, `geo`, `scheduler`, `broker`, `obs`
-
----
-
 ## `just` — Our task runner
 
-`just` recipes wrap `dco` (and `dco` wraps `docker compose`). This is the only interface you should use:
+`just` recipes wrap `docker compose`. This is the only interface you should use:
 
 ```
-you → just → dco → docker compose → Docker engine → containers
+you → just → docker compose → Docker engine → containers
 ```
 
 See the CLI skill (`.claude/skills/cli/SKILL.md`) for the full recipe reference.
