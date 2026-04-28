@@ -20,7 +20,6 @@ import { CONTRACT_STATE } from "../../src/lib/contract_state"
 import { CONTRACT_TYPE } from "../../src/lib/contract_type"
 import { COURT } from "../../src/lib/court"
 import { PROPERTY_DESTINY } from "../../src/lib/property_destiny"
-import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
 import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
@@ -176,7 +175,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     code: "ABL-H-001",
   })
 
-  // Add 6+ photos (using the 2 available files multiple times to simulate variety)
+  // Add 6+ room photos (using the 2 available files multiple times to simulate variety)
   const photo1_id = await seeder.upload_file(
     compose_file_path("property_image_1.webp"),
   )
@@ -184,16 +183,8 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     compose_file_path("property_image_2.webp"),
   )
 
-  await seeder.add_property_file(
-    property_id,
-    photo1_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
-  await seeder.add_property_file(
-    property_id,
-    photo2_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_id, photo1_id)
+  await seeder.add_room_file(bedroom1_id, photo2_id)
   // Upload more copies to get 6+ photos
   const photo3_id = await seeder.upload_file(
     compose_file_path("property_image_1.webp"),
@@ -208,26 +199,10 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     compose_file_path("property_image_2.webp"),
   )
 
-  await seeder.add_property_file(
-    property_id,
-    photo3_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
-  await seeder.add_property_file(
-    property_id,
-    photo4_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
-  await seeder.add_property_file(
-    property_id,
-    photo5_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
-  await seeder.add_property_file(
-    property_id,
-    photo6_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(bedroom2_id, photo3_id)
+  await seeder.add_room_file(bathroom_id, photo4_id)
+  await seeder.add_room_file(kitchen_id, photo5_id)
+  await seeder.add_room_file(living_room_id, photo6_id)
 
   // Add tags
   await seeder.add_property_tag(

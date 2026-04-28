@@ -21,7 +21,6 @@ import { CONTRACT_STATE } from "../../src/lib/contract_state"
 import { CONTRACT_TYPE } from "../../src/lib/contract_type"
 import { COURT } from "../../src/lib/court"
 import { PROPERTY_DESTINY } from "../../src/lib/property_destiny"
-import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
 import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
@@ -158,7 +157,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  await seeder.add_room(ground_floor_1_id, {
+  const living_room_1_id = await seeder.add_room(ground_floor_1_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "4.5",
     length: "4.0",
@@ -177,11 +176,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     type: SERVICE_TYPE.LIGHT,
     code: "T-G01-001",
   })
-  await seeder.add_property_file(
-    property1_id,
-    photo_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_1_id, photo_id)
   await seeder.set_manager(property1_id, manager1_id)
   await seeder.set_owner(property1_id, owner1_id)
   // Add tags
@@ -257,7 +252,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  await seeder.add_room(ground_floor_2_id, {
+  const living_room_2_id = await seeder.add_room(ground_floor_2_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "5.0",
     length: "4.5",
@@ -276,11 +271,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     type: SERVICE_TYPE.LIGHT,
     code: "T-G01-002",
   })
-  await seeder.add_property_file(
-    property2_id,
-    photo_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_2_id, photo_id)
   await seeder.set_manager(property2_id, manager1_id)
   await seeder.set_owner(property2_id, owner2_id)
   // Add tags
@@ -331,7 +322,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  await seeder.add_room(ground_floor_3_id, {
+  const living_room_3_id = await seeder.add_room(ground_floor_3_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "6.0",
     length: "5.0",
@@ -364,11 +355,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     type: SERVICE_TYPE.GAS,
     code: "G-G02-001",
   })
-  await seeder.add_property_file(
-    property3_id,
-    photo_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_3_id, photo_id)
   await seeder.set_manager(property3_id, manager2_id)
   await seeder.set_owner(property3_id, owner3_id)
   // Add tags
@@ -451,7 +438,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  await seeder.add_room(ground_floor_4_id, {
+  const living_room_4_id = await seeder.add_room(ground_floor_4_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "8.0",
     length: "6.0",
@@ -465,11 +452,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     type: SERVICE_TYPE.LIGHT,
     code: "T-G03-001",
   })
-  await seeder.add_property_file(
-    property4_id,
-    photo_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_4_id, photo_id)
   await seeder.set_manager(property4_id, manager3_id)
   await seeder.set_owner(property4_id, owner4_id)
   // Add tags

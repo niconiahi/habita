@@ -10,10 +10,18 @@
     get_property_tag_type_label,
     type PropertyTagType,
   } from "$lib/property_tag_type"
-  import { ROOM_TYPE } from "$lib/room_type"
+  import {
+    ROOM_TYPE,
+    display_room_type,
+  } from "$lib/room_type"
   import { get_service_type_label } from "$lib/service"
   import { get_warranty_type_label } from "$lib/warranty_type"
   import PropertyMap from "$lib/components/PropertyMap.svelte"
+  import PhotoViewer from "$lib/components/PhotoViewer.svelte"
+  import type {
+    ViewerGroup,
+  } from "$lib/components/PhotoViewer.svelte"
+  import { display_floor_number } from "$lib/floor_number"
   import Visualizer from "./components/Visualizer.svelte"
   import AdminCard from "./components/AdminCard.svelte"
   import OrganizationCard from "./components/OrganizationCard.svelte"
@@ -80,6 +88,42 @@
   ]
 
   let active_tab = $state("Condiciones")
+
+  let open_viewer = $state<
+    (photo_index: number, group_index?: number) => void
+  >()
+
+  const viewer_groups: ViewerGroup[] = $derived(
+    data.property.floors.map((floor) => ({
+      label: display_floor_number(floor.number),
+      photos: floor.rooms.flatMap((room) =>
+        room.photos.map((photo) => ({
+          src: photo.src,
+          basename: photo.basename,
+          label: display_room_type(room.type),
+          width: room.width,
+          length: room.length,
+        })),
+      ),
+    })),
+  )
+
+  function handle_gallery_click(flat_index: number) {
+    let remaining = flat_index
+    for (
+      let group_index = 0;
+      group_index < viewer_groups.length;
+      group_index++
+    ) {
+      const group_size =
+        viewer_groups[group_index].photos.length
+      if (remaining < group_size) {
+        open_viewer?.(remaining, group_index)
+        return
+      }
+      remaining -= group_size
+    }
+  }
 </script>
 
 {#snippet Gallery()}
@@ -92,20 +136,26 @@
     class:five={image_count >= 5}
   >
     {#each data.property.images.slice(0, 5) as image, index (`image_${image.id}_${index}`)}
-      <img
-        class="gallery-image"
+      <button
+        type="button"
+        class="gallery-trigger"
         class:main={image_count >= 5 && index === 0}
-        alt={image.alt}
-        src={image.props.src}
-        srcset={image.props.srcSet}
-        sizes={image.props.sizes}
-        onerror={(event) => {
-          const target =
-            event.currentTarget as HTMLImageElement
-          target.srcset = ""
-          target.src = "/placeholder.svg"
-        }}
-      />
+        onclick={() => handle_gallery_click(index)}
+      >
+        <img
+          class="gallery-image"
+          alt={image.alt}
+          src={image.props.src}
+          srcset={image.props.srcSet}
+          sizes={image.props.sizes}
+          onerror={(event) => {
+            const target =
+              event.currentTarget as HTMLImageElement
+            target.srcset = ""
+            target.src = "/placeholder.svg"
+          }}
+        />
+      </button>
     {/each}
   </div>
 {/snippet}
@@ -266,6 +316,8 @@
   </div>
 </Content.Root>
 
+<PhotoViewer groups={viewer_groups} bind:open={open_viewer} />
+
 <style>
   .gallery {
     display: grid;
@@ -295,16 +347,22 @@
     grid-template-rows: 1fr 1fr;
   }
 
+  .gallery-trigger {
+    all: unset;
+    cursor: pointer;
+    min-height: 0;
+  }
+
+  .gallery-trigger.main {
+    grid-row: 1 / -1;
+  }
+
   .gallery-image {
     width: 100%;
     height: 100%;
-    min-height: 0;
     object-fit: cover;
     border-radius: var(--dimension-radius-lg);
-  }
-
-  .gallery-image.main {
-    grid-row: 1 / -1;
+    display: block;
   }
 
   .layout {

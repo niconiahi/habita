@@ -33,13 +33,33 @@ export async function fetch_property(id: number) {
                   "room_map.room_id",
                   "room.id",
                 )
-                .select([
+                .select((eb) => [
                   "room.id",
                   "room.type",
                   "room.width",
                   "room.length",
                   "room_map.position_x",
                   "room_map.position_y",
+                  jsonArrayFrom(
+                    eb
+                      .selectFrom("room_file")
+                      .innerJoin(
+                        "file",
+                        "file.id",
+                        "room_file.file_id",
+                      )
+                      .select([
+                        "room_file.id as room_file_id",
+                        "file.id",
+                        "file.basename",
+                        "file.hash",
+                      ])
+                      .whereRef(
+                        "room_file.room_id",
+                        "=",
+                        "room.id",
+                      ),
+                  ).as("photos"),
                 ])
                 .whereRef("room.floor_id", "=", "floor.id"),
             ).as("rooms"),
@@ -171,26 +191,6 @@ export async function fetch_property(id: number) {
             "property_access.type",
           ]),
       ).as("members"),
-      jsonArrayFrom(
-        eb
-          .selectFrom("property_file")
-          .innerJoin(
-            "file",
-            "file.id",
-            "property_file.file_id",
-          )
-          .select([
-            "file.basename",
-            "file.id",
-            "file.hash",
-            "property_file.type",
-          ])
-          .whereRef(
-            "property_file.property_id",
-            "=",
-            "property.id",
-          ),
-      ).as("images"),
       jsonArrayFrom(
         eb
           .selectFrom("property_tag")

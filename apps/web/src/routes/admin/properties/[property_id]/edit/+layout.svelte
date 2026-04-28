@@ -12,7 +12,6 @@
     { route: "visits", label: "visitas" },
     { route: "contracts", label: "contratos" },
     { route: "layout", label: "disposicion" },
-    { route: "photos", label: "fotos" },
   ] as const
 
   let {

@@ -38,6 +38,22 @@ async function get_file_property_id(
     )
     .unionAll(
       query_builder
+        .selectFrom("room_file")
+        .innerJoin("room", "room.id", "room_file.room_id")
+        .innerJoin(
+          "floor",
+          "floor.id",
+          "room.floor_id",
+        )
+        .select(
+          sql<number | null>`floor.property_id`.as(
+            "property_id",
+          ),
+        )
+        .where("room_file.file_id", "=", file_id),
+    )
+    .unionAll(
+      query_builder
         .selectFrom("contract_item_file")
         .innerJoin(
           "contract_item",

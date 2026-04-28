@@ -1,4 +1,3 @@
-export * from "./create_property_file.server"
 export * from "./create_room.server"
 export * from "./create_service.server"
 export * from "./destroy_room.server"

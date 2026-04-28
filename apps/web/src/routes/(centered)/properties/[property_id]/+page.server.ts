@@ -40,18 +40,44 @@ export const load: PageServerLoad = async ({
   const organization = manager
     ? await get_user_realtor_organization(manager.id)
     : undefined
-  const images_with_props = property.images.map(
-    (image, index) => ({
-      ...image,
-      props: get_img_props(image.id, image.hash, {
-        widths: [600, 1200],
-        sizes: ["(max-width: 900px) 600px, 1200px"],
-      }),
-      alt: `Foto de la propiedad - imagen ${index + 1}`,
+  const floors_with_photo_urls = property.floors.map(
+    (floor) => ({
+      ...floor,
+      rooms: floor.rooms.map((room) => ({
+        ...room,
+        photos: room.photos.map((photo) => ({
+          ...photo,
+          src: get_img_props(photo.id, photo.hash, {
+            widths: [600, 1200],
+            sizes: [
+              "(max-width: 900px) 600px, 1200px",
+            ],
+          }).src,
+        })),
+      })),
     }),
   )
+  const images = floors_with_photo_urls.flatMap(
+    (floor) =>
+      floor.rooms.flatMap((room) =>
+        room.photos.map((photo) => ({
+          ...photo,
+          props: get_img_props(photo.id, photo.hash, {
+            widths: [600, 1200],
+            sizes: [
+              "(max-width: 900px) 600px, 1200px",
+            ],
+          }),
+          alt: `Foto de la propiedad - ${photo.basename}`,
+        })),
+      ),
+  )
   return {
-    property: { ...property, images: images_with_props },
+    property: {
+      ...property,
+      floors: floors_with_photo_urls,
+      images,
+    },
     has_credit_report,
     manager,
     organization,
