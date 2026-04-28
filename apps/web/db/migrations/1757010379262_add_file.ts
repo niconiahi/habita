@@ -73,6 +73,21 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
+    .createTable("room_file")
+    .addColumn("id", "serial", (col) =>
+      col.primaryKey().notNull(),
+    )
+    .addColumn("room_id", "integer", (col) => col.notNull())
+    .addColumn("file_id", "integer", (col) => col.notNull())
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .addColumn("updated_at", "timestamptz", (col) =>
+      col.notNull(),
+    )
+    .execute()
+
+  await db.schema
     .alterTable("contract_file")
     .addForeignKeyConstraint(
       "contract_file_contract_id_contract_id_fk",
@@ -132,9 +147,43 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on("property_file")
     .column("file_id")
     .execute()
+  await db.schema
+    .alterTable("room_file")
+    .addForeignKeyConstraint(
+      "room_file_room_id_room_id_fk",
+      ["room_id"],
+      "room",
+      ["id"],
+      (cb) => cb.onDelete("cascade"),
+    )
+    .execute()
+  await db.schema
+    .alterTable("room_file")
+    .addForeignKeyConstraint(
+      "room_file_file_id_file_id_fk",
+      ["file_id"],
+      "file",
+      ["id"],
+      (cb) => cb.onDelete("cascade"),
+    )
+    .execute()
+  await db.schema
+    .createIndex("idx_room_file_room_id")
+    .on("room_file")
+    .column("room_id")
+    .execute()
+  await db.schema
+    .createIndex("idx_room_file_file_id")
+    .on("room_file")
+    .column("file_id")
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .dropTable("room_file")
+    .ifExists()
+    .execute()
   await db.schema
     .dropTable("contract_file")
     .ifExists()

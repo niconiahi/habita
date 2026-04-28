@@ -10,10 +10,11 @@ export const ACTION = {
   CREATE_SERVICE: "create_service",
   UPDATE_SERVICE: "update_service",
   DESTROY_SERVICE: "destroy_service",
-  CREATE_PROPERTY_FILE: "create_property_file",
   INVITE_LANDLORD: "invite_landlord",
   UPDATE_DESTINIES: "update_destinies",
   TOGGLE_TAG: "toggle_tag",
   UPDATE_CONSTRUCTION_YEAR: "update_construction_year",
   REORDER_FLOORS: "reorder_floors",
+  CREATE_ROOM_FILE: "create_room_file",
+  DESTROY_ROOM_FILE: "destroy_room_file",
 } as const

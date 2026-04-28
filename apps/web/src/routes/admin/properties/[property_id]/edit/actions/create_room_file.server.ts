@@ -1,6 +1,6 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { PROPERTY_FILE_TYPE } from "$lib/property_file_type"
+import { ForceNumberSchema } from "$lib/force_number"
 import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
@@ -9,11 +9,11 @@ import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
   file: v.instance(File),
+  room_id: ForceNumberSchema,
 })
 
-export async function create_property_file(
+export async function create_room_file(
   form_data: FormData,
-  property_id: number,
 ) {
   const input_validation = v.safeParse(
     InputSchema,
@@ -22,7 +22,7 @@ export async function create_property_file(
   if (!input_validation.success) {
     return [
       {
-        create_property_file: {
+        create_room_file: {
           input: v.flatten(input_validation.issues),
         },
       },
@@ -35,11 +35,10 @@ export async function create_property_file(
     query_builder.transaction().execute(async (tx) => {
       const file_id = await upsert_file(input.file, tx)
       await tx
-        .insertInto("property_file")
+        .insertInto("room_file")
         .values({
-          type: PROPERTY_FILE_TYPE.PHOTO,
           file_id,
-          property_id,
+          room_id: input.room_id,
           created_at: now,
           updated_at: now,
         })
@@ -50,14 +49,14 @@ export async function create_property_file(
   if (transaction_error) {
     logger.error(
       transaction_error.message,
-      { property_id },
+      { room_id: input.room_id },
       transaction_error,
     )
     return [
       {
-        create_property_file: {
+        create_room_file: {
           execution:
-            "Error al crear el archivo de la propiedad",
+            "Error al agregar la foto a la habitación",
         },
       },
       null,

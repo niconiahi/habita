@@ -12,6 +12,8 @@ import { update_floor } from "../actions/update_floor.server"
 import { update_room } from "../actions/update_room.server"
 import { update_room_positions } from "../actions/update_room_positions.server"
 import { reorder_floors } from "../actions/reorder_floors.server"
+import { create_room_file } from "../actions/create_room_file.server"
+import { destroy_room_file } from "../actions/destroy_room_file.server"
 
 export const actions: Actions = {
   [ACTION.CREATE_FLOOR]: async ({
@@ -215,6 +217,54 @@ export const actions: Actions = {
     )
     if (reorder_floors_errors) {
       return { errors: reorder_floors_errors }
+    }
+    return null
+  },
+  [ACTION.CREATE_ROOM_FILE]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    require_authentication(locals)
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [create_room_file_errors] =
+      await create_room_file(form_data)
+    if (create_room_file_errors) {
+      return { errors: create_room_file_errors }
+    }
+    return null
+  },
+  [ACTION.DESTROY_ROOM_FILE]: async ({
+    request,
+    locals,
+    params,
+  }) => {
+    require_authentication(locals)
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    await require_edit_access(
+      request.headers,
+      locals.user.id,
+      property_id,
+      locals.session.activeOrganizationId,
+    )
+    const form_data = await request.formData()
+    const [destroy_room_file_errors] =
+      await destroy_room_file(form_data)
+    if (destroy_room_file_errors) {
+      return { errors: destroy_room_file_errors }
     }
     return null
   },

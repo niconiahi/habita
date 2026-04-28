@@ -6,6 +6,10 @@
   import Button from "$lib/components/Button.svelte"
   import SegmentedButton from "$lib/components/SegmentedButton.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
+  import PhotoViewer from "$lib/components/PhotoViewer.svelte"
+  import type {
+    ViewerGroup,
+  } from "$lib/components/PhotoViewer.svelte"
   import { display_floor_number } from "$lib/floor_number"
   import {
     display_room_type,
@@ -49,6 +53,20 @@
     positions: Map<number, { x: number; y: number }>,
   ) {
     room_positions = positions
+  }
+
+  function handle_add_photo_click(room_id: number) {
+    const input = document.getElementById(
+      `file_input_${room_id}`,
+    ) as HTMLInputElement
+    input?.click()
+  }
+
+  function handle_photo_change(room_id: number) {
+    const form = document.getElementById(
+      `photo_form_${room_id}`,
+    ) as HTMLFormElement
+    form?.requestSubmit()
   }
 
   // Floor drag-to-reorder
@@ -133,6 +151,51 @@
       ) as HTMLInputElement
       input.value = JSON.stringify(floors.map((f) => f.id))
       form.requestSubmit()
+    }
+  }
+
+  // Photo viewer
+  let open_viewer = $state<
+    (
+      photo_index: number,
+      group_index?: number,
+    ) => void
+  >()
+
+  const viewer_groups: ViewerGroup[] = $derived(
+    data.property.floors.map((floor) => ({
+      label: display_floor_number(floor.number),
+      photos: floor.rooms.flatMap((room) =>
+        room.photos.map((photo) => ({
+          src: `/files/${photo.id}`,
+          basename: photo.basename,
+          label: display_room_type(room.type),
+          width: room.width,
+          length: room.length,
+        })),
+      ),
+    })),
+  )
+
+  function handle_photo_viewer_open(
+    photo_room_file_id: number,
+  ) {
+    const floor_number_value = selected_floor_number()
+    const floor_index = data.property.floors.findIndex(
+      (f) => f.number === floor_number_value,
+    )
+    if (floor_index === -1) return
+
+    const floor = data.property.floors[floor_index]
+    let flat_index = 0
+    for (const room of floor.rooms) {
+      for (const photo of room.photos) {
+        if (photo.room_file_id === photo_room_file_id) {
+          open_viewer?.(flat_index, floor_index)
+          return
+        }
+        flat_index++
+      }
     }
   }
 </script>
@@ -278,8 +341,83 @@
                       ACTION.DESTROY_ROOM,
                     )}>Eliminar habitación</Button
                   >
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onclick={() =>
+                      handle_add_photo_click(room.id)}
+                    >Agregar fotos</Button
+                  >
                 </Formulary.Actions>
               </Formulary.Root>
+              {#if room.photos.length > 0}
+                <ul class="room-photos">
+                  {#each room.photos as photo (photo.room_file_id)}
+                    <li class="room-photo">
+                      <button
+                        type="button"
+                        class="photo-trigger"
+                        onclick={() =>
+                          handle_photo_viewer_open(
+                            photo.room_file_id,
+                          )}
+                      >
+                        <img
+                          src={`/files/${photo.id}`}
+                          alt={photo.basename}
+                        />
+                      </button>
+                      <form
+                        method="POST"
+                        action={compose_action(
+                          ACTION.DESTROY_ROOM_FILE,
+                        )}
+                        class="delete-photo-form"
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="id"
+                          value={photo.room_file_id}
+                        />
+                        <Button
+                          variant="secondary"
+                          squared
+                          type="submit"
+                          class="delete-photo-button"
+                          aria-label="Eliminar foto"
+                          >&#x2715;</Button
+                        >
+                      </form>
+                    </li>
+                  {/each}
+                </ul>
+              {/if}
+              <form
+                id={`photo_form_${room.id}`}
+                method="POST"
+                action={compose_action(
+                  ACTION.CREATE_ROOM_FILE,
+                )}
+                enctype="multipart/form-data"
+                class="hidden-form"
+                use:enhance
+              >
+                <input
+                  type="hidden"
+                  name="room_id"
+                  value={room.id}
+                />
+                <input
+                  id={`file_input_${room.id}`}
+                  type="file"
+                  name="file"
+                  accept="image/*"
+                  class="sr-only"
+                  onchange={() =>
+                    handle_photo_change(room.id)}
+                />
+              </form>
             </li>
           {/each}
         </ul>
@@ -376,6 +514,8 @@
 >
   <input type="hidden" name="floor_ids" value="" />
 </form>
+
+<PhotoViewer groups={viewer_groups} bind:open={open_viewer} />
 
 <style>
   .layout {
@@ -503,4 +643,60 @@
     color: var(--color-text-body);
     text-align: center;
   }
+
+  .room-photos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--dimension-spacing-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: var(--dimension-spacing-4);
+  }
+
+  .room-photo {
+    position: relative;
+  }
+
+  .photo-trigger {
+    all: unset;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .photo-trigger img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-radius: var(--dimension-radius-default);
+  }
+
+  .delete-photo-form {
+    display: contents;
+  }
+
+  :global(.delete-photo-button) {
+    position: absolute;
+    top: var(--dimension-spacing-1);
+    right: var(--dimension-spacing-1);
+  }
+
+  .hidden-form {
+    display: contents;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
 </style>

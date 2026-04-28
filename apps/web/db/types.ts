@@ -345,6 +345,14 @@ export interface Room {
   width: Numeric;
 }
 
+export interface RoomFile {
+  created_at: Timestamp;
+  file_id: number;
+  id: Generated<number>;
+  room_id: number;
+  updated_at: Timestamp;
+}
+
 export interface RoomMap {
   created_at: Timestamp;
   id: Generated<number>;
@@ -1089,6 +1097,7 @@ export interface DB {
   realtor: Realtor;
   receipt: Receipt;
   room: Room;
+  room_file: RoomFile;
   room_map: RoomMap;
   service: Service;
   session: Session;

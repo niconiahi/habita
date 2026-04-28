@@ -260,16 +260,6 @@ Intended use of a property.
 - `get_property_destiny_label(type: number | PropertyDestiny): string`
 - `get_property_destinies(): PropertyDestiny[]`
 
-## property_file_type.ts
-
-Types of files attached to properties.
-
-- `PROPERTY_FILE_TYPE` — `{ PHOTO: 0 }`
-- `PropertyFileTypeSchema` — Valibot picklist
-- `PropertyFileType` — type
-- `get_property_file_type_label(type: number | PropertyFileType): string`
-- `get_property_file_types(): PropertyFileType[]`
-
 ## property_state.ts
 
 Lifecycle state of a property listing.

@@ -4,12 +4,12 @@
 
 Requires auth + `require_edit_access()` (ACL). Fetches `property` via `fetch_property()`. Returns 404 if not found. Redirects to `/admin/properties` if property state is `RENTED`.
 
-## Actions (12 total)
+## Actions (13 total)
 
 - `UPDATE_LOCATION` — updates property location
 - `CREATE_ROOM` / `UPDATE_ROOM` / `DESTROY_ROOM` / `UPDATE_ROOM_POSITIONS` — full CRUD for rooms + drag-and-drop reordering
 - `CREATE_SERVICE` / `UPDATE_SERVICE` / `DESTROY_SERVICE` — CRUD for utility services
-- `CREATE_PROPERTY_FILE` — upload property images/files
+- `CREATE_ROOM_FILE` / `DESTROY_ROOM_FILE` — upload and delete room photos
 - `INVITE_LANDLORD` — sends invitation email to a landlord
 - `UPDATE_DESTINIES` — updates property destiny checkboxes
 - `TOGGLE_TAG` — toggles a property tag on/off

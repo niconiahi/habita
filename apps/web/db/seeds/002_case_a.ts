@@ -22,7 +22,6 @@ import { CONTRACT_STATE } from "../../src/lib/contract_state"
 import { CONTRACT_TYPE } from "../../src/lib/contract_type"
 import { COURT } from "../../src/lib/court"
 import { PROPERTY_DESTINY } from "../../src/lib/property_destiny"
-import { PROPERTY_FILE_TYPE } from "../../src/lib/property_file_type"
 import { PROPERTY_STATE } from "../../src/lib/property_state"
 import { PROPERTY_TAG_TYPE } from "../../src/lib/property_tag_type"
 import { PROPERTY_TYPE } from "../../src/lib/property_type"
@@ -113,12 +112,12 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
 
   // Add rooms
-  await seeder.add_room(ground_floor_id, {
+  const living_room_id = await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.LIVING_ROOM,
     width: "5.0",
     length: "4.5",
   })
-  await seeder.add_room(ground_floor_id, {
+  const bedroom_id = await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.0",
     length: "3.5",
@@ -148,23 +147,15 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     code: "ABL-345678",
   })
 
-  // Add property photos
+  // Add room photos
   const photo1_id = await seeder.upload_file(
     compose_file_path("property_image_1.webp"),
   )
   const photo2_id = await seeder.upload_file(
     compose_file_path("property_image_2.webp"),
   )
-  await seeder.add_property_file(
-    property_id,
-    photo1_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
-  await seeder.add_property_file(
-    property_id,
-    photo2_id,
-    PROPERTY_FILE_TYPE.PHOTO,
-  )
+  await seeder.add_room_file(living_room_id, photo1_id)
+  await seeder.add_room_file(bedroom_id, photo2_id)
 
   // Add tags
   await seeder.add_property_tag(
