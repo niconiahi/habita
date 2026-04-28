@@ -17,16 +17,19 @@ fi
 
 INFRA="$REPO_ROOT/infra"
 ENV_FILE="$INFRA/.env.$ENV_SUFFIX"
+MANIFEST_ENV=$("$REPO_ROOT/bin/load-manifest")
 
 # Compose command for a stack: compose <stack> <args...>
 # Merges base + env override automatically
 compose() {
   local stack="$1"
   shift
+  # shellcheck disable=SC2086
   docker compose \
     -p "$stack" \
     -f "$INFRA/$stack/docker-compose.yml" \
     -f "$INFRA/$stack/docker-compose.$ENV_SUFFIX.yml" \
+    $MANIFEST_ENV \
     "$@"
 }
 
