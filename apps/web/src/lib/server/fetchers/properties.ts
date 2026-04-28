@@ -106,23 +106,21 @@ export async function fetch_properties(
       ).as("contracts"),
       jsonArrayFrom(
         eb
-          .selectFrom("property_file")
+          .selectFrom("room_file")
           .innerJoin(
             "file",
             "file.id",
-            "property_file.file_id",
+            "room_file.file_id",
           )
-          .select([
-            "file.id",
-            "file.hash",
-            "property_file.type",
-          ])
+          .innerJoin("room", "room.id", "room_file.room_id")
+          .innerJoin("floor", "floor.id", "room.floor_id")
+          .select(["file.id", "file.hash"])
           .whereRef(
-            "property_file.property_id",
+            "floor.property_id",
             "=",
             "property.id",
           )
-          .orderBy("property_file.id", "asc"),
+          .orderBy("room_file.id", "asc"),
       ).as("images"),
     ])
     .where("property.state", "=", PROPERTY_STATE.PUBLISHED)
