@@ -1,11 +1,11 @@
 ---
 name: cli
-description: CLI conventions. Use always when running shell commands — covers just recipes, dco wrapper, and when to avoid raw CLI tools.
+description: CLI conventions. Use always when running shell commands — covers just recipes and when to avoid raw CLI tools.
 ---
 
 # CLI Conventions
 
-**Always use `just` first.** Only fall back to `dco` when no `just` recipe covers what you need and the task involves Docker. Never use raw `docker compose`, `npx`, or other CLI tools for project operations.
+**Always use `just`.** Never use raw `docker compose`, `npx`, or other CLI tools for project operations.
 
 ## `just` — Task Runner
 
@@ -79,8 +79,8 @@ just deploy push app api       # Build, push, deploy specific services
 just deploy pull               # Pull latest images (production)
 just deploy rollback           # Rollback 1 commit and redeploy
 just deploy rollback 3 app     # Rollback 3 commits, redeploy app only
-just deploy tag-svelte v1.2.3  # Deploy specific svelte version
-just deploy tag-go v1.2.3      # Deploy specific go version
+just deploy image-svelte <image>  # Deploy specific svelte image
+just deploy image-go <image>      # Deploy specific go image
 ```
 
 ### SSH (`just ssh`)
@@ -96,33 +96,10 @@ just ssh run "docker ps"       # Run a command remotely and return output
 just zone argentina            # Extract Argentine boundaries from Nominatim
 ```
 
-## `dco` — Fallback for ad-hoc Docker commands
-
-`dco` (`bin/dco`) wraps `docker compose` with automatic environment detection and compose file resolution. **Only use `dco` when no `just` recipe exists for what you need.**
-
-### Two modes
-
-- **Service-level** — targets a specific service: `dco <stack> <service> <subcommand> [flags...]`
-- **Stack-level** — targets the whole stack (all services): `dco <stack> <subcommand> [flags...]`
-
-`dco` auto-detects which mode by checking if the second argument is a known docker compose subcommand (`up`, `down`, `ps`, etc.). If it is, stack-level. Otherwise, service-level.
-
-### Available stacks
-
-`storage`, `app`, `api`, `broker`, `gateway`, `media`, `pdf`, `geo`, `scheduler`, `status`, `obs` (observability)
-
-### Examples
-
-```bash
-dco app svelte exec sh                     # Service-level: shell into svelte
-dco storage down --remove-orphans          # Stack-level: tear down all storage services + orphans
-```
-
 ## Priority order
 
 1. **`just`** — always check `just --list` first
-2. **`dco`** — only if no `just` recipe exists and you need Docker
-3. **Raw CLI** — never for project operations
+2. **Raw CLI** — never for project operations
 
 ## Remote server access
 
@@ -146,14 +123,6 @@ When diagnosing production issues, use `just ssh run` proactively to gather info
 - Never add `2>&1` to redirect stderr into stdout. Keep stderr separate so errors are visible and distinguishable from normal output.
 
 ## What NOT to do
-
-```bash
-# WRONG — dco when just recipe exists
-dco app svelte logs -f
-
-# RIGHT
-just logs svelte
-```
 
 ```bash
 # WRONG — raw docker compose

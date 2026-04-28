@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MANIFEST="$REPO_ROOT/infra/manifest.json"
+
+if [ ! -f "$MANIFEST" ]; then
+  exit 0
+fi
+
+ENV_FILE="/tmp/habita-manifest.env"
+jq -r 'to_entries | map("\(.key | ascii_upcase)_IMAGE=\(.value)") | .[]' "$MANIFEST" > "$ENV_FILE"
+echo "--env-file $ENV_FILE"

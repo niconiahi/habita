@@ -43,7 +43,7 @@ Follow conventional commits. Every commit message follows: `type(scope): descrip
 ```
 refactor: extract s3 storage api into reusable unit
 refactor(infra): reorganize gatus groups to mirror docker stacks
-deploy: update versions.env [skip ci]
+chore(deploy): update image manifest [skip ci]
 feat: extract button styles into css file
 fix(infra): use node for tileserver healthcheck (no curl/wget in image)
 fix(infra): bump planetiler heap to 4g for argentina boundaries

@@ -1,6 +1,6 @@
 services:
   email:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     restart: unless-stopped
     env_file:
       - ../.env
@@ -33,7 +33,7 @@ services:
       - internal
 
   subscription:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     restart: unless-stopped
     env_file:
       - ../.env
@@ -66,7 +66,7 @@ services:
       - internal
 
   escalation:
-    image: niconiahi/habita:broker-${BROKER_TAG:?BROKER_TAG required}
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     restart: unless-stopped
     env_file:
       - ../.env

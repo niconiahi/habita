@@ -21,9 +21,6 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 INFRA_DIR="$REPO_ROOT/infra/development"
 ENV_FILE=""
-if [ -f "$INFRA_DIR/versions.env" ]; then
-  ENV_FILE="--env-file $INFRA_DIR/versions.env"
-fi
 
 COUNTRY_DIR="$REPO_ROOT/apps/web/db/zones/argentina"
 
