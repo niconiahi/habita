@@ -84,7 +84,7 @@ How to manage the database, Docker, runtime, config files, and git.
 
 ## Process & Planning
 
-- **Planning** — Be extremely concise. All plans are multi-phased. Stop after each phase and wait for user confirmation. Use `AskUserQuestion` for clarifications. After finishing a phase, run `cd /Users/niconiahi/Documents/repos/habita/apps/web && pnpm run typecheck 2>&1`. Only run `just lint types` and `just lint format` when user explicitly asks. Read [`.claude/skills/planning/SKILL.md`](.claude/skills/planning/SKILL.md).
+- **Planning** — Be extremely concise. All plans are multi-phased. Stop after each phase and wait for user confirmation. Use `AskUserQuestion` for clarifications. After finishing a phase, run `just lint types`. Only run `just lint types` and `just lint format` when user explicitly asks. Read [`.claude/skills/planning/SKILL.md`](.claude/skills/planning/SKILL.md).
 
 ---
 
