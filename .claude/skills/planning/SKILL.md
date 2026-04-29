@@ -16,6 +16,6 @@ This skills guides what plan considerations must be held and how to execute such
 ## Executing plan
 
 - When executing a multi-phased plan, you must always stop after finish one. I'll manually confirm that you can continue with the next one
-- After finishing a phase, run `cd /Users/niconiahi/Documents/repos/habita/apps/web && pnpm run typecheck 2>&1` to check your work for type errors
+- After finishing a phase, run `just lint types` to check your work for type errors
 
 After having finished a plan, only run `just lint types` and `just lint format` when the user explicitly asks for it.
