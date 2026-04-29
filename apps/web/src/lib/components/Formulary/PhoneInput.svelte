@@ -321,6 +321,7 @@
     label = "Teléfono",
   }: Props = $props()
 
+  // svelte-ignore state_referenced_locally
   let digits = $state(
     value.startsWith(PHONE_PREFIX)
       ? value.slice(PHONE_PREFIX.length)

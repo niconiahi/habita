@@ -1,6 +1,7 @@
 <script lang="ts">
   import { display_location } from "$lib/display_location"
   import { get_escalation_label } from "$lib/escalation_type"
+  import SafeAddress from "$lib/components/SafeAddress.svelte"
 
   interface Props {
     location: {
@@ -34,18 +35,14 @@
   }
 
   function format_address() {
-    const parts = [
-      display_location(location),
-      location.suburb,
-      location.city || location.town,
-      location.state,
-    ].filter(Boolean)
-    return parts.join(", ")
+    return display_location(location)
   }
 </script>
 
 <div class="card">
-  <h2 class="heading-md address">{format_address()}</h2>
+  <SafeAddress {location}>
+    <h2 class="heading-md address">{format_address()}</h2>
+  </SafeAddress>
   {#if initial_price}
     <div class="price-row">
       <span class="heading-sm price">

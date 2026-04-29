@@ -64,7 +64,14 @@ export const load: PageServerLoad = async ({ url }) => {
       ).length
       return {
         id: property.id,
-        location: display_location(property.location),
+        location: {
+          road: property.location.road,
+          house_number: property.location.house_number,
+          suburb: property.location.suburb,
+          city: property.location.city,
+          town: property.location.town,
+          state: property.location.state,
+        },
         price: contract?.current_price ?? null,
         escalation:
           contract?.escalation_type !== null &&

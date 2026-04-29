@@ -1,6 +1,17 @@
 import { query_builder } from "../../../db/query_builder"
 import { encrypt } from "../server/encryption"
 
+const AVATAR_COUNT = 30
+
+function pick_avatar(email: string): string {
+  let hash = 0
+  for (let i = 0; i < email.length; i++) {
+    hash = (hash * 31 + email.charCodeAt(i)) | 0
+  }
+  const index = (Math.abs(hash) % AVATAR_COUNT) + 1
+  return `/avatars/${index}.jpg`
+}
+
 function compute_cuil(document_number: number): string {
   const prefix = 20
   const dni = String(document_number).padStart(8, "0")
@@ -42,7 +53,7 @@ export async function create_user(data: {
     .insertInto("user")
     .values({
       email: data.email,
-      image: "/images/default-avatar.svg",
+      image: pick_avatar(data.email),
       name: encrypt(data.name),
       surname: encrypt(data.surname),
       phone_number: encrypt(data.phone_number),

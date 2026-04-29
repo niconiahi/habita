@@ -11,6 +11,7 @@
     { route: "members", label: "miembros" },
     { route: "visits", label: "visitas" },
     { route: "contracts", label: "contratos" },
+    { route: "receipts", label: "comprobantes" },
     { route: "layout", label: "disposicion" },
   ] as const
 

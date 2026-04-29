@@ -13,21 +13,17 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    border: 1px solid var(--gray-400);
-  }
-
-  .table :global(thead tr) {
-    background-color: var(--gray-700);
   }
 
   .table :global(th) {
-    border: 1px solid var(--gray-400);
-    padding: var(--spacing-3);
-    font-weight: 500;
+    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    color: var(--color-text-body);
+    border-bottom: 1px solid var(--color-border-primary);
   }
 
   .table :global(td) {
-    border: 1px solid var(--gray-400);
-    padding: var(--spacing-3);
+    padding: var(--dimension-spacing-3);
+    color: var(--color-text-body);
+    border-bottom: 1px solid var(--color-border-primary);
   }
 </style>

@@ -31,6 +31,10 @@
 
   let dialog_element: HTMLDialogElement | undefined =
     $state()
+  let photo_element: HTMLDivElement | undefined =
+    $state()
+  let thumbnails_element: HTMLDivElement | undefined =
+    $state()
   let current_group = $state(0)
   let current_photo = $state(0)
 
@@ -54,6 +58,9 @@
     current_photo = photo_index
     dialog_element?.showModal()
     is_open = true
+    requestAnimationFrame(() => {
+      photo_element?.focus()
+    })
   }
 
   function close() {
@@ -83,15 +90,41 @@
     }
   }
 
+  function is_thumbnail_focused() {
+    return (
+      thumbnails_element?.contains(
+        document.activeElement,
+      ) ?? false
+    )
+  }
+
+  function focus_active_thumbnail() {
+    const active =
+      thumbnails_element?.querySelector<HTMLElement>(
+        ".viewer-thumbnail.active",
+      )
+    active?.focus()
+  }
+
   function handle_keydown(event: KeyboardEvent) {
     if (!is_open) return
     if (event.key === "ArrowLeft") {
       event.preventDefault()
       prev()
+      if (is_thumbnail_focused()) {
+        requestAnimationFrame(() =>
+          focus_active_thumbnail(),
+        )
+      }
     }
     if (event.key === "ArrowRight") {
       event.preventDefault()
       next()
+      if (is_thumbnail_focused()) {
+        requestAnimationFrame(() =>
+          focus_active_thumbnail(),
+        )
+      }
     }
   }
 
@@ -137,12 +170,18 @@
     class="viewer-nav prev"
     onclick={prev}
     disabled={current_photo === 0}
+    tabindex={current_photo === 0 ? -1 : 0}
     aria-label="Foto anterior"
   >
     &#x2039;
   </button>
 
-  <div class="viewer-photo">
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div
+    bind:this={photo_element}
+    class="viewer-photo"
+    tabindex="-1"
+  >
     {#if current_photos[current_photo]}
       <div class="viewer-photo-inner">
         <img
@@ -177,18 +216,27 @@
     onclick={next}
     disabled={current_photo >=
       current_photos.length - 1}
+    tabindex={current_photo >= current_photos.length - 1
+      ? -1
+      : 0}
     aria-label="Foto siguiente"
   >
     &#x203A;
   </button>
 
   {#if current_photos.length > 1}
-    <div class="viewer-thumbnails">
+    <div
+      bind:this={thumbnails_element}
+      class="viewer-thumbnails"
+      role="group"
+      aria-label="Miniaturas"
+    >
       {#each current_photos as photo, index}
         <button
           type="button"
           class="viewer-thumbnail"
           class:active={index === current_photo}
+          tabindex={-1}
           onclick={() => (current_photo = index)}
         >
           <img
@@ -321,6 +369,7 @@
     justify-content: center;
     min-width: 0;
     min-height: 0;
+    outline: none;
   }
 
   .viewer-photo-inner {

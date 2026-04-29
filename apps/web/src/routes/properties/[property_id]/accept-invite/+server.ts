@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"

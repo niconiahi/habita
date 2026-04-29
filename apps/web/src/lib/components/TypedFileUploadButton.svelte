@@ -112,7 +112,7 @@
           type="button"
           onclick={handle_search_click}
         >
-          Buscar archivo
+          Subir archivo
         </Button>
       </Dialog.Content>
     {/snippet}

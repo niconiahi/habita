@@ -119,13 +119,14 @@ export const GET: RequestHandler = async ({
     file_id,
     locals.user.id,
   )
-  if (!property_id) {
+  if (property_id === undefined) {
     logger.warn("file access denied", {
       file_id,
       user_id: locals.user.id,
     })
     error(403, "Forbidden")
-  } else {
+  }
+  if (property_id !== null) {
     await require_view_access(
       request.headers,
       locals.user.id,
@@ -163,7 +164,7 @@ export const GET: RequestHandler = async ({
   return new Response(Uint8Array.from(content), {
     headers: {
       "Content-Type": file.mime,
-      "Content-Disposition": `inline; filename="${file.basename}"`,
+      "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(file.basename)}`,
       "X-Content-Type-Options": "nosniff",
       "Cache-Control": "private, no-cache, no-store",
     },

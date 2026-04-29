@@ -2,7 +2,6 @@ import { require_authentication } from "$lib/server/auth"
 import { error, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { get_contract_file_types } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
 import type { LayoutServerLoad } from "./$types"
@@ -75,12 +74,10 @@ export const load: LayoutServerLoad = async ({
     fetch_warranty(contract.warranty_id),
     fetch_signature(contract_id),
   ])
-  const contract_file_types = get_contract_file_types()
   return {
     contract,
     property,
     warranty,
-    contract_file_types,
     signature: signature ?? null,
   }
 }

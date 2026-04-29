@@ -156,6 +156,7 @@ export async function update_slot(
     type: notification_type,
     property_id: notification.property_id,
     created_at: notification.created_at.toISOString(),
+    read_at: null,
     location: {
       road: property.location.road,
       house_number: property.location.house_number,

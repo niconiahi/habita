@@ -15,6 +15,7 @@
     label = "CUIL",
   }: Props = $props()
 
+  // svelte-ignore state_referenced_locally
   let digits = $state(value.replace(/\D/g, ""))
 
   function handle_input(event: Event) {

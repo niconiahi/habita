@@ -6,6 +6,7 @@
   import ToggleButton from "$lib/components/ToggleButton.svelte"
   import RangeFilter from "$lib/components/RangeFilter.svelte"
   import ZoneInput from "$lib/components/ZoneInput.svelte"
+  import { display_location } from "$lib/display_location"
   import { compose_action } from "$lib/compose_action"
   import {
     PROPERTY_TAG_CATEGORIES,
@@ -241,7 +242,7 @@
       <li>
         <PropertyCard
           images={property.images}
-          label={`Imagenes de ${property.location}`}
+          label={`Imagenes de ${display_location(property.location)}`}
           price={property.price}
           escalation={property.escalation}
           location={property.location}
