@@ -23,5 +23,6 @@ case "$service" in
   gatus)                 compose status logs -f gatus "$@" ;;
   nominatim)             compose geo logs -f nominatim "$@" ;;
   tileserver)            compose geo logs -f tileserver "$@" ;;
+  autoheal)              compose autoheal logs -f autoheal "$@" ;;
   *) echo "unknown service: $service"; exit 1 ;;
 esac
