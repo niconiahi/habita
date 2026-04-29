@@ -7,6 +7,7 @@
     ACCESS_TYPE,
   } from "$lib/access_type"
   import { compose_action } from "$lib/compose_action"
+  import WhatsappButton from "$lib/components/WhatsappButton.svelte"
   import { ACTION } from "../actions/action"
   import type { PageData } from "./$types"
 
@@ -24,8 +25,28 @@
   <ul class="member-list">
     {#each data.property.members as member, index (`member-${member.id}-${index}`)}
       <li class="member-item">
-        <p>{display_name(member)}</p>
-        <p>{get_access_label(member.type)}</p>
+        {#if member.image}
+          <img
+            class="avatar"
+            src={member.image}
+            alt={display_name(member)}
+          />
+        {:else}
+          <span class="avatar-placeholder">
+            {member.name.charAt(0).toUpperCase()}
+          </span>
+        {/if}
+        <span class="body-md-medium member-name">
+          {display_name(member)}
+        </span>
+        <span class="body-md-medium role">
+          {get_access_label(member.type)}
+        </span>
+        {#if member.phone_number}
+          <WhatsappButton phone_number={member.phone_number}>
+            Contactar
+          </WhatsappButton>
+        {/if}
       </li>
     {/each}
   </ul>
@@ -65,6 +86,36 @@
 
   .member-item {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: var(--dimension-spacing-3);
   }
+
+  .member-name {
+    color: var(--color-text-heading);
+  }
+
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--dimension-radius-full);
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--dimension-radius-full);
+    background-color: var(--color-neutrals-200);
+    color: var(--color-neutrals-500);
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .role {
+    color: var(--color-text-body);
+  }
+
 </style>

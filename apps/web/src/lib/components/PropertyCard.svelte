@@ -1,6 +1,8 @@
 <script lang="ts">
   import Carousel from "$lib/components/Carousel/Root.svelte"
   import Button from "$lib/components/Button.svelte"
+  import SafeAddress from "$lib/components/SafeAddress.svelte"
+  import { display_location } from "$lib/display_location"
 
   interface CarouselImage {
     src: string
@@ -14,7 +16,14 @@
     label: string
     price: number | null
     escalation: string | null
-    location: string
+    location: {
+      road: string
+      house_number: number
+      suburb: string | null
+      city: string | null
+      town: string | null
+      state: string | null
+    }
     room_count: number
     total_surface: number
     bathroom_count: number
@@ -55,7 +64,11 @@
           </span>
         {/if}
       </div>
-      <p class="body-md-medium location-text">{location}</p>
+      <SafeAddress {location}>
+        <p class="body-md-medium location-text">
+          {display_location(location)}
+        </p>
+      </SafeAddress>
     </div>
     <div class="rooms body-md-regular">
       <span>{room_count} amb.</span>

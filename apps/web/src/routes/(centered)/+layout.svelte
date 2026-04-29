@@ -26,6 +26,7 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
+    min-height: 70vh;
     padding: var(--dimension-spacing-6) 0;
     background-color: var(--color-absolute-white);
     font-family: var(--font-family-body);

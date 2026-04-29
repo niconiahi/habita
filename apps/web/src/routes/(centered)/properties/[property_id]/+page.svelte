@@ -93,35 +93,39 @@
     (photo_index: number, group_index?: number) => void
   >()
 
-  const viewer_groups: ViewerGroup[] = $derived(
-    data.property.floors.map((floor) => ({
-      label: display_floor_number(floor.number),
-      photos: floor.rooms.flatMap((room) =>
-        room.photos.map((photo) => ({
-          src: photo.src,
-          basename: photo.basename,
-          label: display_room_type(room.type),
-          width: room.width,
-          length: room.length,
-        })),
+  const viewer_groups: ViewerGroup[] = $derived([
+    {
+      label: "Fotos",
+      photos: data.property.floors.flatMap((floor) =>
+        floor.rooms.flatMap((room) =>
+          room.photos.map((photo) => ({
+            src: photo.src,
+            basename: photo.basename,
+            label: display_room_type(room.type),
+            width: room.width,
+            length: room.length,
+          })),
+        ),
       ),
-    })),
-  )
+    },
+  ])
 
   function handle_gallery_click(flat_index: number) {
-    let remaining = flat_index
-    for (
-      let group_index = 0;
-      group_index < viewer_groups.length;
-      group_index++
-    ) {
-      const group_size =
-        viewer_groups[group_index].photos.length
-      if (remaining < group_size) {
-        open_viewer?.(remaining, group_index)
-        return
+    open_viewer?.(flat_index, 0)
+  }
+
+  function handle_room_click(room_id: number) {
+    let photo_index = 0
+    for (const floor of data.property.floors) {
+      for (const room of floor.rooms) {
+        if (room.id === room_id) {
+          if (room.photos.length > 0) {
+            open_viewer?.(photo_index, 0)
+          }
+          return
+        }
+        photo_index += room.photos.length
       }
-      remaining -= group_size
     }
   }
 </script>
@@ -298,7 +302,11 @@
 {/snippet}
 
 <Content.Root>
-  <Visualizer images={Gallery} rooms={all_rooms} />
+  <Visualizer
+    images={Gallery}
+    rooms={all_rooms}
+    on_room_click={handle_room_click}
+  />
   <div class="layout">
     <div class="main">
       <PricingCard

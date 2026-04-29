@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import { get_property_destinies } from "$lib/property_destiny"
 import { get_property_types } from "$lib/property_type"

@@ -174,11 +174,6 @@
     color: var(--color-neutrals-400);
   }
 
-  .empty {
-    padding: var(--dimension-spacing-3);
-    color: var(--color-text-body);
-  }
-
   .view-all {
     display: block;
     padding: var(--dimension-spacing-3);

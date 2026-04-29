@@ -51,4 +51,34 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   console.log(
     `granted manager access to ${properties.length} properties`,
   )
+
+  // Grant landlord and tenant access to properties that have contracts (up to 2)
+  const properties_with_contracts = await query_builder
+    .selectFrom("property")
+    .innerJoin(
+      "contract",
+      "contract.property_id",
+      "property.id",
+    )
+    .select("property.id")
+    .groupBy("property.id")
+    .limit(2)
+    .execute()
+
+  for (const property of properties_with_contracts) {
+    await seeder.grant_access_by_email(
+      property.id,
+      REAL_USER_EMAIL,
+      ACCESS_TYPE.LANDLORD,
+    )
+    await seeder.grant_access_by_email(
+      property.id,
+      REAL_USER_EMAIL,
+      ACCESS_TYPE.TENANT,
+    )
+  }
+
+  console.log(
+    `granted landlord and tenant access to ${properties_with_contracts.length} properties`,
+  )
 }

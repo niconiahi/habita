@@ -4,15 +4,15 @@
   let {
     children,
     header = false,
-  }: { children: Snippet; header?: boolean } = $props()
+  }: { children?: Snippet; header?: boolean } = $props()
 </script>
 
 {#if header}
-  <th>
-    {@render children()}
+  <th class="body-sm-bold">
+    {@render children?.()}
   </th>
 {:else}
-  <td>
-    {@render children()}
+  <td class="body-md-medium">
+    {@render children?.()}
   </td>
 {/if}

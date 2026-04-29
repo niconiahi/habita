@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import type { PageServerLoad } from "./$types"
 

@@ -5,6 +5,7 @@ import { SEND_BOOKING_CONFIRMATION_TOPIC } from "../event/send_booking_confirmat
 import { SEND_LANDLORD_INVITE_TOPIC } from "../event/send_landlord_invite"
 import { SEND_RENEWAL_REMINDER_TOPIC } from "../event/send_renewal_reminder"
 import { SEND_SIGNING_REQUEST_TOPIC } from "../event/send_signing_request"
+import { SEND_NO_SLOTS_ALERT_TOPIC } from "../event/send_no_slots_alert"
 import { SEND_SLOT_REJECTED_ALERT_TOPIC } from "../event/send_slot_rejected_alert"
 import { SEND_SLOT_RESERVED_ALERT_TOPIC } from "../event/send_slot_reserved_alert"
 import { dlq_topic } from "../lib/topic"
@@ -25,6 +26,7 @@ const topics = [
   SEND_LANDLORD_INVITE_TOPIC,
   SEND_SLOT_RESERVED_ALERT_TOPIC,
   SEND_SLOT_REJECTED_ALERT_TOPIC,
+  SEND_NO_SLOTS_ALERT_TOPIC,
 ]
 
 async function create_topics() {

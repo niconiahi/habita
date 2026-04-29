@@ -4,9 +4,18 @@ env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "pro
 infra := "infra/" + env
 manifest_env := `bin/load-manifest`
 
-# Open psql shell
-shell:
-  docker exec -it $(docker ps -qf "label=habita.role=database" | head -1) psql -U postgres -d habita
+# Open psql shell (e.g., just db shell, just db shell "SELECT 1")
+shell query="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  DB_CONTAINER=$(docker ps -qf "label=habita.role=database" | head -1)
+  if [[ -z "{{query}}" ]]; then
+    docker exec -it "$DB_CONTAINER" sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+  else
+    docker exec -i "$DB_CONTAINER" sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' <<'QUERY'
+  {{query}}
+  QUERY
+  fi
 
 # Run pending migrations
 migrate:

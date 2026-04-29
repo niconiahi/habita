@@ -48,6 +48,13 @@
               >
                 Perfil
               </a>
+              <a
+                href="/accesses"
+                class="body-md-medium dropdown-item"
+                onclick={close}
+              >
+                Accesos
+              </a>
               <button
                 type="button"
                 class="body-md-medium dropdown-item"
@@ -130,16 +137,6 @@
   }
 
   .dropdown-item:hover {
-    background-color: var(--popover-bg-hover);
-  }
-
-  .nav-link {
-    padding: var(--dimension-spacing-2)
-      var(--dimension-spacing-3);
-    border-radius: var(--dimension-radius-lg);
-  }
-
-  .nav-link:hover {
     background-color: var(--popover-bg-hover);
   }
 </style>

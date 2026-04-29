@@ -224,10 +224,12 @@ Building floor number constants and display.
 
 Types of notifications.
 
-- `NOTIFICATION_TYPE` — `{ PROPERTY_VISIT: 0 }`
+- `NOTIFICATION_TYPE` — `{ PROPERTY_VISIT: 0, NO_AVAILABLE_SLOTS: 1 }`
 - `NotificationTypeSchema` — Valibot picklist
 - `NotificationType` — type
 - `get_notification_type_label(type: number | NotificationType): string`
+- `compose_property_visit_href(property_id: number): string`
+- `compose_no_available_slots_href(property_id: number): string`
 - `get_notification_types(): NotificationType[]`
 
 ## organization_role.ts
@@ -676,6 +678,7 @@ Topic constants and Valibot schemas for Kafka messages. Each file exports a `*_T
 - `send_signing_request.ts` — `SEND_SIGNING_REQUEST_TOPIC`, `SendSigningRequestEvent`
 - `send_landlord_invite.ts` — `SEND_LANDLORD_INVITE_TOPIC`, `SendLandlordInviteEvent`
 - `delete_object.ts` — `DELETE_OBJECT_TOPIC`, `DeleteObjectEvent`
+- `send_no_slots_alert.ts` — `SEND_NO_SLOTS_ALERT_TOPIC`, `SendNoSlotsAlertEvent`
 
 ## Producers
 
@@ -688,6 +691,7 @@ Publish functions that send messages to Kafka topics.
 - `publish_send_renewal_reminder(): Promise<void>`
 - `publish_send_signing_request(contract_id: number, payload: SendSigningRequestEvent): Promise<void>`
 - `publish_delete_object(key: string): Promise<void>`
+- `publish_send_no_slots_alert(property_id: number, user_id: number, payload: SendNoSlotsAlertEvent): Promise<void>`
 
 ## Consumers
 
@@ -723,6 +727,8 @@ All paths relative to `apps/web/src/lib/fetchers/`
 
 - `PropertyVisitNotificationSchema` — Valibot object schema
 - `PropertyVisitNotification` — type
+- `NoAvailableSlotsNotificationSchema` — Valibot object schema
+- `NoAvailableSlotsNotification` — type
 - `NotificationSchema` — Valibot variant schema (discriminated by `type`)
 - `NotificationsSchema` — Valibot array schema
 - `Notification` — type

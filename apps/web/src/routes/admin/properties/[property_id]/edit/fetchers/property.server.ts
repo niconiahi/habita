@@ -200,6 +200,7 @@ export async function fetch_property(id: number) {
             "user.surname",
             "user.phone_number",
             "user.document_number",
+            "user.image",
             "property_access.type",
           ]),
       ).as("members"),

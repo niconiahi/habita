@@ -10,6 +10,7 @@
   let { id, content, children }: Props = $props()
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <span class="trigger" aria-describedby={id} tabindex="0">
   {@render children()}
   <span {id} role="tooltip" class="tooltip body-sm-regular">

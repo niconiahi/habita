@@ -13,9 +13,10 @@
       position_x: string | null
       position_y: string | null
     }[]
+    on_room_click?: (room_id: number) => void
   }
 
-  let { images, rooms }: Props = $props()
+  let { images, rooms, on_room_click }: Props = $props()
 
   const VIEWS = [
     { label: "Map", value: "map" },
@@ -35,7 +36,7 @@
   </div>
   <div class="content">
     {#if selected_view === "map"}
-      <RoomMap {rooms} is_readonly={true} />
+      <RoomMap {rooms} is_readonly={true} {on_room_click} />
     {:else}
       {@render images()}
     {/if}

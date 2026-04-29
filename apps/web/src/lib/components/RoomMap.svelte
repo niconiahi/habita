@@ -49,12 +49,14 @@
     on_positions_change?: (
       positions: Map<number, Position>,
     ) => void
+    on_room_click?: (room_id: number) => void
   }
 
   let {
     rooms,
     is_readonly = false,
     on_positions_change,
+    on_room_click,
   }: Props = $props()
 
   let canvas_el: HTMLCanvasElement | undefined = $state()
@@ -217,6 +219,8 @@
         room_start_y: room.y,
       }
       canvas_el.style.cursor = "grabbing"
+    } else if (room && is_readonly) {
+      on_room_click?.(room.id)
     } else {
       container_el.setPointerCapture(event.pointerId)
       panning_state = {
@@ -444,6 +448,7 @@
   })
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="room-map-container"
   bind:this={container_el}

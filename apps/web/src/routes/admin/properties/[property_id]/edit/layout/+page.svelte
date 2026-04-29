@@ -163,38 +163,38 @@
   >()
 
   const viewer_groups: ViewerGroup[] = $derived(
-    data.property.floors.map((floor) => ({
-      label: display_floor_number(floor.number),
-      photos: floor.rooms.flatMap((room) =>
-        room.photos.map((photo) => ({
-          src: `/files/${photo.id}`,
-          basename: photo.basename,
-          label: display_room_type(room.type),
-          width: room.width,
-          length: room.length,
+    data.property.floors.flatMap((floor) =>
+      floor.rooms
+        .filter((room) => room.photos.length > 0)
+        .map((room) => ({
+          label: `${display_room_type(room.type)} — ${display_floor_number(floor.number)}`,
+          photos: room.photos.map((photo) => ({
+            src: `/files/${photo.id}`,
+            basename: photo.basename,
+            label: display_room_type(room.type),
+            width: room.width,
+            length: room.length,
+          })),
         })),
-      ),
-    })),
+    ),
   )
 
   function handle_photo_viewer_open(
     photo_room_file_id: number,
   ) {
-    const floor_number_value = selected_floor_number()
-    const floor_index = data.property.floors.findIndex(
-      (f) => f.number === floor_number_value,
-    )
-    if (floor_index === -1) return
-
-    const floor = data.property.floors[floor_index]
-    let flat_index = 0
-    for (const room of floor.rooms) {
-      for (const photo of room.photos) {
-        if (photo.room_file_id === photo_room_file_id) {
-          open_viewer?.(flat_index, floor_index)
+    let group_index = 0
+    for (const floor of data.property.floors) {
+      for (const room of floor.rooms) {
+        if (room.photos.length === 0) continue
+        const photo_index = room.photos.findIndex(
+          (photo) =>
+            photo.room_file_id === photo_room_file_id,
+        )
+        if (photo_index !== -1) {
+          open_viewer?.(photo_index, group_index)
           return
         }
-        flat_index++
+        group_index++
       }
     }
   }
@@ -260,7 +260,7 @@
     <SegmentedButton
       items={[
         {
-          label: "Dimensiones",
+          label: "Dimensiones y fotos",
           value: LAYOUT_VIEW.DIMENSIONES,
         },
         {
@@ -346,7 +346,7 @@
                     type="button"
                     onclick={() =>
                       handle_add_photo_click(room.id)}
-                    >Agregar fotos</Button
+                    >Agregar foto</Button
                   >
                 </Formulary.Actions>
               </Formulary.Root>

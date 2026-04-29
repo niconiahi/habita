@@ -4,7 +4,6 @@
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import Button from "$lib/components/Button.svelte"
-  import TypedFileUploadButton from "$lib/components/TypedFileUploadButton.svelte"
   import {
     ContractFileTypeSchema,
     get_contract_file_type_label,
@@ -19,27 +18,11 @@
   let errors = $derived(
     (form?.errors as any)?.create_pdf ?? {},
   )
-
-  const document_types = $derived(
-    data.contract_file_types.map((type) => ({
-      value: type,
-      label: get_contract_file_type_label(type),
-    })),
-  )
 </script>
 
 <Content.Section>
   <Section.Header>
     <Section.Title>documentos</Section.Title>
-    <Section.Actions>
-      <TypedFileUploadButton
-        types={document_types}
-        label="Agregar documento"
-        action={compose_action(ACTION.CREATE_FILE)}
-        type_name="file_type"
-        data={{ contract_id: data.contract.id }}
-      />
-    </Section.Actions>
   </Section.Header>
   {#if errors.property_road || errors.property_house_number || errors.property_state || errors.property_unit}
     <div class="error-block">
@@ -73,7 +56,7 @@
         file.type,
       )}
       <li class="file-item">
-        <span class="file-type"
+        <span class="file-type body-sm-bold"
           >{get_contract_file_type_label(
             contract_type,
           )}</span
@@ -98,6 +81,16 @@
             >Eliminar</Button
           >
         </form>
+      </li>
+    {/each}
+    {#each data.tenant_insurance_files as file (file.id)}
+      <li class="file-item">
+        <span class="file-type body-sm-bold">Seguro</span>
+        <a
+          target="_blank"
+          href="/files/{file.id}"
+          class="file-link">{file.basename}</a
+        >
       </li>
     {/each}
   </ul>

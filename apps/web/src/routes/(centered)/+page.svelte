@@ -8,13 +8,18 @@
     <h1 class="heading-lg slogan">El hogar del inmueble</h1>
     <p class="body-md-regular description">
       Publicá propiedades, agendá visitas, firmá contratos y
-      cobrá alquileres — todo desde Habita
+      hace seguimiento de pagos — todo desde Habita
     </p>
     <div class="ctas">
       <a href="/signup" class="cta-link">
         <Button variant="primary">Empezar gratis</Button>
       </a>
-      <a href="/signup" class="cta-link">
+      <a
+        href="https://wa.me/5491122537752?text=Hola%20Nico%2C%20quiero%20una%20demo%20de%20Habita"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cta-link"
+      >
         <Button variant="secondary"
           >Solicitar una demo</Button
         >

@@ -6,6 +6,13 @@ declare module "*.svx" {
 }
 
 declare global {
+  // HMR-safe singletons (vite dev)
+  var __query_builder: unknown
+  var __auth: unknown
+  var __redis: unknown
+  var __kafka: unknown
+  var __notification_emitter: unknown
+
   namespace App {
     interface Locals {
       user: {

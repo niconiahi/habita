@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
