@@ -9,6 +9,11 @@ compose storage up -d
 echo "waiting for db"
 wait_healthy database 60 || { echo "db failed health check"; exit 1; }
 
+echo "starting observability"
+compose observability up -d
+echo "waiting for otel-collector"
+wait_healthy otel-collector 60 || { echo "otel-collector failed health check"; exit 1; }
+
 echo "starting app"
 compose app up -d
 echo "starting consumers"

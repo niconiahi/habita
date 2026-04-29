@@ -34,8 +34,8 @@ compose() {
 }
 
 # All stacks in dependency order
-STACKS_UP="storage app consumer api media gateway scheduler broker pdf status geo autoheal"
-STACKS_DOWN="autoheal geo status pdf broker scheduler gateway media api consumer app storage"
+STACKS_UP="storage observability app consumer api media gateway scheduler broker pdf status geo autoheal"
+STACKS_DOWN="autoheal geo status pdf broker scheduler gateway media api consumer app observability storage"
 
 # Wait for a container to be healthy by label
 wait_healthy() {

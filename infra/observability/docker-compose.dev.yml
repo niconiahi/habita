@@ -1,0 +1,58 @@
+services:
+  telemetry-db:
+    ports:
+      - "8123:8123"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 512M
+          cpus: "0.25"
+
+  otel-collector:
+    ports:
+      - "4318:4318"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
+
+  observability-ui:
+    build:
+      context: ../../apps/observability
+      dockerfile: config/Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    volumes:
+      - ../../apps/observability:/app:delegated
+      - observability_deps:/app/node_modules
+      - ../gateway/certs:/certs:ro
+    env_file:
+      - ../.env.dev
+    ports:
+      - "5175:5175"
+    environment:
+      PORT: 5175
+      BETTER_AUTH_URL: https://observability.dev.habita.rent
+      MAIN_APP_URL: https://dev.habita.rent
+      COOKIE_DOMAIN: .dev.habita.rent
+      OTEL_ENVIRONMENT: development
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+
+volumes:
+  observability_deps:
