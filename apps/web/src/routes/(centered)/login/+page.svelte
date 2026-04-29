@@ -1,20 +1,27 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
+  import { page } from "$app/state"
   import { authClient } from "$lib/auth-client"
   import Button from "$lib/components/Button.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import Google from "$icon/Google.svelte"
 
   const BETTER_AUTH_DEFAULT_ERROR_MESSAGE = "Invalid email"
+  const DEFAULT_REDIRECT = "/properties"
 
   let error = $state<string | null>(null)
   let is_loading = $state(false)
+
+  function get_redirect_to() {
+    return page.url.searchParams.get("redirect_to") ?? DEFAULT_REDIRECT
+  }
 
   async function handle_email_login(event: SubmitEvent) {
     event.preventDefault()
     error = null
     is_loading = true
 
+    const redirect_to = get_redirect_to()
     const form_data = new FormData(
       event.currentTarget as HTMLFormElement,
     )
@@ -25,7 +32,7 @@
       await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/properties",
+        callbackURL: redirect_to,
       })
 
     is_loading = false
@@ -44,13 +51,14 @@
       return
     }
 
-    goto("/properties")
+    goto(redirect_to)
   }
 
   async function handle_google_login() {
+    const redirect_to = get_redirect_to()
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/properties",
+      callbackURL: redirect_to,
     })
   }
 </script>

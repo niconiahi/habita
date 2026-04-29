@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({
   locals,
   url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const state_param = url.searchParams.get("state")
   const state =
     state_param !== null

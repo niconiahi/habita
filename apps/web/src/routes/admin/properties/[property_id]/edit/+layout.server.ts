@@ -10,8 +10,9 @@ export const load: LayoutServerLoad = async ({
   locals,
   params,
   request,
+  url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,

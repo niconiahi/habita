@@ -15,8 +15,9 @@ import {
 export const load: PageServerLoad = async ({
   locals,
   params,
+  url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const candidate_id = v.parse(
     ForceNumberSchema,
     params.candidate_id,

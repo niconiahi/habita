@@ -4,8 +4,8 @@ import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { select_account_type } from "./actions/select_account_type.server"
 
-export const load: PageServerLoad = async ({ locals }) => {
-  require_authentication(locals)
+export const load: PageServerLoad = async ({ locals, url }) => {
+  require_authentication(locals, url)
 }
 
 export const actions: Actions = {

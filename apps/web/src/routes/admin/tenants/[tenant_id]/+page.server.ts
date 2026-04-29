@@ -13,8 +13,9 @@ import { fetch_tenant_by_id } from "./fetchers/tenant.server"
 export const load: PageServerLoad = async ({
   locals,
   params,
+  url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const tenant_id = v.parse(
     ForceNumberSchema,
     params.tenant_id,
