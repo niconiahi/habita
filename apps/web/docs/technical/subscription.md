@@ -250,8 +250,7 @@ All seats in the organization are extended together — one payment covers every
 - `$lib/server/broker/events/send_renewal_reminder.ts` — event schema + topic name
 - `$lib/server/broker/consumer/handle_extend_subscription.ts` — consumer handler with retry/DLQ
 - `$lib/server/broker/consumer/handle_send_renewal_reminder.ts` — consumer handler with retry/DLQ
-- `infra/development/scheduler/ofelia.ini` — daily `create-renewal-jobs` at 8 AM
-- `infra/production/scheduler/ofelia.ini` — same
+- `infra/scheduler/ofelia.ini` — daily `create-renewal-jobs` at 8 AM
 - See `docs/broker.md` for full broker architecture
 
 ### Payment page
