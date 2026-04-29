@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({
   params,
   url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const property_id = v.parse(
     ForceNumberSchema,
     params.property_id,

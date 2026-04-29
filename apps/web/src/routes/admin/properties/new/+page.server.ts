@@ -6,8 +6,8 @@ import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { create_property } from "./actions/create_property.server"
 
-export const load: PageServerLoad = async ({ locals }) => {
-  require_authentication(locals)
+export const load: PageServerLoad = async ({ locals, url }) => {
+  require_authentication(locals, url)
   return {
     property_types: get_property_types(),
     property_destinies: get_property_destinies(),

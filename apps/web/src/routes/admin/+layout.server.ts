@@ -5,8 +5,9 @@ import type { LayoutServerLoad } from "./$types"
 
 export const load: LayoutServerLoad = async ({
   locals,
+  url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   require_active_subscription(
     locals.subscriptions,
     locals.session.activeOrganizationId,

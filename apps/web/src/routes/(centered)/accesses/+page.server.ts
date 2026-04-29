@@ -7,8 +7,9 @@ import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({
   locals,
+  url,
 }) => {
-  require_authentication(locals)
+  require_authentication(locals, url)
   const properties = await fetch_properties_with_access(
     locals.user.id,
   )

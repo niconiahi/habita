@@ -12,8 +12,8 @@ import { ACTION } from "./actions/action"
 import { set_tenant } from "./actions/index.server"
 import { fetch_candidates } from "./fetchers/candidates.server"
 
-export const load: PageServerLoad = async ({ locals }) => {
-  require_authentication(locals)
+export const load: PageServerLoad = async ({ locals, url }) => {
+  require_authentication(locals, url)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,
     [ACCESS_TYPE.LANDLORD, ACCESS_TYPE.MANAGER],

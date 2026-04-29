@@ -340,8 +340,16 @@ interface AuthenticatedLocals {
 
 export function require_authentication(
   locals: App.Locals,
+  url?: URL,
 ): asserts locals is App.Locals & AuthenticatedLocals {
   if (!locals.user || !locals.session) {
+    if (url) {
+      const redirect_to = url.pathname + url.search
+      redirect(
+        302,
+        `/login?redirect_to=${encodeURIComponent(redirect_to)}`,
+      )
+    }
     redirect(302, "/login")
   }
 }

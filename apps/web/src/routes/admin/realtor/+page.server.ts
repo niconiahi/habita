@@ -9,8 +9,8 @@ import { remove_manager } from "./actions/remove_manager.server"
 import { fetch_managers_with_property_counts } from "./fetchers/managers.server"
 import { fetch_organization_details } from "./fetchers/organization.server"
 
-export const load: PageServerLoad = async ({ locals }) => {
-  require_authentication(locals)
+export const load: PageServerLoad = async ({ locals, url }) => {
+  require_authentication(locals, url)
 
   const realtor_org = await get_user_realtor_organization(
     locals.user.id,
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   [ACTION.INVITE_MANAGER]: async ({ request, locals }) => {
-    if (!locals.user) redirect(302, "/login")
+    require_authentication(locals)
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )
@@ -48,7 +48,7 @@ export const actions: Actions = {
   },
 
   [ACTION.REMOVE_MANAGER]: async ({ request, locals }) => {
-    if (!locals.user) redirect(302, "/login")
+    require_authentication(locals)
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )
@@ -69,7 +69,7 @@ export const actions: Actions = {
     request,
     locals,
   }) => {
-    if (!locals.user) redirect(302, "/login")
+    require_authentication(locals)
     const realtor_org = await get_user_realtor_organization(
       locals.user.id,
     )
