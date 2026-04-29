@@ -94,6 +94,8 @@ function make_auth() {
       "https://dev.habita.rent",
       "https://habita.rent",
       "https://svelte:5174",
+      "https://observability.dev.habita.rent",
+      "https://observability.habita.rent",
     ],
     emailAndPassword: {
       enabled: true,
@@ -131,6 +133,10 @@ function make_auth() {
           }
           return crypto.randomUUID()
         },
+      },
+      crossSubDomainCookies: {
+        enabled: true,
+        domain: process.env.COOKIE_DOMAIN,
       },
       defaultCookieAttributes: {
         sameSite: "lax",

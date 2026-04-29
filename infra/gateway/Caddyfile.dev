@@ -31,3 +31,14 @@ status.dev.habita.rent {
   # Gatus status page
   reverse_proxy gatus:8080
 }
+
+observability.dev.habita.rent {
+  tls /etc/ssl/certs/dev.habita.rent.pem /etc/ssl/private/dev.habita.rent-key.pem
+
+  reverse_proxy https://observability-ui:5175 {
+    transport http {
+      tls_insecure_skip_verify
+      versions h1.1
+    }
+  }
+}
