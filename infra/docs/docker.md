@@ -317,7 +317,7 @@ build:
   dockerfile: apps/web/config/Dockerfile
 ```
 
-**The path is relative to the compose file**, not the project root. Since our compose file is at `infra/development/app/docker-compose.yml`, `../../../apps/web` resolves to `apps/web/` from the repo root.
+**The path is relative to the compose file**, not the project root. Since our compose file is at `infra/app/docker-compose.dev.yml`, `../../apps/web` resolves to `apps/web/` from the repo root.
 
 ### .dockerignore
 
@@ -403,10 +403,9 @@ Host machine
 │   ├── go (172.18.0.6)
 │   └── redpanda (172.18.0.7)
 │
-├── Bridge network "observability"
-│   ├── clickhouse (172.19.0.2)
-│   ├── zookeeper (172.19.0.3)
-│   └── otel-collector (172.19.0.4) ← also on "internal"
+│   ├── telemetry-db (ClickHouse)
+│   ├── otel-collector
+│   └── observability-ui
 │
 └── Host network (your machine: 192.168.1.x)
 ```
@@ -438,7 +437,7 @@ DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRE
 
 If the database container is restarted and gets a new IP, the DNS record updates automatically. You never hardcode container IPs.
 
-**How DNS connects to networks:** DNS only works within a network. If `svelte` is on the `internal` network but `clickhouse` is only on the `observability` network, `svelte` cannot resolve `clickhouse` by name. The `otel-collector` container is on **both** networks, acting as a bridge — it can talk to services on either side.
+**How DNS connects to networks:** DNS only works within a network. All services — including observability (`telemetry-db`, `otel-collector`, `observability-ui`) — are on the `internal` network, so any service can send telemetry directly to `otel-collector:4318`.
 
 ### Network aliases
 
@@ -753,7 +752,7 @@ environment:
 
 `${POSTGRES_USER}` is resolved by Docker Compose (not by the container). Compose reads these values from a `.env` file in the same directory as the compose file, or from your shell's environment.
 
-Our `.env` file (`infra/development/.env`) contains all secrets — database credentials, API keys, OAuth tokens, encryption keys. It's encrypted with SOPS and never committed to git in plaintext.
+Our `.env` files (`infra/.env.dev` and `infra/.env.prod`) contain all secrets — database credentials, API keys, OAuth tokens, encryption keys. The production file is encrypted with SOPS and never committed to git in plaintext.
 
 ### The env_file directive
 
@@ -988,10 +987,10 @@ Our `dco` wrapper automates steps 1-2 by selecting the right compose file and en
 - **Ofelia** (scheduler) — Runs cron jobs inside other containers (backups, escalation checks)
 - **PDF service** — Generates contract PDFs using Playwright
 - **Gatus** (status page) — Monitors service health
-- **SigNoz** (observability) — Traces, metrics, and logs via OpenTelemetry
+- **Observability** (telemetry-db + otel-collector + observability-ui) — Traces, metrics, and logs via OpenTelemetry → ClickHouse
 
 **How everything connects:**
-All services join the `internal` network, created once by `just infra-setup`. The observability stack has its own `observability` network, with `otel-collector` bridging both networks to receive telemetry from application services. Caddy is the only service with ports mapped to the host (80, 443) — everything else communicates container-to-container via DNS on the `internal` network.
+All services join the `internal` network, created once by `just infra-setup`. Caddy is the only service with ports mapped to the host (80, 443) — everything else communicates container-to-container via DNS on the `internal` network. The observability stack lives on the same network, so any service can send telemetry to `otel-collector:4318`.
 
 ---
 

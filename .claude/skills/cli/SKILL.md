@@ -140,7 +140,7 @@ When diagnosing production issues, use `just ssh run` proactively to gather info
 
 ```bash
 # WRONG — raw docker compose
-docker compose -f infra/development/app/docker-compose.yml run --rm svelte pnpm run lint:format
+docker compose -f infra/app/docker-compose.yml run --rm svelte pnpm run lint:format
 
 # RIGHT
 just lint format

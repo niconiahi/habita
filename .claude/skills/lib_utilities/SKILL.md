@@ -637,9 +637,39 @@ Processes pending rent escalations.
 
 ## telemetry/sdk.ts
 
-OpenTelemetry initialization.
+Server-side OpenTelemetry initialization. Called in `hooks.server.ts` init hook before any HTTP calls.
 
-- `init_telemetry(): void`
+- `init_telemetry(): void` — starts NodeSDK with auto-instrumentations (HTTP, pg, ioredis)
+
+## telemetry/sdk.client.ts
+
+Browser-side OpenTelemetry initialization.
+
+- `init_browser_telemetry(): void` — sets up trace/log export to `/api/otel/v1/traces` and `/api/otel/v1/logs`
+
+---
+
+# Observability App (`apps/observability/src/lib/`)
+
+Separate SvelteKit app for viewing telemetry data. Not shared with the main app.
+
+## safe_async.ts
+
+- `safe_async<T>(promise: Promise<T>): Promise<[Error, null] | [null, T]>`
+
+## server/auth.ts
+
+Minimal Better Auth config for session validation only (no login UI, no OAuth).
+
+- `auth` — Proxy-wrapped Better Auth instance (HMR-safe singleton)
+- `require_authentication(locals, url): asserts locals` — redirects to main app login if not authenticated
+
+## server/clickhouse.ts
+
+ClickHouse HTTP API client. Queries `http://telemetry-db:8123` with `FORMAT JSON`.
+
+- `escape_clickhouse(value: string): string` — escapes `'` and `\` for SQL string params
+- `query_clickhouse<T>(sql: string, schema: GenericSchema<T>): Promise<[Error, null] | [null, T[]]>` — executes SQL, validates response with Valibot schema
 
 ## contract/types.ts
 

@@ -38,11 +38,11 @@ Documento preparado para revisión de seguridad.
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    OBSERVABILIDAD (SigNoz Stack)                             │
-├─────────────────┬─────────────────┬─────────────────┬───────────────────────┤
-│   ClickHouse    │   OTel Collector │  Query Service  │    Frontend          │
-│   (Analytics)   │   (Traces/Logs)  │  Puerto: 8080   │   Puerto: 3301       │
-└─────────────────┴─────────────────┴─────────────────┴───────────────────────┘
+│                    OBSERVABILIDAD (Self-hosted)                               │
+├─────────────────────┬──────────────────────┬────────────────────────────────┤
+│   ClickHouse        │   OTel Collector     │  Observability UI              │
+│   (telemetry-db)    │   :4317/:4318        │  :5175 / :3001                 │
+└─────────────────────┴──────────────────────┴────────────────────────────────┘
 ```
 
 ### Stack Tecnológico
@@ -59,7 +59,7 @@ Documento preparado para revisión de seguridad.
 | **Autenticación** | Better Auth | 1.4.17 |
 | **Reverse Proxy** | Caddy | 2.8 |
 | **Contenedores** | Docker Compose | - |
-| **Observabilidad** | OpenTelemetry + SigNoz | - |
+| **Observabilidad** | OpenTelemetry + ClickHouse | - |
 | **Package Manager** | Bun | - |
 | **Lenguaje** | TypeScript | 5.9.3 |
 
@@ -269,8 +269,8 @@ Better Auth expone automáticamente endpoints para:
 
 | Ambiente | Ubicación Config | Puerto Web |
 |----------|------------------|------------|
-| **Desarrollo** | `/infra/development/` | 5174 |
-| **Producción** | `/infra/production/` | 3000 |
+| **Desarrollo** | `/infra/` (`.dev.yml` overrides) | 5174 |
+| **Producción** | `/infra/` (`.prod.yml` overrides) | 3000 |
 
 ### Base de Datos
 
@@ -326,7 +326,7 @@ Better Auth expone automáticamente endpoints para:
 
 ### Servicios Docker - Producción
 
-#### Stack Principal (`/infra/production/app/`)
+#### Stack Principal (`/infra/app/` + `/infra/storage/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
@@ -334,37 +334,37 @@ Better Auth expone automáticamente endpoints para:
 | **kv** | `valkey/valkey:7.2` | 6379 | valkey (default) | 512M | 0.5 |
 | **svelte** | `niconiahi/habita:svelte-${SHA}` | 3000 | appuser (10001) | 2G | 2.0 |
 
-#### Gateway (`/infra/production/gateway/`)
+#### Gateway (`/infra/gateway/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **caddy** | `caddy:2.8` | 80, 443 | root (default) | 256M | 1.0 |
 
-#### API Go (`/infra/production/api/`)
+#### API Go (`/infra/api/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **go** | `niconiahi/habita:go-${SHA}` | 8081 | gopher (10001) | 512M | 1.0 |
 
-#### Media (`/infra/production/media/`)
+#### Media (`/infra/media/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **image** | `darthsim/imgproxy:v3.24.1` | 8080 | 1000:1000 | 512M | 2.0 |
 
-#### PDF (`/infra/production/pdf/`)
+#### PDF (`/infra/pdf/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **pdf** | Custom (Playwright) | 8082 | node (default) | 1G | 1.0 |
 
-#### Geocoding (`/infra/production/geo/`)
+#### Geocoding (`/infra/geo/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
 | **nominatim** | `mediagis/nominatim:4.4` | 8080 | postgres (default) | 2G | 1.0 |
 
-#### Scheduler & Backups (`/infra/production/scheduler/`)
+#### Scheduler & Backups (`/infra/scheduler/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
@@ -372,7 +372,7 @@ Better Auth expone automáticamente endpoints para:
 | **backup-worker** | `postgres:17-alpine` + age | - | backup (10001) | 256M | 0.5 |
 | **backup-uploader** | `rclone/rclone:1.68` | - | root | 128M | 0.25 |
 
-#### Status Page (`/infra/production/status/`)
+#### Status Page (`/infra/status/`)
 
 | Servicio | Imagen | Puerto Interno | Usuario | Memoria Límite | CPU Límite |
 |----------|--------|----------------|---------|----------------|------------|
@@ -525,7 +525,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 | **Pagos** | Mercado Pago | Procesamiento de pagos | `MERCADO_PAGO_ACCESS_TOKEN`, `MERCADO_PAGO_CLIENT_ID`, `MERCADO_PAGO_CLIENT_SECRET` |
 | **Email SMTP** | Gmail | Envío de emails/calendarios | `SMTP_USER`, `SMTP_PASS` (smtp.gmail.com:587) |
 | **Object Storage** | Cloudflare R2 | Backups | `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`, `R2_BACKUP_ENDPOINT` |
-| **Observabilidad** | SigNoz (self-hosted) | Traces y logs | `OTEL_EXPORTER_OTLP_ENDPOINT` |
+| **Observabilidad** | OTel Collector + ClickHouse (self-hosted) | Traces y logs | `OTEL_EXPORTER_OTLP_ENDPOINT` |
 
 ### Servicios Self-Hosted
 
@@ -590,13 +590,13 @@ R2_BACKUP_ENDPOINT, CLOUDFLARE_ACCOUNT_ID
 
 | Archivo | Propósito |
 |---------|-----------|
-| `/infra/production/gateway/Caddyfile` | Configuración reverse proxy, headers, rutas |
-| `/infra/production/gateway/docker-compose.yml` | Puertos expuestos (80, 443) |
-| `/infra/production/app/docker-compose.yml` | DB, Valkey, Svelte - servicios core |
-| `/infra/production/api/docker-compose.yml` | Go API service |
-| `/infra/production/scheduler/docker-compose.yml` | Ofelia, backup workers |
-| `/infra/production/scheduler/ofelia.ini` | Cron jobs programados |
-| `/infra/production/status/config.yaml` | Endpoints monitoreados por Gatus |
+| `/infra/gateway/Caddyfile.prod` | Configuración reverse proxy, headers, rutas |
+| `/infra/gateway/docker-compose.prod.yml` | Puertos expuestos (80, 443) |
+| `/infra/app/docker-compose.yml` + `.prod.yml` | Svelte - servicio core |
+| `/infra/storage/docker-compose.yml` + `.prod.yml` | DB, Valkey, Object Store |
+| `/infra/api/docker-compose.yml` + `.prod.yml` | Go API service |
+| `/infra/scheduler/docker-compose.yml` + `.prod.yml` | Ofelia, backup workers |
+| `/infra/status/docker-compose.yml` + `.prod.yml` | Endpoints monitoreados por Gatus |
 | `/apps/web/Dockerfile` | Build de imagen Svelte (multi-stage) |
 | `/apps/go/Dockerfile` | Build de imagen Go |
 

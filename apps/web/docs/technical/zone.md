@@ -118,7 +118,7 @@ Benchmarked at **6.6ms total** against Nominatim's 4M row `placex` table. Agains
 ### Querying Nominatim's DB directly
 
 ```bash
-docker compose -p geo -f infra/development/geo/docker-compose.yml \
+docker compose -p geo -f infra/geo/docker-compose.yml -f infra/geo/docker-compose.dev.yml \
   exec -T nominatim \
   su - postgres -c "psql -d nominatim -t -A -c \"YOUR_QUERY\""
 ```
