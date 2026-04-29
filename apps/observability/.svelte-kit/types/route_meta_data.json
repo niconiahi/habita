@@ -1,0 +1,22 @@
+{
+	"/": [
+		"src/routes/+page.server.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/health": [
+		"src/routes/health/+server.ts"
+	],
+	"/logs": [
+		"src/routes/logs/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/traces": [
+		"src/routes/traces/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/traces/[trace_id]": [
+		"src/routes/traces/[trace_id]/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	]
+}
