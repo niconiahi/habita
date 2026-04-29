@@ -6,8 +6,7 @@ services:
     environment:
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
       REDIS_URL: redis://kv:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
-      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: consumer-email
       BROKER_BROKERS: redpanda:9092
     command: pnpm exec tsx src/consumer/email.script.ts
@@ -34,8 +33,7 @@ services:
     environment:
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
       REDIS_URL: redis://kv:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
-      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: consumer-subscription
       BROKER_BROKERS: redpanda:9092
     command: pnpm exec tsx src/consumer/subscription.script.ts
@@ -54,8 +52,7 @@ services:
     environment:
       DATABASE_URL: postgres://$$POSTGRES_USER:$$POSTGRES_PASSWORD@db:5432/$$POSTGRES_DB
       REDIS_URL: redis://kv:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
-      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $$AXIOM_TOKEN,X-Axiom-Dataset=$$AXIOM_DATASET
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: consumer-escalation
       BROKER_BROKERS: redpanda:9092
     command: pnpm exec tsx src/consumer/escalation.script.ts

@@ -7,6 +7,8 @@ services:
       PORT: 3000
       NODE_ENV: production
       OTEL_ENVIRONMENT: production
+      PUBLIC_OTEL_ENVIRONMENT: production
+      COOKIE_DOMAIN: .habita.rent
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
       interval: 30s
