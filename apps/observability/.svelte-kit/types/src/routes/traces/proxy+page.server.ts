@@ -26,7 +26,7 @@ export const load = async ({
   locals,
   url,
 }: Parameters<PageServerLoad>[0]) => {
-  require_authentication(locals, url)
+  require_authentication(locals)
 
   const service = url.searchParams.get("service") ?? ""
   const hours = Math.min(
