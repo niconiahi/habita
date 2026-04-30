@@ -11,14 +11,14 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull().unique(),
     )
     .addColumn("name", "text", (col) => col.notNull())
-    .addColumn("emailVerified", "boolean", (col) =>
+    .addColumn("email_verified", "boolean", (col) =>
       col.defaultTo(false),
     )
     .addColumn("image", "text")
-    .addColumn("createdAt", "timestamptz", (col) =>
+    .addColumn("created_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
-    .addColumn("updatedAt", "timestamptz", (col) =>
+    .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
     .execute()
@@ -28,19 +28,19 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "text", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("userId", "text", (col) => col.notNull())
+    .addColumn("user_id", "text", (col) => col.notNull())
     .addColumn("token", "text", (col) =>
       col.notNull().unique(),
     )
-    .addColumn("expiresAt", "timestamptz", (col) =>
+    .addColumn("expires_at", "timestamptz", (col) =>
       col.notNull(),
     )
-    .addColumn("ipAddress", "text")
-    .addColumn("userAgent", "text")
-    .addColumn("createdAt", "timestamptz", (col) =>
+    .addColumn("ip_address", "text")
+    .addColumn("user_agent", "text")
+    .addColumn("created_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
-    .addColumn("updatedAt", "timestamptz", (col) =>
+    .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
     .execute()
@@ -50,22 +50,22 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "text", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("userId", "text", (col) => col.notNull())
-    .addColumn("accountId", "text", (col) => col.notNull())
-    .addColumn("providerId", "text", (col) =>
+    .addColumn("user_id", "text", (col) => col.notNull())
+    .addColumn("account_id", "text", (col) => col.notNull())
+    .addColumn("provider_id", "text", (col) =>
       col.notNull(),
     )
-    .addColumn("accessToken", "text")
-    .addColumn("refreshToken", "text")
-    .addColumn("accessTokenExpiresAt", "timestamptz")
-    .addColumn("refreshTokenExpiresAt", "timestamptz")
+    .addColumn("access_token", "text")
+    .addColumn("refresh_token", "text")
+    .addColumn("access_token_expires_at", "timestamptz")
+    .addColumn("refresh_token_expires_at", "timestamptz")
     .addColumn("scope", "text")
-    .addColumn("idToken", "text")
+    .addColumn("id_token", "text")
     .addColumn("password", "text")
-    .addColumn("createdAt", "timestamptz", (col) =>
+    .addColumn("created_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
-    .addColumn("updatedAt", "timestamptz", (col) =>
+    .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
     .execute()
@@ -77,13 +77,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn("identifier", "text", (col) => col.notNull())
     .addColumn("value", "text", (col) => col.notNull())
-    .addColumn("expiresAt", "timestamptz", (col) =>
+    .addColumn("expires_at", "timestamptz", (col) =>
       col.notNull(),
     )
-    .addColumn("createdAt", "timestamptz", (col) =>
+    .addColumn("created_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
-    .addColumn("updatedAt", "timestamptz", (col) =>
+    .addColumn("updated_at", "timestamptz", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
     .execute()
@@ -91,8 +91,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("session")
     .addForeignKeyConstraint(
-      "session_userId_user_id_fk",
-      ["userId"],
+      "session_user_id_user_id_fk",
+      ["user_id"],
       "user",
       ["id"],
       (cb) => cb.onDelete("cascade"),
@@ -102,8 +102,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable("account")
     .addForeignKeyConstraint(
-      "account_userId_user_id_fk",
-      ["userId"],
+      "account_user_id_user_id_fk",
+      ["user_id"],
       "user",
       ["id"],
       (cb) => cb.onDelete("cascade"),
@@ -111,9 +111,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex("idx_account_userId")
+    .createIndex("idx_account_user_id")
     .on("account")
-    .column("userId")
+    .column("user_id")
     .execute()
 }
 
