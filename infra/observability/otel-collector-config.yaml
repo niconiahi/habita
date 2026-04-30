@@ -18,7 +18,6 @@ exporters:
   clickhouse:
     endpoint: tcp://telemetry-db:9000
     database: otel
-    create_schema: true
   debug:
     verbosity: basic
 

@@ -25,25 +25,6 @@
 
   let { data } = $props()
 
-  const SERVICE_COLORS = [
-    "#58a6ff",
-    "#3fb950",
-    "#d29922",
-    "#f778ba",
-    "#a371f7",
-    "#79c0ff",
-    "#56d364",
-    "#e3b341",
-  ]
-
-  function get_service_color(
-    service: string,
-    services: string[],
-  ): string {
-    const index = services.indexOf(service)
-    return SERVICE_COLORS[index % SERVICE_COLORS.length]
-  }
-
   function format_duration(
     nanoseconds: string | number,
   ): string {
@@ -99,10 +80,6 @@
   const roots = $derived(build_span_tree(data.spans))
   const flat_spans = $derived(flatten_tree(roots))
 
-  const unique_services = $derived([
-    ...new Set(data.spans.map((s) => s.ServiceName)),
-  ])
-
   const trace_start = $derived(
     Math.min(
       ...data.spans.map((s) =>
@@ -132,7 +109,7 @@
 
 <div class="page">
   <div class="header">
-    <a href="/traces" class="back-link">← Traces</a>
+    <a href="/traces" class="back">← Traces</a>
     <h1 class="title">
       Trace
       <span class="trace-id">
@@ -146,76 +123,58 @@
     </div>
   </div>
 
-  <div class="legend">
-    {#each unique_services as service}
-      <span class="legend-item">
-        <span
-          class="legend-dot"
-          style="background: {get_service_color(service, unique_services)}"
-        ></span>
-        {service}
-      </span>
+  <div class="waterfall-container">
+    {#each flat_spans as { span, depth }}
+      {@const span_start =
+        new Date(span.Timestamp).getTime() - trace_start}
+      {@const span_duration =
+        Number(span.Duration) / 1_000_000}
+      {@const left_percent =
+        trace_duration > 0
+          ? (span_start / trace_duration) * 100
+          : 0}
+      {@const width_percent =
+        trace_duration > 0
+          ? Math.max(
+              (span_duration / trace_duration) * 100,
+              0.3,
+            )
+          : 100}
+      <button
+        class="span-row"
+        class:selected={selected_span?.SpanId === span.SpanId}
+        class:error-span={span.StatusCode === "STATUS_CODE_ERROR"}
+        onclick={() =>
+          (selected_span =
+            selected_span?.SpanId === span.SpanId
+              ? null
+              : span)}
+      >
+        <div
+          class="span-label"
+          style="padding-left: {depth * 16 + 8}px"
+        >
+          <span class="span-name">{span.SpanName}</span>
+          <span class="span-duration">
+            {format_duration(span.Duration)}
+          </span>
+        </div>
+        <div class="bar-container">
+          <div
+            class="bar"
+            style="left: {left_percent}%; width: {width_percent}%"
+          ></div>
+        </div>
+      </button>
     {/each}
   </div>
 
-  <div class="waterfall-container">
-    <div class="waterfall">
-      {#each flat_spans as { span, depth }}
-        {@const span_start =
-          new Date(span.Timestamp).getTime() - trace_start}
-        {@const span_duration =
-          Number(span.Duration) / 1_000_000}
-        {@const left_percent =
-          trace_duration > 0
-            ? (span_start / trace_duration) * 100
-            : 0}
-        {@const width_percent =
-          trace_duration > 0
-            ? Math.max(
-                (span_duration / trace_duration) * 100,
-                0.3,
-              )
-            : 100}
-        <button
-          class="span-row"
-          class:selected={selected_span?.SpanId ===
-            span.SpanId}
-          class:error-span={span.StatusCode ===
-            "STATUS_CODE_ERROR"}
-          onclick={() =>
-            (selected_span =
-              selected_span?.SpanId === span.SpanId
-                ? null
-                : span)}
-        >
-          <div
-            class="span-label"
-            style="padding-left: {depth * 16 + 8}px"
-          >
-            <span class="span-name">{span.SpanName}</span>
-            <span class="span-duration">
-              {format_duration(span.Duration)}
-            </span>
-          </div>
-          <div class="span-bar-container">
-            <div
-              class="span-bar"
-              style="left: {left_percent}%; width: {width_percent}%; background: {get_service_color(span.ServiceName, unique_services)}"
-            ></div>
-          </div>
-        </button>
-      {/each}
-    </div>
-  </div>
-
   {#if selected_span}
-    <div class="detail-panel">
+    <div class="detail">
       <div class="detail-header">
-        <h2 class="detail-title">
-          {selected_span.SpanName}
-        </h2>
+        <h2 class="detail-title">{selected_span.SpanName}</h2>
         <button
-          class="close-button"
+          class="close"
           onclick={() => (selected_span = null)}
         >
           ×
@@ -228,8 +187,7 @@
         <dd>{selected_span.SpanKind}</dd>
         <dt>Estado</dt>
         <dd
-          class:error-text={selected_span.StatusCode ===
-            "STATUS_CODE_ERROR"}
+          class:error-text={selected_span.StatusCode === "STATUS_CODE_ERROR"}
         >
           {selected_span.StatusCode}
         </dd>
@@ -240,20 +198,16 @@
           </dd>
         {/if}
         <dt>Duracion</dt>
-        <dd>
-          {format_duration(selected_span.Duration)}
-        </dd>
+        <dd>{format_duration(selected_span.Duration)}</dd>
         <dt>Span ID</dt>
         <dd class="mono">{selected_span.SpanId}</dd>
         {#if selected_span.ParentSpanId}
           <dt>Parent ID</dt>
-          <dd class="mono">
-            {selected_span.ParentSpanId}
-          </dd>
+          <dd class="mono">{selected_span.ParentSpanId}</dd>
         {/if}
       </dl>
       {#if Object.keys(selected_span.SpanAttributes).length > 0}
-        <h3 class="attributes-title">Atributos</h3>
+        <h3 class="attrs-title">Atributos</h3>
         <dl class="detail-list">
           {#each Object.entries(selected_span.SpanAttributes) as [key, value]}
             <dt>{key}</dt>
@@ -275,13 +229,13 @@
     margin-bottom: 16px;
   }
 
-  .back-link {
-    color: var(--link, #58a6ff);
+  .back {
+    color: var(--trace);
     text-decoration: none;
     font-size: 13px;
   }
 
-  .back-link:hover {
+  .back:hover {
     text-decoration: underline;
   }
 
@@ -289,51 +243,26 @@
     font-size: 20px;
     font-weight: 600;
     margin: 8px 0 4px;
+    color: var(--trace);
   }
 
   .trace-id {
-    font-family: "SF Mono", "Fira Code", monospace;
+    font-family: var(--mono);
     font-size: 16px;
-    color: var(--text-muted, #8b949e);
+    color: var(--text-muted);
   }
 
   .meta {
     display: flex;
     gap: 16px;
     font-size: 13px;
-    color: var(--text-muted, #8b949e);
-  }
-
-  .legend {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-muted, #8b949e);
-  }
-
-  .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    color: var(--text-secondary);
   }
 
   .waterfall-container {
-    border: 1px solid var(--border, #30363d);
+    border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
-  }
-
-  .waterfall {
-    display: flex;
-    flex-direction: column;
   }
 
   .span-row {
@@ -345,8 +274,7 @@
     color: inherit;
     text-align: left;
     cursor: pointer;
-    border-bottom: 1px solid
-      var(--border-subtle, #21262d);
+    border-bottom: 1px solid var(--border-subtle);
     padding: 0;
     min-height: 28px;
     font: inherit;
@@ -354,15 +282,15 @@
   }
 
   .span-row:hover {
-    background: var(--hover-bg, #161b22);
+    background: var(--hover-bg);
   }
 
   .span-row.selected {
-    background: var(--active-bg, #1c2128);
+    background: var(--trace-subtle);
   }
 
   .span-row.error-span {
-    background: rgba(248, 81, 73, 0.05);
+    background: var(--error-subtle);
   }
 
   .span-label {
@@ -381,33 +309,34 @@
   }
 
   .span-duration {
-    font-family: "SF Mono", "Fira Code", monospace;
+    font-family: var(--mono);
     font-size: 11px;
-    color: var(--text-muted, #8b949e);
+    color: var(--text-muted);
     white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .span-bar-container {
+  .bar-container {
     position: relative;
     height: 16px;
     margin: 0 8px;
   }
 
-  .span-bar {
+  .bar {
     position: absolute;
     height: 100%;
     border-radius: 3px;
     min-width: 2px;
-    opacity: 0.8;
+    background: var(--trace);
+    opacity: 0.7;
   }
 
-  .detail-panel {
+  .detail {
     margin-top: 16px;
-    border: 1px solid var(--border, #30363d);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 16px;
-    background: var(--nav-bg, #161b22);
+    background: var(--bg-raised);
   }
 
   .detail-header {
@@ -423,17 +352,17 @@
     margin: 0;
   }
 
-  .close-button {
+  .close {
     background: none;
     border: none;
-    color: var(--text-muted, #8b949e);
+    color: var(--text-muted);
     font-size: 20px;
     cursor: pointer;
     padding: 4px 8px;
   }
 
-  .close-button:hover {
-    color: var(--text, #e1e4e8);
+  .close:hover {
+    color: var(--text);
   }
 
   .detail-list {
@@ -445,7 +374,7 @@
   }
 
   dt {
-    color: var(--text-muted, #8b949e);
+    color: var(--text-muted);
     font-weight: 500;
   }
 
@@ -454,18 +383,18 @@
     word-break: break-all;
   }
 
-  .attributes-title {
+  .attrs-title {
     font-size: 14px;
     font-weight: 600;
     margin: 16px 0 8px;
   }
 
   .mono {
-    font-family: "SF Mono", "Fira Code", monospace;
+    font-family: var(--mono);
     font-size: 12px;
   }
 
   .error-text {
-    color: var(--red, #f85149);
+    color: var(--error);
   }
 </style>
