@@ -1,5 +1,6 @@
 import { error } from "@sveltejs/kit"
 import { env } from "$env/dynamic/private"
+import { require_otel_endpoint } from "$lib/telemetry/env"
 import type { RequestHandler } from "./$types"
 
 const ALLOWED_SIGNALS = new Set(["v1/traces", "v1/logs"])
@@ -13,14 +14,10 @@ export const POST: RequestHandler = async ({
     error(404, "señal no soportada")
   }
 
-  const endpoint = env.OTEL_EXPORTER_OTLP_ENDPOINT
-  if (!endpoint) {
-    error(500, "OTEL_EXPORTER_OTLP_ENDPOINT no está configurado")
-  }
-
+  const otel_endpoint = require_otel_endpoint(env)
   const body = await request.arrayBuffer()
   const response = await fetch(
-    `${endpoint}/${signal}`,
+    `${otel_endpoint}/${signal}`,
     {
       method: "POST",
       headers: {
