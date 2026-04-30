@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "__Secure-better-auth.session_token",
-      "value": "Am98rrQqQRYWm27pTuzSEGHyd9k4N3Op.iwH92ZUN%2FChawDTGh%2FGFj2b9BZL5lkmTCEZ88d9MNAc%3D",
-      "domain": "dev.habita.rent",
+      "value": "nGNAI65A6ZWZseSaEz8J8Mk4IEoAipTH.fzeeaehK5ehehDfxIimBhMd6gbQomJubFb4aCghXdxE%3D",
+      "domain": ".dev.habita.rent",
       "path": "/",
-      "expires": 1775310504.087182,
+      "expires": 1780145325.195378,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Lax"
