@@ -64,6 +64,11 @@ export class TelemetryPlugin implements KyselyPlugin {
 }
 
 function get_table(node: RootOperationNode) {
-  // @ts-expect-error it's a complex object, but the name is there
-  return node.from?.froms[0].table.identifier.name
+  const n = node as any
+  return (
+    n.from?.froms?.[0]?.table?.identifier?.name ??
+    n.into?.table?.identifier?.name ??
+    n.table?.table?.identifier?.name ??
+    "unknown"
+  )
 }
