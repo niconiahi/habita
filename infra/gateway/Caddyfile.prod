@@ -62,3 +62,15 @@ status.habita.rent {
   # Enable compression
   encode gzip
 }
+
+observability.habita.rent {
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+  }
+
+  reverse_proxy observability-ui:3001
+
+  encode gzip
+}

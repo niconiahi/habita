@@ -1,4 +1,11 @@
 services:
+  topics:
+    image: ${BROKER_IMAGE:?BROKER_IMAGE required}
+    env_file:
+      - ../.env.prod
+    environment:
+      NODE_ENV: production
+
   email:
     image: ${BROKER_IMAGE:?BROKER_IMAGE required}
     env_file:

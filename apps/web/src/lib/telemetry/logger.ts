@@ -1,4 +1,8 @@
-import { SpanStatusCode, trace } from "@opentelemetry/api"
+import {
+  context,
+  SpanStatusCode,
+  trace,
+} from "@opentelemetry/api"
 import {
   type LogAttributes,
   logs,
@@ -13,19 +17,11 @@ function warn(
   message: string,
   attributes?: LogAttributes,
 ): void {
-  const span = trace.getActiveSpan()
-  const span_context = span?.spanContext()
-  const _attributes: LogAttributes = {
-    ...attributes,
-  }
-  if (span_context) {
-    _attributes.trace_id = span_context.traceId
-    _attributes.span_id = span_context.spanId
-  }
   get_otel_logger().emit({
     severityNumber: SeverityNumber.WARN,
     body: message,
-    attributes: _attributes,
+    attributes,
+    context: context.active(),
   })
 }
 
@@ -33,54 +29,42 @@ function info(
   message: string,
   attributes?: LogAttributes,
 ): void {
-  const span = trace.getActiveSpan()
-  const span_context = span?.spanContext()
-  const _attributes: LogAttributes = {
-    ...attributes,
-  }
-  if (span_context) {
-    _attributes.trace_id = span_context.traceId
-    _attributes.span_id = span_context.spanId
-  }
   get_otel_logger().emit({
     severityNumber: SeverityNumber.INFO,
     body: message,
-    attributes: _attributes,
+    attributes,
+    context: context.active(),
   })
 }
 
 function error(
   message: string,
   attributes?: LogAttributes,
-  error?: Error,
+  thrown_error?: Error,
 ) {
   const span = trace.getActiveSpan()
-  const span_context = span?.spanContext()
-  const _attributes: LogAttributes = {
-    ...attributes,
-  }
-  if (span_context) {
-    _attributes.trace_id = span_context.traceId
-    _attributes.span_id = span_context.spanId
-  }
-  if (error) {
-    _attributes.error = {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    }
-  }
-  if (span && error) {
-    span.recordException(error)
+  if (span && thrown_error) {
+    span.recordException(thrown_error)
     span.setStatus({
       code: SpanStatusCode.ERROR,
-      message: error.message,
+      message: thrown_error.message,
     })
   }
+
+  const error_attributes: LogAttributes = {
+    ...attributes,
+  }
+  if (thrown_error) {
+    error_attributes["error.name"] = thrown_error.name
+    error_attributes["error.message"] = thrown_error.message
+    error_attributes["error.stack"] = thrown_error.stack ?? ""
+  }
+
   get_otel_logger().emit({
     severityNumber: SeverityNumber.ERROR,
     body: message,
-    attributes: _attributes,
+    attributes: error_attributes,
+    context: context.active(),
   })
 }
 

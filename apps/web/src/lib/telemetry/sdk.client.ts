@@ -1,3 +1,4 @@
+import { PUBLIC_OTEL_ENVIRONMENT } from "$env/static/public"
 import { trace } from "@opentelemetry/api"
 import { logs } from "@opentelemetry/api-logs"
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http"
@@ -23,10 +24,11 @@ export function init_browser_telemetry() {
   started = true
   const resource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: "web-browser",
-    [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: "production",
+    [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]:
+      PUBLIC_OTEL_ENVIRONMENT,
   })
   const trace_exporter = new OTLPTraceExporter({
-    url: "/api/logger",
+    url: "/api/otel/v1/traces",
   })
   const tracer_provider = new BasicTracerProvider({
     resource,
@@ -36,7 +38,7 @@ export function init_browser_telemetry() {
   })
   trace.setGlobalTracerProvider(tracer_provider)
   const log_exporter = new OTLPLogExporter({
-    url: "/api/logger",
+    url: "/api/otel/v1/logs",
   })
   const logger_provider = new LoggerProvider({
     resource,

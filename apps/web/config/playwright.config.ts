@@ -5,7 +5,7 @@ if (!process.env.POSTGRES_USER) {
   const { config } = await import("dotenv")
   config({
     path: new URL(
-      "../../infra/development/.env",
+      "../../infra/.env.dev",
       import.meta.url,
     ).pathname,
   })

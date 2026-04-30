@@ -18,7 +18,7 @@ dco media up -d    # imgproxy image service
 dco pdf up -d      # PDF generation service
 dco scheduler up -d # Ofelia cron jobs
 dco status up -d   # Gatus uptime monitoring
-dco obs up -d      # Observability stack (optional)
+dco observability up -d  # Observability stack (ClickHouse + OTel Collector + UI)
 dco geo up -d      # Nominatim geocoding (optional, heavy)
 ```
 
@@ -53,18 +53,13 @@ dco geo up -d      # Nominatim geocoding (optional, heavy)
 │ └──────┘      └────────┘     └──────────┘     └───────────┘                 │
 │                                                                              │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│                        OBSERVABILITY NETWORK                                 │
+│                        OBSERVABILITY (internal network)                       │
 │                                                                              │
-│   ┌──────────────┐     ┌────────────┐     ┌──────────────┐                  │
-│   │otel-collector│◄────│query-service│────►│  clickhouse  │                  │
-│   │ :4317/:4318  │     │   :8080    │     │ :9000/:8123  │                  │
-│   └──────────────┘     └────────────┘     └──────┬───────┘                  │
-│          │                   │                    │                          │
-│          │                   ▼                    ▼                          │
-│          │             ┌──────────┐         ┌───────────┐                   │
-│          └────────────►│ frontend │         │ zookeeper │                   │
-│                        │  :3301   │         │   :2181   │                   │
-│                        └──────────┘         └───────────┘                   │
+│   ┌──────────────┐     ┌──────────────┐     ┌───────────────────┐           │
+│   │otel-collector│────►│ telemetry-db │     │  observability-ui │           │
+│   │ :4317/:4318  │     │ (ClickHouse) │◄────│  :5175 / :3001    │           │
+│   └──────────────┘     │ :9000/:8123  │     └───────────────────┘           │
+│                        └──────────────┘                                      │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -73,32 +68,24 @@ dco geo up -d      # Nominatim geocoding (optional, heavy)
 ```
 infra/
 ├── development/           # Development environment
-│   ├── storage/          # PostgreSQL + Valkey + MinIO (stateful)
-│   ├── app/              # SvelteKit + consumer (stateless)
-│   ├── api/              # Go API service
-│   ├── broker/           # Redpanda message broker
-│   ├── gateway/          # Caddy reverse proxy (dev certs)
-│   ├── media/            # imgproxy image processing
-│   ├── pdf/              # PDF generation service
-│   ├── geo/              # Nominatim geocoding
-│   ├── scheduler/        # Ofelia cron jobs
-│   ├── status/           # Gatus uptime monitoring
-│   ├── observability/    # SigNoz stack
-│   └── .env              # Environment variables
-│
-├── production/           # Production environment
-│   ├── storage/          # PostgreSQL + Valkey + MinIO (stateful)
-│   ├── app/              # SvelteKit + consumer (stateless)
-│   ├── api/              # Go API service
-│   ├── broker/           # Redpanda message broker
-│   ├── gateway/          # Caddy (Let's Encrypt)
-│   ├── media/            # imgproxy
-│   ├── pdf/              # PDF generation service
-│   ├── geo/              # Nominatim
-│   ├── scheduler/        # Ofelia + backup containers
-│   ├── status/           # Gatus uptime monitoring
-│   └── .env              # Production secrets
-│
+├── storage/              # PostgreSQL + Valkey + Object Store
+│   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   └── docker-compose.prod.yml
+├── app/                  # SvelteKit web application
+├── consumer/             # Kafka consumer workers
+├── api/                  # Go API service
+├── broker/               # Redpanda message broker
+├── gateway/              # Caddy reverse proxy + Caddyfiles
+├── media/                # imgproxy image processing
+├── pdf/                  # PDF generation service
+├── geo/                  # Nominatim geocoding
+├── scheduler/            # Ofelia cron jobs
+├── status/               # Gatus uptime monitoring
+├── observability/        # ClickHouse + OTel Collector + UI
+├── autoheal/             # Container health monitoring
+├── .env.dev              # Development environment variables
+├── .env.prod             # Production secrets (encrypted)
 └── README.md             # This file
 ```
 
@@ -123,17 +110,9 @@ docker network create internal
 - nominatim (Geocoding)
 - gatus (Status monitoring)
 - ofelia (Scheduler)
-- otel-collector (bridges to observability)
-
-### observability (bridge)
-Isolated network for the SigNoz monitoring stack.
-
-**Connected services:**
-- zookeeper-1
-- clickhouse
-- query-service
-- otel-collector (also on internal)
-- frontend
+- telemetry-db (ClickHouse)
+- otel-collector
+- observability-ui
 
 ## Services
 
@@ -159,15 +138,13 @@ Isolated network for the SigNoz monitoring stack.
 | gatus | twinproduction/gatus:v5.14.0 | - | Uptime and status monitoring |
 | ofelia | mcuadros/ofelia:v0.3.12 | - | Docker-native cron scheduler |
 
-### Observability (SigNoz)
+### Observability
 
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
-| zookeeper-1 | signoz/zookeeper:3.7.1 | 2181 | Coordination service |
-| clickhouse | clickhouse/clickhouse-server:24.1.2-alpine | 9000, 8123 | Analytics database |
-| query-service | signoz/query-service:0.69.0 | 8080 | SigNoz query engine |
-| otel-collector | signoz/signoz-otel-collector:0.111.16 | 4317, 4318 | OpenTelemetry collector |
-| frontend | signoz/frontend:0.69.0 | 3301 | SigNoz dashboard |
+| telemetry-db | clickhouse/clickhouse-server:24.1.2-alpine | 8123 | Traces, logs, metrics storage |
+| otel-collector | otel/opentelemetry-collector-contrib:0.98.0 | 4317, 4318 | OTLP receiver → ClickHouse exporter |
+| observability-ui | custom (SvelteKit) | 5175/3001 | Log explorer, trace viewer |
 
 ### Backup (Production Only)
 
@@ -194,7 +171,9 @@ All services have memory and CPU limits configured:
 | nominatim | 8G | 8G | 4.0 |
 | gatus | 128M | 128M | 0.25 |
 | ofelia | 64M | 128M | 0.25 |
-| clickhouse | 2G | - | - |
+| telemetry-db | 1G | 1G | 1.0 |
+| otel-collector | 256M | 256M | 0.5 |
+| observability-ui | 512M | 256M | 0.5-1.0 |
 
 ## Health Checks
 
@@ -213,10 +192,9 @@ All services have health checks configured:
 | pdf | HTTP /health | 10s |
 | nominatim | HTTP /status | 30s |
 | ofelia | pgrep ofelia | 30s |
-| clickhouse | wget /ping | 30s |
-| query-service | HTTP /api/v1/health | 30s |
+| telemetry-db | wget /ping | 30s |
 | otel-collector | HTTP :13133/ | 30s |
-| frontend | wget localhost:3301 | 30s |
+| observability-ui | HTTP /health | 30s |
 
 ## Logging
 
@@ -259,12 +237,6 @@ just restore-test backups/habita_20240101_030000.sql.gz.age
 
 ## Security
 
-### ClickHouse Password
-Password: `signoz_clickhouse_secure_2024`
-- SHA256 hash in `clickhouse-users.xml`
-- Used in OTel collector connection strings
-- Network restricted to Docker internal networks
-
 ### Secrets Management
 - Environment files encrypted with SOPS + Age
 - Decrypt: `just secrets decrypt`
@@ -277,23 +249,27 @@ Password: `signoz_clickhouse_secure_2024`
 
 ## Monitoring
 
-### SigNoz Dashboard
-Access at: http://localhost:3301
+### Observability UI
+- Dev: https://observability.dev.habita.rent
+- Prod: https://observability.habita.rent
 
 Features:
-- Distributed tracing
-- Metrics visualization
-- Log aggregation
-- Custom dashboards
+- Log explorer with service/severity filtering
+- Trace list with duration and status
+- Trace detail with span waterfall visualization
+- Cross-subdomain auth via Better Auth
 
-### Prometheus Alerts
-Configured alerts in `observability/alerts.yml`:
-- High memory usage
-- Container restarts
-- Database connection limits
-- High error rates
-- High latency
-- Backup age monitoring
+### ClickHouse Direct Queries
+```bash
+# Check trace count
+curl "http://localhost:8123/?query=SELECT+count()+FROM+otel.otel_traces"
+
+# Check log count
+curl "http://localhost:8123/?query=SELECT+count()+FROM+otel.otel_logs"
+
+# List services sending telemetry
+curl "http://localhost:8123/?query=SELECT+DISTINCT+ServiceName+FROM+otel.otel_traces"
+```
 
 ## Troubleshooting
 
@@ -308,8 +284,9 @@ docker network create internal
 
 ### View service logs
 ```bash
-dco app svelte logs -f
-dco obs clickhouse logs -f
+just logs svelte
+just logs telemetry-db
+just logs otel-collector
 ```
 
 ### Check health status
@@ -319,8 +296,9 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 
 ### Reset observability data
 ```bash
-dco obs down -v
-dco obs up -d
+# Stop observability stack and delete ClickHouse volume
+docker compose -p observability down -v
+just up
 ```
 
 ## Commands Reference

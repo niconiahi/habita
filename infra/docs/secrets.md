@@ -28,13 +28,13 @@ Habita uses [SOPS](https://github.com/getsops/sops) with [age](https://github.co
 
 ```bash
 # 1. Edit the plaintext file locally
-vim infra/production/.env
+vim infra/.env.prod
 
 # 2. Encrypt it
 just secrets encrypt production
 
 # 3. Commit and push
-git add infra/production/.env.enc
+git add infra/.env.prod.enc
 git commit -m "update: add NEW_SECRET"
 git push
 ```

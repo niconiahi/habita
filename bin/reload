@@ -5,22 +5,13 @@ source "$(dirname "$0")/lib.sh"
 
 service="$1"
 
-case "$service" in
-  svelte)                compose app up -d --force-recreate svelte ;;
-  db)                    compose storage up -d --force-recreate db ;;
-  kv)                    compose storage up -d --force-recreate kv ;;
-  object)                compose storage up -d --force-recreate object ;;
-  go)                    compose api up -d --force-recreate go ;;
-  consumer-email)        compose consumer up -d --force-recreate email ;;
-  consumer-subscription) compose consumer up -d --force-recreate subscription ;;
-  consumer-escalation)   compose consumer up -d --force-recreate escalation ;;
-  caddy)                 compose gateway up -d --force-recreate caddy ;;
-  image)                 compose media up -d --force-recreate image ;;
-  redpanda)              compose broker up -d --force-recreate redpanda ;;
-  ofelia)                compose scheduler up -d --force-recreate ofelia ;;
-  pdf)                   compose pdf up -d --force-recreate pdf ;;
-  gatus)                 compose status up -d --force-recreate gatus ;;
-  nominatim)             compose geo up -d --force-recreate nominatim ;;
-  tileserver)            compose geo up -d --force-recreate tileserver ;;
-  *) echo "unknown service: $service"; exit 1 ;;
-esac
+for compose_file in "$INFRA"/*/docker-compose.yml; do
+  if grep -q "^  ${service}:" "$compose_file" 2>/dev/null; then
+    stack=$(basename "$(dirname "$compose_file")")
+    compose "$stack" up -d --force-recreate "$service"
+    exit 0
+  fi
+done
+
+echo "unknown service: $service"
+exit 1

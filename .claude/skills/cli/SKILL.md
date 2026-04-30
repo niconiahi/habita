@@ -17,18 +17,17 @@ All project operations go through `just`. Auto-detects environment: development 
 just up                        # Start all services (correct order, waits for db health)
 just down                      # Stop all services
 just status                    # Show status of all services
-just restart app               # Restart a project
-just restart app svelte        # Restart a specific service
-just reload app svelte         # Force-recreate a service (picks up image/config changes)
-just rebuild app svelte        # Rebuild image from scratch (after Dockerfile changes)
-just logs svelte               # Follow svelte logs
+just restart svelte             # Restart a service (uses compose service name)
+just reload otel-collector      # Force-recreate a service (picks up image/config changes)
+just rebuild svelte             # Rebuild image from scratch (after Dockerfile changes)
+just logs svelte               # Follow logs (uses compose service name from any stack)
 just logs db                   # Follow database logs
 just logs kv                   # Follow key-value cache logs
 just logs object               # Follow object storage logs
 just logs go                   # Follow Go API logs
-just logs consumer-email       # Follow email consumer logs
-just logs consumer-subscription # Follow subscription consumer logs
-just logs consumer-escalation  # Follow escalation consumer logs
+just logs email                # Follow email consumer logs
+just logs subscription         # Follow subscription consumer logs
+just logs escalation           # Follow escalation consumer logs
 just logs caddy                # Follow reverse proxy logs
 just logs image                # Follow image processing logs
 just logs redpanda             # Follow message broker logs
@@ -38,6 +37,9 @@ just logs gatus                # Follow status monitor logs
 just logs nominatim            # Follow geocoding logs
 just logs tileserver           # Follow tile server logs
 just logs autoheal             # Follow autoheal logs
+just logs otel-collector       # Follow OpenTelemetry collector logs
+just logs telemetry-db         # Follow ClickHouse telemetry logs
+just logs observability-ui     # Follow observability web app logs
 just deps                      # Reinstall node_modules in svelte container
 just preview                   # Run production build locally (tests ORIGIN-dependent flows)
 just prune                     # Clean up unused Docker images and volumes
@@ -140,7 +142,7 @@ When diagnosing production issues, use `just ssh run` proactively to gather info
 
 ```bash
 # WRONG — raw docker compose
-docker compose -f infra/development/app/docker-compose.yml run --rm svelte pnpm run lint:format
+docker compose -f infra/app/docker-compose.yml run --rm svelte pnpm run lint:format
 
 # RIGHT
 just lint format

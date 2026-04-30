@@ -1,0 +1,1 @@
+config/kysely.config.ts

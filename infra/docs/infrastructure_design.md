@@ -193,7 +193,7 @@ Uses [Ofelia](https://github.com/mcuadros/ofelia) to run scheduled tasks via `do
 | **imgproxy user** | root | 1000:1000 | Dev needs cert installation |
 | **Security headers** | None | Full set | Dev flexibility |
 | **Backups** | Local only | Encrypted + R2 upload | No cloud in dev |
-| **Observability** | Full SigNoz stack | Axiom (external) | Self-hosted for dev |
+| **Observability** | Self-hosted (ClickHouse + OTel Collector + UI) | Same self-hosted stack | Identical pipeline in both environments |
 
 ### Aligned Configurations
 
@@ -226,7 +226,7 @@ docker network create internal
 docker volume create backups
 
 # 3. Generate local TLS certificates
-cd infra/development/gateway/certs
+cd infra/gateway/certs
 mkcert dev.habita.rent
 mkcert -install  # Trust the CA
 
@@ -298,11 +298,11 @@ See [`secrets.md`](secrets.md) for the full workflow (adding, changing, applying
 **Key configuration** — `.sops.yaml` defines encryption rules per path:
 ```yaml
 creation_rules:
-  - path_regex: infra/development/\.env(\.enc)?$
+  - path_regex: infra/\.env\.dev(\.enc)?$
     age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
-  - path_regex: infra/production/\.env(\.enc)?$
+  - path_regex: infra/\.env\.prod(\.enc)?$
     age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
-  - path_regex: infra/production/scheduler/rclone\.conf(\.enc)?$
+  - path_regex: infra/scheduler/rclone\.conf(\.enc)?$
     age: age1k9mtnlyx6383ukprf7s8ahc8hzs9ftpdnqa858nkhqpmc5y92s7qgkgzqc
 ```
 
@@ -358,31 +358,35 @@ This pattern:
 ### Adding New Jobs
 
 1. Add script in `apps/web/src/lib/server/cron/`
-2. Add job definition to both `infra/development/scheduler/ofelia.ini` and `infra/production/scheduler/ofelia.ini`
+2. Add job definition to `infra/scheduler/ofelia.ini`
 3. Use consistent paths: `/app/src/lib/server/cron/your_script.ts`
 
 ---
 
 ## Observability
 
-### Development: Self-hosted SigNoz
+### Pipeline
 
-Located in `infra/development/observability/`:
-- ClickHouse for storage
-- OpenTelemetry Collector
-- Prometheus for metrics
-- AlertManager for alerts
+All environments use the same self-hosted pipeline:
 
-Access at: `http://localhost:3301`
-
-### Production: Axiom
-
-Traces and logs are sent to [Axiom](https://axiom.co):
-
-```yaml
-OTEL_EXPORTER_OTLP_ENDPOINT: https://api.axiom.co
-OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer $AXIOM_TOKEN,X-Axiom-Dataset=$AXIOM_DATASET
 ```
+App → OTLP → OTel Collector → ClickHouse
+```
+
+Located in `infra/observability/`:
+- `telemetry-db` — ClickHouse for traces, logs, and metrics storage
+- `otel-collector` — OpenTelemetry Collector (contrib) with native ClickHouse exporter
+- `observability-ui` — Custom SvelteKit app for viewing telemetry data
+
+All services point to `http://otel-collector:4318` via `OTEL_EXPORTER_OTLP_ENDPOINT` in compose environment.
+
+### Observability UI
+
+Access at:
+- Dev: `https://observability.dev.habita.rent`
+- Prod: `https://observability.habita.rent`
+
+Pages: log explorer, trace list, trace detail with span waterfall. Auth via cross-subdomain Better Auth session sharing.
 
 ### Instrumentation
 
@@ -390,6 +394,8 @@ The SvelteKit app uses OpenTelemetry auto-instrumentation:
 - HTTP requests
 - Database queries (pg)
 - Redis operations (ioredis)
+
+Server SDK initialized in `hooks.server.ts` via `init_telemetry()`. Browser telemetry proxied through `/api/otel/[...signal]`.
 
 Key packages:
 ```json
@@ -427,10 +433,10 @@ The deploy workflow only triggers for relevant changes:
 |------|----------|
 | `apps/web/**` | Svelte build + app deploy |
 | `apps/go/**` | Go build + api deploy |
-| `infra/production/scheduler/**` | scheduler deploy |
-| `infra/production/gateway/**` | gateway deploy |
-| `infra/production/media/**` | media deploy |
-| `infra/production/.env.enc` | secrets deploy |
+| `infra/scheduler/**` | scheduler deploy |
+| `infra/gateway/**` | gateway deploy |
+| `infra/media/**` | media deploy |
+| `infra/.env.prod.enc` | secrets deploy |
 
 ### Image Building
 
