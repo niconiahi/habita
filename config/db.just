@@ -4,7 +4,6 @@ suffix := if justfile_directory() == "/opt/habita" { "prod" } else { "dev" }
 manifest_env := `bin/load-manifest`
 
 app_compose := "docker compose -p app " + manifest_env + " -f infra/app/docker-compose.yml -f infra/app/docker-compose." + suffix + ".yml"
-obs_compose := "docker compose -p observability " + manifest_env + " -f infra/observability/docker-compose.yml -f infra/observability/docker-compose." + suffix + ".yml"
 
 # Open psql shell (e.g., just db shell, just db shell "SELECT 1")
 shell query="":
@@ -22,10 +21,6 @@ shell query="":
 # Run pending migrations
 migrate:
   {{app_compose}} run --rm svelte pnpm kysely migrate:latest
-
-# Run observability migrations
-migrate-obs:
-  {{obs_compose}} run --rm -e OBS_POSTGRES_DB=observability observability-ui pnpm kysely migrate:latest
 
 # Regenerate database types from current schema
 types:

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "prepare": "svelte-kit sync || echo ''"
+    "prepare": "svelte-kit sync || echo ''",
+    "lint:types": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "lint:format": "prettier --write ."
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.4.0",
