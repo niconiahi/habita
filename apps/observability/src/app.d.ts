@@ -1,5 +1,5 @@
 declare global {
-  var __auth: unknown
+  var __obs_auth: unknown
 
   namespace App {
     interface Locals {

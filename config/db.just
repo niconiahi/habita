@@ -1,8 +1,10 @@
 # Database recipes
 
-env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
-infra := "infra/" + env
+suffix := if justfile_directory() == "/opt/habita" { "prod" } else { "dev" }
 manifest_env := `bin/load-manifest`
+
+app_compose := "docker compose -p app " + manifest_env + " -f infra/app/docker-compose.yml -f infra/app/docker-compose." + suffix + ".yml"
+obs_compose := "docker compose -p observability " + manifest_env + " -f infra/observability/docker-compose.yml -f infra/observability/docker-compose." + suffix + ".yml"
 
 # Open psql shell (e.g., just db shell, just db shell "SELECT 1")
 shell query="":
@@ -19,30 +21,31 @@ shell query="":
 
 # Run pending migrations
 migrate:
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:latest
+  {{app_compose}} run --rm svelte pnpm kysely migrate:latest
+
+# Run observability migrations
+migrate-obs:
+  {{obs_compose}} run --rm -e OBS_POSTGRES_DB=observability observability-ui pnpm kysely migrate:latest
 
 # Regenerate database types from current schema
 types:
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:types
+  {{app_compose}} run --rm svelte pnpm run db:types
 
 # Run database seeds
 seed:
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm run db:seed
+  {{app_compose}} run --rm svelte pnpm run db:seed
 
 # Create a new migration file (e.g., just db make add_users_table)
 make name:
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte pnpm kysely migrate:make {{name}}
+  {{app_compose}} run --rm svelte pnpm kysely migrate:make {{name}}
 
 # Reset database: tear down storage + app, remove volumes, restart fresh with migrations and seeds
-# Usage: ENV=production just db reset
 reset:
   #!/usr/bin/env bash
   set -euo pipefail
 
-  echo "Environment: {{env}}"
-
-  STORAGE_COMPOSE="docker compose -p storage {{manifest_env}} -f {{infra}}/storage/docker-compose.yml"
-  APP_COMPOSE="docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml"
+  APP_COMPOSE="{{app_compose}}"
+  STORAGE_COMPOSE="docker compose -p storage {{manifest_env}} -f infra/storage/docker-compose.yml -f infra/storage/docker-compose.{{suffix}}.yml"
   RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""
@@ -81,7 +84,7 @@ reset:
   $APP_COMPOSE up -d
 
   echo ""
-  echo "✅ Database reset complete!"
+  echo "done"
 
 # Point-in-time recovery from WAL archive (e.g., just db restore '2026-04-22 15:30:00')
 restore timestamp="":
@@ -108,7 +111,7 @@ restore-test backup_file="":
     BACKUP=$(docker exec "$UPLOADER_CONTAINER" \
       sh -c 'ls -t /backups/*.sql.gz.age 2>/dev/null | head -1')
     if [[ -z "$BACKUP" ]]; then
-      echo "❌ No encrypted backup found in /backups"
+      echo "no encrypted backup found in /backups"
       exit 1
     fi
     echo "Using latest backup: $BACKUP"
@@ -142,15 +145,10 @@ restore-test backup_file="":
     psql -U postgres -d "$TEST_DB" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
   echo "   Tables found: $TABLES"
 
-  # TODO(human): Add domain-specific sanity queries here
-  # Example: Check that critical tables have data
-  # USERS=$(docker exec "$DB_CONTAINER" psql -U postgres -d "$TEST_DB" -t -c "SELECT COUNT(*) FROM users;")
-  # echo "   Users: $USERS"
-
   # Cleanup
   echo ""
   echo "4. Cleaning up test database..."
   docker exec "$DB_CONTAINER" dropdb -U postgres "$TEST_DB"
 
   echo ""
-  echo "✅ Restore test completed successfully!"
+  echo "done"

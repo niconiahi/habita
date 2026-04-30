@@ -42,8 +42,7 @@ services:
     environment:
       PORT: 5175
       BETTER_AUTH_URL: https://observability.dev.habita.rent
-      MAIN_APP_URL: https://dev.habita.rent
-      COOKIE_DOMAIN: .dev.habita.rent
+      OBS_POSTGRES_DB: observability
       OTEL_ENVIRONMENT: development
     deploy:
       resources:

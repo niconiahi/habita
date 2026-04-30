@@ -23,10 +23,9 @@ const SpanRowSchema = v.object({
 
 export const load: PageServerLoad = async ({
   locals,
-  url,
   params,
 }) => {
-  require_authentication(locals, url)
+  require_authentication(locals)
 
   const trace_id = escape_clickhouse(params.trace_id)
 

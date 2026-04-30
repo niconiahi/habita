@@ -10,24 +10,21 @@ export const handle: Handle = async ({
   const session = await auth.api.getSession({
     headers: event.request.headers,
   })
-  if (!session) {
+
+  if (session) {
+    event.locals.user = {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+    }
+    event.locals.session = {
+      id: session.session.id,
+    }
+  } else {
     event.locals.user = null
     event.locals.session = null
-    return svelteKitHandler({
-      event,
-      resolve,
-      auth,
-      building,
-    })
   }
-  event.locals.user = {
-    id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-  }
-  event.locals.session = {
-    id: session.session.id,
-  }
+
   return svelteKitHandler({
     event,
     resolve,
