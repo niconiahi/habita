@@ -104,6 +104,9 @@ test-infra:
   ./bin/test-infra
 
 [group('project')]
+mod observability
+
+[group('project')]
 mod db
 
 [group('project')]
