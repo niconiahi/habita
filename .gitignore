@@ -14,6 +14,7 @@ infra/.env.*
 !infra/.env.*.enc
 infra/*/scheduler/rclone.conf
 infra/scheduler/rclone.conf
+.svelte-kit
 
 # Private keys
 *-key.pem
