@@ -10,6 +10,7 @@ on:
       - 'apps/web/**'
       - 'apps/go/**'
       - 'apps/broker/**'
+      - 'apps/observability/**'
 
 env:
   REGISTRY: docker.io
@@ -27,6 +28,7 @@ jobs:
       app: ${{ steps.filter.outputs.app }}
       api: ${{ steps.filter.outputs.api }}
       broker: ${{ steps.filter.outputs.broker }}
+      observability: ${{ steps.filter.outputs.observability }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +44,8 @@ jobs:
               - 'apps/go/**'
             broker:
               - 'apps/broker/**'
+            observability:
+              - 'apps/observability/**'
 
   build-svelte:
     needs: changes
@@ -151,8 +155,44 @@ jobs:
         id: image
         run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
 
+  build-observability:
+    needs: changes
+    if: needs.changes.outputs.observability == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/observability
+          file: ./apps/observability/Dockerfile
+          target: production
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}:observability-${{ env.MERGE_SHA }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Set image output
+        id: image
+        run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
   update-manifest:
-    needs: [build-svelte, build-go, build-broker]
+    needs: [build-svelte, build-go, build-broker, build-observability]
     if: always() && !cancelled() && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
@@ -167,10 +207,12 @@ jobs:
           SVELTE_DIGEST="${{ needs.build-svelte.outputs.digest }}"
           GO_DIGEST="${{ needs.build-go.outputs.digest }}"
           BROKER_DIGEST="${{ needs.build-broker.outputs.digest }}"
+          OBSERVABILITY_DIGEST="${{ needs.build-observability.outputs.digest }}"
 
           SVELTE_IMAGE="${SVELTE_DIGEST:+${IMAGE_PREFIX}@${SVELTE_DIGEST}}"
           GO_IMAGE="${GO_DIGEST:+${IMAGE_PREFIX}@${GO_DIGEST}}"
           BROKER_IMAGE="${BROKER_DIGEST:+${IMAGE_PREFIX}@${BROKER_DIGEST}}"
+          OBSERVABILITY_IMAGE="${OBSERVABILITY_DIGEST:+${IMAGE_PREFIX}@${OBSERVABILITY_DIGEST}}"
 
           if [[ -n "$SVELTE_IMAGE" ]]; then
             jq --arg v "$SVELTE_IMAGE" '.svelte = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
@@ -180,6 +222,9 @@ jobs:
           fi
           if [[ -n "$BROKER_IMAGE" ]]; then
             jq --arg v "$BROKER_IMAGE" '.broker = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
+          fi
+          if [[ -n "$OBSERVABILITY_IMAGE" ]]; then
+            jq --arg v "$OBSERVABILITY_IMAGE" '.observability = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
           fi
 
           echo "Updated versions.json:"
