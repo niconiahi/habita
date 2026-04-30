@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test"
-import { get_user_id_by_email } from "../../helpers/db"
+import {
+  get_user_id_by_email,
+  verify_test_email,
+} from "../../helpers/db"
 
 // Unique email to avoid conflicts with seeded test users
 const FREELANCE_USER = {
@@ -25,19 +28,45 @@ test.describe.serial("Signup as Freelance", () => {
     await page
       .locator("#password")
       .fill(FREELANCE_USER.password)
+    await page
+      .locator("#password_confirmation")
+      .fill(FREELANCE_USER.password)
 
     await page
       .getByRole("button", { name: "Crear cuenta" })
       .click()
 
-    // Should redirect to onboarding after successful signup
+    // Should redirect to verification page after signup
+    await page.waitForURL("/signup/verification", {
+      timeout: 15000,
+    })
+
+    // Verify email programmatically and log in
+    await verify_test_email(FREELANCE_USER.email)
+    await page.goto("/login?redirect_to=/onboarding")
+    await page.locator("#email").fill(FREELANCE_USER.email)
+    await page
+      .locator("#password")
+      .fill(FREELANCE_USER.password)
+    await page
+      .getByRole("button", { name: "Ingresar", exact: true })
+      .click()
+
+    // Should redirect to onboarding after login
     await page.waitForURL("/onboarding", {
       timeout: 15000,
     })
 
-    // Choose freelance
+    // Choose freelance (Asesor inmobiliario)
     await page
-      .getByRole("button", { name: "Freelance" })
+      .getByRole("button", {
+        name: /Asesor inmobiliario/,
+      })
+      .click()
+    await page
+      .getByRole("button", {
+        name: "Confirmar tipo de cuenta",
+      })
       .click()
 
     // Should redirect to admin properties
