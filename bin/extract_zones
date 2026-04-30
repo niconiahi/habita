@@ -19,14 +19,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-INFRA_DIR="$REPO_ROOT/infra/development"
-ENV_FILE=""
+INFRA_DIR="$REPO_ROOT/infra"
 
 COUNTRY_DIR="$REPO_ROOT/apps/web/db/zones/argentina"
 
 run_query() {
   local query="$1"
-  docker compose -p geo $ENV_FILE -f "$INFRA_DIR/geo/docker-compose.yml" \
+  docker compose -p geo \
+    -f "$INFRA_DIR/geo/docker-compose.yml" \
+    -f "$INFRA_DIR/geo/docker-compose.dev.yml" \
     exec -T nominatim \
     su - postgres -c "psql -d nominatim -t -A -F '	' -c \"$query\""
 }

@@ -1,4 +1,18 @@
 services:
+  topics:
+    build:
+      context: ../../apps/broker
+      dockerfile: config/Dockerfile
+      target: dev
+      pull: false
+      x-bake:
+        provenance: false
+    volumes:
+      - ../../apps/broker:/app:delegated
+      - deps:/app/node_modules
+    env_file:
+      - ../.env.dev
+
   email:
     build:
       context: ../../apps/broker

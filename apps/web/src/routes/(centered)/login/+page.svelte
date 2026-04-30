@@ -8,6 +8,7 @@
 
   const BETTER_AUTH_DEFAULT_ERROR_MESSAGE = "Invalid email"
   const DEFAULT_REDIRECT = "/properties"
+  const TRUSTED_ORIGIN_PATTERN = /^https:\/\/[a-z-]+\.(?:dev\.)?habita\.rent/
 
   let error = $state<string | null>(null)
   let is_loading = $state(false)
@@ -51,7 +52,11 @@
       return
     }
 
-    goto(redirect_to)
+    if (TRUSTED_ORIGIN_PATTERN.test(redirect_to)) {
+      window.location.href = redirect_to
+    } else {
+      goto(redirect_to)
+    }
   }
 
   async function handle_google_login() {

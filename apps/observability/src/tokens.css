@@ -1,0 +1,48 @@
+:root {
+  /* neutral scale — light theme, near-zero chroma */
+  --neutral-0: oklch(100% 0 0);
+  --neutral-50: oklch(98% 0.004 260);
+  --neutral-100: oklch(96% 0.006 260);
+  --neutral-200: oklch(91% 0.008 260);
+  --neutral-300: oklch(85% 0.01 260);
+  --neutral-400: oklch(70% 0.01 260);
+  --neutral-500: oklch(55% 0.012 260);
+  --neutral-600: oklch(45% 0.014 260);
+  --neutral-700: oklch(37% 0.016 260);
+  --neutral-800: oklch(27% 0.018 260);
+  --neutral-900: oklch(20% 0.02 260);
+  --neutral-950: oklch(13% 0.02 260);
+
+  /* signal: logs — blue */
+  --log: oklch(63% 0.19 255);
+  --log-muted: oklch(78% 0.1 255);
+  --log-subtle: oklch(96% 0.02 255);
+
+  /* signal: traces — violet */
+  --trace: oklch(63% 0.19 290);
+  --trace-muted: oklch(78% 0.1 290);
+  --trace-subtle: oklch(96% 0.02 290);
+
+  /* signal: metrics — emerald */
+  --metric: oklch(63% 0.19 160);
+  --metric-muted: oklch(78% 0.1 160);
+  --metric-subtle: oklch(96% 0.02 160);
+
+  /* semantic */
+  --bg: var(--neutral-0);
+  --bg-raised: var(--neutral-50);
+  --bg-inset: var(--neutral-100);
+  --nav-bg: var(--neutral-900);
+  --nav-text: var(--neutral-200);
+  --nav-text-muted: var(--neutral-400);
+  --text: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-400);
+  --border: var(--neutral-200);
+  --border-subtle: var(--neutral-100);
+  --hover-bg: var(--neutral-50);
+  --error: oklch(57% 0.22 27);
+  --error-subtle: oklch(96% 0.02 27);
+  --warning: oklch(75% 0.18 75);
+  --mono: "SF Mono", "Fira Code", ui-monospace, monospace;
+}

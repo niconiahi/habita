@@ -117,8 +117,8 @@ scp backup_20260118_030000.sql.gz root@NEW_IP:/tmp/
 ```bash
 cd ~/habita
 just --set env production network
-docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db
-docker compose -p storage -f infra/production/storage/docker-compose.yml ps
+docker compose -p storage -f infra/storage/docker-compose.yml -f infra/storage/docker-compose.prod.yml up -d db
+docker compose -p storage -f infra/storage/docker-compose.yml -f infra/storage/docker-compose.prod.yml ps
 ```
 
 ### Step 8: Restore Database
@@ -195,7 +195,7 @@ Use this during an actual disaster:
 
 1. `just --set env production down`
 2. `docker volume rm storage_db`
-3. `docker compose -p storage -f infra/production/storage/docker-compose.yml up -d db`
+3. `docker compose -p storage -f infra/storage/docker-compose.yml -f infra/storage/docker-compose.prod.yml up -d db`
 4. Restore from backup — see [`recovery/backups.md`](recovery/backups.md#restore)
 5. `just --set env production up`
 

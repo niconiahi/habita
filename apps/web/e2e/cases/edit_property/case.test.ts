@@ -34,66 +34,84 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("2. Adds rooms to the property", async ({
     page,
   }) => {
-    await page.goto(`/admin/properties/${property_id}/edit`)
+    await page.goto(
+      `/admin/properties/${property_id}/edit/layout`,
+    )
 
-    // Add 4 rooms by clicking "Agregar ambiente" 4 times
-    const room_selects = page.locator('select[name="type"]')
+    // Create a floor first (click the top "agregar +" button)
+    const add_floor_button = page
+      .locator(".add-floor-button")
+      .first()
+    await Promise.all([
+      page.waitForResponse(
+        (res) => res.request().method() === "POST",
+      ),
+      add_floor_button.click(),
+    ])
+
+    // Wait for the floor button to appear and be selected
+    await page
+      .locator(".floor-button")
+      .first()
+      .waitFor({ state: "visible" })
+
+    // Add 4 rooms by clicking "agregar habitación +" 4 times
     for (let i = 0; i < 4; i++) {
+      const add_room_button = page.locator(
+        ".add-room-button",
+      )
+      await add_room_button.waitFor({ state: "visible" })
       await Promise.all([
         page.waitForResponse(
           (res) => res.request().method() === "POST",
         ),
-        page.click('button:has-text("Agregar ambiente")'),
+        add_room_button.click(),
       ])
-      await expect(room_selects).toHaveCount(i + 1)
     }
 
     // Verify 4 rooms exist
-    await expect(room_selects).toHaveCount(4)
+    const room_cards = page.locator(".room-card")
+    await expect(room_cards).toHaveCount(4)
   })
 
   test("3. Configures room types and dimensions", async ({
     page,
   }) => {
-    await page.goto(`/admin/properties/${property_id}/edit`)
-
-    // Get all room forms and configure each one
-    const room_type_selects = page.locator(
-      'select[name="type"]',
+    await page.goto(
+      `/admin/properties/${property_id}/edit/layout`,
     )
-    const count = await room_type_selects.count()
+
+    // Get all room cards and configure each one
+    const room_cards = page.locator(".room-card")
+    const count = await room_cards.count()
 
     for (let i = 0; i < count; i++) {
-      const room_select = room_type_selects.nth(i)
-      const room_id = await room_select
-        .locator("..") // field
-        .locator("..") // fields
+      const card = room_cards.nth(i)
+      const room_id = await card
         .locator('input[name="id"]')
         .inputValue()
 
       // Set room type (0=bedroom, 1=bathroom, 2=kitchen, 3=living)
-      await room_select.selectOption(String(i))
+      await card
+        .locator(`#type_${room_id}`)
+        .selectOption(String(i))
 
       // Set dimensions
-      await page
+      await card.locator(`#width_${room_id}`).fill(String(2 + i))
+      await card
         .locator(`#length_${room_id}`)
         .fill(String(3 + i))
-      await page
-        .locator(`#width_${room_id}`)
-        .fill(String(2 + i))
 
       // Save this room
-      const save_button = page
-        .locator(`#length_${room_id}`)
-        .locator("..") // field
-        .locator("..") // fields
-        .locator("..") // form root
-        .locator('button:has-text("Guardar ambiente")')
       await Promise.all([
         page.waitForResponse(
           (res) => res.request().method() === "POST",
         ),
-        save_button.click(),
+        card
+          .getByRole("button", {
+            name: "Guardar habitación",
+          })
+          .click(),
       ])
     }
   })
@@ -101,7 +119,14 @@ test.describe.serial("Edit Property with Room Map", () => {
   test("4. Moves rooms on the map and saves positions", async ({
     page,
   }) => {
-    await page.goto(`/admin/properties/${property_id}/edit`)
+    await page.goto(
+      `/admin/properties/${property_id}/edit/layout`,
+    )
+
+    // Switch to "Mapa" view via SegmentedButton
+    await page
+      .getByRole("button", { name: "Mapa" })
+      .click()
 
     // Wait for the positions input to be in the DOM
     const positions_input = page.locator(
@@ -109,9 +134,20 @@ test.describe.serial("Edit Property with Room Map", () => {
     )
     await positions_input.waitFor({ state: "attached" })
 
-    // The room map uses a canvas with pointer events for dragging
-    // Instead of simulating drag, we set positions via the hidden input
-    // and submit the form (the same way the UI works internally)
+    // Get actual room IDs from the page
+    const room_id_inputs = page.locator(
+      '.room-card input[name="id"]',
+    )
+
+    // We need to go back to "Dimensiones y fotos" to read room IDs,
+    // then switch to Mapa again
+    await page
+      .getByRole("button", {
+        name: "Dimensiones y fotos",
+      })
+      .click()
+
+    const room_count = await room_id_inputs.count()
     const valid_positions: {
       room_id: number | null
       position_x: number
@@ -119,18 +155,18 @@ test.describe.serial("Edit Property with Room Map", () => {
     }[] = [
       {
         room_id: null,
-        position_x: 212.41379310344826,
-        position_y: 135.17241379310343,
+        position_x: 212.41,
+        position_y: 135.17,
       },
       {
         room_id: null,
-        position_x: 77.24137931034483,
+        position_x: 77.24,
         position_y: 0,
       },
       {
         room_id: null,
         position_x: 0,
-        position_y: 135.17241379310343,
+        position_y: 135.17,
       },
       {
         room_id: null,
@@ -138,12 +174,6 @@ test.describe.serial("Edit Property with Room Map", () => {
         position_y: 0,
       },
     ]
-
-    // Get actual room IDs from the page
-    const room_id_inputs = page.locator(
-      'input[name="id"][type="hidden"]',
-    )
-    const room_count = await room_id_inputs.count()
 
     for (
       let i = 0;
@@ -156,13 +186,17 @@ test.describe.serial("Edit Property with Room Map", () => {
       valid_positions[i].room_id = Number(room_id)
     }
 
-    // Set the positions hidden input value and enable the submit button.
-    // The button is disabled because Svelte's room_positions state is empty
-    // (rooms have no saved positions yet). Setting the input via evaluate
-    // bypasses Svelte reactivity, so we also need to enable the button.
-    const save_map_button = page.locator(
-      'button:has-text("Guardar mapa")',
-    )
+    // Switch back to Mapa view
+    await page
+      .getByRole("button", { name: "Mapa" })
+      .click()
+
+    await positions_input.waitFor({ state: "attached" })
+
+    // Set positions and enable the submit button
+    const save_map_button = page.getByRole("button", {
+      name: "Guardar mapa",
+    })
     await positions_input.evaluate(
       (el: HTMLInputElement, positions) => {
         el.value = JSON.stringify(positions)
@@ -185,21 +219,32 @@ test.describe.serial("Edit Property with Room Map", () => {
 
     // Verify we're still on the edit page (no errors)
     await expect(page).toHaveURL(
-      `/admin/properties/${property_id}/edit`,
+      new RegExp(
+        `/admin/properties/${property_id}/edit/layout`,
+      ),
     )
   })
 
   test("5. Adds a service to the property", async ({
     page,
   }) => {
-    await page.goto(`/admin/properties/${property_id}/edit`)
+    await page.goto(
+      `/admin/properties/${property_id}/edit/characteristics`,
+    )
+
+    // Expand the "Servicios" disclosure
+    await page
+      .locator("summary", { hasText: "Servicios" })
+      .click()
 
     // Add a service
     await Promise.all([
       page.waitForResponse(
         (res) => res.request().method() === "POST",
       ),
-      page.click('button:has-text("Agregar servicio")'),
+      page
+        .getByRole("button", { name: "Agregar servicio" })
+        .click(),
     ])
 
     // Configure the service (ABL = 0)
@@ -220,13 +265,15 @@ test.describe.serial("Edit Property with Room Map", () => {
         (res) => res.request().method() === "POST",
       ),
       page
-        .locator('button:has-text("Guardar servicio")')
+        .getByRole("button", { name: "Guardar servicio" })
         .last()
         .click(),
     ])
 
     await expect(page).toHaveURL(
-      `/admin/properties/${property_id}/edit`,
+      new RegExp(
+        `/admin/properties/${property_id}/edit/characteristics`,
+      ),
     )
   })
 })

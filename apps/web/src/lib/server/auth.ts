@@ -132,6 +132,10 @@ function make_auth() {
           return crypto.randomUUID()
         },
       },
+      crossSubDomainCookies: {
+        enabled: true,
+        domain: process.env.COOKIE_DOMAIN,
+      },
       defaultCookieAttributes: {
         sameSite: "lax",
         secure: true,

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+source "$(dirname "$0")/lib.sh"
 
 # Collect all compose containers with their project, service, status, and ports
 data=$(docker ps -a --format '{{.Label "com.docker.compose.project"}}\t{{.Label "com.docker.compose.service"}}\t{{.Status}}\t{{.Ports}}' \
@@ -10,8 +10,7 @@ if [ -z "$data" ]; then
   exit 0
 fi
 
-# Known habita projects in display order
-projects="storage app consumer api gateway broker scheduler pdf media status geo"
+projects=$(for f in "$INFRA"/*/docker-compose.yml; do basename "$(dirname "$f")"; done | tr '\n' ' ')
 
 current_group=""
 

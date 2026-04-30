@@ -81,5 +81,5 @@ Files are deduplicated by SHA-256 hash computed on the **plaintext content befor
 
 - Key stored in `ENCRYPTION_KEY` env var (64 hex characters = 32 bytes)
 - Same key for PII fields and file content
-- Encrypted at rest in git via SOPS + age (`infra/production/.env.enc`)
+- Encrypted at rest in git via SOPS + age (`infra/.env.prod.enc`)
 - On the VPS, decrypted `.env` is read by the svelte container at startup

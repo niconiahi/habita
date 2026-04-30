@@ -14,14 +14,14 @@ The compose file location is configured via environment variable (`COMPOSE_FILE`
 ```bash
 docker compose up
 docker compose down
-docker compose restart signoz-query-service
-docker compose logs signoz-frontend
+docker compose restart otel-collector
+docker compose logs telemetry-db
 ```
 
 NOT:
 
 ```bash
-docker compose -f infra/development/docker-compose.yml up
+docker compose -f infra/app/docker-compose.yml up
 ```
 
 The environment variable handles the file path automatically.

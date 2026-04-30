@@ -40,13 +40,22 @@ test.describe.serial("Send Landlord Invite Email", () => {
   test("2. Invites a landlord and verifies broker message", async ({
     page,
   }) => {
-    await page.goto(`/admin/properties/${property_id}/edit`)
+    await page.goto(
+      `/admin/properties/${property_id}/edit/members`,
+    )
 
     const email_input = page.locator("#email")
     await email_input.scrollIntoViewIfNeeded()
     await email_input.fill(LANDLORD_EMAIL)
-    await page.click('button:has-text("Invitar dueño")')
-    await page.waitForLoadState("networkidle")
+
+    await Promise.all([
+      page.waitForResponse(
+        (res) => res.request().method() === "POST",
+      ),
+      page
+        .getByRole("button", { name: "Invitar dueño" })
+        .click(),
+    ])
 
     const message = await fetch_latest_message(
       SEND_LANDLORD_INVITE_TOPIC,

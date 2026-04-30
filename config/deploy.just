@@ -1,22 +1,25 @@
 # CI/CD Deployment (called by GitHub Actions)
 
-env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
-infra := "infra/" + env
-
+suffix := if justfile_directory() == "/opt/habita" { "prod" } else { "dev" }
 manifest_env := `bin/load-manifest`
 
-# Deploy specific services: ENV=production just deploy push app api scheduler
+# Deploy specific services: just deploy push app api scheduler
 push +services:
   #!/usr/bin/env bash
   set -euo pipefail
 
+  compose_for() {
+    local stack="$1"
+    echo "docker compose -p $stack {{manifest_env}} -f infra/$stack/docker-compose.yml -f infra/$stack/docker-compose.{{suffix}}.yml"
+  }
+
   # Deploy locking - prevent concurrent deploys
   exec 200>/tmp/habita-deploy.lock
   if ! flock -n 200; then
-    echo "❌ Deploy already in progress (locked by another process)"
+    echo "deploy already in progress (locked by another process)"
     exit 1
   fi
-  echo "🔒 Deploy lock acquired"
+  echo "deploy lock acquired"
 
   # Cleanup function for notifications and lock release
   cleanup() {
@@ -25,82 +28,76 @@ push +services:
       if [[ $exit_code -eq 0 ]]; then
         curl -s -X POST "$DEPLOY_WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{\"content\": \"✅ **Deploy succeeded** on habita.rent\n\nServices: {{services}}\"}" || true
+          -d "{\"content\": \"deploy succeeded on habita.rent\n\nServices: {{services}}\"}" || true
       else
         curl -s -X POST "$DEPLOY_WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{\"content\": \"❌ **Deploy failed** on habita.rent\n\nServices: {{services}}\n\nCheck logs: \`just logs app\`\"}" || true
+          -d "{\"content\": \"deploy failed on habita.rent\n\nServices: {{services}}\n\nCheck logs: just logs app\"}" || true
       fi
     fi
-    # Lock is released automatically when the script exits
   }
   trap cleanup EXIT
 
   echo "=== Pulling latest code ==="
   git fetch origin main && git reset --hard origin/main
 
-  # Docker login is handled once during server provisioning via `docker login`
-  # Credentials persist in ~/.docker/config.json
-
   # Decrypt secrets only if .env doesn't exist (first deploy)
-  # For secret updates, manually run: ENV=production just secrets decrypt
-  if [[ ! -f "{{infra}}/.env" ]]; then
+  if [[ ! -f "infra/.env.{{suffix}}" ]]; then
     echo ""
     echo "=== Decrypting secrets (first deploy) ==="
-    ENV={{env}} just secrets decrypt
+    just secrets decrypt
   fi
 
   echo ""
   echo "=== Deploying services: {{services}} ==="
 
   for svc in {{services}}; do
+    APP=$(compose_for app)
     case $svc in
       app)
-        echo "→ Deploying app (pull, migrate, restart)..."
-        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml pull svelte
-        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml run --rm svelte npx kysely migrate:latest
-        docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate --pull always svelte
+        echo "deploying app (pull, migrate, restart)..."
+        $APP pull svelte
+        $APP run --rm svelte npx kysely migrate:latest
+        $APP up -d --force-recreate --pull always svelte
         ;;
       consumer)
-        echo "→ Deploying consumers (email, subscription, escalation)..."
-        docker compose -p consumer {{manifest_env}} -f {{infra}}/consumer/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying consumers (email, subscription, escalation)..."
+        $(compose_for consumer) up -d --force-recreate --pull always
         ;;
       api)
-        echo "→ Deploying api (pull, restart)..."
-        docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml pull go
-        docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate --pull always go
+        echo "deploying api (pull, restart)..."
+        $(compose_for api) pull go
+        $(compose_for api) up -d --force-recreate --pull always go
         ;;
       scheduler)
-        echo "→ Deploying scheduler..."
-        docker compose -p scheduler -f {{infra}}/scheduler/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying scheduler..."
+        $(compose_for scheduler) up -d --force-recreate --pull always
         ;;
       gateway)
-        echo "→ Deploying gateway..."
-        docker compose -p gateway -f {{infra}}/gateway/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying gateway..."
+        $(compose_for gateway) up -d --force-recreate --pull always
         ;;
       media)
-        echo "→ Deploying media..."
-        docker compose -p media -f {{infra}}/media/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying media..."
+        $(compose_for media) up -d --force-recreate --pull always
         ;;
       pdf)
-        echo "→ Deploying pdf (build + restart)..."
-        docker compose -p pdf -f {{infra}}/pdf/docker-compose.yml up -d --force-recreate --build
+        echo "deploying pdf (build + restart)..."
+        $(compose_for pdf) up -d --force-recreate --build
         ;;
       status)
-        echo "→ Deploying status..."
-        docker compose -p status -f {{infra}}/status/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying status..."
+        $(compose_for status) up -d --force-recreate --pull always
         ;;
       geo)
-        echo "→ Deploying geo..."
-        docker compose -p geo -f {{infra}}/geo/docker-compose.yml up -d --force-recreate --pull always
+        echo "deploying geo..."
+        $(compose_for geo) up -d --force-recreate --pull always
         ;;
       secrets)
-        echo "→ Secrets decrypted. Restart services manually if needed:"
-        echo "  docker compose -p app restart svelte"
-        echo "  docker compose -p api restart go"
+        echo "secrets decrypted. restart services manually if needed"
         ;;
       *)
-        echo "⚠ Unknown service: $svc"
+        echo "unknown service: $svc"
         ;;
     esac
   done
@@ -110,37 +107,37 @@ push +services:
   sleep 10
   unhealthy=$(docker ps --filter "health=unhealthy" --format "{{{{.Names}}}}" 2>/dev/null || true)
   if [[ -n "$unhealthy" ]]; then
-    echo "❌ UNHEALTHY containers detected: $unhealthy"
+    echo "unhealthy containers detected: $unhealthy"
     exit 1
   fi
-  echo "✅ All containers healthy"
+  echo "all containers healthy"
 
   echo ""
   echo "=== Deploy complete ==="
-  ENV={{env}} just status
+  just ps
 
 # Pull latest images (for production deploys)
 pull:
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml pull
-  docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml pull
-  docker compose -p consumer {{manifest_env}} -f {{infra}}/consumer/docker-compose.yml pull
+  docker compose -p app {{manifest_env}} -f infra/app/docker-compose.yml -f infra/app/docker-compose.{{suffix}}.yml pull
+  docker compose -p api {{manifest_env}} -f infra/api/docker-compose.yml -f infra/api/docker-compose.{{suffix}}.yml pull
+  docker compose -p consumer {{manifest_env}} -f infra/consumer/docker-compose.yml -f infra/consumer/docker-compose.{{suffix}}.yml pull
 
 # Deploy specific svelte image (production only)
 image-svelte image:
-  SVELTE_IMAGE={{image}} docker compose -p app -f {{infra}}/app/docker-compose.yml pull svelte
-  SVELTE_IMAGE={{image}} docker compose -p app -f {{infra}}/app/docker-compose.yml up -d svelte
+  SVELTE_IMAGE={{image}} docker compose -p app -f infra/app/docker-compose.yml -f infra/app/docker-compose.{{suffix}}.yml pull svelte
+  SVELTE_IMAGE={{image}} docker compose -p app -f infra/app/docker-compose.yml -f infra/app/docker-compose.{{suffix}}.yml up -d svelte
   @echo "Deployed svelte: {{image}}"
 
 # Deploy specific broker image (production only)
 image-broker image:
-  BROKER_IMAGE={{image}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml pull
-  BROKER_IMAGE={{image}} docker compose -p consumer -f {{infra}}/consumer/docker-compose.yml up -d
+  BROKER_IMAGE={{image}} docker compose -p consumer -f infra/consumer/docker-compose.yml -f infra/consumer/docker-compose.{{suffix}}.yml pull
+  BROKER_IMAGE={{image}} docker compose -p consumer -f infra/consumer/docker-compose.yml -f infra/consumer/docker-compose.{{suffix}}.yml up -d
   @echo "Deployed broker: {{image}}"
 
 # Deploy specific go image (production only)
 image-go image:
-  GO_IMAGE={{image}} docker compose -p api -f {{infra}}/api/docker-compose.yml pull go
-  GO_IMAGE={{image}} docker compose -p api -f {{infra}}/api/docker-compose.yml up -d go
+  GO_IMAGE={{image}} docker compose -p api -f infra/api/docker-compose.yml -f infra/api/docker-compose.{{suffix}}.yml pull go
+  GO_IMAGE={{image}} docker compose -p api -f infra/api/docker-compose.yml -f infra/api/docker-compose.{{suffix}}.yml up -d go
   @echo "Deployed go: {{image}}"
 
 # Rollback to previous commit(s) and redeploy
@@ -153,9 +150,9 @@ rollback commits="1" +services="app api":
 
   echo ""
   echo "=== Redeploying services: {{services}} ==="
-  ENV={{env}} just deploy push {{services}}
+  just deploy push {{services}}
 
   echo ""
-  echo "⚠ Rollback applied but NOT committed. Review changes with 'git diff'"
-  echo "  To finalize: git commit -m 'Rollback: revert {{commits}} commits'"
-  echo "  To abort: git revert --abort"
+  echo "rollback applied but NOT committed. review changes with 'git diff'"
+  echo "  to finalize: git commit -m 'rollback: revert {{commits}} commits'"
+  echo "  to abort: git revert --abort"

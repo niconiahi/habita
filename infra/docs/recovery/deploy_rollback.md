@@ -90,7 +90,7 @@ See [`secrets.md`](../secrets.md) for available commands. Two approaches:
 
 ### If you remember the old value
 
-1. Edit `infra/production/.env` directly — fix the value, save
+1. Edit `infra/.env.prod` directly — fix the value, save
 2. `just --set env production secrets encrypt`
 3. `just --set env production restart app`
 
@@ -99,8 +99,8 @@ See [`secrets.md`](../secrets.md) for available commands. Two approaches:
 Restore the encrypted file from git history:
 
 ```bash
-git log --oneline -10 -- infra/production/.env.enc
-git checkout <commit> -- infra/production/.env.enc
+git log --oneline -10 -- infra/.env.prod.enc
+git checkout <commit> -- infra/.env.prod.enc
 just --set env production secrets decrypt
 just --set env production restart app
 ```
@@ -167,7 +167,7 @@ just --set env production up
 
 ```bash
 # Revert just the docker-compose file
-git checkout <good-commit> -- infra/production/app/docker-compose.yml
+git checkout <good-commit> -- infra/app/docker-compose.yml infra/app/docker-compose.prod.yml
 git commit -m "revert: docker-compose changes"
 git push
 ```
@@ -183,7 +183,7 @@ just --set env production deploy <previous-sha>
 
 ### "Changed a secret and broke things"
 ```bash
-vim infra/production/.env               # fix it
+vim infra/.env.prod                     # fix it
 just --set env production secrets encrypt
 just --set env production restart app
 ```

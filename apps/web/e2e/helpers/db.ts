@@ -333,6 +333,46 @@ export async function assign_property_access(
     .execute()
 }
 
+export async function create_reserved_slot(
+  property_id: number,
+  host_id: number,
+  visitant_id: number,
+): Promise<number> {
+  const now = new Date()
+  const start_date = new Date(now)
+  start_date.setDate(start_date.getDate() + 5)
+  start_date.setHours(9, 0, 0, 0)
+  const end_date = new Date(start_date)
+  end_date.setHours(10, 0, 0, 0)
+
+  const slot = await query_builder
+    .insertInto("slot")
+    .values({
+      property_id,
+      host_id,
+      visitant_id,
+      state: 1, // RESERVED
+      event_id: crypto.randomUUID(),
+      start_date: start_date.toISOString(),
+      end_date: end_date.toISOString(),
+      created_at: now.toISOString(),
+      updated_at: now.toISOString(),
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow()
+  return slot.id
+}
+
+export async function verify_test_email(
+  email: string,
+): Promise<void> {
+  await query_builder
+    .updateTable("user")
+    .set({ email_verified: true })
+    .where("email", "=", email)
+    .execute()
+}
+
 export async function get_user_id_by_email(
   email: string,
 ): Promise<number | undefined> {

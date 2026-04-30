@@ -6,21 +6,13 @@ source "$(dirname "$0")/lib.sh"
 service="$1"
 shift
 
-case "$service" in
-  svelte)                compose app exec svelte "$@" ;;
-  db)                    compose storage exec db "$@" ;;
-  kv)                    compose storage exec kv "$@" ;;
-  object)                compose storage exec object "$@" ;;
-  go)                    compose api exec go "$@" ;;
-  consumer-email)        compose consumer exec email "$@" ;;
-  consumer-subscription) compose consumer exec subscription "$@" ;;
-  consumer-escalation)   compose consumer exec escalation "$@" ;;
-  caddy)                 compose gateway exec caddy "$@" ;;
-  image)                 compose media exec image "$@" ;;
-  redpanda)              compose broker exec redpanda "$@" ;;
-  ofelia)                compose scheduler exec ofelia "$@" ;;
-  pdf)                   compose pdf exec pdf "$@" ;;
-  nominatim)             compose geo exec nominatim "$@" ;;
-  tileserver)            compose geo exec tileserver "$@" ;;
-  *) echo "unknown service: $service"; exit 1 ;;
-esac
+for compose_file in "$INFRA"/*/docker-compose.yml; do
+  if grep -q "^  ${service}:" "$compose_file" 2>/dev/null; then
+    stack=$(basename "$(dirname "$compose_file")")
+    compose "$stack" exec "$service" "$@"
+    exit 0
+  fi
+done
+
+echo "unknown service: $service"
+exit 1

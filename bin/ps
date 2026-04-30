@@ -9,7 +9,7 @@ if [ -z "$data" ]; then
   exit 0
 fi
 
-projects="storage app consumer api gateway broker scheduler pdf media status geo autoheal"
+projects=$(for f in "$INFRA"/*/docker-compose.yml; do basename "$(dirname "$f")"; done | tr '\n' ' ')
 current_group=""
 
 while IFS=$'\t' read -r project service status ports; do
