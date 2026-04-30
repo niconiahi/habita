@@ -20,7 +20,7 @@ services:
           cpus: "0.1"
 
   observability-ui:
-    image: ${OBSERVABILITY_UI_IMAGE:?OBSERVABILITY_UI_IMAGE required}
+    image: ${OBSERVABILITY_IMAGE:?OBSERVABILITY_IMAGE required}
     env_file:
       - ../.env.prod
     environment:
