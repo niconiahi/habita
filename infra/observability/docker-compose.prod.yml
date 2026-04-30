@@ -27,8 +27,7 @@ services:
       PORT: 3001
       NODE_ENV: production
       BETTER_AUTH_URL: https://observability.habita.rent
-      MAIN_APP_URL: https://habita.rent
-      COOKIE_DOMAIN: .habita.rent
+      OBS_POSTGRES_DB: observability
     deploy:
       resources:
         limits:

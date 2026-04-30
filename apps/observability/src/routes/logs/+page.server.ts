@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({
   locals,
   url,
 }) => {
-  require_authentication(locals, url)
+  require_authentication(locals)
 
   const service = url.searchParams.get("service") ?? ""
   const severity = url.searchParams.get("severity") ?? ""

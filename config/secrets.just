@@ -1,7 +1,6 @@
 # Secrets management (sops + age)
 
-env := env_var_or_default("ENV", if justfile_directory() == "/opt/habita" { "production" } else { "development" })
-infra := "infra/" + env
+suffix := if justfile_directory() == "/opt/habita" { "prod" } else { "dev" }
 manifest_env := `bin/load-manifest`
 
 # Generate a new age key (one-time setup)
@@ -17,40 +16,31 @@ keygen:
     grep "public key:" ~/.config/sops/age/keys.txt | cut -d: -f2 | tr -d ' '; \
   fi
 
-# Encrypt .env to .env.enc (e.g., just secrets encrypt production)
-encrypt target=env:
-  sops -e --input-type dotenv --output-type dotenv infra/{{target}}/.env > infra/{{target}}/.env.enc
-  @echo "Encrypted: infra/{{target}}/.env.enc"
-  @if [ -f "infra/{{target}}/scheduler/rclone.conf" ]; then \
-    sops -e infra/{{target}}/scheduler/rclone.conf > infra/{{target}}/scheduler/rclone.conf.enc; \
-    echo "Encrypted: infra/{{target}}/scheduler/rclone.conf.enc"; \
-  fi
+# Encrypt .env to .env.enc (e.g., just secrets encrypt, just secrets encrypt prod)
+encrypt target=suffix:
+  sops -e --input-type dotenv --output-type dotenv infra/.env.{{target}} > infra/.env.{{target}}.enc
+  @echo "Encrypted: infra/.env.{{target}}.enc"
 
-# Decrypt .env.enc to .env (e.g., just secrets decrypt production)
-decrypt target=env:
-  sops -d --input-type dotenv --output-type dotenv infra/{{target}}/.env.enc > infra/{{target}}/.env
-  chmod 600 infra/{{target}}/.env
-  @echo "Decrypted: infra/{{target}}/.env"
-  @if [ -f "infra/{{target}}/scheduler/rclone.conf.enc" ]; then \
-    sops -d infra/{{target}}/scheduler/rclone.conf.enc > infra/{{target}}/scheduler/rclone.conf; \
-    chmod 600 infra/{{target}}/scheduler/rclone.conf; \
-    echo "Decrypted: infra/{{target}}/scheduler/rclone.conf"; \
-  fi
+# Decrypt .env.enc to .env (e.g., just secrets decrypt, just secrets decrypt prod)
+decrypt target=suffix:
+  sops -d --input-type dotenv --output-type dotenv infra/.env.{{target}}.enc > infra/.env.{{target}}
+  chmod 600 infra/.env.{{target}}
+  @echo "Decrypted: infra/.env.{{target}}"
 
 # Decrypt secrets AND recreate affected services to pick up new env vars
 apply:
   #!/usr/bin/env bash
   set -euo pipefail
 
-  ENV={{env}} just secrets decrypt
+  just secrets decrypt
 
   echo ""
   echo "=== Recreating services to pick up new secrets ==="
-  docker compose -p app {{manifest_env}} -f {{infra}}/app/docker-compose.yml up -d --force-recreate svelte
-  docker compose -p api {{manifest_env}} -f {{infra}}/api/docker-compose.yml up -d --force-recreate go
+  docker compose -p app {{manifest_env}} -f infra/app/docker-compose.yml -f infra/app/docker-compose.{{suffix}}.yml up -d --force-recreate svelte
+  docker compose -p api {{manifest_env}} -f infra/api/docker-compose.yml -f infra/api/docker-compose.{{suffix}}.yml up -d --force-recreate go
 
   echo ""
-  echo "✅ Secrets applied and services recreated"
+  echo "done"
 
 # Show current age public key
 pubkey:
