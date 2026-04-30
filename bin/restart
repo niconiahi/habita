@@ -5,22 +5,13 @@ source "$(dirname "$0")/lib.sh"
 
 service="$1"
 
-case "$service" in
-  svelte)                compose app restart svelte ;;
-  db)                    compose storage restart db ;;
-  kv)                    compose storage restart kv ;;
-  object)                compose storage restart object ;;
-  go)                    compose api restart go ;;
-  consumer-email)        compose consumer restart email ;;
-  consumer-subscription) compose consumer restart subscription ;;
-  consumer-escalation)   compose consumer restart escalation ;;
-  caddy)                 compose gateway restart caddy ;;
-  image)                 compose media restart image ;;
-  redpanda)              compose broker restart redpanda ;;
-  ofelia)                compose scheduler restart ofelia ;;
-  pdf)                   compose pdf restart pdf ;;
-  gatus)                 compose status restart gatus ;;
-  nominatim)             compose geo restart nominatim ;;
-  tileserver)            compose geo restart tileserver ;;
-  *) echo "unknown service: $service"; exit 1 ;;
-esac
+for compose_file in "$INFRA"/*/docker-compose.yml; do
+  if grep -q "^  ${service}:" "$compose_file" 2>/dev/null; then
+    stack=$(basename "$(dirname "$compose_file")")
+    compose "$stack" restart "$service"
+    exit 0
+  fi
+done
+
+echo "unknown service: $service"
+exit 1

@@ -1,41 +1,32 @@
 <script lang="ts">
   import { page } from "$app/state"
+  import "../tokens.css"
 
   let { data, children } = $props()
-
-  const MAIN_APP_URL =
-    typeof window !== "undefined"
-      ? window.location.origin.replace("observability.", "")
-      : ""
 </script>
 
 <div class="shell">
   <nav class="nav">
-    <div class="nav-left">
-      <span class="nav-title">Observability</span>
+    <span class="title">observability</span>
+    <div class="links">
       <a
         href="/logs"
-        class="nav-link"
-        class:active={page.url.pathname === "/logs"}
+        class="link"
+        class:active-log={page.url.pathname === "/logs"}
       >
-        Logs
+        logs
       </a>
       <a
         href="/traces"
-        class="nav-link"
-        class:active={page.url.pathname.startsWith("/traces")}
+        class="link"
+        class:active-trace={page.url.pathname.startsWith("/traces")}
       >
-        Traces
+        traces
       </a>
     </div>
-    <div class="nav-right">
-      {#if data.user}
-        <span class="user-email">{data.user.email}</span>
-      {/if}
-      <a href={MAIN_APP_URL} class="nav-link">
-        Volver a Habita
-      </a>
-    </div>
+    {#if data.user}
+      <span class="user">{data.user.email}</span>
+    {/if}
   </nav>
   <main class="content">
     {@render children()}
@@ -46,8 +37,8 @@
   :global(body) {
     margin: 0;
     font-family: system-ui, -apple-system, sans-serif;
-    background: var(--bg, #0f1117);
-    color: var(--text, #e1e4e8);
+    background: var(--bg);
+    color: var(--text);
   }
 
   .shell {
@@ -59,47 +50,51 @@
   .nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     padding: 0 24px;
     height: 48px;
-    background: var(--nav-bg, #161b22);
-    border-bottom: 1px solid var(--border, #30363d);
+    background: var(--nav-bg);
+    color: var(--nav-text);
   }
 
-  .nav-left,
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .nav-title {
+  .title {
     font-weight: 600;
     font-size: 14px;
-    margin-right: 8px;
+    letter-spacing: 0.02em;
   }
 
-  .nav-link {
+  .links {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .link {
     font-size: 13px;
-    color: var(--text-muted, #8b949e);
+    color: var(--nav-text-muted);
     text-decoration: none;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
+    border-bottom: 2px solid transparent;
   }
 
-  .nav-link:hover {
-    color: var(--text, #e1e4e8);
-    background: var(--hover-bg, #21262d);
+  .link:hover {
+    color: var(--nav-text);
   }
 
-  .nav-link.active {
-    color: var(--text, #e1e4e8);
-    background: var(--active-bg, #30363d);
+  .active-log {
+    color: var(--log);
+    border-color: var(--log);
   }
 
-  .user-email {
+  .active-trace {
+    color: var(--trace);
+    border-color: var(--trace);
+  }
+
+  .user {
     font-size: 12px;
-    color: var(--text-muted, #8b949e);
+    color: var(--nav-text-muted);
   }
 
   .content {
