@@ -25,6 +25,25 @@
       loading = false
     }
   }
+
+  async function handle_google_login() {
+    const response = await fetch(
+      "/api/auth/sign-in/social",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "google",
+          callbackURL: "/logs",
+        }),
+      },
+    )
+
+    const data = await response.json()
+    if (data.url) {
+      window.location.href = data.url
+    }
+  }
 </script>
 
 <svelte:head>
@@ -61,6 +80,18 @@
 
     <button type="submit" class="submit" disabled={loading}>
       {loading ? "..." : "Ingresar"}
+    </button>
+
+    <div class="divider">
+      <span>o</span>
+    </div>
+
+    <button
+      type="button"
+      class="google"
+      onclick={handle_google_login}
+    >
+      Ingresar con Google
     </button>
   </form>
 </div>
@@ -143,5 +174,36 @@
   .submit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .google {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .google:hover {
+    background: var(--hover-bg);
   }
 </style>

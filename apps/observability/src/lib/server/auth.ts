@@ -9,6 +9,9 @@ function get_config() {
   const postgres_user = process.env.POSTGRES_USER
   const postgres_password = process.env.POSTGRES_PASSWORD
   const postgres_db = process.env.OBS_POSTGRES_DB
+  const google_client_id = process.env.GOOGLE_CLIENT_ID
+  const google_client_secret =
+    process.env.GOOGLE_CLIENT_SECRET
   if (!secret)
     throw new Error("BETTER_AUTH_SECRET is not set")
   if (!base_url)
@@ -21,6 +24,10 @@ function get_config() {
     throw new Error("POSTGRES_PASSWORD is not set")
   if (!postgres_db)
     throw new Error("OBS_POSTGRES_DB is not set")
+  if (!google_client_id)
+    throw new Error("GOOGLE_CLIENT_ID is not set")
+  if (!google_client_secret)
+    throw new Error("GOOGLE_CLIENT_SECRET is not set")
   return {
     secret,
     base_url,
@@ -28,6 +35,8 @@ function get_config() {
     postgres_user,
     postgres_password,
     postgres_db,
+    google_client_id,
+    google_client_secret,
   }
 }
 
@@ -87,6 +96,13 @@ function make_auth() {
         expiresAt: "expires_at",
         createdAt: "created_at",
         updatedAt: "updated_at",
+      },
+    },
+    socialProviders: {
+      google: {
+        clientId: config.google_client_id,
+        clientSecret: config.google_client_secret,
+        prompt: "select_account",
       },
     },
   })
