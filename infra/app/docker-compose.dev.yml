@@ -39,6 +39,8 @@ services:
       - ../.env.dev
     environment:
       POSTGRES_HOST: db
+    extra_hosts:
+      - "dev.habita.rent:host-gateway"
     networks:
       - internal
     profiles:

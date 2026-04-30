@@ -66,20 +66,23 @@ export async function signup_test_user(
   await submit_button.click()
 
   // Wait for redirect to /onboarding (successful signup auto-logs in)
-  // or wait for error message
+  // or wait for error message (filter out empty error placeholders)
+  const visible_error = page
+    .locator(".error")
+    .filter({ hasText: /\S/ })
+    .first()
+
   await Promise.race([
     page.waitForURL(/\/onboarding/, { timeout: 20000 }),
-    page
-      .locator(".error")
-      .waitFor({ state: "visible", timeout: 20000 }),
+    visible_error.waitFor({
+      state: "visible",
+      timeout: 20000,
+    }),
   ])
 
   // Check if we got an error
-  const error = await page.locator(".error").isVisible()
-  if (error) {
-    const error_text = await page
-      .locator(".error")
-      .textContent()
+  if (await visible_error.isVisible()) {
+    const error_text = await visible_error.textContent()
     throw new Error(`Signup failed: ${error_text}`)
   }
 
@@ -102,7 +105,8 @@ export async function login_test_user(
 
   // Submit
   const submit_button = page.getByRole("button", {
-    name: "Iniciar sesión",
+    name: "Ingresar",
+    exact: true,
   })
   await submit_button.waitFor({ state: "visible" })
   await submit_button.click()
@@ -130,14 +134,15 @@ export async function authenticate_test_user(
   await page.locator("#password").fill(user.password)
 
   const submit_button = page.getByRole("button", {
-    name: "Iniciar sesión",
+    name: "Ingresar",
+    exact: true,
   })
   await submit_button.waitFor({ state: "visible" })
   await submit_button.click()
 
   // Wait for either success (redirect to /properties) or stay on login (user doesn't exist yet)
   try {
-    await page.waitForURL(/\/properties/, { timeout: 5000 })
+    await page.waitForURL(/\/properties/, { timeout: 15000 })
     console.log(
       `user ${user.email} already exists, skipping signup`,
     )
