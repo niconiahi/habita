@@ -16,10 +16,6 @@
 <style>
   .tab {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--dimension-spacing-0-5)
-      var(--dimension-spacing-3);
     border-bottom: 2px solid var(--tab-border-inactive);
     border-radius: var(--dimension-radius-default)
       var(--dimension-radius-default) 0 0;
@@ -28,12 +24,19 @@
     transition:
       background-color 0.15s ease,
       border-color 0.15s ease;
+    padding: var(--dimension-spacing-0-5)
+      var(--dimension-spacing-3);
   }
 
   .tab :global(a),
   .tab :global(button) {
     all: unset;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
   .tab:hover {
