@@ -1,5 +1,6 @@
 # Zone extraction recipes
 
-# Extract Argentine administrative boundaries from Nominatim
+# Extract Argentine administrative boundaries from Nominatim and download map tiles
 argentina:
-  bin/extract_zones
+  bin/map/argentina/fetch_zones
+  bin/map/argentina/fetch_tiles
