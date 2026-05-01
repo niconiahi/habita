@@ -126,13 +126,14 @@
 
   .badge {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: calc(var(--dimension-spacing-1) * -3);
+    right: calc(var(--dimension-spacing-1) * -3);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--dimension-spacing-1)
-      var(--dimension-spacing-2);
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 var(--dimension-spacing-1);
     background-color: var(--color-blue-500);
     border-radius: var(--dimension-radius-full);
     font-size: 0.75rem;
