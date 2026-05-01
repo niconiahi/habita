@@ -2,13 +2,10 @@
   import * as Dashboard from "$lib/components/Dashboard"
   import OrganizationSelector from "$lib/components/OrganizationSelector.svelte"
   import Notifications from "$lib/components/Notifications.svelte"
+  import UserPopover from "$lib/components/UserPopover.svelte"
   import type { Snippet } from "svelte"
   import type { LayoutData } from "./$types"
-  import { authClient } from "$lib/auth-client"
-  import * as Popover from "$lib/components/Popover"
   import HabitaFull from "$icon/habita/Full.svelte"
-  import HabitaBrandmark from "$icon/habita/Brandmark.svelte"
-  import ChevronDown from "$icon/ChevronDown.svelte"
 
   let {
     children,
@@ -40,47 +37,11 @@
         <Notifications position="right" />
       </div>
       {#if data.user}
-        <Popover.Root id="admin-user-popover">
-          <Popover.Trigger id="admin-user-popover">
-            <span class="avatar">
-              <HabitaBrandmark />
-            </span>
-            <span class="email">
-              {data.user.email}
-            </span>
-            <ChevronDown />
-          </Popover.Trigger>
-          <Popover.Content
-            id="admin-user-popover"
-            position="right"
-          >
-            {#snippet children({ close })}
-              <a
-                href="/profile"
-                class="dropdown-item"
-                onclick={close}
-              >
-                Perfil
-              </a>
-              <button
-                type="button"
-                class="dropdown-item"
-                onclick={async () => {
-                  close()
-                  await authClient.signOut({
-                    fetchOptions: {
-                      onSuccess: () => {
-                        window.location.href = "/"
-                      },
-                    },
-                  })
-                }}
-              >
-                Cerrar sesión
-              </button>
-            {/snippet}
-          </Popover.Content>
-        </Popover.Root>
+        <UserPopover
+          id="admin-user-popover"
+          user={data.user}
+          position="right"
+        />
       {/if}
     </div>
   </aside>
@@ -130,41 +91,6 @@
 
   .row :global(> :first-child) {
     flex: 1;
-  }
-
-  .avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--avatar-size-sm);
-    height: var(--avatar-size-sm);
-    border-radius: var(--dimension-radius-full);
-    overflow: hidden;
-  }
-
-  .email {
-    font-family: var(--font-family-body);
-    font-weight: 500;
-    font-size: var(--font-size-body-md);
-    line-height: 1.4;
-  }
-
-  .dropdown-item {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: var(--dimension-spacing-3);
-    border: none;
-    border-radius: var(--dimension-radius-default);
-    background-color: transparent;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-body-md);
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-  }
-
-  .dropdown-item:hover {
-    background-color: var(--popover-bg-hover);
   }
 
   .content {
