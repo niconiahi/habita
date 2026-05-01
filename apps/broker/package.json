@@ -1,7 +1,7 @@
 {
 	"name": "broker",
 	"private": true,
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"type": "module",
 	"scripts": {
 		"topics": "pnpm exec tsx src/consumer/create_topics.script.ts"
