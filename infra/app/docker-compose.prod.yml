@@ -9,6 +9,7 @@ services:
       OTEL_ENVIRONMENT: production
       PUBLIC_OTEL_ENVIRONMENT: production
       COOKIE_DOMAIN: .habita.rent
+      BODY_SIZE_LIMIT: "5242880"
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
       interval: 30s
