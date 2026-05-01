@@ -1,6 +1,6 @@
 {
-  "svelte": "niconiahi/habita@sha256:50df6e66b531937a6b973124d0078a1abda92925ddc043883d67045935bb9e56",
+  "svelte": "niconiahi/habita@sha256:d90c64d060fbc6a4ab2c625d5809b638bd70a8e3a15f1fc543200d122282ab49",
   "go": "niconiahi/habita:go-3d7ae0118afb2db05bcbd767c72e3b61d3709b44",
   "broker": "niconiahi/habita@sha256:a157d5cd712b6a0c7b960430646b66366d2663277b318f58e893f6798829db2d",
-  "observability": "niconiahi/habita@sha256:29b72a3b8cdc63dee1ac654197ca893b530bbf98b18e6b99fa51e32301dc80a6"
+  "observability": "niconiahi/habita@sha256:54ec175aa6f5d59d4823fff1a4524dd5a78df5af81442fe683c300eb4ee92ef2"
 }
