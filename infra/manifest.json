@@ -2,5 +2,6 @@
   "svelte": "niconiahi/habita@sha256:027b1a16b7819aa7b880906a4340853c3e10cedb62ec102e8798f79422c68c21",
   "go": "niconiahi/habita:go-3d7ae0118afb2db05bcbd767c72e3b61d3709b44",
   "broker": "niconiahi/habita@sha256:a157d5cd712b6a0c7b960430646b66366d2663277b318f58e893f6798829db2d",
-  "observability": "niconiahi/habita@sha256:ae6be04e80012d85f4812643c700d413f84d7fc29b24afd72ea135647dd8721f"
+  "observability": "niconiahi/habita@sha256:ae6be04e80012d85f4812643c700d413f84d7fc29b24afd72ea135647dd8721f",
+  "otel_collector": "niconiahi/habita@sha256:a52731581eb1ca5df846aa833341c831238331e551c9c0571e3a3d7703981066"
 }
