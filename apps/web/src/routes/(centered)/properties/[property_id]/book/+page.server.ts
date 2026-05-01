@@ -70,32 +70,28 @@ export const load: PageServerLoad = async ({
 export const actions: Actions = {
   [ACTION.UPDATE_SLOT]: async ({ request, params }) => {
     const tracer = trace.getTracer("web.action")
-    return tracer.startActiveSpan(
-      "/properties/:id/book/update_slot",
-      async (span) => {
-        const form_data = await request.formData()
-        const property_id = v.parse(
-          ForceNumberSchema,
-          params.property_id,
-        )
-        form_data.set("property_id", String(property_id))
-        span.setAttribute("property.id", property_id)
-        const [update_slot_errors] = await update_slot(
-          form_data,
-          span,
-        )
-        if (update_slot_errors) {
-          span.end()
-          return { errors: update_slot_errors }
-        }
-        const date = form_data.get("date")
-        logger.info("slot updated successfully")
-        span.end()
-        redirect(
-          302,
-          `/book/success?date=${encodeURIComponent(String(date))}`,
-        )
-      },
+    const span = tracer.startSpan("/properties/:id/book/update_slot")
+    const form_data = await request.formData()
+    const property_id = v.parse(
+      ForceNumberSchema,
+      params.property_id,
+    )
+    form_data.set("property_id", String(property_id))
+    span.setAttribute("property.id", property_id)
+    const [update_slot_errors] = await update_slot(
+      form_data,
+      span,
+    )
+    if (update_slot_errors) {
+      span.end()
+      return { errors: update_slot_errors }
+    }
+    const date = form_data.get("date")
+    logger.info("slot updated successfully")
+    span.end()
+    redirect(
+      302,
+      `/book/success?date=${encodeURIComponent(String(date))}`,
     )
   },
 }
