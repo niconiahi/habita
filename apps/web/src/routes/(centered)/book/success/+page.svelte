@@ -18,29 +18,20 @@
   )
 </script>
 
-<div class="centered">
-  <div class="card">
-    <h1 class="heading-md title">Visita reservada</h1>
-    <p class="body-md-medium description">
-      Tu visita para el día
-      <strong class="body-md-bold">{formatted_date}</strong>
-      fue reservada. Queda pendiente de aprobación por el administrador.
-      Te enviaremos un email con los detalles una vez confirmada
-    </p>
-    <p class="body-md-medium footer">
-      <a href="/properties">Volver a propiedades</a>
-    </p>
-  </div>
+<div class="card vertically-centered">
+  <h1 class="heading-md title">Visita reservada</h1>
+  <p class="body-md-medium description">
+    Tu visita para el día
+    <strong class="body-md-bold">{formatted_date}</strong>
+    fue reservada. Queda pendiente de aprobación por el administrador.
+    Te enviaremos un email con los detalles una vez confirmada
+  </p>
+  <p class="body-md-medium footer">
+    <a href="/properties">Volver a propiedades</a>
+  </p>
 </div>
 
 <style>
-  .centered {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-
   .card {
     border: 2px solid var(--card-border);
     border-radius: var(--dimension-radius-2xl);
