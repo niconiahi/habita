@@ -53,3 +53,18 @@ wait_healthy() {
   done
   return 1
 }
+
+# Wait for an HTTP endpoint to respond 200
+wait_http() {
+  local url="$1"
+  local timeout="${2:-60}"
+  local elapsed=0
+  while [[ $elapsed -lt $timeout ]]; do
+    if curl -sf -o /dev/null "$url" 2>/dev/null; then
+      return 0
+    fi
+    sleep 2
+    elapsed=$((elapsed + 2))
+  done
+  return 1
+}
