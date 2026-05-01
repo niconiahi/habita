@@ -11,6 +11,7 @@ on:
       - 'apps/go/**'
       - 'apps/broker/**'
       - 'apps/observability/**'
+      - 'infra/observability/**'
 
 env:
   REGISTRY: docker.io
@@ -29,6 +30,7 @@ jobs:
       api: ${{ steps.filter.outputs.api }}
       broker: ${{ steps.filter.outputs.broker }}
       observability: ${{ steps.filter.outputs.observability }}
+      otel_collector: ${{ steps.filter.outputs.otel_collector }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,6 +48,8 @@ jobs:
               - 'apps/broker/**'
             observability:
               - 'apps/observability/**'
+            otel_collector:
+              - 'infra/observability/**'
 
   build-svelte:
     needs: changes
@@ -191,8 +195,43 @@ jobs:
         id: image
         run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
 
+  build-otel-collector:
+    needs: changes
+    if: needs.changes.outputs.otel_collector == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./infra/observability
+          file: ./infra/observability/Dockerfile.otel-collector
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}:otel-collector-${{ env.MERGE_SHA }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Set image output
+        id: image
+        run: echo "digest=${{ steps.build.outputs.digest }}" >> "$GITHUB_OUTPUT"
+
   update-manifest:
-    needs: [build-svelte, build-go, build-broker, build-observability]
+    needs: [build-svelte, build-go, build-broker, build-observability, build-otel-collector]
     if: always() && !cancelled() && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
@@ -208,11 +247,13 @@ jobs:
           GO_DIGEST="${{ needs.build-go.outputs.digest }}"
           BROKER_DIGEST="${{ needs.build-broker.outputs.digest }}"
           OBSERVABILITY_DIGEST="${{ needs.build-observability.outputs.digest }}"
+          OTEL_COLLECTOR_DIGEST="${{ needs.build-otel-collector.outputs.digest }}"
 
           SVELTE_IMAGE="${SVELTE_DIGEST:+${IMAGE_PREFIX}@${SVELTE_DIGEST}}"
           GO_IMAGE="${GO_DIGEST:+${IMAGE_PREFIX}@${GO_DIGEST}}"
           BROKER_IMAGE="${BROKER_DIGEST:+${IMAGE_PREFIX}@${BROKER_DIGEST}}"
           OBSERVABILITY_IMAGE="${OBSERVABILITY_DIGEST:+${IMAGE_PREFIX}@${OBSERVABILITY_DIGEST}}"
+          OTEL_COLLECTOR_IMAGE="${OTEL_COLLECTOR_DIGEST:+${IMAGE_PREFIX}@${OTEL_COLLECTOR_DIGEST}}"
 
           if [[ -n "$SVELTE_IMAGE" ]]; then
             jq --arg v "$SVELTE_IMAGE" '.svelte = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
@@ -225,6 +266,9 @@ jobs:
           fi
           if [[ -n "$OBSERVABILITY_IMAGE" ]]; then
             jq --arg v "$OBSERVABILITY_IMAGE" '.observability = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
+          fi
+          if [[ -n "$OTEL_COLLECTOR_IMAGE" ]]; then
+            jq --arg v "$OTEL_COLLECTOR_IMAGE" '.otel_collector = $v' infra/manifest.json > tmp.json && mv tmp.json infra/manifest.json
           fi
 
           echo "Updated versions.json:"
