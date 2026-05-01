@@ -20,6 +20,7 @@ export SVELTE_IMAGE=$(jq -r '.svelte' "$REPO_ROOT/infra/manifest.json")
 export GO_IMAGE=$(jq -r '.go' "$REPO_ROOT/infra/manifest.json")
 export BROKER_IMAGE=$(jq -r '.broker' "$REPO_ROOT/infra/manifest.json")
 export OBSERVABILITY_IMAGE=$(jq -r '.observability' "$REPO_ROOT/infra/manifest.json")
+export OTEL_COLLECTOR_IMAGE=$(jq -r '.otel_collector' "$REPO_ROOT/infra/manifest.json")
 
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
