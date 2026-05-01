@@ -68,8 +68,7 @@
   }
 </script>
 
-<div class="centered">
-  <div class="card">
+<div class="card vertically-centered">
     <form class="form" onsubmit={handle_email_login}>
       <Formulary.Input
         label="Email"
@@ -107,17 +106,9 @@
         <a href="/signup">Crear cuenta</a>
       </p>
     </form>
-  </div>
 </div>
 
 <style>
-  .centered {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-
   .card {
     border: 2px solid var(--card-border);
     border-radius: var(--dimension-radius-2xl);

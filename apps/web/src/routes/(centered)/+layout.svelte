@@ -41,6 +41,10 @@
     flex-direction: column;
   }
 
+  .content :global(.vertically-centered) {
+    margin: auto;
+  }
+
   .content
     :global(
       input:not([type="radio"]):not([type="checkbox"])
