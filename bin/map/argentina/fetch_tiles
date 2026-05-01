@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
-# bin/download_tiles/argentina.sh
+# bin/map/argentina/fetch_tiles
 # Description: Generate Argentina mbtiles from Geofabrik OSM extract using Planetiler.
 #              Idempotent — skips if the output file already exists.
 #
-# Output: infra/{ENV}/geo/tiles/argentina.mbtiles
+# Output: infra/geo/tiles/argentina.mbtiles
 #
 # Prerequisites: Docker must be running.
 #
 # Usage:
-#   bin/download_tiles/argentina.sh                    # defaults to development
-#   ENV=production bin/download_tiles/argentina.sh
+#   bin/map/argentina/fetch_tiles
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-ENV="${ENV:-development}"
-TILES_DIR="$REPO_ROOT/infra/$ENV/geo/tiles"
+TILES_DIR="$REPO_ROOT/infra/geo/tiles"
 OUTPUT="$TILES_DIR/argentina.mbtiles"
 
 if [ -f "$OUTPUT" ]; then
