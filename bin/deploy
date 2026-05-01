@@ -3,7 +3,7 @@ source "$(dirname "$0")/lib.sh"
 
 # No args = deploy all
 if [[ $# -eq 0 ]]; then
-  set -- app consumer api scheduler gateway media broker pdf status geo
+  set -- observability app consumer api scheduler gateway media broker pdf status geo
 fi
 
 # If on laptop (dev), delegate to VPS via SSH
@@ -19,6 +19,7 @@ fi
 export SVELTE_IMAGE=$(jq -r '.svelte' "$REPO_ROOT/infra/manifest.json")
 export GO_IMAGE=$(jq -r '.go' "$REPO_ROOT/infra/manifest.json")
 export BROKER_IMAGE=$(jq -r '.broker' "$REPO_ROOT/infra/manifest.json")
+export OBSERVABILITY_IMAGE=$(jq -r '.observability' "$REPO_ROOT/infra/manifest.json")
 
 # Check lock
 LOCK_FILE="/tmp/habita-deploy.lock"
@@ -123,7 +124,7 @@ for svc in "$@"; do
     pdf)
       compose pdf up -d --force-recreate --build
       ;;
-    scheduler|gateway|media|status|geo|broker)
+    observability|scheduler|gateway|media|status|geo|broker)
       deploy_standard "$svc"
       ;;
     *)
