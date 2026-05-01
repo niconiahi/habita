@@ -16,6 +16,8 @@ compose observability up -d
 echo "waiting for otel-collector"
 wait_http http://127.0.0.1:13133/ 60 || { echo "otel-collector failed health check"; exit 1; }
 
+echo "starting broker"
+compose broker up -d
 echo "starting app"
 compose app up -d
 echo "starting consumers"
@@ -28,8 +30,6 @@ echo "starting gateway"
 compose gateway up -d
 echo "starting scheduler"
 compose scheduler up -d
-echo "starting broker"
-compose broker up -d
 echo "starting pdf"
 compose pdf up -d
 echo "starting status"
