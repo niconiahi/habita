@@ -1,7 +1,7 @@
 {
-  "svelte": "niconiahi/habita@sha256:c1e333a4deba4395da96fa6b8a38cb644b4d12a2006c92054a9f7acc647bb058",
+  "svelte": "niconiahi/habita@sha256:a377c35cb5c55cf0e20718a3bf75893396d568653eda721065927f86086fc691",
   "go": "niconiahi/habita:go-3d7ae0118afb2db05bcbd767c72e3b61d3709b44",
-  "broker": "niconiahi/habita@sha256:44b8aef0f0a750f836ebcdb31aeadabf227f154eae4759b04ab47af48f5487d1",
-  "observability": "niconiahi/habita@sha256:6d3a00cc7fb65e598fa04b6ef970b1982e3035ef3edb10b8512955f1bea60d11",
+  "broker": "niconiahi/habita@sha256:e766356fdc5145ce42d99c71ace1c7fed7e86c7f8af3eb2a475079e0447e6d20",
+  "observability": "niconiahi/habita@sha256:c9c1406660437cc7c701470c838d2ef13290663e970693defe82833f3bea0abc",
   "otel_collector": "niconiahi/habita@sha256:a52731581eb1ca5df846aa833341c831238331e551c9c0571e3a3d7703981066"
 }
