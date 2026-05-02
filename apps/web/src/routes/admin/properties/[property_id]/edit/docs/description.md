@@ -1,14 +1,12 @@
 # Edit a property
 
-This is the most detailed management page for a property. Here, managers can update virtually everything about a property:
+This is the most detailed management area for a property, organized into tabs. Managers can update virtually everything about a property across six sections:
 
-- **Location** — change or correct the property's address
-- **Rooms** — add, edit, reposition, or remove rooms with their types and dimensions
-- **Services** — add or remove utility services (electricity, gas, water, etc.)
-- **Photos** — upload images of the property
-- **Tags** — toggle category tags that describe the property's features
-- **Destiny** — update what the property is intended for (residential, commercial)
-- **Construction year** — set when the property was built
-- **Invite a landlord** — send an email invitation to a property owner so they can access the property's management
+- **Characteristics** — location, destinies, tags, construction year, and utility services
+- **Layout** — floors, rooms with dimensions and photos, and a visual room map
+- **Visits** — schedule visit slots and manage candidate bookings
+- **Contracts** — view all contracts associated with this property
+- **Members** — see who has access to the property and invite a landlord
+- **Receipts** — view and manage tenant payment receipts
 
-Only properties that aren't currently rented can be edited. The user needs editing permissions on that specific property to access this page.
+Only properties that aren't currently rented can be edited. The user needs editing permissions on that specific property to access this area.

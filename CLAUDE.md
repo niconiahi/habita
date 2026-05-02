@@ -64,6 +64,8 @@ How to build the UI layer — components, forms, layout, styling, and design-to-
 
 - **Design (Figma-to-code)** — File key: `pwgsZM9ts0fJjczhT6bx5B`. Components page: `427:274`. Workflow: screenshot -> design context -> variable defs -> check existing components -> implement. Never hardcode values — use tokens from `tokens.css`. Never inline font properties — use text style classes from `text_styles.css` (`.heading-lg`, `.body-md-medium`, etc.). Design system components in `$lib/components/`, page-specific in `routes/.../components/`. Read [`.claude/skills/design/SKILL.md`](.claude/skills/design/SKILL.md) for the full component inventory, text style table, Figma MCP tool guide, and workflow checklist.
 
+- **Route docs** — Every route has a `docs/` subdirectory with two files: `description.md` (product-level: what the route does, who uses it) and `technical.md` (developer-level: loader, actions, auth, key components, notes). Both files mandatory for every new route. Update them when route behavior changes. Read [`.claude/skills/route_docs/SKILL.md`](.claude/skills/route_docs/SKILL.md) for templates by route type (standard page, API endpoint, layout, static callback, etc.).
+
 ---
 
 ## Infrastructure & Tooling
