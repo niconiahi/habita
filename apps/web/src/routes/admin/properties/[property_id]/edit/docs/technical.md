@@ -1,26 +1,17 @@
-# /admin/properties/[property_id]/edit
+# /admin/properties/[property_id]/edit (layout)
 
-## Loader
+## Layout (`+layout.server.ts`)
 
-Requires auth + `require_edit_access()` (ACL). Fetches `property` via `fetch_property()`. Returns 404 if not found. Redirects to `/admin/properties` if property state is `RENTED`.
+Requires auth + `require_edit_access()` (ACL). Fetches `property` via `fetch_property()`. Returns 404 if not found.
 
-## Actions (13 total)
+## Layout (`+layout.svelte`)
 
-- `UPDATE_LOCATION` — updates property location
-- `CREATE_ROOM` / `UPDATE_ROOM` / `DESTROY_ROOM` / `UPDATE_ROOM_POSITIONS` — full CRUD for rooms + drag-and-drop reordering
-- `CREATE_SERVICE` / `UPDATE_SERVICE` / `DESTROY_SERVICE` — CRUD for utility services
-- `CREATE_ROOM_FILE` / `DESTROY_ROOM_FILE` — upload and delete room photos
-- `INVITE_LANDLORD` — sends invitation email to a landlord
-- `UPDATE_DESTINIES` — updates property destiny checkboxes
-- `TOGGLE_TAG` — toggles a property tag on/off
-- `UPDATE_CONSTRUCTION_YEAR` — sets construction year
+Tab navigation with 6 subroutes: caracteristicas, disposicion, visitas, contratos, miembros, comprobantes. Displays breadcrumb with property location.
 
-All actions require `require_edit_access()`.
+## Page (`+page.server.ts`)
+
+Redirects 302 to `/characteristics` (default tab).
 
 ## Auth
 
 Requires authenticated user with edit access (ACL) to the property.
-
-## Key Components
-
-LocationInput, RoomMap, Formulary, PropertyTag, TypedFileUploadButton, Button
