@@ -23,6 +23,21 @@ const product_modules = import.meta.glob(
   { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>
 
+const technical_modules = import.meta.glob(
+  "/src/routes/**/docs/technical.md",
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>
+
+const security_modules = import.meta.glob(
+  "/docs/security/*.md",
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>
+
+const platform_technical_modules = import.meta.glob(
+  "/docs/technical/*.md",
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>
+
 function is_webmaster_description(path: string): boolean {
   return WEBMASTER_ROUTE_PREFIXES.some((prefix) =>
     path.startsWith(prefix),
@@ -45,7 +60,15 @@ function format_module_entries(
     .join("\n\n")
 }
 
+function never_exclude(): boolean {
+  return false
+}
+
 export function compose_system_prompt(): string {
+  const product = format_module_entries(
+    product_modules,
+    never_exclude,
+  )
   const descriptions = format_module_entries(
     description_modules,
     is_webmaster_description,
@@ -54,18 +77,26 @@ export function compose_system_prompt(): string {
     journey_modules,
     is_webmaster_journey,
   )
+  const technical = format_module_entries(
+    technical_modules,
+    never_exclude,
+  )
+  const security = format_module_entries(
+    security_modules,
+    never_exclude,
+  )
+  const platform_technical = format_module_entries(
+    platform_technical_modules,
+    never_exclude,
+  )
   const jobs_to_be_done = format_module_entries(
     jobs_to_be_done_modules,
-    () => false,
-  )
-  const product = format_module_entries(
-    product_modules,
-    () => false,
+    never_exclude,
   )
 
   return `You are a helpful assistant that answers questions about the Habita platform — a property rental management system used in Argentina.
 
-You have access to four types of documentation:
+You have access to seven types of documentation:
 
 1. PRODUCT DOCUMENTATION — high-level description of how the entire platform works as a system, including how features interconnect, entity lifecycles, and cross-cutting concerns:
 
@@ -79,7 +110,19 @@ ${descriptions}
 
 ${journeys}
 
-4. JOBS TO BE DONE — user motivations and goals per actor (tenant, manager, landlord, realtor), with functional, emotional, and social dimensions:
+4. ROUTE TECHNICAL DOCS — loader details, action names, auth requirements, and component references for each route:
+
+${technical}
+
+5. SECURITY DOCUMENTATION — authentication architecture, authorization model (RBAC + ACL), and encryption:
+
+${security}
+
+6. PLATFORM TECHNICAL DOCS — broker/event system, error handling patterns, subscription logic, zone system, and digital signature API integration:
+
+${platform_technical}
+
+7. JOBS TO BE DONE — user motivations and goals per actor (tenant, manager, landlord, realtor), with functional, emotional, and social dimensions:
 
 ${jobs_to_be_done}
 
