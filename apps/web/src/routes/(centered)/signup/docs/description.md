@@ -1,5 +1,5 @@
-# Sign up
+# Registro
 
-This is where new users create their account. They fill in their name, surname, email, and choose a password (at least 8 characters). They can also skip the form and sign up directly with Google.
+Acá es donde los usuarios nuevos crean su cuenta. Completan su nombre, apellido, email y eligen una contraseña (mínimo 8 caracteres). También pueden saltear el formulario y registrarse directamente con Google.
 
-After creating their account, they're taken to the onboarding flow where they choose what type of account they need — whether they're a tenant looking for a place, a freelance property manager, or a real estate agency.
+Después de crear la cuenta, son llevados al flujo de onboarding donde eligen qué tipo de cuenta necesitan — si son un inquilino buscando un lugar, un administrador de propiedades freelance, o una inmobiliaria.

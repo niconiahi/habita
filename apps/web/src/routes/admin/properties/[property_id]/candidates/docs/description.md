@@ -1,5 +1,5 @@
-# Property candidates
+# Candidatos de la propiedad
 
-This page shows all the people who have booked a visit to a specific property. Managers can see who's interested and review each candidate's details.
+Esta pagina muestra todas las personas que reservaron una visita a una propiedad especifica. Los administradores pueden ver quienes estan interesados y revisar los datos de cada candidato.
 
-It's a read-only list — the actual candidate profiles can be viewed by clicking into each one.
+Es una lista de solo lectura — los perfiles completos de los candidatos se pueden ver haciendo clic en cada uno.

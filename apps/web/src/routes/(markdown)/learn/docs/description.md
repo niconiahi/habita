@@ -1,5 +1,5 @@
-# Learn — help articles
+# Aprender — artículos de ayuda
 
-This is the educational section of the platform. It provides a sidebar with links to all available articles, and clicking on one opens its content. Articles cover topics like what information is needed for a profile, how phone numbers should be formatted, what's required before booking a property visit, and more.
+Esta es la sección educativa de la plataforma. Ofrece una barra lateral con enlaces a todos los artículos disponibles, y al hacer clic en uno se abre su contenido. Los artículos cubren temas como qué información se necesita para un perfil, cómo deben formatearse los números de teléfono, qué se requiere antes de reservar una visita a una propiedad, y más.
 
-Think of it as a built-in help center where users can find answers to common questions about using the platform.
+Pensalo como un centro de ayuda integrado donde los usuarios pueden encontrar respuestas a preguntas frecuentes sobre el uso de la plataforma.

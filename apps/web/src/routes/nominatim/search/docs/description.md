@@ -1,5 +1,5 @@
-# Location search
+# Búsqueda de ubicación
 
-This is a behind-the-scenes endpoint that powers the location/address search throughout the platform. When a user types an address in the property creation or editing form, this endpoint searches for matching locations and returns the results.
+Este es un endpoint que funciona detrás de escena y potencia la búsqueda de ubicaciones/direcciones en toda la plataforma. Cuando un usuario escribe una dirección en el formulario de creación o edición de propiedad, este endpoint busca ubicaciones que coincidan y devuelve los resultados.
 
-It connects to Nominatim (a geographic search service) to find addresses, with built-in protections against slow responses and oversized results.
+Se conecta a Nominatim (un servicio de búsqueda geográfica) para encontrar direcciones, con protecciones incorporadas contra respuestas lentas y resultados demasiado grandes.

@@ -1,5 +1,5 @@
-# Test payment
+# Pago de prueba
 
-This is a testing page only accessible to platform administrators (webmasters). It allows them to make a test payment of 50 ARS through Mercado Pago to verify the payment integration is working correctly.
+Esta es una página de prueba accesible únicamente para administradores de la plataforma (webmasters). Les permite realizar un pago de prueba de 50 ARS a través de Mercado Pago para verificar que la integración de pagos funciona correctamente.
 
-Regular users cannot see or access this page.
+Los usuarios regulares no pueden ver ni acceder a esta página.

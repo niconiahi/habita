@@ -1,3 +1,3 @@
-# Payment success
+# Pago exitoso
 
-This is the page users land on after completing a payment through Mercado Pago. It checks the payment status and shows the appropriate message: confirmed, still processing, or rejected. If the payment was approved, it displays a confirmation with the operation ID.
+Esta es la página a la que llegan los usuarios después de completar un pago a través de Mercado Pago. Verifica el estado del pago y muestra el mensaje correspondiente: confirmado, en proceso, o rechazado. Si el pago fue aprobado, muestra una confirmación con el ID de la operación.

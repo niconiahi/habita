@@ -1,3 +1,3 @@
-# Payment failure
+# Pago fallido
 
-This is the page shown when a Mercado Pago payment fails. It tells the user that something went wrong and gives them a button to try again. If the problem persists, it suggests contacting support.
+Esta es la página que se muestra cuando un pago de Mercado Pago falla. Le indica al usuario que algo salió mal y le ofrece un botón para intentar de nuevo. Si el problema persiste, sugiere contactar a soporte.
