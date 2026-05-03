@@ -112,11 +112,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_i1_id = await seeder.add_room(ground_floor_i1, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "4.5",
-    length: "4.0",
-  })
+  const living_room_i1_id = await seeder.add_room(
+    ground_floor_i1,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "4.5",
+      length: "4.0",
+    },
+  )
   await seeder.add_room(ground_floor_i1, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",
@@ -274,11 +277,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_i2_id = await seeder.add_room(ground_floor_i2, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "5.0",
-    length: "4.5",
-  })
+  const living_room_i2_id = await seeder.add_room(
+    ground_floor_i2,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "5.0",
+      length: "4.5",
+    },
+  )
   await seeder.add_room(ground_floor_i2, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.0",
@@ -431,11 +437,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_i3_id = await seeder.add_room(ground_floor_i3, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "4.5",
-    length: "4.0",
-  })
+  const living_room_i3_id = await seeder.add_room(
+    ground_floor_i3,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "4.5",
+      length: "4.0",
+    },
+  )
   await seeder.add_room(ground_floor_i3, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",

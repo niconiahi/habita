@@ -29,7 +29,8 @@
     gap: var(--dimension-spacing-2);
     color: white;
     background-color: #25d366;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-4);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-4);
     border-radius: var(--dimension-radius-default);
     font-weight: 700;
     text-decoration: none;

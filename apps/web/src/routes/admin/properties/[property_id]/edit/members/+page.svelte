@@ -43,7 +43,9 @@
           {get_access_label(member.type)}
         </span>
         {#if member.phone_number}
-          <WhatsappButton phone_number={member.phone_number}>
+          <WhatsappButton
+            phone_number={member.phone_number}
+          >
             Contactar
           </WhatsappButton>
         {/if}
@@ -117,5 +119,4 @@
   .role {
     color: var(--color-text-body);
   }
-
 </style>

@@ -18,9 +18,7 @@
   import { get_warranty_type_label } from "$lib/warranty_type"
   import PropertyMap from "$lib/components/PropertyMap.svelte"
   import PhotoViewer from "$lib/components/PhotoViewer.svelte"
-  import type {
-    ViewerGroup,
-  } from "$lib/components/PhotoViewer.svelte"
+  import type { ViewerGroup } from "$lib/components/PhotoViewer.svelte"
   import { display_floor_number } from "$lib/floor_number"
   import Visualizer from "./components/Visualizer.svelte"
   import AdminCard from "./components/AdminCard.svelte"
@@ -89,9 +87,10 @@
 
   let active_tab = $state("Condiciones")
 
-  let open_viewer = $state<
-    (photo_index: number, group_index?: number) => void
-  >()
+  let open_viewer =
+    $state<
+      (photo_index: number, group_index?: number) => void
+    >()
 
   const viewer_groups: ViewerGroup[] = $derived([
     {
@@ -324,7 +323,10 @@
   </div>
 </Content.Root>
 
-<PhotoViewer groups={viewer_groups} bind:open={open_viewer} />
+<PhotoViewer
+  groups={viewer_groups}
+  bind:open={open_viewer}
+/>
 
 <style>
   .gallery {

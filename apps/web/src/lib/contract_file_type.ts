@@ -23,7 +23,7 @@ export function get_contract_file_type_label(
     case CONTRACT_FILE_TYPE.CONTRACT: {
       return "Contrato"
     }
-case CONTRACT_FILE_TYPE.SIGNED: {
+    case CONTRACT_FILE_TYPE.SIGNED: {
       return "Contrato firmado"
     }
     default: {

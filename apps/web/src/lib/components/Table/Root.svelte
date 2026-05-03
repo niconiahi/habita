@@ -16,7 +16,8 @@
   }
 
   .table :global(th) {
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }

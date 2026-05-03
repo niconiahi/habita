@@ -24,9 +24,7 @@
                 </a>
               {/if}
               {#if access_type === ACCESS_TYPE.TENANT}
-                <a
-                  href="/properties/{property.id}/tenant"
-                >
+                <a href="/properties/{property.id}/tenant">
                   Ver como inquilino
                 </a>
               {/if}

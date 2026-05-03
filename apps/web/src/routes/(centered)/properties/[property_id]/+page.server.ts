@@ -49,28 +49,23 @@ export const load: PageServerLoad = async ({
           ...photo,
           src: get_img_props(photo.id, photo.hash, {
             widths: [600, 1200],
-            sizes: [
-              "(max-width: 900px) 600px, 1200px",
-            ],
+            sizes: ["(max-width: 900px) 600px, 1200px"],
           }).src,
         })),
       })),
     }),
   )
-  const images = floors_with_photo_urls.flatMap(
-    (floor) =>
-      floor.rooms.flatMap((room) =>
-        room.photos.map((photo) => ({
-          ...photo,
-          props: get_img_props(photo.id, photo.hash, {
-            widths: [600, 1200],
-            sizes: [
-              "(max-width: 900px) 600px, 1200px",
-            ],
-          }),
-          alt: `Foto de la propiedad - ${photo.basename}`,
-        })),
-      ),
+  const images = floors_with_photo_urls.flatMap((floor) =>
+    floor.rooms.flatMap((room) =>
+      room.photos.map((photo) => ({
+        ...photo,
+        props: get_img_props(photo.id, photo.hash, {
+          widths: [600, 1200],
+          sizes: ["(max-width: 900px) 600px, 1200px"],
+        }),
+        alt: `Foto de la propiedad - ${photo.basename}`,
+      })),
+    ),
   )
   return {
     property: {

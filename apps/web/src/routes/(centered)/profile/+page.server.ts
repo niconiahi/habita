@@ -8,7 +8,10 @@ import { ACTION } from "./actions/action"
 import { create_file } from "./actions/create_file.server"
 import { update_user } from "./actions/update_user.server"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,

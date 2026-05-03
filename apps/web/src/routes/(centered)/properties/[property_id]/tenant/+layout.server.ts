@@ -36,8 +36,7 @@ export const load: LayoutServerLoad = async ({
     error(404, "Propiedad no encontrada")
   }
   const contract = property.contracts.find(
-    (contract) =>
-      contract.state === CONTRACT_STATE.ACTIVE,
+    (contract) => contract.state === CONTRACT_STATE.ACTIVE,
   )
   if (!contract) {
     error(

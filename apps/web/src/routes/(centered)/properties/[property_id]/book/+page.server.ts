@@ -70,7 +70,9 @@ export const load: PageServerLoad = async ({
 export const actions: Actions = {
   [ACTION.UPDATE_SLOT]: async ({ request, params }) => {
     const tracer = trace.getTracer("web.action")
-    const span = tracer.startSpan("/properties/:id/book/update_slot")
+    const span = tracer.startSpan(
+      "/properties/:id/book/update_slot",
+    )
     const form_data = await request.formData()
     const property_id = v.parse(
       ForceNumberSchema,
@@ -115,16 +117,8 @@ function fetch_property_manager(property_id: number) {
       "property_access.user_id",
       "user.id",
     )
-    .where(
-      "property_access.property_id",
-      "=",
-      property_id,
-    )
-    .where(
-      "property_access.type",
-      "=",
-      ACCESS_TYPE.MANAGER,
-    )
+    .where("property_access.property_id", "=", property_id)
+    .where("property_access.type", "=", ACCESS_TYPE.MANAGER)
     .select(["user.email", "user.name"])
     .executeTakeFirst()
 }
@@ -160,7 +154,11 @@ async function notify_no_available_slots(
     kv.get(dedup_key),
   )
   if (dedup_error) {
-    logger.error(dedup_error.message, { property_id }, dedup_error)
+    logger.error(
+      dedup_error.message,
+      { property_id },
+      dedup_error,
+    )
     return
   }
   if (existing) return
@@ -169,7 +167,11 @@ async function notify_no_available_slots(
     fetch_property_manager(property_id),
   )
   if (manager_error) {
-    logger.error(manager_error.message, { property_id }, manager_error)
+    logger.error(
+      manager_error.message,
+      { property_id },
+      manager_error,
+    )
     return
   }
   if (!manager) return
@@ -178,32 +180,40 @@ async function notify_no_available_slots(
     fetch_property_location(property_id),
   )
   if (location_error) {
-    logger.error(location_error.message, { property_id }, location_error)
+    logger.error(
+      location_error.message,
+      { property_id },
+      location_error,
+    )
     return
   }
   if (!location) return
 
-  const notification_type = NOTIFICATION_TYPE.NO_AVAILABLE_SLOTS
+  const notification_type =
+    NOTIFICATION_TYPE.NO_AVAILABLE_SLOTS
   const now_date = new Date()
-  const [notification_error, notification] = await safe_async(
-    query_builder
-      .insertInto("notification")
-      .values({
-        type: notification_type,
-        href: compose_no_available_slots_href(property_id),
-        property_id,
-        created_at: now_date,
-        updated_at: now_date,
-      })
-      .returning([
-        "notification.id",
-        "notification.type",
-        "notification.href",
-        "notification.property_id",
-        "notification.created_at",
-      ])
-      .executeTakeFirstOrThrow(),
-  )
+  const [notification_error, notification] =
+    await safe_async(
+      query_builder
+        .insertInto("notification")
+        .values({
+          type: notification_type,
+          href: compose_no_available_slots_href(
+            property_id,
+          ),
+          property_id,
+          created_at: now_date,
+          updated_at: now_date,
+        })
+        .returning([
+          "notification.id",
+          "notification.type",
+          "notification.href",
+          "notification.property_id",
+          "notification.created_at",
+        ])
+        .executeTakeFirstOrThrow(),
+    )
   if (notification_error) {
     logger.error(
       notification_error.message,

@@ -7,7 +7,11 @@
   import type { Snippet } from "svelte"
 
   const TENANT_TABS = [
-    { route: "receipts", label: "comprobantes", exact: false },
+    {
+      route: "receipts",
+      label: "comprobantes",
+      exact: false,
+    },
     { route: "tenant", label: "contrato", exact: true },
     { route: "services", label: "servicios", exact: false },
   ] as const
@@ -21,10 +25,7 @@
     `/properties/${data.property_id}/tenant`,
   )
 
-  function is_active(
-    route: string,
-    exact: boolean,
-  ) {
+  function is_active(route: string, exact: boolean) {
     if (exact) {
       return page.url.pathname === base_path
     }

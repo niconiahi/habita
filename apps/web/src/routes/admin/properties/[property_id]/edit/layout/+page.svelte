@@ -7,9 +7,7 @@
   import SegmentedButton from "$lib/components/SegmentedButton.svelte"
   import RoomMap from "$lib/components/RoomMap.svelte"
   import PhotoViewer from "$lib/components/PhotoViewer.svelte"
-  import type {
-    ViewerGroup,
-  } from "$lib/components/PhotoViewer.svelte"
+  import type { ViewerGroup } from "$lib/components/PhotoViewer.svelte"
   import { display_floor_number } from "$lib/floor_number"
   import {
     display_room_type,
@@ -155,12 +153,10 @@
   }
 
   // Photo viewer
-  let open_viewer = $state<
-    (
-      photo_index: number,
-      group_index?: number,
-    ) => void
-  >()
+  let open_viewer =
+    $state<
+      (photo_index: number, group_index?: number) => void
+    >()
 
   const viewer_groups: ViewerGroup[] = $derived(
     data.property.floors.flatMap((floor) =>
@@ -515,7 +511,10 @@
   <input type="hidden" name="floor_ids" value="" />
 </form>
 
-<PhotoViewer groups={viewer_groups} bind:open={open_viewer} />
+<PhotoViewer
+  groups={viewer_groups}
+  bind:open={open_viewer}
+/>
 
 <style>
   .layout {
@@ -698,5 +697,4 @@
     white-space: nowrap;
     border-width: 0;
   }
-
 </style>

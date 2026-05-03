@@ -66,5 +66,4 @@
     align-items: center;
     gap: var(--dimension-spacing-2-5);
   }
-
 </style>

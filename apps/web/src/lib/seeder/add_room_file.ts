@@ -14,7 +14,5 @@ export async function add_room_file(
       updated_at: now,
     })
     .execute()
-  console.log(
-    `added file ${file_id} to room ${room_id}`,
-  )
+  console.log(`added file ${file_id} to room ${room_id}`)
 }

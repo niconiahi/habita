@@ -76,7 +76,8 @@
         <tbody>
           {#each data.candidate_files as file (file.id)}
             <tr>
-              <td class="body-md-medium">{file.basename}</td>
+              <td class="body-md-medium">{file.basename}</td
+              >
               <td class="body-md-medium">
                 {get_user_file_type_label(file.type)}
               </td>
@@ -126,13 +127,15 @@
 
   .documents-table th {
     text-align: left;
-    padding: var(--dimension-spacing-2) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-2)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }
 
   .documents-table td {
-    padding: var(--dimension-spacing-3) var(--dimension-spacing-3);
+    padding: var(--dimension-spacing-3)
+      var(--dimension-spacing-3);
     color: var(--color-text-body);
     border-bottom: 1px solid var(--color-border-primary);
   }

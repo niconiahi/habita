@@ -12,7 +12,10 @@ async function open_disclosure(page: Page, title: string) {
   }
 }
 
-async function submit_and_wait(page: Page, button_text: string) {
+async function submit_and_wait(
+  page: Page,
+  button_text: string,
+) {
   await Promise.all([
     page.waitForResponse(
       (res) => res.request().method() === "POST",
@@ -185,8 +188,12 @@ export async function fill_income_warranty(page: Page) {
     .click()
   const dialog = page.locator("dialog[open]")
   await dialog.waitFor({ state: "visible" })
-  await dialog.locator("#new_guarantor_name").fill("Carlos López Garante")
-  await dialog.locator("#new_guarantor_dni").fill("11223344")
+  await dialog
+    .locator("#new_guarantor_name")
+    .fill("Carlos López Garante")
+  await dialog
+    .locator("#new_guarantor_dni")
+    .fill("11223344")
   await dialog
     .locator("#new_guarantor_email")
     .fill("garanteingreso1@test.com")
@@ -208,7 +215,9 @@ export async function fill_income_warranty(page: Page) {
   await dialog2
     .locator("#new_guarantor_name")
     .fill("Ana Martínez Garante")
-  await dialog2.locator("#new_guarantor_dni").fill("55667788")
+  await dialog2
+    .locator("#new_guarantor_dni")
+    .fill("55667788")
   await dialog2
     .locator("#new_guarantor_email")
     .fill("garanteingreso2@test.com")
@@ -216,7 +225,9 @@ export async function fill_income_warranty(page: Page) {
     page.waitForResponse(
       (res) => res.request().method() === "POST",
     ),
-    dialog2.getByRole("button", { name: "Agregar" }).click(),
+    dialog2
+      .getByRole("button", { name: "Agregar" })
+      .click(),
   ])
 }
 
