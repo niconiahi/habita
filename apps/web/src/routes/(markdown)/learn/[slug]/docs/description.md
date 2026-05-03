@@ -1,5 +1,5 @@
-# Help article
+# Artículo de ayuda
 
-This page displays a single help article by its URL slug. Articles are written to explain how different parts of the platform work — things like what documents are needed, how to format a phone number, or what steps to follow before booking a visit.
+Esta página muestra un artículo de ayuda individual según su slug en la URL. Los artículos están escritos para explicar cómo funcionan las distintas partes de la plataforma — cosas como qué documentos se necesitan, cómo formatear un número de teléfono, o qué pasos seguir antes de reservar una visita.
 
-If someone tries to access an article that doesn't exist, they'll see a "not found" error.
+Si alguien intenta acceder a un artículo que no existe, va a ver un error de "no encontrado".

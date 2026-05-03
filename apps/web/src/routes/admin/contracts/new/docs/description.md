@@ -1,5 +1,5 @@
-# Create a contract (choose property)
+# Crear un contrato (elegir propiedad)
 
-This is the first step when creating a contract from the global contracts section. Instead of being tied to a specific property already, this page shows a list of all available properties and lets the manager pick which one the contract is for.
+Este es el primer paso para crear un contrato desde la seccion global de contratos. En lugar de estar vinculado a una propiedad especifica de antemano, esta pagina muestra una lista de todas las propiedades disponibles y permite al administrador elegir a cual corresponde el contrato.
 
-Once they select a property, they're redirected to that property's contract creation page to fill in the actual contract details.
+Una vez seleccionada la propiedad, se redirige a la pagina de creacion de contrato de esa propiedad para completar los datos del contrato.

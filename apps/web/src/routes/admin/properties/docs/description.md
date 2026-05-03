@@ -1,5 +1,5 @@
-# Manage properties
+# Gestionar propiedades
 
-This is where property managers and landlords see all the properties they have access to. Each property shows its location, type (house, apartment, etc.), and current status (editing, published, rented).
+Aca es donde los administradores y propietarios ven todas las propiedades a las que tienen acceso. Cada propiedad muestra su ubicacion, tipo (casa, departamento, etc.) y estado actual (en edicion, publicada, alquilada).
 
-From here they can create a new property, edit existing ones that are still in draft, publish properties to make them visible to tenants, or unpublish them to take them off the listing. Published properties also have a link to manage their visit calendar.
+Desde aca pueden crear una nueva propiedad, editar las existentes que aun estan en borrador, publicar propiedades para hacerlas visibles a los inquilinos, o despublicarlas para quitarlas del listado. Las propiedades publicadas tambien tienen un enlace para gestionar su calendario de visitas.
