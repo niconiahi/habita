@@ -47,7 +47,10 @@ function fetch_signature_documents(user_id: number) {
     .execute()
 }
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   const documents = await fetch_signature_documents(
     locals.user.id,

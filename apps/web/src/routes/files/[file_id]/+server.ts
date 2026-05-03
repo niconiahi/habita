@@ -40,11 +40,7 @@ async function get_file_property_id(
       query_builder
         .selectFrom("room_file")
         .innerJoin("room", "room.id", "room_file.room_id")
-        .innerJoin(
-          "floor",
-          "floor.id",
-          "room.floor_id",
-        )
+        .innerJoin("floor", "floor.id", "room.floor_id")
         .select(
           sql<number | null>`floor.property_id`.as(
             "property_id",

@@ -8,13 +8,17 @@
 
   const BETTER_AUTH_DEFAULT_ERROR_MESSAGE = "Invalid email"
   const DEFAULT_REDIRECT = "/properties"
-  const TRUSTED_ORIGIN_PATTERN = /^https:\/\/[a-z-]+\.(?:dev\.)?habita\.rent/
+  const TRUSTED_ORIGIN_PATTERN =
+    /^https:\/\/[a-z-]+\.(?:dev\.)?habita\.rent/
 
   let error = $state<string | null>(null)
   let is_loading = $state(false)
 
   function get_redirect_to() {
-    return page.url.searchParams.get("redirect_to") ?? DEFAULT_REDIRECT
+    return (
+      page.url.searchParams.get("redirect_to") ??
+      DEFAULT_REDIRECT
+    )
   }
 
   async function handle_email_login(event: SubmitEvent) {
@@ -69,43 +73,43 @@
 </script>
 
 <div class="card vertically-centered">
-    <form class="form" onsubmit={handle_email_login}>
-      <Formulary.Input
-        label="Email"
-        name="email"
-        type="email"
-        required
-        autocomplete="email"
-      />
-      <Formulary.Input
-        label="Contraseña"
-        name="password"
-        type="password"
-        required
-        autocomplete="current-password"
-        minlength={8}
-        error={error ?? undefined}
-      />
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={is_loading}
-      >
-        {is_loading ? "Cargando..." : "Ingresar"}
-      </Button>
-      <Button
-        variant="secondary"
-        type="button"
-        onclick={handle_google_login}
-      >
-        <Google />
-        Ingresar con Google
-      </Button>
-      <p class="body-md-medium footer">
-        ¿No tenés cuenta?
-        <a href="/signup">Crear cuenta</a>
-      </p>
-    </form>
+  <form class="form" onsubmit={handle_email_login}>
+    <Formulary.Input
+      label="Email"
+      name="email"
+      type="email"
+      required
+      autocomplete="email"
+    />
+    <Formulary.Input
+      label="Contraseña"
+      name="password"
+      type="password"
+      required
+      autocomplete="current-password"
+      minlength={8}
+      error={error ?? undefined}
+    />
+    <Button
+      variant="primary"
+      type="submit"
+      disabled={is_loading}
+    >
+      {is_loading ? "Cargando..." : "Ingresar"}
+    </Button>
+    <Button
+      variant="secondary"
+      type="button"
+      onclick={handle_google_login}
+    >
+      <Google />
+      Ingresar con Google
+    </Button>
+    <p class="body-md-medium footer">
+      ¿No tenés cuenta?
+      <a href="/signup">Crear cuenta</a>
+    </p>
+  </form>
 </div>
 
 <style>

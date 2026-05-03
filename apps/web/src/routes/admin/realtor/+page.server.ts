@@ -9,7 +9,10 @@ import { remove_manager } from "./actions/remove_manager.server"
 import { fetch_managers_with_property_counts } from "./fetchers/managers.server"
 import { fetch_organization_details } from "./fetchers/organization.server"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
 
   const realtor_org = await get_user_realtor_organization(

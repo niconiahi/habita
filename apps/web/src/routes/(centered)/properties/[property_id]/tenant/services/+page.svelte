@@ -19,7 +19,9 @@
       {#each data.services as service (service.id)}
         <div class="info-row">
           <span class="info-label">
-            {get_service_type_label(service.type as ServiceType)}
+            {get_service_type_label(
+              service.type as ServiceType,
+            )}
           </span>
           <span>{service.code}</span>
         </div>

@@ -34,9 +34,7 @@ test.describe.serial("Assign Candidate as Tenant", () => {
     await page.check('input[name="destiny"][value="0"]')
     await page.click('button[type="submit"]')
 
-    await page.waitForURL(
-      /\/admin\/properties\/\d+\/edit/,
-    )
+    await page.waitForURL(/\/admin\/properties\/\d+\/edit/)
     const match = page
       .url()
       .match(/\/admin\/properties\/(\d+)\/edit/)

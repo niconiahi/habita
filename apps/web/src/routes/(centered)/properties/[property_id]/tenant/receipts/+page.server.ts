@@ -41,8 +41,7 @@ export const load: PageServerLoad = async ({
     error(404, "Propiedad no encontrada")
   }
   const contract = property.contracts.find(
-    (contract) =>
-      contract.state === CONTRACT_STATE.ACTIVE,
+    (contract) => contract.state === CONTRACT_STATE.ACTIVE,
   )
   if (!contract) {
     error(
@@ -60,7 +59,11 @@ export const load: PageServerLoad = async ({
 
   const history_dates: Date[] = []
   if (history_anchor) {
-    for (let index = 0; index < HISTORY_PAGE_SIZE; index++) {
+    for (
+      let index = 0;
+      index < HISTORY_PAGE_SIZE;
+      index++
+    ) {
       const month = subMonths(history_anchor, index)
       if (month.getTime() >= current_month.getTime()) {
         continue
@@ -70,9 +73,10 @@ export const load: PageServerLoad = async ({
   }
 
   const dates = [now, ...history_dates]
-  const oldest_visible = history_dates.length > 0
-    ? history_dates[history_dates.length - 1]
-    : current_month
+  const oldest_visible =
+    history_dates.length > 0
+      ? history_dates[history_dates.length - 1]
+      : current_month
 
   const receipts = await query_builder
     .selectFrom("receipt")

@@ -11,7 +11,10 @@ import { is_webmaster } from "$lib/server/is_webmaster"
 import { now } from "$lib/server/now"
 import type { Actions, PageServerLoad } from "./$types"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   if (!is_webmaster(locals.user)) {
     error(403, "forbidden")

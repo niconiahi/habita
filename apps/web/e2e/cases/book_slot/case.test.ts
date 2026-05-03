@@ -29,9 +29,7 @@ test.describe.serial("Book a Slot", () => {
     await page.check('input[name="destiny"][value="0"]')
     await page.click('button[type="submit"]')
 
-    await page.waitForURL(
-      /\/admin\/properties\/\d+\/edit/,
-    )
+    await page.waitForURL(/\/admin\/properties\/\d+\/edit/)
     const match = page
       .url()
       .match(/\/admin\/properties\/(\d+)\/edit/)
@@ -113,8 +111,6 @@ test.describe.serial("Book a Slot", () => {
     ])
 
     // Verify state changed to "Publicada"
-    await expect(
-      page.getByText("Publicada"),
-    ).toBeVisible()
+    await expect(page.getByText("Publicada")).toBeVisible()
   })
 })

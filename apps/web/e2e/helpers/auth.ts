@@ -142,7 +142,9 @@ export async function authenticate_test_user(
 
   // Wait for either success (redirect to /properties) or stay on login (user doesn't exist yet)
   try {
-    await page.waitForURL(/\/properties/, { timeout: 15000 })
+    await page.waitForURL(/\/properties/, {
+      timeout: 15000,
+    })
     console.log(
       `user ${user.email} already exists, skipping signup`,
     )

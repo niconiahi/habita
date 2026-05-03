@@ -12,7 +12,10 @@ import { publish_property } from "./actions/publish_property.server"
 import { unpublish_property } from "./actions/unpublish_property.server"
 import { fetch_properties } from "./fetchers/properties.server"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   const property_ids = await get_accessible_property_ids(
     locals.user.id,

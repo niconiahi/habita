@@ -157,11 +157,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_1_id = await seeder.add_room(ground_floor_1_id, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "4.5",
-    length: "4.0",
-  })
+  const living_room_1_id = await seeder.add_room(
+    ground_floor_1_id,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "4.5",
+      length: "4.0",
+    },
+  )
   await seeder.add_room(ground_floor_1_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "3.5",
@@ -252,11 +255,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_2_id = await seeder.add_room(ground_floor_2_id, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "5.0",
-    length: "4.5",
-  })
+  const living_room_2_id = await seeder.add_room(
+    ground_floor_2_id,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "5.0",
+      length: "4.5",
+    },
+  )
   await seeder.add_room(ground_floor_2_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.0",
@@ -322,11 +328,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_3_id = await seeder.add_room(ground_floor_3_id, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "6.0",
-    length: "5.0",
-  })
+  const living_room_3_id = await seeder.add_room(
+    ground_floor_3_id,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "6.0",
+      length: "5.0",
+    },
+  )
   await seeder.add_room(ground_floor_3_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.5",
@@ -438,11 +447,14 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
     { number: FLOOR_NUMBER.GROUND },
   )
 
-  const living_room_4_id = await seeder.add_room(ground_floor_4_id, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "8.0",
-    length: "6.0",
-  })
+  const living_room_4_id = await seeder.add_room(
+    ground_floor_4_id,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "8.0",
+      length: "6.0",
+    },
+  )
   await seeder.add_room(ground_floor_4_id, {
     type: ROOM_TYPE.BATHROOM,
     width: "2.0",

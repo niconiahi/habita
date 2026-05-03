@@ -31,8 +31,7 @@
 
   let dialog_element: HTMLDialogElement | undefined =
     $state()
-  let photo_element: HTMLDivElement | undefined =
-    $state()
+  let photo_element: HTMLDivElement | undefined = $state()
   let thumbnails_element: HTMLDivElement | undefined =
     $state()
   let current_group = $state(0)
@@ -50,10 +49,7 @@
     resolved_groups[current_group]?.photos ?? [],
   )
 
-  open = (
-    photo_index: number,
-    group_index?: number,
-  ) => {
+  open = (photo_index: number, group_index?: number) => {
     current_group = group_index ?? 0
     current_photo = photo_index
     dialog_element?.showModal()
@@ -197,7 +193,9 @@
               <span
                 class="viewer-stats-dimensions body-sm-medium"
               >
-                {current_photos[current_photo].width}m × {current_photos[current_photo].length}m
+                {current_photos[current_photo].width}m × {current_photos[
+                  current_photo
+                ].length}m
               </span>
             {/if}
           </div>
@@ -214,8 +212,7 @@
     type="button"
     class="viewer-nav next"
     onclick={next}
-    disabled={current_photo >=
-      current_photos.length - 1}
+    disabled={current_photo >= current_photos.length - 1}
     tabindex={current_photo >= current_photos.length - 1
       ? -1
       : 0}
@@ -239,10 +236,7 @@
           tabindex={-1}
           onclick={() => (current_photo = index)}
         >
-          <img
-            src={photo.src}
-            alt={photo.basename}
-          />
+          <img src={photo.src} alt={photo.basename} />
         </button>
       {/each}
     </div>

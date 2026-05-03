@@ -5,7 +5,10 @@ import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { create_payment } from "./actions/create_payment.server"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   if (!is_webmaster(locals.user)) {
     error(403, "forbidden")

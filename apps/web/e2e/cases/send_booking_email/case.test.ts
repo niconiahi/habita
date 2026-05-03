@@ -39,9 +39,7 @@ test.describe.serial("Send Booking Email", () => {
     await page.fill("#unit", "3F")
     await page.check('input[name="destiny"][value="0"]')
     await page.click('button[type="submit"]')
-    await page.waitForURL(
-      /\/admin\/properties\/\d+\/edit/,
-    )
+    await page.waitForURL(/\/admin\/properties\/\d+\/edit/)
     const match = page
       .url()
       .match(/\/admin\/properties\/(\d+)\/edit/)
@@ -95,9 +93,9 @@ test.describe.serial("Send Booking Email", () => {
     ])
 
     // Verify the slot state changed to "Confirmado"
-    await expect(
-      page.getByText("Confirmado"),
-    ).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText("Confirmado")).toBeVisible({
+      timeout: 5000,
+    })
 
     // Verify broker received the booking confirmation event
     const message = await fetch_latest_message(

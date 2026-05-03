@@ -18,13 +18,16 @@
         <div class="info-row">
           <span class="info-label">Vencimiento</span>
           <span>
-            {display_date(new Date(data.contract_end_date), {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: undefined,
-              minute: undefined,
-            })}
+            {display_date(
+              new Date(data.contract_end_date),
+              {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: undefined,
+                minute: undefined,
+              },
+            )}
           </span>
         </div>
       {/if}
@@ -56,14 +59,18 @@
         <div class="info-row">
           <span class="info-label">Nombre</span>
           <span
-            >{data.manager.name} {data.manager.surname}</span
+            >{data.manager.name}
+            {data.manager.surname}</span
           >
         </div>
         {#if data.manager.phone_number}
           <div class="info-row">
             <span class="info-label">Teléfono</span>
             <a
-              href="https://wa.me/{data.manager.phone_number.replace('+', '')}"
+              href="https://wa.me/{data.manager.phone_number.replace(
+                '+',
+                '',
+              )}"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -79,7 +86,9 @@
 {#snippet RentPrice()}
   <Content.Section>
     <Section.Header>
-      <Section.Title>Precio de alquiler actual</Section.Title>
+      <Section.Title
+        >Precio de alquiler actual</Section.Title
+      >
     </Section.Header>
     <p>${data.current_rent_price}</p>
   </Content.Section>

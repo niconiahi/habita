@@ -97,7 +97,9 @@ test.describe.serial("Edit Property with Room Map", () => {
         .selectOption(String(i))
 
       // Set dimensions
-      await card.locator(`#width_${room_id}`).fill(String(2 + i))
+      await card
+        .locator(`#width_${room_id}`)
+        .fill(String(2 + i))
       await card
         .locator(`#length_${room_id}`)
         .fill(String(3 + i))
@@ -124,9 +126,7 @@ test.describe.serial("Edit Property with Room Map", () => {
     )
 
     // Switch to "Mapa" view via SegmentedButton
-    await page
-      .getByRole("button", { name: "Mapa" })
-      .click()
+    await page.getByRole("button", { name: "Mapa" }).click()
 
     // Wait for the positions input to be in the DOM
     const positions_input = page.locator(
@@ -187,9 +187,7 @@ test.describe.serial("Edit Property with Room Map", () => {
     }
 
     // Switch back to Mapa view
-    await page
-      .getByRole("button", { name: "Mapa" })
-      .click()
+    await page.getByRole("button", { name: "Mapa" }).click()
 
     await positions_input.waitFor({ state: "attached" })
 
