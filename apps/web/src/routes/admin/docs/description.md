@@ -1,5 +1,5 @@
-# Admin dashboard
+# Panel de administracion
 
-This is the management area of the platform, accessible only to users with an active subscription. It provides a sidebar navigation to all the management sections: properties, tenants, candidates, and contracts. Real estate agencies also see a link to their agency management page.
+Esta es el area de gestion de la plataforma, accesible unicamente para usuarios con una suscripcion activa. Provee una barra de navegacion lateral hacia todas las secciones de gestion: propiedades, inquilinos, candidatos y contratos. Las inmobiliarias tambien ven un enlace a su pagina de administracion de la agencia.
 
-Everything inside the admin area is gated behind a paid subscription — if the subscription isn't active, access is blocked.
+Todo dentro del area de administracion esta protegido detras de una suscripcion paga — si la suscripcion no esta activa, el acceso queda bloqueado.

@@ -1,5 +1,5 @@
-# Candidate detail
+# Detalle del candidato
 
-This page shows the full profile of a specific candidate — someone who booked a visit to one of the managed properties. Managers can review the candidate's information before deciding whether to accept them as a tenant.
+Esta pagina muestra el perfil completo de un candidato especifico — alguien que reservo una visita a una de las propiedades administradas. Los administradores pueden revisar la informacion del candidato antes de decidir si aceptarlo como inquilino.
 
-The page only loads if the candidate actually has a reserved visit slot on one of the manager's properties, so managers can't see candidates from other people's properties.
+La pagina solo carga si el candidato efectivamente tiene un turno de visita reservado en una de las propiedades del administrador, por lo que no es posible ver candidatos de propiedades de otras personas.

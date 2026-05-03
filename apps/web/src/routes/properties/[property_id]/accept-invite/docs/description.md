@@ -1,5 +1,5 @@
-# Accept a property invitation
+# Aceptar una invitación a una propiedad
 
-This isn't a page you visit directly — it's a special link that landlords receive via email when they're invited to manage a property. Clicking the link verifies the invitation token, checks that it hasn't expired or been used before, and confirms that the logged-in user's email matches the invitation.
+Esta no es una página que se visite directamente — es un enlace especial que los propietarios reciben por email cuando son invitados a administrar una propiedad. Al hacer clic en el enlace se verifica el token de invitación, se comprueba que no haya expirado ni haya sido usado antes, y se confirma que el email del usuario logueado coincida con la invitación.
 
-If everything checks out, the user is granted landlord access to the property and gets redirected to the property's detail page. If something's wrong (expired token, wrong email, already used), it simply shows an error.
+Si todo está en orden, se le otorga al usuario acceso de propietario a la propiedad y se lo redirige a la página de detalle de la propiedad. Si algo está mal (token expirado, email incorrecto, ya utilizado), simplemente se muestra un error.

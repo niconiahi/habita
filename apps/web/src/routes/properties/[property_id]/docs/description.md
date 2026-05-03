@@ -1,7 +1,7 @@
-# Property detail
+# Detalle de propiedad
 
-This is the full detail page for a single property. Here you can see everything about a rental: its exact address (street, neighborhood, city, province), what the property is intended for (residential, commercial, etc.), and a breakdown of all its rooms with their dimensions.
+Esta es la página de detalle completa de una propiedad individual. Acá podés ver todo sobre un alquiler: su dirección exacta (calle, barrio, ciudad, provincia), para qué está destinada la propiedad (residencial, comercial, etc.) y un desglose de todos sus ambientes con sus dimensiones.
 
-There's also a visual room map that shows how the spaces are laid out, and a photo gallery of the property.
+También hay un plano visual de los ambientes que muestra cómo están distribuidos los espacios, y una galería de fotos de la propiedad.
 
-If you're interested, there's a "Book" button to schedule a visit. To book, you'll need to have uploaded a credit report to your profile first — otherwise the button takes you to an article explaining what's needed.
+Si te interesa, hay un botón de "Reservar" para agendar una visita. Para reservar, primero tenés que haber subido un informe crediticio a tu perfil — de lo contrario, el botón te lleva a un artículo que explica lo que se necesita.

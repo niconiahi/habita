@@ -1,3 +1,3 @@
 # Health check
 
-A simple internal endpoint used by monitoring systems to verify the platform is running. It returns a quick "ok" status. Not something end users ever see or interact with.
+Un endpoint interno simple que usan los sistemas de monitoreo para verificar que la plataforma está funcionando. Devuelve un estado rápido de "ok". No es algo que los usuarios finales vean o con lo que interactúen.

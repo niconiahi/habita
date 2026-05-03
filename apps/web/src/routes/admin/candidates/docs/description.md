@@ -1,5 +1,5 @@
-# All candidates
+# Todos los candidatos
 
-This page gives managers a bird's-eye view of all candidates across all their properties. Every person who has booked a visit to any of their managed properties shows up here.
+Esta pagina ofrece a los administradores una vista general de todos los candidatos en todas sus propiedades. Cada persona que haya reservado una visita a cualquiera de sus propiedades administradas aparece aca.
 
-Managers can also promote a candidate to tenant status directly from this list — essentially accepting someone as the new renter for a property.
+Los administradores tambien pueden promover a un candidato a inquilino directamente desde esta lista — esencialmente aceptando a alguien como el nuevo inquilino de una propiedad.
