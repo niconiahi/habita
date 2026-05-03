@@ -57,7 +57,8 @@ function error(
   if (thrown_error) {
     error_attributes["error.name"] = thrown_error.name
     error_attributes["error.message"] = thrown_error.message
-    error_attributes["error.stack"] = thrown_error.stack ?? ""
+    error_attributes["error.stack"] =
+      thrown_error.stack ?? ""
   }
 
   get_otel_logger().emit({

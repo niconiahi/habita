@@ -13,7 +13,10 @@ import { create_subscription_payment } from "./actions/create_subscription_payme
 const FREELANCE_PRICE_USD = 50
 const REALTOR_SEAT_PRICE_USD = 40
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
 
   const active_organization_id =

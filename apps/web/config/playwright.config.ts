@@ -4,10 +4,8 @@ import { defineConfig } from "@playwright/test"
 if (!process.env.POSTGRES_USER) {
   const { config } = await import("dotenv")
   config({
-    path: new URL(
-      "../../infra/.env.dev",
-      import.meta.url,
-    ).pathname,
+    path: new URL("../../infra/.env.dev", import.meta.url)
+      .pathname,
   })
 }
 

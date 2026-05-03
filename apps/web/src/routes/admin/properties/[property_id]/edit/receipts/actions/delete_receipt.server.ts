@@ -11,9 +11,7 @@ const InputSchema = v.object({
   receipt_id: ForceNumberSchema,
 })
 
-export async function delete_receipt(
-  form_data: FormData,
-) {
+export async function delete_receipt(form_data: FormData) {
   const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),

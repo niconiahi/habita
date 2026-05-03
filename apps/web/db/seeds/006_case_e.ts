@@ -136,16 +136,22 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   )
 
   // Add rooms
-  const living_room_id = await seeder.add_room(ground_floor_id, {
-    type: ROOM_TYPE.LIVING_ROOM,
-    width: "6.0",
-    length: "5.5",
-  })
-  const bedroom1_id = await seeder.add_room(ground_floor_id, {
-    type: ROOM_TYPE.BEDROOM,
-    width: "4.5",
-    length: "4.0",
-  })
+  const living_room_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.LIVING_ROOM,
+      width: "6.0",
+      length: "5.5",
+    },
+  )
+  const bedroom1_id = await seeder.add_room(
+    ground_floor_id,
+    {
+      type: ROOM_TYPE.BEDROOM,
+      width: "4.5",
+      length: "4.0",
+    },
+  )
   await seeder.add_room(ground_floor_id, {
     type: ROOM_TYPE.BEDROOM,
     width: "4.0",

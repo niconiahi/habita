@@ -72,89 +72,90 @@
         )}
         {@const label = get_receipt_type_label(type)}
         {#if receipt || is_editable}
-        <li class="receipt-item">
-          <span class="receipt-label">{label}</span>
-          {#if receipt}
-            <a
-              href="/files/{receipt.file_id}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Descargar
-            </a>
-            <Button
-              variant="secondary"
-              squared
-              type="button"
-              onclick={() =>
-                delete_dialog_element?.showModal()}
-              aria-label="Solicitar eliminación"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+          <li class="receipt-item">
+            <span class="receipt-label">{label}</span>
+            {#if receipt}
+              <a
+                href="/files/{receipt.file_id}"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path
-                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                ></path>
-              </svg>
-            </Button>
-          {:else if is_editable}
-            {@const input_id = `file_${date.getTime()}_${type}`}
-            <form
-              method="POST"
-              action={compose_action(
-                ACTION.UPLOAD_RECEIPT,
-              )}
-              enctype="multipart/form-data"
-              use:enhance
-            >
-              <input
-                type="hidden"
-                name="contract_id"
-                value={data.contract.id}
-              />
-              <input
-                type="hidden"
-                name="type"
-                value={type}
-              />
-              <input
-                id={input_id}
-                type="file"
-                name="file"
-                required
-                accept="image/*,application/pdf"
-                class="sr-only"
-                onchange={(event) => {
-                  const form_element =
-                    event.currentTarget.form
-                  if (form_element) {
-                    handle_file_change(form_element)
-                  }
-                }}
-              />
+                Descargar
+              </a>
               <Button
-                variant="primary"
+                variant="secondary"
+                squared
                 type="button"
                 onclick={() =>
-                  document
-                    .getElementById(input_id)
-                    ?.click()}
+                  delete_dialog_element?.showModal()}
+                aria-label="Solicitar eliminación"
               >
-                Subir archivo
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6"
+                  ></polyline>
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  ></path>
+                </svg>
               </Button>
-            </form>
-          {/if}
-        </li>
+            {:else if is_editable}
+              {@const input_id = `file_${date.getTime()}_${type}`}
+              <form
+                method="POST"
+                action={compose_action(
+                  ACTION.UPLOAD_RECEIPT,
+                )}
+                enctype="multipart/form-data"
+                use:enhance
+              >
+                <input
+                  type="hidden"
+                  name="contract_id"
+                  value={data.contract.id}
+                />
+                <input
+                  type="hidden"
+                  name="type"
+                  value={type}
+                />
+                <input
+                  id={input_id}
+                  type="file"
+                  name="file"
+                  required
+                  accept="image/*,application/pdf"
+                  class="sr-only"
+                  onchange={(event) => {
+                    const form_element =
+                      event.currentTarget.form
+                    if (form_element) {
+                      handle_file_change(form_element)
+                    }
+                  }}
+                />
+                <Button
+                  variant="primary"
+                  type="button"
+                  onclick={() =>
+                    document
+                      .getElementById(input_id)
+                      ?.click()}
+                >
+                  Subir archivo
+                </Button>
+              </form>
+            {/if}
+          </li>
         {/if}
       {/each}
     </ul>

@@ -15,8 +15,9 @@
 
   let { data }: { data: PageData } = $props()
 
-  let confirm_dialog_element: HTMLDialogElement | undefined =
-    $state()
+  let confirm_dialog_element:
+    | HTMLDialogElement
+    | undefined = $state()
   let pending_receipt_id: number | null = $state(null)
 
   function is_current_month(date: Date | string) {
@@ -43,7 +44,9 @@
         {#each data.receipts as receipt (receipt.id)}
           <Table.Row>
             <Table.Cell>
-              {get_receipt_type_label(receipt.type as ReceiptType)}
+              {get_receipt_type_label(
+                receipt.type as ReceiptType,
+              )}
             </Table.Cell>
             <Table.Cell>
               <a

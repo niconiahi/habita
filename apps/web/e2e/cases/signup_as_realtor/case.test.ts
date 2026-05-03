@@ -49,7 +49,10 @@ test.describe.serial("Signup as Realtor", () => {
       .locator("#password")
       .fill(REALTOR_USER.password)
     await page
-      .getByRole("button", { name: "Ingresar", exact: true })
+      .getByRole("button", {
+        name: "Ingresar",
+        exact: true,
+      })
       .click()
 
     // Should redirect to onboarding after login

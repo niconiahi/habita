@@ -46,17 +46,13 @@
       NodeFilter.SHOW_TEXT,
     )
     let text_node: Text | null
-    while (
-      (text_node = walker.nextNode() as Text | null)
-    ) {
-      const index = (
-        text_node.textContent ?? ""
-      ).indexOf(number_string)
+    while ((text_node = walker.nextNode() as Text | null)) {
+      const index = (text_node.textContent ?? "").indexOf(
+        number_string,
+      )
       if (index === -1) continue
       number_node = text_node.splitText(index)
-      ;(number_node as Text).splitText(
-        number_string.length,
-      )
+      ;(number_node as Text).splitText(number_string.length)
       break
     }
 
@@ -65,10 +61,7 @@
     const trigger = document.createElement("span")
     trigger.className = "safe-address-trigger"
     trigger.setAttribute("tabindex", "0")
-    trigger.setAttribute(
-      "aria-describedby",
-      tooltip_id,
-    )
+    trigger.setAttribute("aria-describedby", tooltip_id)
     trigger.textContent = masked
 
     const tooltip = document.createElement("span")

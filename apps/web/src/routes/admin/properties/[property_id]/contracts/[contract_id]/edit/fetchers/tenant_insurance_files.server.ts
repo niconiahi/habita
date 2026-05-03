@@ -14,21 +14,9 @@ export function fetch_tenant_insurance_files(
       "property_access.user_id",
       "user.id",
     )
-    .where(
-      "property_access.property_id",
-      "=",
-      property_id,
-    )
-    .where(
-      "property_access.type",
-      "=",
-      ACCESS_TYPE.TENANT,
-    )
-    .where(
-      "user_file.type",
-      "=",
-      USER_FILE_TYPE.INSURANCE,
-    )
+    .where("property_access.property_id", "=", property_id)
+    .where("property_access.type", "=", ACCESS_TYPE.TENANT)
+    .where("user_file.type", "=", USER_FILE_TYPE.INSURANCE)
     .select(["file.id", "file.basename"])
     .execute()
 }

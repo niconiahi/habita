@@ -4,7 +4,10 @@ import { fetch_all_notifications } from "$lib/fetchers/notifications.server"
 import { get_accessible_property_ids } from "$lib/server/property_access"
 import type { PageServerLoad } from "./$types"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
 
   const property_ids = await get_accessible_property_ids(

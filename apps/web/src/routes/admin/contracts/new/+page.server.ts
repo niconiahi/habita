@@ -5,7 +5,10 @@ import { get_accessible_property_ids } from "$lib/server/property_access"
 import type { Actions, PageServerLoad } from "./$types"
 import { fetch_available_properties } from "./fetchers/available_properties.server"
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({
+  locals,
+  url,
+}) => {
   require_authentication(locals, url)
   const manager_property_ids =
     await get_accessible_property_ids(
