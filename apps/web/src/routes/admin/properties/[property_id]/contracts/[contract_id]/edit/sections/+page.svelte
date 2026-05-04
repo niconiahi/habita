@@ -320,7 +320,10 @@
 {/snippet}
 
 {#snippet SectionSeven()}
-  <Disclosure name="sections" title="Sección 7: canon locativo">
+  <Disclosure
+    name="sections"
+    title="Sección 7: canon locativo"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
@@ -384,7 +387,10 @@
 {/snippet}
 
 {#snippet SectionEight()}
-  <Disclosure name="sections" title="Sección 8: forma de pago">
+  <Disclosure
+    name="sections"
+    title="Sección 8: forma de pago"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
@@ -451,7 +457,10 @@
 {/snippet}
 
 {#snippet SectionFourteen()}
-  <Disclosure name="sections" title="Sección 14: devoluciones">
+  <Disclosure
+    name="sections"
+    title="Sección 14: devoluciones"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
@@ -484,7 +493,10 @@
 {/snippet}
 
 {#snippet SectionFifteen()}
-  <Disclosure name="sections" title="Sección 15: recesión anticipada">
+  <Disclosure
+    name="sections"
+    title="Sección 15: recesión anticipada"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
@@ -518,7 +530,10 @@
 {/snippet}
 
 {#snippet SectionSixteen()}
-  <Disclosure name="sections" title="Sección 16: muestra de propiedad">
+  <Disclosure
+    name="sections"
+    title="Sección 16: muestra de propiedad"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
@@ -1018,7 +1033,10 @@
 {/snippet}
 
 {#snippet SectionTwentyOne()}
-  <Disclosure name="sections" title="Sección 21: jurisdicción">
+  <Disclosure
+    name="sections"
+    title="Sección 21: jurisdicción"
+  >
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}

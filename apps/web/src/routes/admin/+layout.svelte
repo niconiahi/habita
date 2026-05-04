@@ -25,6 +25,11 @@
           <Dashboard.Link href="/admin/properties">
             Propiedades
           </Dashboard.Link>
+          {#if data.is_realtor}
+            <Dashboard.Link href="/admin/teams">
+              Equipos
+            </Dashboard.Link>
+          {/if}
           {#if data.is_webmaster}
             <Dashboard.Link href="/admin/conversations">
               Conversaciones
