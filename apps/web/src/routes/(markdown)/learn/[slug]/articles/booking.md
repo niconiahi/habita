@@ -17,7 +17,7 @@ Es un documento que refleja tu situación financiera y tu historial de pagos. En
 
 ### ¿Cómo lo subo?
 
-1. Ingresá a [tu perfil](/profile)
+1. Ingresá a [tu perfil](/account)
 2. Buscá la sección **Documentos**
 3. Hacé clic en **Agregar documento**
 4. Seleccioná el tipo **Informe crediticio** y subí el archivo
