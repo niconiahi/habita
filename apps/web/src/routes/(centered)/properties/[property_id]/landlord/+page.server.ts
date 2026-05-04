@@ -48,9 +48,6 @@ function fetch_property_location(property_id: number) {
       "property.location_id",
     )
     .where("property.id", "=", property_id)
-    .select([
-      "location.road",
-      "location.house_number",
-    ])
+    .select(["location.road", "location.house_number"])
     .executeTakeFirst()
 }

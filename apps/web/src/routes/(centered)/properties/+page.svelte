@@ -462,7 +462,6 @@
     margin: 0;
   }
 
-
   form :global(.button) {
     width: 100%;
   }
