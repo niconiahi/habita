@@ -186,20 +186,18 @@ export async function is_manager_of_visitant_file(
       "slot.visitant_id",
       "user_file.user_id",
     )
-    .innerJoin(
-      "property_access",
-      (join) =>
-        join
-          .onRef(
-            "property_access.property_id",
-            "=",
-            "slot.property_id",
-          )
-          .on("property_access.user_id", "=", manager_id)
-          .on("property_access.type", "in", [
-            ACCESS_TYPE.LANDLORD,
-            ACCESS_TYPE.MANAGER,
-          ]),
+    .innerJoin("property_access", (join) =>
+      join
+        .onRef(
+          "property_access.property_id",
+          "=",
+          "slot.property_id",
+        )
+        .on("property_access.user_id", "=", manager_id)
+        .on("property_access.type", "in", [
+          ACCESS_TYPE.LANDLORD,
+          ACCESS_TYPE.MANAGER,
+        ]),
     )
     .innerJoin(
       "property",
