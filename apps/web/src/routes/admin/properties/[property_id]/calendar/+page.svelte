@@ -29,7 +29,8 @@
       >Propiedades</Breadcrumb.Link
     >
     <Breadcrumb.Link
-      href="/admin/properties/{data.property.id}/edit/characteristics"
+      href="/admin/properties/{data.property
+        .id}/edit/characteristics"
     >
       {data.property.location.road}
       {data.property.location.house_number}
