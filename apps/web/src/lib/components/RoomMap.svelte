@@ -46,6 +46,7 @@
   interface Props {
     rooms: Room[]
     is_readonly?: boolean
+    clickable_room_ids?: Set<number>
     on_positions_change?: (
       positions: Map<number, Position>,
     ) => void
@@ -55,6 +56,7 @@
   let {
     rooms,
     is_readonly = false,
+    clickable_room_ids,
     on_positions_change,
     on_room_click,
   }: Props = $props()
@@ -221,7 +223,7 @@
       canvas_el.style.cursor = "grabbing"
     } else if (room && is_readonly) {
       on_room_click?.(room.id)
-    } else {
+    } else if (!is_readonly) {
       container_el.setPointerCapture(event.pointerId)
       panning_state = {
         start_x: event.clientX,
@@ -234,6 +236,23 @@
   }
 
   function handle_pointer_move(event: PointerEvent): void {
+    if (is_readonly && canvas_el) {
+      const rect = canvas_el.getBoundingClientRect()
+      const canvas_x = event.clientX - rect.left
+      const canvas_y = event.clientY - rect.top
+      const room = get_room_at_point(
+        canvas_x,
+        canvas_y,
+        room_bounds,
+        PADDING,
+      )
+      const is_clickable =
+        room && clickable_room_ids?.has(room.id)
+      canvas_el.style.cursor = is_clickable
+        ? "pointer"
+        : "default"
+      return
+    }
     if (dragging_state && canvas_el) {
       const rect = canvas_el.getBoundingClientRect()
       const canvas_x = event.clientX - rect.left
@@ -292,6 +311,13 @@
       container_el.style.cursor = "grab"
     }
   }
+
+  $effect(() => {
+    if (!container_el) return
+    container_el.style.cursor = is_readonly
+      ? "default"
+      : "grab"
+  })
 
   // Initialize positions from rooms
   $effect(() => {
