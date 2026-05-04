@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
   import { display_location } from "$lib/display_location"
   import { display_name } from "$lib/display_name"
@@ -7,11 +8,20 @@
 </script>
 
 <Content.Root>
+  <Breadcrumb.Root>
+    <Breadcrumb.Link href="/admin/properties"
+      >Propiedades</Breadcrumb.Link
+    >
+    <Breadcrumb.Link
+      href="/admin/properties/{data.property.id}/edit/characteristics"
+    >
+      {data.property.location.road}
+      {data.property.location.house_number}
+    </Breadcrumb.Link>
+    <Breadcrumb.Current>Candidatos</Breadcrumb.Current>
+  </Breadcrumb.Root>
   <Content.Title>Candidatos</Content.Title>
   <Content.Section>
-    <p class="subtitle">
-      {display_location(data.property.location)}
-    </p>
     {#if data.candidates.length === 0}
       <p>No hay candidatos para revisar.</p>
     {:else}
@@ -39,9 +49,6 @@
 </Content.Root>
 
 <style>
-  .subtitle {
-    color: rgb(75 85 99);
-  }
   .candidate-list {
     display: flex;
     flex-direction: column;

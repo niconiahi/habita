@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import * as Table from "$lib/components/Table"
@@ -23,13 +24,19 @@
 </script>
 
 <Content.Root>
-  <Content.Title>Calendario de visitas</Content.Title>
-  <Content.Header>
-    <p class="subtitle">
+  <Breadcrumb.Root>
+    <Breadcrumb.Link href="/admin/properties"
+      >Propiedades</Breadcrumb.Link
+    >
+    <Breadcrumb.Link
+      href="/admin/properties/{data.property.id}/edit/characteristics"
+    >
       {data.property.location.road}
       {data.property.location.house_number}
-    </p>
-  </Content.Header>
+    </Breadcrumb.Link>
+    <Breadcrumb.Current>Calendario</Breadcrumb.Current>
+  </Breadcrumb.Root>
+  <Content.Title>Calendario de visitas</Content.Title>
   <Content.Section>
     <Section.Header>
       <Section.Title>Crear nuevo horario</Section.Title>
@@ -141,9 +148,6 @@
 </Content.Root>
 
 <style>
-  .subtitle {
-    color: rgb(75 85 99);
-  }
   .inactive {
     color: rgb(156 163 175);
   }

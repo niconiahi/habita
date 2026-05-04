@@ -1,4 +1,5 @@
 import { require_authentication } from "$lib/server/auth"
+import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -27,4 +28,23 @@ export const load: PageServerLoad = async ({
     locals.session.activeOrganizationId,
     { property: ["read"] },
   )
+  const property_location =
+    await fetch_property_location(property_id)
+  return { property_id, property_location }
+}
+
+function fetch_property_location(property_id: number) {
+  return query_builder
+    .selectFrom("property")
+    .innerJoin(
+      "location",
+      "location.id",
+      "property.location_id",
+    )
+    .where("property.id", "=", property_id)
+    .select([
+      "location.road",
+      "location.house_number",
+    ])
+    .executeTakeFirst()
 }

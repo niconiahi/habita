@@ -74,6 +74,7 @@ export const load: LayoutServerLoad = async ({
 
   return {
     property_id,
+    property_location: property.location,
     contract,
     manager,
     services: property.services,
