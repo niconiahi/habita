@@ -33,7 +33,7 @@
       >Propiedades</Breadcrumb.Link
     >
     <Breadcrumb.Link
-      href="/admin/properties/{data.property.id}/edit"
+      href="/admin/properties/{data.property.id}/edit/characteristics"
     >
       {data.property.location?.road ?? "Sin calle"}
       {data.property.location?.house_number ?? ""}
