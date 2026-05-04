@@ -32,6 +32,7 @@ Explains **what** the route does for someone who hasn't read the code.
 - Content: purpose, what users can do, who has access, special behaviors
 - Length: 2–6 sentences for simple routes; bulleted feature list for complex ones
 - No inline code, no function names, no file paths
+- **Exact UI labels**: when mentioning buttons, tabs, links, or any interactive element, quote the EXACT label as it appears in the template. Write `el botón "Nueva propiedad"`, not `crear una nueva propiedad`. Read the +page.svelte to verify. This is critical — the AI assistant uses these docs to guide users, and paraphrased labels cause confusion
 
 ### Security — what NEVER goes in description.md
 

@@ -4,13 +4,19 @@
   interface Props {
     title: string
     open?: boolean
+    name?: string
     children: Snippet
   }
 
-  let { title, open = false, children }: Props = $props()
+  let {
+    title,
+    open = false,
+    name,
+    children,
+  }: Props = $props()
 </script>
 
-<details class="disclosure" {open}>
+<details class="disclosure" {open} {name}>
   <summary class="body-md-bold header">
     <span>{title}</span>
     <svg
@@ -37,6 +43,19 @@
   .disclosure {
     border: 1px solid var(--color-border-primary);
     border-radius: var(--dimension-radius-lg);
+    interpolate-size: allow-keywords;
+  }
+
+  .disclosure::details-content {
+    height: 0;
+    overflow: clip;
+    transition:
+      height 200ms ease-out,
+      content-visibility 200ms ease-out allow-discrete;
+  }
+
+  .disclosure[open]::details-content {
+    height: auto;
   }
 
   .header {
@@ -72,4 +91,5 @@
     padding: 0 var(--dimension-spacing-4)
       var(--dimension-spacing-4);
   }
+
 </style>

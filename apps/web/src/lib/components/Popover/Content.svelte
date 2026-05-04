@@ -3,7 +3,7 @@
 
   interface Props {
     id: string
-    position?: "bottom" | "right" | "top"
+    position?: "bottom" | "right" | "top" | "top-left"
     children: Snippet<[{ close: () => void }]>
   }
 
@@ -52,6 +52,11 @@
   .content.top {
     position-area: top span-right;
     margin-bottom: var(--dimension-spacing-1);
+  }
+
+  .content.top-left {
+    position-area: top span-left;
+    margin-bottom: var(--dimension-spacing-4);
   }
 
   .content::backdrop {

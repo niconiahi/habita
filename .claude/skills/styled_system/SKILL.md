@@ -28,6 +28,10 @@ Use `$lib/components/Dialog` for all modal dialogs. Never create custom `<dialog
         <Dialog.Close onclick={close} />
       </Dialog.Header>
       <!-- content here -->
+      <Dialog.Actions>
+        <Button variant="secondary" type="button" onclick={close}>Cancelar</Button>
+        <Button variant="primary" type="button">Confirmar</Button>
+      </Dialog.Actions>
     </Dialog.Content>
   {/snippet}
 </Dialog.Root>

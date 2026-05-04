@@ -17,9 +17,6 @@
         <li>
           <a href="/properties">Propiedades</a>
         </li>
-        <li>
-          <a href="/chat">Preguntale a nuestro agente</a>
-        </li>
       </ul>
     </div>
     <div class="group">

@@ -51,6 +51,7 @@ Available helpers:
 - `get_accessible_property_ids()` — bulk query for property IDs a user can access
 - `assign_property_access()` — grant access
 - `is_tenant_accessible()` — check if a tenant belongs to managed properties
+- `is_manager_of_visitant_file()` — check if user is manager/landlord of a property where the file owner has a visit slot. Used by `/files/[file_id]` as a fallback when the file can't be resolved through direct ownership paths (e.g., candidate documents)
 - `revoke_all_access_by_type()` — revoke access
 
 ### Resources

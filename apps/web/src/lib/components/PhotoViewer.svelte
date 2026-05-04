@@ -81,7 +81,10 @@
   let is_open = $state(false)
 
   function handle_backdrop_click(event: MouseEvent) {
-    if (event.target === dialog_element) {
+    if (
+      event.target === dialog_element ||
+      event.target === photo_element
+    ) {
       close()
     }
   }

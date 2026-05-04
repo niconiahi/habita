@@ -24,8 +24,6 @@
     transition:
       background-color 0.15s ease,
       border-color 0.15s ease;
-    padding: var(--dimension-spacing-0-5)
-      var(--dimension-spacing-3);
   }
 
   .tab :global(a),
@@ -35,8 +33,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    padding: var(--dimension-spacing-0-5)
+      var(--dimension-spacing-3);
   }
 
   .tab:hover {

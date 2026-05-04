@@ -47,6 +47,7 @@
     align-items: center;
     padding: var(--dimension-spacing-2);
     background-color: var(--color-neutrals-50);
+    border-bottom: 1px solid var(--color-border-primary);
   }
 
   .container {

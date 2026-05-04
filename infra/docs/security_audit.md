@@ -213,8 +213,6 @@ user: {
 | Método | Ruta | Acción | Descripción |
 |--------|------|--------|-------------|
 | GET/POST | `/admin/candidates` | SET_TENANT | Gestión de candidatos |
-| GET/POST | `/admin/contracts` | - | Listar contratos |
-| POST | `/admin/contracts/new` | - | Crear contrato |
 | POST | `/admin/contracts/[id]/edit` | - | Editar contrato |
 | GET/POST | `/admin/properties` | - | Gestión propiedades |
 | POST | `/admin/properties/new` | - | Crear propiedad |
