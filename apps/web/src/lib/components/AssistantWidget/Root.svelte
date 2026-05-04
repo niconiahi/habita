@@ -70,7 +70,9 @@
     <Popover.Root id="ai-chat-popover">
       <Button
         variant="tertiary"
-        class="trigger {active_panel === 'ai' ? 'active' : ''}"
+        class="trigger {active_panel === 'ai'
+          ? 'active'
+          : ''}"
         popovertarget="ai-chat-popover"
         style="anchor-name: --ai-chat-popover"
         onclick={handle_ai_click}
@@ -78,7 +80,10 @@
         <Sparkles />
         Preguntá a Habita
       </Button>
-      <Popover.Content id="ai-chat-popover" position="top-left">
+      <Popover.Content
+        id="ai-chat-popover"
+        position="top-left"
+      >
         {#snippet children({ close })}
           <div class="panel-wrapper">
             <div class="panel-close">
@@ -100,7 +105,9 @@
     <Popover.Root id="conversation-popover">
       <Button
         variant="tertiary"
-        class="trigger {active_panel === 'conversation' ? 'active' : ''}"
+        class="trigger {active_panel === 'conversation'
+          ? 'active'
+          : ''}"
         popovertarget="conversation-popover"
         style="anchor-name: --conversation-popover"
         onclick={handle_conversation_click}

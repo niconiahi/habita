@@ -106,7 +106,8 @@
   {#if !is_authenticated}
     <div class="auth-gate">
       <p class="body-md-medium">
-        Necesitás estar autenticado para hablar con nosotros.
+        Necesitás estar autenticado para hablar con
+        nosotros.
       </p>
       <a href="/login" class="body-md-bold auth-link">
         Iniciá sesión
