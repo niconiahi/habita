@@ -1,13 +1,18 @@
-a:not(:has(*)):not(.button) {
+a:not(:has(*)):not(.button),
+[aria-label="breadcrumb"] a {
   color: var(--color-blue-500);
   text-decoration: none;
   border-bottom: 1px solid var(--color-blue-500);
+}
+
+a:not(:has(*)):not(.button) {
   font-family: var(--font-family-body);
   font-size: var(--font-size-body-md);
   line-height: 1.4;
 }
 
-a:not(:has(*)):not(.button):hover {
+a:not(:has(*)):not(.button):hover,
+[aria-label="breadcrumb"] a:hover {
   background-color: var(--color-blue-100);
 }
 

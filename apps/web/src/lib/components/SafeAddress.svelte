@@ -6,13 +6,16 @@
   import type { Snippet } from "svelte"
 
   interface Props {
-    location: {
-      house_number: number
-    }
+    house_number: number
+    placement?: "top" | "bottom"
     children: Snippet
   }
 
-  let { location, children }: Props = $props()
+  let {
+    house_number,
+    placement = "top",
+    children,
+  }: Props = $props()
 
   let container: HTMLElement
 
@@ -20,26 +23,23 @@
   const TOOLTIP_TEXT =
     "Por seguridad, la numeración es aproximada. La dirección real se entrega una vez que el administrador acepte tu visita."
 
-  function compute_masked(house_number: number) {
-    const digits = String(house_number)
-    if (digits.length <= 2) return "00"
-    return `${digits.slice(0, -2)}00`
-  }
-
   function position_tooltip(
     trigger: HTMLElement,
     tooltip: HTMLElement,
   ) {
     const rect = trigger.getBoundingClientRect()
     tooltip.style.left = `${rect.left + rect.width / 2}px`
-    tooltip.style.top = `${rect.top - 8}px`
+    if (placement === "bottom") {
+      tooltip.style.top = `${rect.bottom + 8}px`
+    } else {
+      tooltip.style.top = `${rect.top - 8}px`
+    }
   }
 
   $effect(() => {
-    if (!container || location.house_number === 0) return
+    if (!container || house_number === 0) return
 
-    const number_string = String(location.house_number)
-    const masked = compute_masked(location.house_number)
+    const number_text = String(house_number)
     let number_node: ChildNode | null = null
     const walker = document.createTreeWalker(
       container,
@@ -48,11 +48,11 @@
     let text_node: Text | null
     while ((text_node = walker.nextNode() as Text | null)) {
       const index = (text_node.textContent ?? "").indexOf(
-        number_string,
+        number_text,
       )
       if (index === -1) continue
       number_node = text_node.splitText(index)
-      ;(number_node as Text).splitText(number_string.length)
+      ;(number_node as Text).splitText(number_text.length)
       break
     }
 
@@ -62,13 +62,12 @@
     trigger.className = "safe-address-trigger"
     trigger.setAttribute("tabindex", "0")
     trigger.setAttribute("aria-describedby", tooltip_id)
-    trigger.textContent = masked
+    trigger.textContent = number_text
 
     const tooltip = document.createElement("span")
     tooltip.id = tooltip_id
     tooltip.setAttribute("role", "tooltip")
-    tooltip.className =
-      "safe-address-tooltip body-sm-regular"
+    tooltip.className = `safe-address-tooltip safe-address-tooltip--${placement} body-sm-regular`
     tooltip.textContent = TOOLTIP_TEXT
     document.body.appendChild(tooltip)
 
@@ -115,7 +114,6 @@
   :global(.safe-address-tooltip) {
     display: none;
     position: fixed;
-    translate: -50% -100%;
     width: max-content;
     max-width: 240px;
     padding: var(--dimension-spacing-2)
@@ -127,7 +125,11 @@
     pointer-events: none;
   }
 
-  :global(.safe-address-tooltip)::after {
+  :global(.safe-address-tooltip--top) {
+    translate: -50% -100%;
+  }
+
+  :global(.safe-address-tooltip--top)::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -135,6 +137,20 @@
     translate: -50% 0;
     border: 6px solid transparent;
     border-top-color: var(--color-neutrals-950);
+  }
+
+  :global(.safe-address-tooltip--bottom) {
+    translate: -50% 0;
+  }
+
+  :global(.safe-address-tooltip--bottom)::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    translate: -50% 0;
+    border: 6px solid transparent;
+    border-bottom-color: var(--color-neutrals-950);
   }
 
   :global(.safe-address-tooltip.visible) {

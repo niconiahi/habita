@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { mask_house_number } from "$lib/mask_house_number"
 import { get_img_props } from "$lib/server/image"
 import { fetch_manager } from "$lib/server/manager"
 import { get_user_realtor_organization } from "$lib/server/organization"
@@ -70,6 +71,7 @@ export const load: PageServerLoad = async ({
   return {
     property: {
       ...property,
+      location: mask_house_number(property.location),
       floors: floors_with_photo_urls,
       images,
     },

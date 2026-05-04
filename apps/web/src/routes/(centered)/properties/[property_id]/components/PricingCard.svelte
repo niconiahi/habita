@@ -40,7 +40,7 @@
 </script>
 
 <div class="card">
-  <SafeAddress {location}>
+  <SafeAddress house_number={location.house_number}>
     <h2 class="heading-md address">{format_address()}</h2>
   </SafeAddress>
   {#if initial_price}

@@ -2,6 +2,7 @@
   import { page } from "$app/state"
   import { replaceState } from "$app/navigation"
   import * as Breadcrumb from "$lib/components/Breadcrumb"
+  import SafeAddress from "$lib/components/SafeAddress.svelte"
   import * as Dialog from "$lib/components/Dialog"
   import * as Content from "$lib/components/Content"
   import * as Formulary from "$lib/components/Formulary"
@@ -275,8 +276,10 @@
       <Breadcrumb.Link
         href="/properties/{page.params.property_id}"
       >
-        {data.property_location.road}
-        {data.property_location.house_number}
+        <SafeAddress house_number={data.property_location.house_number} placement="bottom">
+          {data.property_location.road}
+          {data.property_location.house_number}
+        </SafeAddress>
       </Breadcrumb.Link>
       <Breadcrumb.Current>Reservar</Breadcrumb.Current>
     </Breadcrumb.Root>
