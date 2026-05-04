@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { page } from "$app/state"
   import { replaceState } from "$app/navigation"
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Dialog from "$lib/components/Dialog"
   import * as Content from "$lib/components/Content"
   import * as Formulary from "$lib/components/Formulary"
@@ -265,6 +267,17 @@
 {/snippet}
 
 <Content.Root>
+  {#if data.property_location}
+    <Breadcrumb.Root>
+      <Breadcrumb.Link
+        href="/properties/{page.params.property_id}"
+      >
+        {data.property_location.road}
+        {data.property_location.house_number}
+      </Breadcrumb.Link>
+      <Breadcrumb.Current>Reservar</Breadcrumb.Current>
+    </Breadcrumb.Root>
+  {/if}
   <Content.Title>Seleccioná día y horario</Content.Title>
   {#if data.slots.length === 0}
     <p class="empty">No hay turnos disponibles.</p>
