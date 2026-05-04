@@ -18,7 +18,7 @@
             {#each property.access_types as access_type (access_type)}
               {#if access_type === ACCESS_TYPE.MANAGER}
                 <a
-                  href="/admin/properties/{property.id}/edit"
+                  href="/admin/properties/{property.id}/edit/characteristics"
                 >
                   Ver como administrador
                 </a>

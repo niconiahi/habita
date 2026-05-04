@@ -35,7 +35,7 @@
         <tr>
           <td class="body-md-medium">
             <a
-              href={`/admin/properties/${property.id}/edit`}
+              href={`/admin/properties/${property.id}/edit/characteristics`}
             >
               {display_location(property.location)}
             </a>
