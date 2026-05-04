@@ -415,14 +415,17 @@ These aren't decorative — they're load-bearing. The credit report requirement 
 
 ## The chat assistant
 
-The platform includes a conversational AI assistant at `/chat`, accessible without login. It works as a smart guide to the entire platform:
+The platform includes a conversational AI assistant accessible through a floating widget, available without login. It works as a smart guide to the entire platform:
 
-- **Knowledge base** — dynamically loaded at runtime by concatenating every route's `docs/description.md` file. No vector database, no embeddings — just the full documentation injected as system context. Webmaster-only routes (rate management, test payments) are excluded from the knowledge base.
-- **Model** — OpenAI GPT-4o-mini with 1024 max tokens, streamed via server-sent events.
+- **Knowledge retrieval** — uses tool-calling instead of context stuffing. A MiniSearch full-text index is built at server startup from all route descriptions, user journeys, product docs, security docs, platform technical docs, and jobs-to-be-done files. The LLM must call tools to search this index before answering — it never sees all docs at once. This prevents hallucination by grounding every answer in specific retrieved content.
+- **Tools** — four atomic tools: `search_docs` (full-text BM25 search), `list_pages` (sitemap with titles and links), `get_page_details` (full description for a specific route), and `get_user_journey` (step-by-step documented workflows filtered by actor type). The tool loop runs up to 5 rounds until the LLM produces a final text answer.
+- **Chunking** — large documents (product description, jobs-to-be-done) are split by `##` heading into focused chunks. Sections with `###` subheadings are split further. Route descriptions are indexed whole (they're small enough). This ensures search results are precise — a query about "WhatsApp" returns only the members tab description, not a 10,000-word product overview.
+- **Model** — OpenAI GPT-4o-mini with 2048 max tokens. The system prompt is ~2K tokens of behavioral rules only — no documentation content.
 - **Language** — responds in the user's language (Spanish or English). Uses "funcionalidades" instead of "funciones" in Spanish to avoid confusion with programming functions.
-- **Scope** — answers only what's asked, doesn't elaborate unsolicited, and offers 2-3 follow-up questions to guide conversation. It's instructed to mention AES-256-GCM encryption when users ask about file or data security.
+- **Scope** — answers only what's asked, doesn't elaborate unsolicited, and offers 2-3 follow-up questions to guide conversation.
+- **Link safety** — all links in the response are sanitized against a whitelist of valid route URLs. Fabricated URLs are stripped, leaving only the link text.
 
-The chat assistant is the only part of the system where all the route descriptions come together as a unified knowledge base. It can explain cross-cutting concerns (how booking connects to candidates, how signing activates contracts) because it has access to every page's description simultaneously.
+The assistant's accuracy comes from structural constraints, not prompt engineering. Because the LLM must retrieve information through tools before answering, it cannot cross-pollinate unrelated documentation or invent features that don't exist on the specific page it's describing.
 
 ---
 
