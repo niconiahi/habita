@@ -47,10 +47,11 @@
     <Breadcrumb.Link href="/properties"
       >Propiedades</Breadcrumb.Link
     >
-    <Breadcrumb.Link
-      href="/properties/{data.property_id}"
-    >
-      <SafeAddress house_number={data.property_location.house_number} placement="bottom">
+    <Breadcrumb.Link href="/properties/{data.property_id}">
+      <SafeAddress
+        house_number={data.property_location.house_number}
+        placement="bottom"
+      >
         {data.property_location.road}
         {data.property_location.house_number}
       </SafeAddress>

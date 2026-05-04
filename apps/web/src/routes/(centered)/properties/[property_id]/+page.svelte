@@ -316,7 +316,10 @@
       >Propiedades</Breadcrumb.Link
     >
     <Breadcrumb.Current>
-      <SafeAddress house_number={data.property.location.house_number} placement="bottom">
+      <SafeAddress
+        house_number={data.property.location.house_number}
+        placement="bottom"
+      >
         {data.property.location.road}
         {data.property.location.house_number}
       </SafeAddress>

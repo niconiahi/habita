@@ -16,7 +16,10 @@
       <Breadcrumb.Link
         href="/properties/{data.property_id}"
       >
-        <SafeAddress house_number={data.property_location.house_number} placement="bottom">
+        <SafeAddress
+          house_number={data.property_location.house_number}
+          placement="bottom"
+        >
           {data.property_location.road}
           {data.property_location.house_number}
         </SafeAddress>
