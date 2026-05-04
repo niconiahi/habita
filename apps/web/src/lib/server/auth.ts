@@ -225,30 +225,10 @@ function make_auth() {
             }
           },
           after: async (user) => {
-            try {
-              await auth.api.createOrganization({
-                body: {
-                  name: `Personal: ${user.email}`,
-                  slug: `personal-${user.id}`,
-                  userId: String(user.id),
-                },
-              })
-              logger.info("user signed up", {
-                user_id: user.id,
-                email: user.email,
-              })
-            } catch (error) {
-              const err =
-                error instanceof Error
-                  ? error
-                  : new Error(String(error))
-              logger.error(
-                "failed to create organization for user",
-                { user_id: user.id },
-                err,
-              )
-              throw error
-            }
+            logger.info("user signed up", {
+              user_id: user.id,
+              email: user.email,
+            })
           },
         },
       },
