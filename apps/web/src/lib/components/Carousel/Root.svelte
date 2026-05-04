@@ -45,6 +45,40 @@
       scroll_to_slide(current_index + 1)
     }
   }
+
+  let is_dragging = $state(false)
+  let drag_start_x = 0
+  let scroll_start = 0
+
+  function handle_pointerdown(event: PointerEvent) {
+    if (event.pointerType === "touch") return
+    if (!images_el) return
+    is_dragging = true
+    drag_start_x = event.clientX
+    scroll_start = images_el.scrollLeft
+    images_el.setPointerCapture(event.pointerId)
+  }
+
+  function handle_pointermove(event: PointerEvent) {
+    if (!is_dragging || !images_el) return
+    const delta = event.clientX - drag_start_x
+    images_el.scrollLeft = scroll_start - delta
+  }
+
+  function handle_pointerup(event: PointerEvent) {
+    if (!is_dragging || !images_el) return
+    is_dragging = false
+    const delta = event.clientX - drag_start_x
+    const threshold = images_el.clientWidth / 5
+    let target_index = current_index
+    if (delta < -threshold && current_index < images_count - 1) {
+      target_index = current_index + 1
+    } else if (delta > threshold && current_index > 0) {
+      target_index = current_index - 1
+    }
+    current_index = target_index
+    scroll_to_slide(current_index)
+  }
 </script>
 
 <section
@@ -54,8 +88,13 @@
 >
   <div
     class="images"
+    class:grabbing={is_dragging}
+    role="region"
     bind:this={images_el}
     onscroll={handle_scroll}
+    onpointerdown={handle_pointerdown}
+    onpointermove={handle_pointermove}
+    onpointerup={handle_pointerup}
     aria-live="polite"
     aria-atomic="false"
   >
@@ -139,6 +178,12 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    cursor: grab;
+  }
+
+  .images.grabbing {
+    cursor: grabbing;
+    scroll-snap-type: none;
   }
 
   .images::-webkit-scrollbar {
@@ -159,6 +204,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    pointer-events: none;
   }
 
   .arrow {
