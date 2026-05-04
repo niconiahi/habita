@@ -269,6 +269,9 @@
 <Content.Root>
   {#if data.property_location}
     <Breadcrumb.Root>
+      <Breadcrumb.Link href="/properties"
+        >Propiedades</Breadcrumb.Link
+      >
       <Breadcrumb.Link
         href="/properties/{page.params.property_id}"
       >

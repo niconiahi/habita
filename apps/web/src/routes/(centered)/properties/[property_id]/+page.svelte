@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
   import Tab from "$lib/components/Tab.svelte"
   import TabGroup from "$lib/components/TabGroup.svelte"
@@ -309,6 +310,15 @@
 {/snippet}
 
 <Content.Root>
+  <Breadcrumb.Root>
+    <Breadcrumb.Link href="/properties"
+      >Propiedades</Breadcrumb.Link
+    >
+    <Breadcrumb.Current>
+      {data.property.location.road}
+      {data.property.location.house_number}
+    </Breadcrumb.Current>
+  </Breadcrumb.Root>
   <Visualizer
     images={Gallery}
     rooms={all_rooms}
