@@ -54,20 +54,16 @@ export async function handle_send_slot_reserved_alert(
     minute: "2-digit",
   })
 
-  const text = `Hola ${event.host_name},
-
-${event.visitant_name} ha reservado una visita a la propiedad ubicada en ${event.property_address}.
-
-Fecha: ${date}
-Horario: ${start_time} - ${end_time}
-
-La visita queda pendiente de tu aprobación. Ingresá al panel de administración para confirmarla.`
+  const html = `<p>Hola ${event.host_name},</p>
+<p>${event.visitant_name} ha reservado una visita a la propiedad ubicada en ${event.property_address}.</p>
+<p>Fecha: ${date}<br>Horario: ${start_time} - ${end_time}</p>
+<p>La visita queda pendiente de tu aprobación. Ingresá al panel de administración para confirmarla.</p>`
 
   await deliver_email(payload, producer, async () => {
     const [error] = await send_email({
       to: { email: event.host_email, name: event.host_name },
       subject: `Nueva reserva de visita pendiente de aprobación - ${event.property_address}`,
-      text,
+      html,
     })
     if (error) {
       throw error.error

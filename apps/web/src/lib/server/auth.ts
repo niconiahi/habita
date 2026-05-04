@@ -113,7 +113,7 @@ function make_auth() {
         void send_email({
           to: { email: user.email, name: user.name },
           subject: "Verificá tu email",
-          text: `Hacé clic en el enlace para verificar tu email: ${url}`,
+          html: `<p>Hacé clic en el enlace para verificar tu email: <a href="${url}">${url}</a></p>`,
         })
       },
     },
