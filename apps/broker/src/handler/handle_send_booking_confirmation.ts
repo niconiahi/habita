@@ -43,12 +43,21 @@ export async function handle_send_booking_confirmation(
 
   const event = validation.output
 
+  const visitant_html = event.visitant_text
+    .split("\n\n")
+    .map((paragraph: string) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("")
+  const host_html = event.host_text
+    .split("\n\n")
+    .map((paragraph: string) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("")
+
   await deliver_email(payload, producer, async () => {
     const [visitant_error] = await send_email({
       to: event.visitant,
       subject: event.subject,
-      text: event.visitant_text,
-      content: event.content,
+      html: visitant_html,
+      ics: event.content,
     })
     if (visitant_error) {
       throw visitant_error.error
@@ -57,8 +66,8 @@ export async function handle_send_booking_confirmation(
     const [host_error] = await send_email({
       to: event.host,
       subject: event.subject,
-      text: event.host_text,
-      content: event.content,
+      html: host_html,
+      ics: event.content,
     })
     if (host_error) {
       throw host_error.error

@@ -89,7 +89,6 @@ export async function send_renewal_reminder() {
          <p><a href="${origin}/subscribe">Renovar ahora</a></p>`
 
     const [email_error] = await send_email({
-      type: "html",
       to: { email: admin.email, name: admin.name ?? "" },
       subject,
       html,

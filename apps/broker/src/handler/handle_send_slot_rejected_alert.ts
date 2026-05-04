@@ -54,14 +54,10 @@ export async function handle_send_slot_rejected_alert(
     minute: "2-digit",
   })
 
-  const text = `Hola ${event.visitant_name},
-
-Lamentamos informarte que tu reserva de visita a la propiedad ubicada en ${event.property_address} no fue aprobada.
-
-Fecha solicitada: ${date}
-Horario solicitado: ${start_time} - ${end_time}
-
-Podés intentar reservar otro horario disponible desde la plataforma.`
+  const html = `<p>Hola ${event.visitant_name},</p>
+<p>Lamentamos informarte que tu reserva de visita a la propiedad ubicada en ${event.property_address} no fue aprobada.</p>
+<p>Fecha solicitada: ${date}<br>Horario solicitado: ${start_time} - ${end_time}</p>
+<p>Podés intentar reservar otro horario disponible desde la plataforma.</p>`
 
   await deliver_email(payload, producer, async () => {
     const [error] = await send_email({
@@ -70,7 +66,7 @@ Podés intentar reservar otro horario disponible desde la plataforma.`
         name: event.visitant_name,
       },
       subject: `Tu reserva de visita no fue aprobada - ${event.property_address}`,
-      text,
+      html,
     })
     if (error) {
       throw error.error

@@ -40,7 +40,6 @@ export async function handle_send_landlord_invite(
 
   await deliver_email(payload, producer, async () => {
     const [email_error] = await send_email({
-      type: "html",
       to: { email: event.email, name: "" },
       subject: event.subject,
       html: event.html,
