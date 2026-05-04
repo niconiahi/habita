@@ -36,7 +36,7 @@
         surname,
         email,
         password,
-        callbackURL: "/onboarding",
+        callbackURL: "/account/create",
       })
 
     is_loading = false
@@ -52,7 +52,7 @@
   async function handle_google_signup() {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/onboarding",
+      callbackURL: "/account/create",
     })
   }
 </script>
