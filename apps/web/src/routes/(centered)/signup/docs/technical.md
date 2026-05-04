@@ -6,7 +6,7 @@ Client-side only — no `+page.server.ts`. Uses `authClient.signUp.email()` with
 
 ## Auth
 
-Public page. Redirects to `/onboarding` on success.
+Public page. Redirects to `/account/create` on success.
 
 ## Key Components
 
