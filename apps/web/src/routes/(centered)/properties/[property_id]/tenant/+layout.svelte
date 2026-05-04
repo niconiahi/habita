@@ -43,6 +43,9 @@
 
 <Content.Root>
   <Breadcrumb.Root>
+    <Breadcrumb.Link href="/properties"
+      >Propiedades</Breadcrumb.Link
+    >
     <Breadcrumb.Link
       href="/properties/{data.property_id}"
     >
