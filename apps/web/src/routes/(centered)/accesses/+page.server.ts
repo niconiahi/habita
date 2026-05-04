@@ -3,6 +3,7 @@ import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import type { AccessType } from "$lib/access_type"
 import { display_location } from "$lib/display_location"
+import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({
@@ -10,10 +11,40 @@ export const load: PageServerLoad = async ({
   url,
 }) => {
   require_authentication(locals, url)
-  const properties = await fetch_properties_with_access(
-    locals.user.id,
-  )
-  return { properties }
+  const [properties, organizations] = await Promise.all([
+    fetch_properties_with_access(locals.user.id),
+    fetch_user_organizations(locals.user.id),
+  ])
+  return { properties, organizations }
+}
+
+async function fetch_user_organizations(
+  user_id: number,
+) {
+  return query_builder
+    .selectFrom("member")
+    .innerJoin(
+      "organization",
+      "organization.id",
+      "member.organization_id",
+    )
+    .innerJoin(
+      "subscription",
+      "subscription.organization_id",
+      "member.organization_id",
+    )
+    .where("member.user_id", "=", user_id)
+    .where(
+      "subscription.type",
+      "=",
+      SUBSCRIPTION_TYPE.REALTOR,
+    )
+    .select([
+      "organization.id",
+      "organization.name",
+      "subscription.type",
+    ])
+    .execute()
 }
 
 async function fetch_properties_with_access(
