@@ -32,13 +32,14 @@ export const POST: RequestHandler = async ({
 
   const user_id = locals.user.id
 
-  const [find_error, existing_conversation] = await safe_async(
-    query_builder
-      .selectFrom("conversation")
-      .where("conversation.user_id", "=", user_id)
-      .select(["conversation.id"])
-      .executeTakeFirst(),
-  )
+  const [find_error, existing_conversation] =
+    await safe_async(
+      query_builder
+        .selectFrom("conversation")
+        .where("conversation.user_id", "=", user_id)
+        .select(["conversation.id"])
+        .executeTakeFirst(),
+    )
   if (find_error) {
     logger.error(find_error.message, {}, find_error)
     return json(
@@ -63,17 +64,18 @@ export const POST: RequestHandler = async ({
       logger.error(update_error.message, {}, update_error)
     }
   } else {
-    const [create_error, new_conversation] = await safe_async(
-      query_builder
-        .insertInto("conversation")
-        .values({
-          user_id,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("conversation.id")
-        .executeTakeFirstOrThrow(),
-    )
+    const [create_error, new_conversation] =
+      await safe_async(
+        query_builder
+          .insertInto("conversation")
+          .values({
+            user_id,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("conversation.id")
+          .executeTakeFirstOrThrow(),
+      )
     if (create_error) {
       logger.error(create_error.message, {}, create_error)
       return json(

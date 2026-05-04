@@ -71,7 +71,10 @@
     const delta = event.clientX - drag_start_x
     const threshold = images_el.clientWidth / 5
     let target_index = current_index
-    if (delta < -threshold && current_index < images_count - 1) {
+    if (
+      delta < -threshold &&
+      current_index < images_count - 1
+    ) {
       target_index = current_index + 1
     } else if (delta > threshold && current_index > 0) {
       target_index = current_index - 1

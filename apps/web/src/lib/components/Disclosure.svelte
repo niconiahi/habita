@@ -91,5 +91,4 @@
     padding: 0 var(--dimension-spacing-4)
       var(--dimension-spacing-4);
   }
-
 </style>
