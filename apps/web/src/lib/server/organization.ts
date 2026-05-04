@@ -68,7 +68,6 @@ export async function get_user_selectable_organizations(
       "member.organization_id",
     )
     .where("member.user_id", "=", user_id)
-    .where("organization.slug", "not like", "personal-%")
     .select([
       "organization.id",
       "organization.name",

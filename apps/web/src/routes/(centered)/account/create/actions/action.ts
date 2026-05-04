@@ -1,3 +1,3 @@
 export const ACTION = {
-  SELECT_ACCOUNT_TYPE: "select_account_type",
+  CREATE_ACCOUNT: "create_account",
 } as const
