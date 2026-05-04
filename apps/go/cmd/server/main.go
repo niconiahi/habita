@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"habita/apps/go/internal/observability"
-	"habita/apps/go/internal/smtp"
+	"habita/apps/go/internal/email"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -38,7 +38,7 @@ func main() {
 	// Wrap handlers with otelhttpp to extract trace contex
 	http.Handle("/send-email",
 		otelhttp.NewHandler(
-			http.HandlerFunc(smtp.Handler(logger)),
+			http.HandlerFunc(email.Handler(logger)),
 			"POST /send-email",
 		),
 	)
