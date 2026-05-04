@@ -41,7 +41,6 @@ export async function handle_send_signing_request(
   await deliver_email(payload, producer, async () => {
     for (const recipient of event.recipients) {
       const [email_error] = await send_email({
-        type: "html",
         to: recipient,
         subject: event.subject,
         html: event.html,

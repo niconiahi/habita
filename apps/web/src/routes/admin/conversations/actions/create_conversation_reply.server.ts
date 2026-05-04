@@ -82,8 +82,7 @@ export async function create_conversation_reply(
   const [email_error] = await send_email({
     to: { email: conversation_user.email, name: "" },
     subject: "Te respondimos en Habita",
-    text: `Te respondimos: "${input.message.slice(0, 100)}${input.message.length > 100 ? "..." : ""}"`,
-    content: `<p>Te respondimos en Habita:</p><blockquote>${input.message}</blockquote><p><a href="https://dev.habita.rent">Volver a Habita</a></p>`,
+    html: `<p>Te respondimos en Habita:</p><blockquote>${input.message}</blockquote><p><a href="https://dev.habita.rent">Volver a Habita</a></p>`,
   })
   if (email_error) {
     logger.error(

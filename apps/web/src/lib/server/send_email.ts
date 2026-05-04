@@ -17,8 +17,15 @@ type SendEmailTypedError = {
   error: Error
 }
 
+type SendEmailBody = {
+  to: { email: string; name: string }
+  subject: string
+  html: string
+  ics?: string
+}
+
 export async function send_email(
-  body: object,
+  body: SendEmailBody,
   headers?: Record<string, string>,
 ): Promise<[SendEmailTypedError, null] | [null, null]> {
   const merged_headers: Record<string, string> = {

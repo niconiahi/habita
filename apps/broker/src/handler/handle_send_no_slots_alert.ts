@@ -40,12 +40,9 @@ export async function handle_send_no_slots_alert(
 
   const event = validation.output
 
-  const text = `Hola ${event.manager_name},
-
-${event.visitant_name} intentó agendar una visita a la propiedad ubicada en ${event.property_address}, pero no encontró turnos disponibles.
-
-Podés agregar nuevos turnos desde el panel de visitas:
-${event.visits_url}`
+  const html = `<p>Hola ${event.manager_name},</p>
+<p>${event.visitant_name} intentó agendar una visita a la propiedad ubicada en ${event.property_address}, pero no encontró turnos disponibles.</p>
+<p>Podés agregar nuevos turnos desde el panel de visitas:<br><a href="${event.visits_url}">${event.visits_url}</a></p>`
 
   await deliver_email(payload, producer, async () => {
     const [error] = await send_email({
@@ -54,7 +51,7 @@ ${event.visits_url}`
         name: event.manager_name,
       },
       subject: `Sin turnos disponibles - ${event.property_address}`,
-      text,
+      html,
     })
     if (error) {
       throw error.error
