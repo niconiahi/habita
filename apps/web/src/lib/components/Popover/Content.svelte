@@ -55,7 +55,10 @@
   }
 
   .content.top-left {
-    position-area: top span-left;
+    inset: auto;
+    bottom: anchor(top);
+    right: anchor(right);
+    position-try-fallbacks: none;
     margin-bottom: var(--dimension-spacing-4);
   }
 
