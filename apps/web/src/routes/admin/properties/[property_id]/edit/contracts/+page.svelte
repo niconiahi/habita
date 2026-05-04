@@ -36,7 +36,7 @@
           </Table.Cell>
           <Table.Cell>
             <a
-              href={`/admin/properties/${data.property.id}/contracts/${contract.id}/edit`}
+              href={`/admin/properties/${data.property.id}/contracts/${contract.id}/edit/sections`}
             >
               <Button>Editar</Button>
             </a>
