@@ -228,7 +228,8 @@
     {#snippet children({ close })}
       <Dialog.Content>
         <Dialog.Header>
-          <Dialog.Title>¿Iniciar nueva sesión?</Dialog.Title>
+          <Dialog.Title>¿Iniciar nueva sesión?</Dialog.Title
+          >
           <Dialog.Close onclick={close} />
         </Dialog.Header>
         <p class="body-md-medium confirmation-text">
@@ -261,8 +262,8 @@
           Preguntá sobre Habita
         </p>
         <p class="body-sm-medium empty-hint">
-          Podés preguntar qué puede hacer la plataforma, cómo
-          funciona para inquilinos, administradores,
+          Podés preguntar qué puede hacer la plataforma,
+          cómo funciona para inquilinos, administradores,
           inmobiliarias, o propietarios.
         </p>
       </div>

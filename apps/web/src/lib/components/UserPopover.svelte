@@ -34,7 +34,7 @@
   <Popover.Content {id} {position}>
     {#snippet children({ close })}
       <a
-        href="/profile"
+        href="/account"
         class="body-md-medium item"
         onclick={close}
       >
