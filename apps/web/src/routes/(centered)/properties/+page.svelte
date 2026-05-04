@@ -462,11 +462,6 @@
     margin: 0;
   }
 
-  .property-list:has(:global(.carousel-wrapper):hover)
-    :global(.carousel-wrapper):not(:hover) {
-    filter: brightness(0.45);
-    transition: filter 0.3s ease;
-  }
 
   form :global(.button) {
     width: 100%;
