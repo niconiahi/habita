@@ -39,7 +39,7 @@
 </script>
 
 {#snippet Location()}
-  <Disclosure title="Ubicación" open>
+  <Disclosure title="Ubicación" name="characteristics" open>
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_LOCATION)}
@@ -70,7 +70,7 @@
 {/snippet}
 
 {#snippet Destinies()}
-  <Disclosure title="Destino">
+  <Disclosure title="Destino" name="characteristics">
     <Formulary.Root
       method="POST"
       action={compose_action(ACTION.UPDATE_DESTINIES)}
@@ -105,7 +105,7 @@
 {/snippet}
 
 {#snippet Tags()}
-  <Disclosure title="Tags">
+  <Disclosure title="Tags" name="characteristics">
     {#each PROPERTY_TAG_CATEGORIES as category}
       <fieldset class="tag-category">
         <legend>{category.label}</legend>
@@ -141,7 +141,7 @@
 {/snippet}
 
 {#snippet Building()}
-  <Disclosure title="Edificio">
+  <Disclosure title="Edificio" name="characteristics">
     <Formulary.Root
       method="POST"
       action={compose_action(
@@ -174,7 +174,7 @@
 {/snippet}
 
 {#snippet Services()}
-  <Disclosure title="Servicios">
+  <Disclosure title="Servicios" name="characteristics">
     <ul>
       {#each data.property.services as service (`service_${service.id}`)}
         <li>

@@ -2,8 +2,8 @@
 
 This tab lets managers edit the core attributes of a property. It's organized into collapsible sections:
 
-- **Location** — update the property's address and coordinates
-- **Destinies** — choose what the property is intended for (residential, commercial, etc.)
+- **Ubicación** — update the property's address and coordinates. Save with "Guardar ubicación"
+- **Destino** — choose what the property is intended for (residential, commercial, etc.). Save with "Guardar destino"
 - **Tags** — toggle category tags that describe features like parking, balcony, or pets allowed
-- **Construction year** — set when the property was built
-- **Services** — add, edit, or remove utility services (electricity, gas, water, etc.)
+- **Edificio** — set when the property was built. Save with "Guardar año"
+- **Servicios** — manage utility services. "Agregar servicio" to add, "Guardar servicio" to save changes, "Eliminar servicio" to remove

@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Dashboard from "$lib/components/Dashboard"
+  import * as AssistantWidget from "$lib/components/AssistantWidget"
   import OrganizationSelector from "$lib/components/OrganizationSelector.svelte"
   import Notifications from "$lib/components/Notifications.svelte"
   import UserPopover from "$lib/components/UserPopover.svelte"
@@ -24,6 +25,11 @@
           <Dashboard.Link href="/admin/properties">
             Propiedades
           </Dashboard.Link>
+          {#if data.is_webmaster}
+            <Dashboard.Link href="/admin/conversations">
+              Conversaciones
+            </Dashboard.Link>
+          {/if}
         </Dashboard.Section>
       </Dashboard.Root>
     </div>
@@ -45,9 +51,12 @@
       {/if}
     </div>
   </aside>
-  <main class="content">
-    {@render children()}
-  </main>
+  <div class="main-area">
+    <main class="content">
+      {@render children()}
+    </main>
+    <AssistantWidget.Root is_authenticated={true} />
+  </div>
 </div>
 
 <style>
@@ -93,7 +102,14 @@
     flex: 1;
   }
 
+  .main-area {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
   .content {
+    flex: 1;
     overflow-y: auto;
     padding: var(--dimension-spacing-4);
   }

@@ -2,6 +2,6 @@
 
 This tab manages visit scheduling for the property. Managers can:
 
-- **Create visit slots** — open a dialog to add a new available time slot with date, start time, and end time
+- **Create visit slots** — click "Agregar horario" to open a dialog, then "Crear horario" to save the new time slot
 - **View bookings** — see a table of all slots showing their date, time range, candidate info (if booked), and current state
-- **Manage reservations** — confirm or reject candidates who reserved a slot, or delete free slots that are no longer needed
+- **Manage reservations** — click "Confirmar" to accept a candidate, "Rechazar" to reject them, or "Eliminar" to remove free slots

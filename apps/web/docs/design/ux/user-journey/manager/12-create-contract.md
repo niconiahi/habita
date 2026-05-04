@@ -14,11 +14,11 @@
 
 ### Phase 1: Start Contract Creation
 
-**Routes:** `/admin/properties/[property_id]/contracts/new` or `/admin/contracts/new`
+**Routes:** `/admin/properties/[property_id]/contracts/new`
 
 **Actions:**
 
-- Either navigates directly from a specific property, or goes through the global contracts page and selects a property first
+- Navigates to the property's contracts tab and clicks "Nuevo contrato"
 - Selects the contract type
 - Submits the form
 - Gets redirected to the contract editing page
@@ -36,9 +36,4 @@
 
 ### Pain Points
 
-- Two entry points (property-specific vs. global) can be confusing
 - Contract type selection is the only thing captured at creation — feels minimal
-
-### Opportunities
-
-- Unify contract creation to one clear path

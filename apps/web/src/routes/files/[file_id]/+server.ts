@@ -7,7 +7,10 @@ import {
   get_object,
   OBJECT_STORE_ERROR,
 } from "$lib/server/object_store"
-import { require_view_access } from "$lib/server/property_access"
+import {
+  is_manager_of_visitant_file,
+  require_view_access,
+} from "$lib/server/property_access"
 import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
 
@@ -116,13 +119,20 @@ export const GET: RequestHandler = async ({
     locals.user.id,
   )
   if (property_id === undefined) {
-    logger.warn("file access denied", {
-      file_id,
-      user_id: locals.user.id,
-    })
-    error(403, "Forbidden")
-  }
-  if (property_id !== null) {
+    const has_manager_access =
+      await is_manager_of_visitant_file(
+        locals.user.id,
+        file_id,
+        locals.session?.activeOrganizationId,
+      )
+    if (!has_manager_access) {
+      logger.warn("file access denied", {
+        file_id,
+        user_id: locals.user.id,
+      })
+      error(403, "Forbidden")
+    }
+  } else if (property_id !== null) {
     await require_view_access(
       request.headers,
       locals.user.id,

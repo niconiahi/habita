@@ -570,6 +570,7 @@ Authorization layer for property access control (ACL).
 - `get_accessible_property_ids(user_id, types?, active_organization_id?): Promise<number[]>`
 - `assign_property_access(property_id, user_id, type, granted_by?)`
 - `is_tenant_accessible(tenant_id, manager_property_ids): Promise<boolean>`
+- `is_manager_of_visitant_file(manager_id, file_id, active_organization_id): Promise<boolean>`
 - `revoke_all_access_by_type(property_id, type)`
 
 ## object_store.ts

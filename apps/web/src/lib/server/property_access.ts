@@ -174,6 +174,53 @@ export async function is_tenant_accessible(
   return access !== undefined
 }
 
+export async function is_manager_of_visitant_file(
+  manager_id: number,
+  file_id: number,
+  active_organization_id: string | null | undefined,
+): Promise<boolean> {
+  let query = query_builder
+    .selectFrom("user_file")
+    .innerJoin(
+      "slot",
+      "slot.visitant_id",
+      "user_file.user_id",
+    )
+    .innerJoin(
+      "property_access",
+      (join) =>
+        join
+          .onRef(
+            "property_access.property_id",
+            "=",
+            "slot.property_id",
+          )
+          .on("property_access.user_id", "=", manager_id)
+          .on("property_access.type", "in", [
+            ACCESS_TYPE.LANDLORD,
+            ACCESS_TYPE.MANAGER,
+          ]),
+    )
+    .innerJoin(
+      "property",
+      "property.id",
+      "slot.property_id",
+    )
+    .where("user_file.file_id", "=", file_id)
+    .select("property_access.id")
+  if (active_organization_id) {
+    query = query.where(
+      "property.realtor_id",
+      "=",
+      active_organization_id,
+    )
+  } else {
+    query = query.where("property.realtor_id", "is", null)
+  }
+  const result = await query.executeTakeFirst()
+  return result !== undefined
+}
+
 export async function revoke_all_access_by_type(
   property_id: number,
   type: AccessType,

@@ -196,7 +196,7 @@
               </Formulary.Error>
             {/if}
           {/if}
-          <div class="actions">
+          <Dialog.Actions>
             <Button
               variant="secondary"
               type="button"
@@ -227,7 +227,7 @@
                 >Confirmar</Button
               >
             </Formulary.Root>
-          </div>
+          </Dialog.Actions>
         </Dialog.Content>
       {/snippet}
     </Dialog.Root>
@@ -333,12 +333,6 @@
 
   .confirmation-date {
     color: var(--color-neutrals-700);
-  }
-
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--dimension-spacing-2);
   }
 
   .link {
