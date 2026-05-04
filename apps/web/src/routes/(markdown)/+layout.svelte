@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as AssistantWidget from "$lib/components/AssistantWidget"
   import * as Dashboard from "$lib/components/Dashboard"
   import Footer from "$lib/components/Footer.svelte"
   import Header from "$lib/components/Header.svelte"
@@ -52,6 +53,9 @@
     {@render children()}
   </main>
 </div>
+<AssistantWidget.Root
+  is_authenticated={data.user !== null}
+/>
 <Footer />
 
 <style>
