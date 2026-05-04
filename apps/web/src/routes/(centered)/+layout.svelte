@@ -1,6 +1,7 @@
 <script lang="ts">
   import Footer from "$lib/components/Footer.svelte"
   import Header from "$lib/components/Header.svelte"
+  import * as AssistantWidget from "$lib/components/AssistantWidget"
   import type { LayoutData } from "./$types"
 
   let {
@@ -18,6 +19,9 @@
     {@render children()}
   </div>
 </div>
+<AssistantWidget.Root
+  is_authenticated={data.user !== null}
+/>
 <Footer />
 
 <style>
