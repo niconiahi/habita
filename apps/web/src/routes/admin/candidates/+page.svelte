@@ -39,7 +39,7 @@
             </Table.Cell>
             <Table.Cell>
               <a
-                href={`/admin/properties/${candidate.property_id}/edit`}
+                href={`/admin/properties/${candidate.property_id}/edit/characteristics`}
               >
                 {display_location(candidate.location)}
               </a>

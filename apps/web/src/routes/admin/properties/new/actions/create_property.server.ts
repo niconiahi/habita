@@ -144,7 +144,7 @@ export async function create_property(form_data: FormData) {
   return [
     null,
     {
-      redirect_to: `/admin/properties/${property.id}/edit`,
+      redirect_to: `/admin/properties/${property.id}/edit/characteristics`,
     },
   ] as const
 }
