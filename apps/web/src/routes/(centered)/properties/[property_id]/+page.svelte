@@ -40,6 +40,14 @@
     data.property.floors.flatMap((floor) => floor.rooms),
   )
 
+  const clickable_room_ids = $derived(
+    new Set(
+      all_rooms
+        .filter((room) => room.photos.length > 0)
+        .map((room) => room.id),
+    ),
+  )
+
   const image_count = $derived(data.property.images.length)
 
   const property_tags = $derived(
@@ -304,6 +312,7 @@
   <Visualizer
     images={Gallery}
     rooms={all_rooms}
+    {clickable_room_ids}
     on_room_click={handle_room_click}
   />
   <div class="layout">
