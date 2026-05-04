@@ -38,10 +38,12 @@ export const load: PageServerLoad = async ({
     ForceNumberSchema,
     params.property_id,
   )
-  const [slots, user_files] = await Promise.all([
-    fetch_free_slots(property_id),
-    fetch_user_files(locals.user.id),
-  ])
+  const [slots, user_files, property_location] =
+    await Promise.all([
+      fetch_free_slots(property_id),
+      fetch_user_files(locals.user.id),
+      fetch_property_location(property_id),
+    ])
   const has_credit_report = user_files.some(
     (file) => file.type === USER_FILE_TYPE.CREDIT_REPORT,
   )
@@ -64,6 +66,7 @@ export const load: PageServerLoad = async ({
     date,
     user: locals.user,
     has_credit_report,
+    property_location,
   }
 }
 

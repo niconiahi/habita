@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state"
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import Tab from "$lib/components/Tab.svelte"
   import TabGroup from "$lib/components/TabGroup.svelte"
   import * as Content from "$lib/components/Content"
@@ -41,6 +42,15 @@
 </script>
 
 <Content.Root>
+  <Breadcrumb.Root>
+    <Breadcrumb.Link
+      href="/properties/{data.property_id}"
+    >
+      {data.property_location.road}
+      {data.property_location.house_number}
+    </Breadcrumb.Link>
+    <Breadcrumb.Current>Inquilino</Breadcrumb.Current>
+  </Breadcrumb.Root>
   <Content.Title>Panel de inquilino</Content.Title>
   <TabGroup>
     {#each TENANT_TABS as tab}

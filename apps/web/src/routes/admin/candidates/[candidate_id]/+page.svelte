@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
   import * as Section from "$lib/components/Section"
   import { display_name } from "$lib/display_name"
@@ -8,6 +9,14 @@
 </script>
 
 <Content.Root>
+  <Breadcrumb.Root>
+    <Breadcrumb.Link href="/admin/candidates"
+      >Candidatos</Breadcrumb.Link
+    >
+    <Breadcrumb.Current>
+      {display_name(data.candidate)}
+    </Breadcrumb.Current>
+  </Breadcrumb.Root>
   <Content.Title
     >{display_name(data.candidate)}</Content.Title
   >
