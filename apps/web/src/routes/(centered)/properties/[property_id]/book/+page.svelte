@@ -257,7 +257,7 @@
           >
           <p class="body-md-medium footer">
             ¿Estás listo para subir tu informe?
-            <a href="/profile#files" target="_blank"
+            <a href="/account#files" target="_blank"
               >Subir informe</a
             >
           </p>
@@ -276,7 +276,10 @@
       <Breadcrumb.Link
         href="/properties/{page.params.property_id}"
       >
-        <SafeAddress house_number={data.property_location.house_number} placement="bottom">
+        <SafeAddress
+          house_number={data.property_location.house_number}
+          placement="bottom"
+        >
           {data.property_location.road}
           {data.property_location.house_number}
         </SafeAddress>
