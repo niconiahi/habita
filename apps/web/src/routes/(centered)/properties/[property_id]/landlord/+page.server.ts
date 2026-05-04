@@ -1,3 +1,4 @@
+import { mask_house_number } from "$lib/mask_house_number"
 import { require_authentication } from "$lib/server/auth"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
@@ -30,7 +31,12 @@ export const load: PageServerLoad = async ({
   )
   const property_location =
     await fetch_property_location(property_id)
-  return { property_id, property_location }
+  return {
+    property_id,
+    property_location: property_location
+      ? mask_house_number(property_location)
+      : undefined,
+  }
 }
 
 function fetch_property_location(property_id: number) {

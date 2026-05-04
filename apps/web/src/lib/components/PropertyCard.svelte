@@ -64,7 +64,7 @@
           </span>
         {/if}
       </div>
-      <SafeAddress {location}>
+      <SafeAddress house_number={location.house_number}>
         <p class="body-md-medium location-text">
           {display_location(location)}
         </p>

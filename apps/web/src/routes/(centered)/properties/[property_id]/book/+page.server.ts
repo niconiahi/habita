@@ -4,6 +4,7 @@ import { redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { mask_house_number } from "$lib/mask_house_number"
 import { display_location } from "$lib/display_location"
 import type { NoAvailableSlotsNotification } from "$lib/fetchers/notifications.schemas"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -66,7 +67,9 @@ export const load: PageServerLoad = async ({
     date,
     user: locals.user,
     has_credit_report,
-    property_location,
+    property_location: property_location
+      ? mask_house_number(property_location)
+      : undefined,
   }
 }
 
