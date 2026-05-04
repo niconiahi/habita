@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit"
 import { display_location } from "$lib/display_location"
+import { mask_house_number } from "$lib/mask_house_number"
 import { fetch_properties } from "$lib/server/fetchers/properties"
 import { fetch_zones } from "$lib/server/fetchers/zones"
 import { get_img_props } from "$lib/server/image"
@@ -64,14 +65,14 @@ export const load: PageServerLoad = async ({ url }) => {
       ).length
       return {
         id: property.id,
-        location: {
+        location: mask_house_number({
           road: property.location.road,
           house_number: property.location.house_number,
           suburb: property.location.suburb,
           city: property.location.city,
           town: property.location.town,
           state: property.location.state,
-        },
+        }),
         price: contract?.current_price ?? null,
         escalation:
           contract?.escalation_type !== null &&

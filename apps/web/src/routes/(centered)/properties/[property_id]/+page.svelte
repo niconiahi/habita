@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
+  import SafeAddress from "$lib/components/SafeAddress.svelte"
   import Tab from "$lib/components/Tab.svelte"
   import TabGroup from "$lib/components/TabGroup.svelte"
   import { CONTRACT_STATE } from "$lib/contract_state"
@@ -315,8 +316,10 @@
       >Propiedades</Breadcrumb.Link
     >
     <Breadcrumb.Current>
-      {data.property.location.road}
-      {data.property.location.house_number}
+      <SafeAddress house_number={data.property.location.house_number} placement="bottom">
+        {data.property.location.road}
+        {data.property.location.house_number}
+      </SafeAddress>
     </Breadcrumb.Current>
   </Breadcrumb.Root>
   <Visualizer

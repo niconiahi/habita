@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Breadcrumb from "$lib/components/Breadcrumb"
   import * as Content from "$lib/components/Content"
+  import SafeAddress from "$lib/components/SafeAddress.svelte"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
@@ -15,8 +16,10 @@
       <Breadcrumb.Link
         href="/properties/{data.property_id}"
       >
-        {data.property_location.road}
-        {data.property_location.house_number}
+        <SafeAddress house_number={data.property_location.house_number} placement="bottom">
+          {data.property_location.road}
+          {data.property_location.house_number}
+        </SafeAddress>
       </Breadcrumb.Link>
       <Breadcrumb.Current>Propietario</Breadcrumb.Current>
     </Breadcrumb.Root>

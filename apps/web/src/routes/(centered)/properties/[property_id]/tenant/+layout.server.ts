@@ -1,3 +1,4 @@
+import { mask_house_number } from "$lib/mask_house_number"
 import { require_authentication } from "$lib/server/auth"
 import { error } from "@sveltejs/kit"
 import * as v from "valibot"
@@ -74,7 +75,7 @@ export const load: LayoutServerLoad = async ({
 
   return {
     property_id,
-    property_location: property.location,
+    property_location: mask_house_number(property.location),
     contract,
     manager,
     services: property.services,
