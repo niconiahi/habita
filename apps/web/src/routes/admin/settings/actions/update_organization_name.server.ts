@@ -1,5 +1,5 @@
+import { fail } from "@sveltejs/kit"
 import * as v from "valibot"
-import { safe_async } from "$lib/safe_async"
 import { auth } from "$lib/server/auth"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
@@ -13,45 +13,37 @@ export async function update_organization_name(
   organization_id: string,
   request_headers: Headers,
 ) {
-  const input = normalize_input(form_data, InputSchema)
-  const result = v.safeParse(InputSchema, input)
-  if (!result.success) {
-    return [
-      {
-        update_organization_name: {
-          input: v.flatten(result.issues),
-        },
-      },
-      null,
-    ] as const
+  const input_validation = v.safeParse(
+    InputSchema,
+    normalize_input(form_data, InputSchema),
+  )
+  if (!input_validation.success) {
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
 
-  const [update_error] = await safe_async(
-    auth.api.updateOrganization({
+  try {
+    await auth.api.updateOrganization({
       body: {
         organizationId: organization_id,
-        data: { name: result.output.name },
+        data: { name: input_validation.output.name },
       },
       headers: request_headers,
-    }),
-  )
-  if (update_error) {
-    console.error("UPDATE ORG ERROR:", update_error)
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
       "failed to update organization name",
       { organization_id },
-      update_error,
+      typed_error,
     )
-    return [
-      {
-        update_organization_name: {
-          execution:
-            "Error al actualizar el nombre de la organización",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al actualizar el nombre de la organización",
+    })
   }
-
-  return [null, { success: true }] as const
 }

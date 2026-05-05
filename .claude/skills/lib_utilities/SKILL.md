@@ -36,13 +36,6 @@ Wraps a synchronous function into a Go-style error tuple. Use for non-throwing s
 
 - `safe_sync<T>(fn: () => T): [null, T] | [Error, null]`
 
-## has_action_error.ts
-
-Type guard for checking form action errors in templates.
-
-- `ActionError` — interface `{ message: string }`
-- `has_action_error<K extends string>(form: any, key: K): boolean` — checks if form has error for given action key
-
 ## date.ts
 
 Date parsing, formatting, and extraction helpers. Uses `es-AR` locale.

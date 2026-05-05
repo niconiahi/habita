@@ -1,6 +1,9 @@
 # Error handling
 
-This codebase uses Go-style error handling. Functions never throw — they return `[error, result]` tuples. Callers match on error types to decide what to do.
+This codebase uses two layers of error handling:
+
+1. **Utility functions** — Go-style `[error, result]` tuples. Functions never throw. `safe_async` wraps promises, `safe_sync` wraps synchronous code. Typed errors colocated with their utility function.
+2. **Actions** — SvelteKit-native `fail()` and `redirect()`. One action per form. Actions use try/catch internally and return `fail()` for errors or call `redirect()` for navigation. Callers just propagate the return.
 
 ## Core primitives
 
@@ -13,6 +16,8 @@ const [error, data] = await safe_async(fetch("..."))
 // error: Error | null
 // data: T | null
 ```
+
+Used in **utility functions** and **non-critical side effects**. NOT used in actions — actions use try/catch + `fail()` instead.
 
 ### `safe_sync` (`$lib/safe_sync.ts`)
 
@@ -87,39 +92,32 @@ if (fetch_error) {
 
 ## Action error handling
 
-Actions are server-side functions triggered by form submissions. They return Go-style two-element tuples `[errors, data]`, where:
+Actions are server-side functions triggered by form submissions. One action per form — the `form` prop always belongs to the form that submitted. Actions use SvelteKit's `fail()` for errors and `redirect()` for navigation directly.
 
-- `errors` — an object keyed by the action name, containing either `input` validation errors or an `execution` error string
-- `data` — the return value on success (`null` for void actions, a typed object for data-returning actions)
+### Fail shapes
 
-TypeScript infers the full union type from the function's `return` statements — no need to write the type explicitly.
+There are exactly two `fail()` shapes:
 
-### Error shape
-
-Every action error is an object with two discriminated channels:
+**Validation errors** — when `v.safeParse` fails:
 
 ```ts
-{
-  action_name: {
-    input?: v.FlatErrors<typeof InputSchema>  // validation errors from v.flatten
-    execution?: string                         // operation failure message (Spanish)
-  }
-}
+return fail(400, { errors: v.flatten(input_validation.issues) })
 ```
 
-- **`input`** — returned when `v.safeParse` fails. Uses `v.flatten(result.issues)` which produces `{ root?: string[], nested?: Record<string, string[]> }`. Shows ALL validation errors per field.
-- **`execution`** — returned when a database query, API call, or any operation fails after validation.
+**Execution errors** — when an operation fails:
 
-These two channels are mutually exclusive per return — a single return is either an input error or an execution error, never both.
+```ts
+return fail(400, { message: "Error al actualizar" })
+```
 
 ### Inside the action
 
-Every action follows this three-step structure:
+Every action follows this structure:
 
 ```ts
+import { fail } from "@sveltejs/kit"
 import * as v from "valibot"
 import { normalize_input } from "$lib/server/form"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
@@ -138,21 +136,20 @@ const InputSchema = v.object({
 
 export async function update_thing(form_data: FormData) {
   // 1. Validate input — v.safeParse, NOT v.parse
-  const result = v.safeParse(
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
-  if (!result.success) {
-    return [
-      { update_thing: { input: v.flatten(result.issues) } },
-      null,
-    ] as const
+  if (!input_validation.success) {
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
-  const input = result.output
+  const input = input_validation.output
 
-  // 2. Execute operation — safe_async
-  const [error] = await safe_async(
-    query_builder
+  // 2. Execute operation — try/catch
+  try {
+    await query_builder
       .updateTable("thing")
       .set({
         name: input.name,
@@ -160,114 +157,101 @@ export async function update_thing(form_data: FormData) {
         updated_at: now,
       })
       .where("thing.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, {}, error)
-    return [
-      {
-        update_thing: { execution: "Error al actualizar" },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al actualizar",
+    })
   }
 
-  // 3. Success
-  return [null, null] as const
+  // 3. Success — implicit return (void)
 }
 ```
 
-### Data-returning actions
+### Redirect actions
 
-When an action produces data on success, the second tuple element carries it:
+When an action needs to redirect on success, call `redirect()` directly:
 
 ```ts
-export async function create_pdf(
-  form_data: FormData,
-  property_id: number,
-) {
-  const result = v.safeParse(
+export async function create_property(form_data: FormData) {
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
-  if (!result.success) {
-    return [
-      { create_pdf: { input: v.flatten(result.issues) } },
-      null,
-    ] as const
+  if (!input_validation.success) {
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
+  }
+  const input = input_validation.output
+
+  let property
+  try {
+    property = await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        // ... create location, property
+        return { id: result.id }
+      })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al crear la propiedad",
+    })
   }
 
-  const [error, content] =
-    await generate_pdf_with_playwright(html)
-  if (error) {
-    if (
-      error.type ===
-      GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
-    ) {
-      return [
-        {
-          create_pdf: {
-            execution:
-              "No se pudo conectar al servicio de PDF",
-          },
-        },
-        null,
-      ] as const
-    }
-    return [
-      {
-        create_pdf: {
-          execution: "Error al generar el PDF",
-        },
-      },
-      null,
-    ] as const
-  }
-
-  // Success with data
-  return [null, { content }] as const
+  redirect(
+    303,
+    `/admin/properties/${property.id}/edit/characteristics`,
+  )
 }
 ```
 
 ### Actions without FormData input
 
-Some actions don't receive user input — they operate on pre-validated parameters. These skip the `v.safeParse` step and only have `execution` errors:
+Some actions don't receive user input — they operate on pre-validated parameters. These skip the `v.safeParse` step and only have execution errors:
 
 ```ts
 export async function create_room(property_id: number) {
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("room")
       .values({
         property_id,
         created_at: now,
         updated_at: now,
       })
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, {}, error)
-    return [
-      {
-        create_room: {
-          execution: "Error al crear la habitación",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al crear la habitación",
+    })
   }
-  return [null, null] as const
 }
 ```
 
 ### Actions with sequential operations
 
-When an action performs multiple operations, wrap them in a transaction — all succeed or all fail. Use the `tx` handle instead of `query_builder` inside the transaction. Destructure both tuple elements from `safe_async` when a later operation needs data from an earlier one:
+When an action performs multiple operations, wrap them in a transaction — all succeed or all fail:
 
 ```ts
+import { fail } from "@sveltejs/kit"
 import * as v from "valibot"
 import { normalize_input } from "$lib/server/form"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
@@ -285,60 +269,51 @@ const InputSchema = v.object({
 export async function add_income_guarantor(
   form_data: FormData,
 ) {
-  const result = v.safeParse(
+  const input_validation = v.safeParse(
     InputSchema,
     normalize_input(form_data, InputSchema),
   )
-  if (!result.success) {
-    return [
-      {
-        add_income_guarantor: {
-          input: v.flatten(result.issues),
-        },
-      },
-      null,
-    ] as const
+  if (!input_validation.success) {
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
-  const input = result.output
+  const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
-      // First operation — need the returned id
-      const guarantor = await tx
-        .insertInto("income_guarantor")
-        .values({
-          name: input.name,
-          income: input.income,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
+  try {
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const guarantor = await tx
+          .insertInto("income_guarantor")
+          .values({
+            name: input.name,
+            income: input.income,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
 
-      // Second operation — uses guarantor.id from above
-      await tx
-        .insertInto("contract_income_guarantor")
-        .values({
-          contract_id: input.contract_id,
-          income_guarantor_id: guarantor.id,
-          created_at: now,
-        })
-        .execute()
-    }),
-  )
-  if (error) {
-    logger.error(error.message, {}, error)
-    return [
-      {
-        add_income_guarantor: {
-          execution: "Error al crear el garante",
-        },
-      },
-      null,
-    ] as const
+        await tx
+          .insertInto("contract_income_guarantor")
+          .values({
+            contract_id: input.contract_id,
+            income_guarantor_id: guarantor.id,
+            created_at: now,
+          })
+          .execute()
+      })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al crear el garante",
+    })
   }
-
-  return [null, null] as const
 }
 ```
 
@@ -349,7 +324,7 @@ If any operation inside the transaction throws, Kysely rolls back automatically 
 When an action operates on a list of items, wrap the loop in a transaction — all items update or none do:
 
 ```ts
-import { safe_async } from "$lib/safe_async"
+import { fail } from "@sveltejs/kit"
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { query_builder } from "db/query_builder"
@@ -358,40 +333,38 @@ export async function update_room_positions(
   property_id: number,
   positions: Array<{ room_id: number; position: number }>,
 ) {
-  const [error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
-      for (const { room_id, position } of positions) {
-        await tx
-          .insertInto("room")
-          .values({
-            id: room_id,
-            property_id,
-            position,
-            created_at: now,
-            updated_at: now,
-          })
-          .onConflict((oc) =>
-            oc
-              .column("id")
-              .doUpdateSet({ position, updated_at: now }),
-          )
-          .execute()
-      }
-    }),
-  )
-  if (error) {
-    logger.error(error.message, {}, error)
-    return [
-      {
-        update_room_positions: {
-          execution: "Error al actualizar las posiciones",
-        },
-      },
-      null,
-    ] as const
+  try {
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        for (const { room_id, position } of positions) {
+          await tx
+            .insertInto("room")
+            .values({
+              id: room_id,
+              property_id,
+              position,
+              created_at: now,
+              updated_at: now,
+            })
+            .onConflict((oc) =>
+              oc
+                .column("id")
+                .doUpdateSet({ position, updated_at: now }),
+            )
+            .execute()
+        }
+      })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al actualizar las posiciones",
+    })
   }
-
-  return [null, null] as const
 }
 ```
 
@@ -401,7 +374,7 @@ If an action has more than one database operation (sequential steps or loop iter
 
 ### Actions calling typed-error utilities
 
-When an action calls a utility that returns typed errors (e.g. `generate_pdf_with_playwright`, `send_email`), match each error type and map it to an `execution` string:
+When an action calls a utility that returns typed errors (e.g. `generate_pdf_with_playwright`, `send_email`), match each error type and map it to `fail()`:
 
 ```ts
 const [pdf_error, content] =
@@ -411,50 +384,32 @@ if (pdf_error) {
     pdf_error.type ===
     GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
   ) {
-    return [
-      {
-        create_pdf: {
-          execution:
-            "No se pudo conectar al servicio de PDF",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "No se pudo conectar al servicio de PDF",
+    })
   }
   if (
     pdf_error.type ===
     GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR
   ) {
-    return [
-      {
-        create_pdf: {
-          execution:
-            "Error en el servicio de generación de PDF",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error en el servicio de generación de PDF",
+    })
   }
   if (
     pdf_error.type ===
     GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED
   ) {
-    return [
-      {
-        create_pdf: {
-          execution:
-            "Error al leer el contenido del PDF generado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al leer el contenido del PDF generado",
+    })
   }
-  return [
-    {
-      create_pdf: { execution: "Error al generar el PDF" },
-    },
-    null,
-  ] as const
+  return fail(400, {
+    message: "Error al generar el PDF",
+  })
 }
 ```
 
@@ -463,68 +418,6 @@ Always include a fallback return after all if-branches for forward-compatibility
 ### Actions with multiple input shapes
 
 When a concept has multiple shapes (e.g. different warranty types), create one action per shape. Each action has its own clean `v.object` InputSchema. The caller reads the discriminant from `FormData` and dispatches to the correct function.
-
-**Actions** — each owns its own `v.object`:
-
-```ts
-// create_salary_warranty.server.ts
-const InputSchema = v.object({
-  employer: v.pipe(v.string(), v.minLength(1, "Requerido")),
-  salary: ForceNumberSchema,
-})
-
-export async function create_salary_warranty(
-  form_data: FormData,
-) {
-  const result = v.safeParse(
-    InputSchema,
-    normalize_input(form_data, InputSchema),
-  )
-  if (!result.success) {
-    return [
-      {
-        create_warranty: {
-          input: v.flatten(result.issues),
-        },
-      },
-      null,
-    ] as const
-  }
-  // ... insert salary warranty
-  return [null, null] as const
-}
-```
-
-```ts
-// create_property_warranty.server.ts
-const InputSchema = v.object({
-  property_address: v.pipe(
-    v.string(),
-    v.minLength(1, "Requerido"),
-  ),
-})
-
-export async function create_property_warranty(
-  form_data: FormData,
-) {
-  const result = v.safeParse(
-    InputSchema,
-    normalize_input(form_data, InputSchema),
-  )
-  if (!result.success) {
-    return [
-      {
-        create_warranty: {
-          input: v.flatten(result.issues),
-        },
-      },
-      null,
-    ] as const
-  }
-  // ... insert property warranty
-  return [null, null] as const
-}
-```
 
 **Caller** — reads the type and dispatches:
 
@@ -535,69 +428,36 @@ export async function create_property_warranty(
   const warranty_type = v.parse(v.picklist(["salary", "property"]), form_data.get("warranty_type"))
 
   switch (warranty_type) {
-    case "salary": {
-      const [errors] = await create_salary_warranty(form_data)
-      if (errors) return { errors }
-      return null
-    }
-    case "property": {
-      const [errors] = await create_property_warranty(form_data)
-      if (errors) return { errors }
-      return null
-    }
+    case "salary":
+      return create_salary_warranty(form_data)
+    case "property":
+      return create_property_warranty(form_data)
   }
 }
 ```
 
-All actions share the same error key (`create_warranty`) so the template only checks one key.
+Each action uses the same `fail()` shapes — `{ errors: v.flatten(...) }` or `{ message: "..." }`.
 
 ## Caller patterns
 
-Every `+page.server.ts` action handler follows the same explicit pattern: destructure the tuple, check for errors, wrap in `{ errors }` for SvelteKit, and decide what to do on success.
+Callers propagate the action's return directly:
 
-The action never wraps in `{ errors }` — it only produces the error payload. The caller wraps it.
-
-### Standard caller (void action)
+### Standard caller
 
 ```ts
-const [update_thing_errors] = await update_thing(form_data)
-if (update_thing_errors) {
-  return { errors: update_thing_errors }
-}
-return null
-```
-
-### Data-returning caller
-
-```ts
-const [create_pdf_errors, pdf_data] = await create_pdf(
-  form_data,
-  property_id,
-)
-if (create_pdf_errors) {
-  return { errors: create_pdf_errors }
-}
-// use pdf_data.content...
-return null
+return update_thing(form_data)
 ```
 
 ### Redirect caller
 
 ```ts
-const [set_date_errors, date_result] = await set_date(
-  url,
-  form_data,
-)
-if (set_date_errors) {
-  return { errors: set_date_errors }
-}
-redirect(302, date_result.redirect_url)
+// redirect() is called inside the action
+return create_property(form_data)
 ```
 
 ### Full `+page.server.ts` example
 
 ```ts
-import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
@@ -612,9 +472,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -626,21 +484,15 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_location_errors] =
-      await update_location(form_data)
-    if (update_location_errors) {
-      return { errors: update_location_errors }
-    }
-    return null
+    form_data.set("property_id", String(property_id))
+    return update_location(form_data)
   },
   [ACTION.CREATE_ROOM]: async ({
     request,
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -651,100 +503,70 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const [create_room_errors] =
-      await create_room(property_id)
-    if (create_room_errors) {
-      return { errors: create_room_errors }
-    }
-    return null
+    return create_room(property_id)
   },
 }
 ```
 
-No try-catch. No `execute`/`get_errors` pattern. The action owns all error handling internally.
+No try-catch. No destructuring. The action owns all error handling internally.
 
 ## Template patterns
 
-### `has_action_error` utility (`$lib/has_action_error.ts`)
+`fail(400, data)` makes `data` available as the `form` prop. Use optional chaining directly.
 
-Type predicate that narrows the SvelteKit `form` prop to the error shape. Hides the `in` keyword from templates.
-
-```ts
-import type * as v from "valibot"
-
-type ActionError = {
-  input?: v.FlatErrors<undefined>
-  execution?: string
-}
-
-export function has_action_error<K extends string>(
-  form: unknown,
-  key: K,
-): form is { errors: Record<K, ActionError> } {
-  if (!form || typeof form !== "object") return false
-  if (!("errors" in form)) return false
-  const { errors } = form
-  if (!errors || typeof errors !== "object") return false
-  return key in errors
-}
-```
-
-### Displaying input validation errors
-
-`v.flatten` returns `{ root?: string[], nested?: Record<string, string[]> }`. Iterate the arrays to show ALL errors per field:
+### Validation errors per field
 
 ```svelte
-{#if has_action_error(form, "update_user")}
-  <!-- Per-field errors from v.flatten nested -->
-  {#each form.errors.update_user.input?.nested?.name ?? [] as error}
-    <Formulary.Error>{error}</Formulary.Error>
-  {/each}
-
-  {#each form.errors.update_user.input?.nested?.surname ?? [] as error}
-    <Formulary.Error>{error}</Formulary.Error>
-  {/each}
-{/if}
+<Formulary.Input
+  label="Nombre"
+  name="name"
+  value={data.name}
+  error={form?.errors?.nested?.name?.[0]}
+/>
 ```
 
-### Displaying execution errors
+### Execution errors
 
 ```svelte
-{#if has_action_error(form, "update_user")}
-  {#if form.errors.update_user.execution}
-    <Formulary.Error
-      >{form.errors.update_user.execution}</Formulary.Error
-    >
-  {/if}
+{#if form?.message}
+  <Formulary.Error>{form.message}</Formulary.Error>
 {/if}
 ```
 
 ### Combined example
 
-A typical form section handles both channels:
-
 ```svelte
-<Formulary.Field>
-  <Formulary.Label for="name">Nombre</Formulary.Label>
+<Formulary.Root action={compose_action(ACTION.UPDATE_USER)} method="POST">
   <Formulary.Input
+    label="Nombre"
     name="name"
     value={data.user_profile.name}
+    error={form?.errors?.nested?.name?.[0]}
   />
-  {#if has_action_error(form, "update_user")}
-    {#each form.errors.update_user.input?.nested?.name ?? [] as error}
-      <Formulary.Error>{error}</Formulary.Error>
-    {/each}
+  <Formulary.Input
+    label="Apellido"
+    name="surname"
+    value={data.user_profile.surname}
+    error={form?.errors?.nested?.surname?.[0]}
+  />
+  {#if form?.message}
+    <Formulary.Error>{form.message}</Formulary.Error>
   {/if}
-</Formulary.Field>
-
-<!-- Execution error at the form level -->
-{#if has_action_error(form, "update_user")}
-  {#if form.errors.update_user.execution}
-    <Formulary.Error
-      >{form.errors.update_user.execution}</Formulary.Error
-    >
-  {/if}
-{/if}
+  <Button variant="primary" type="submit">Guardar</Button>
+</Formulary.Root>
 ```
+
+## File organization
+
+```
+src/routes/[route]/actions/
+├── action.ts              # ACTION constant object
+├── create_room.server.ts  # One file per action
+├── update_room.server.ts
+└── destroy_room.server.ts
+```
+
+Actions are imported directly in `+page.server.ts` — no barrel export file needed.
 
 ## Loaders (`+page.server.ts` load functions)
 
@@ -829,7 +651,7 @@ The `logger` from `$lib/telemetry/logger.ts` is isomorphic — same import works
 
 ### Unexpected errors (catch-all)
 
-SvelteKit's `handleError` hook in `hooks.client.ts` catches all unhandled client errors — component crashes, runtime exceptions, failed navigations. This is the Sentry-like safety net:
+SvelteKit's `handleError` hook in `hooks.client.ts` catches all unhandled client errors:
 
 ```ts
 // hooks.client.ts
@@ -845,11 +667,9 @@ export function handleError({ error, status, message }) {
 }
 ```
 
-Every unhandled error on the client goes through here. No error is silently lost.
-
 ### Expected errors (explicit)
 
-When client-side code handles an anticipated failure (e.g. a fetch to an external API, a WebSocket disconnect), log it explicitly with context:
+When client-side code handles an anticipated failure, log it explicitly with context:
 
 ```ts
 import { logger } from "$lib/telemetry/logger"
@@ -881,16 +701,17 @@ logger.warn("Payment status check timed out, will retry", {
 
 ## Rules
 
-1. **No `throw`** — utility functions return tuples, never throw.
+1. **No `throw` in utilities** — utility functions return tuples, never throw.
 2. **No `as` assertions** — use Valibot schemas for validation.
 3. **No magic strings** — always reference the constant (`SEND_EMAIL_ERROR.FETCH_FAILED`, not `"fetch_failed"`).
 4. **Log at the source** — the utility or action that detects the error logs it. Callers may log additional context.
-5. **Every if-branch per type** — callers must handle each error variant explicitly, even if the handling is the same.
+5. **Every if-branch per type** — callers of typed-error utilities must handle each error variant explicitly, even if the handling is the same.
 6. **Fallback return** — after all typed if-branches in actions, include a generic fallback error return.
 7. **`v.safeParse` inside actions** — never `v.parse`. Actions own validation internally.
-8. **`v.flatten` for input errors** — shows all validation failures, not just the first one.
-9. **Explicit caller destructuring** — no `return await action()`. Always destructure, check, wrap in `{ errors }`.
-10. **Actions produce payloads, callers wrap** — actions return `[{ action_name: ... }, null]`, callers wrap in `{ errors: ... }`.
+8. **`v.flatten` for validation errors** — shows all validation failures, not just the first one.
+9. **Callers propagate** — `return action(form_data)`. No destructuring, no wrapping.
+10. **`fail()` for errors, `redirect()` for navigation** — actions call these directly.
+11. **One action per form** — no shared forms across actions. The `form` prop always belongs to the form that submitted.
 
 ## Existing error constants
 

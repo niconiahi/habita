@@ -40,14 +40,10 @@ export const actions: Actions = {
     }
 
     const form_data = await request.formData()
-    const [errors] = await update_organization_name(
+    return update_organization_name(
       form_data,
       organization_id,
       request.headers,
     )
-    if (errors) {
-      return { errors }
-    }
-    return null
   },
 }
