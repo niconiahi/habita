@@ -1,7 +1,7 @@
+import { fail, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { auth } from "$lib/server/auth"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
@@ -28,14 +28,9 @@ export async function create_account(
   const input = normalize_input(form_data, InputSchema)
   const result = v.safeParse(InputSchema, input)
   if (!result.success) {
-    return [
-      {
-        create_account: {
-          input: v.flatten(result.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(result.issues),
+    })
   }
 
   if (result.output.type === SUBSCRIPTION_TYPE.FREELANCE) {
@@ -56,15 +51,9 @@ export async function create_account(
       .executeTakeFirst()
 
     if (existing_freelance) {
-      return [
-        {
-          create_account: {
-            execution:
-              "Ya tenés una cuenta de asesor",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message: "Ya tenés una cuenta de asesor",
+      })
     }
   }
 
@@ -73,32 +62,35 @@ export async function create_account(
       ? "Personal"
       : `La inmobiliaria de ${user_email}`
 
-  const [organization_error, organization] =
-    await safe_async(
-      auth.api.createOrganization({
-        body: {
-          name: organization_name,
-          slug: crypto.randomUUID(),
-          userId: String(user_id),
-        },
-      }),
-    )
-  if (organization_error || !organization) {
-    if (organization_error) {
-      logger.error(
-        "failed to create organization",
-        { user_id },
-        organization_error,
-      )
-    }
-    return [
-      {
-        create_account: {
-          execution: "Error al crear la organización",
-        },
+  let organization: Awaited<
+    ReturnType<typeof auth.api.createOrganization>
+  >
+  try {
+    organization = await auth.api.createOrganization({
+      body: {
+        name: organization_name,
+        slug: crypto.randomUUID(),
+        userId: String(user_id),
       },
-      null,
-    ] as const
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(
+      "failed to create organization",
+      { user_id },
+      typed_error,
+    )
+    return fail(400, {
+      message: "Error al crear la organización",
+    })
+  }
+  if (!organization) {
+    return fail(400, {
+      message: "Error al crear la organización",
+    })
   }
 
   const period_start = new Date(now)
@@ -107,8 +99,8 @@ export async function create_account(
     period_end.getDate() + TRIAL_PERIOD_DAYS,
   )
 
-  const [subscription_error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("subscription")
       .values({
         organization_id: organization.id,
@@ -120,54 +112,55 @@ export async function create_account(
         created_at: now,
         updated_at: now,
       })
-      .execute(),
-  )
-  if (subscription_error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
       "failed to create subscription",
       { user_id },
-      subscription_error,
+      typed_error,
     )
-    return [
-      {
-        create_account: {
-          execution: "Error al crear la suscripción",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al crear la suscripción",
+    })
   }
 
-  const [active_organization_error] = await safe_async(
-    auth.api.setActiveOrganization({
+  try {
+    await auth.api.setActiveOrganization({
       body: { organizationId: organization.id },
       headers: request_headers,
-    }),
-  )
-  if (active_organization_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
       "failed to set active organization",
       {
         user_id,
         organization_id: organization.id,
       },
-      active_organization_error,
+      typed_error,
     )
   }
 
-  const [cache_error] = await safe_async(
-    invalidate_user_subscriptions_cache(user_id),
-  )
-  if (cache_error) {
+  try {
+    await invalidate_user_subscriptions_cache(user_id)
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
       "failed to invalidate subscriptions cache",
       { user_id },
-      cache_error,
+      typed_error,
     )
   }
 
-  return [
-    null,
-    { redirect_path: "/admin/settings" },
-  ] as const
+  redirect(303, "/admin/settings")
 }

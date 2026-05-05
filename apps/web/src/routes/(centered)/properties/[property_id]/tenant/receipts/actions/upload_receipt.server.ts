@@ -1,8 +1,8 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { ReceiptTypeSchema } from "$lib/receipt_type"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { upsert_file } from "$lib/server/upsert_file"
@@ -20,19 +20,14 @@ export async function upload_receipt(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        upload_receipt: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const file_id = await upsert_file(input.file, tx)
       await tx
         .insertInto("receipt")
@@ -45,31 +40,27 @@ export async function upload_receipt(form_data: FormData) {
         })
         .returning("id")
         .executeTakeFirstOrThrow()
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       {
         contract_id: input.contract_id,
         receipt_type: input.type,
       },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        upload_receipt: {
-          execution: "Error al subir el comprobante",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al subir el comprobante",
+    })
   }
 
   logger.info("receipt uploaded", {
     contract_id: input.contract_id,
     receipt_type: input.type,
   })
-
-  return [null, null] as const
 }

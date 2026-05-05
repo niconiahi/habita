@@ -6,7 +6,6 @@
     get_user_file_type_label,
     USER_FILE_TYPE,
   } from "$lib/user_file_type"
-  import { has_action_error } from "$lib/has_action_error"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
   import type { PageData, ActionData } from "./$types"
@@ -14,17 +13,9 @@
   let { data, form }: { data: PageData; form: ActionData } =
     $props()
 
-  let input_errors = $derived(
-    has_action_error(form, "update_user")
-      ? (form.errors.update_user.input?.nested ?? {})
-      : {},
-  )
+  let input_errors = $derived(form?.errors?.nested ?? {})
 
-  let execution_error = $derived(
-    has_action_error(form, "update_user")
-      ? form.errors.update_user.execution
-      : undefined,
-  )
+  let execution_error = $derived(form?.message)
 
   const document_types = Object.values(USER_FILE_TYPE).map(
     (type) => ({

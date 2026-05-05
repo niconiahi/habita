@@ -8,7 +8,6 @@
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
   import Togglable from "$lib/components/Togglable.svelte"
-  import { has_action_error } from "$lib/has_action_error"
   import { compose_action } from "$lib/compose_action"
   import { get_date } from "$lib/date"
   import { ACTION } from "./actions/action"
@@ -192,12 +191,10 @@
           <p class="body-md-bold confirmation-date">
             {format_confirmation(selected_slot.start_date)}
           </p>
-          {#if has_action_error(form, "update_slot")}
-            {#if form.errors.update_slot.execution}
-              <Formulary.Error>
-                {form.errors.update_slot.execution}
-              </Formulary.Error>
-            {/if}
+          {#if form?.message}
+            <Formulary.Error>
+              {form.message}
+            </Formulary.Error>
           {/if}
           <Dialog.Actions>
             <Button

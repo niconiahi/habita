@@ -86,13 +86,10 @@ export const actions: Actions = {
     )
     form_data.set("property_id", String(property_id))
     span.setAttribute("property.id", property_id)
-    const [update_slot_errors] = await update_slot(
-      form_data,
-      span,
-    )
-    if (update_slot_errors) {
+    const result = await update_slot(form_data, span)
+    if (result) {
       span.end()
-      return { errors: update_slot_errors }
+      return result
     }
     const date = form_data.get("date")
     logger.info("slot updated successfully")
