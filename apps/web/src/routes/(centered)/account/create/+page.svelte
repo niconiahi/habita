@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import Togglable from "$lib/components/Togglable.svelte"
   import { compose_action } from "$lib/compose_action"
   import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
@@ -114,7 +115,7 @@
         <h2 class="heading-md subtitle">
           ¿Cómo administrás?
         </h2>
-        <form
+        <Formulary.Root
           action={compose_action(ACTION.CREATE_ACCOUNT)}
           method="POST"
         >
@@ -148,7 +149,7 @@
               Crear cuenta
             </Button>
           </div>
-        </form>
+        </Formulary.Root>
       </div>
     {/if}
   </div>
