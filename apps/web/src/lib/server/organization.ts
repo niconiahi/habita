@@ -67,12 +67,18 @@ export async function get_user_selectable_organizations(
       "organization.id",
       "member.organization_id",
     )
+    .innerJoin(
+      "subscription",
+      "subscription.organization_id",
+      "member.organization_id",
+    )
     .where("member.user_id", "=", user_id)
     .select([
       "organization.id",
       "organization.name",
       "organization.logo",
       "member.role",
+      "subscription.type as subscription_type",
     ])
     .execute()
 }

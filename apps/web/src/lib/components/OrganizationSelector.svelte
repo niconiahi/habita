@@ -1,8 +1,9 @@
 <script lang="ts">
   import { authClient } from "$lib/auth-client"
-  import { invalidateAll } from "$app/navigation"
+  import { goto, invalidateAll } from "$app/navigation"
   import * as Popover from "$lib/components/Popover"
   import ChevronDown from "$icon/ChevronDown.svelte"
+  import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
   import type { SelectableOrganization } from "$lib/server/organization"
 
   interface Props {
@@ -17,27 +18,55 @@
     position = "bottom",
   }: Props = $props()
 
+  const freelance_organization = $derived(
+    organizations.find(
+      (organization) =>
+        organization.subscription_type ===
+        SUBSCRIPTION_TYPE.FREELANCE,
+    ),
+  )
+
+  const non_freelance_organizations = $derived(
+    organizations.filter(
+      (organization) =>
+        organization.subscription_type !==
+        SUBSCRIPTION_TYPE.FREELANCE,
+    ),
+  )
+
+  const is_freelance_active = $derived(
+    freelance_organization?.id === active_organization_id,
+  )
+
   const active_label = $derived(
-    active_organization_id === null
+    is_freelance_active || active_organization_id === null
       ? "Personal"
-      : (organizations.find(
+      : (non_freelance_organizations.find(
           (organization) =>
             organization.id === active_organization_id,
         )?.name ?? "Personal"),
   )
 
   async function handle_select(
-    organization_id: string | null,
+    organization: SelectableOrganization | null,
     close: () => void,
   ) {
     close()
+    const organization_id = organization?.id ?? null
     if (active_organization_id === organization_id) {
       return
     }
     await authClient.organization.setActive({
       organizationId: organization_id,
     })
-    await invalidateAll()
+    if (
+      organization?.subscription_type ===
+      SUBSCRIPTION_TYPE.FREELANCE
+    ) {
+      await goto("/admin/properties", { invalidateAll: true })
+    } else {
+      await invalidateAll()
+    }
   }
 </script>
 
@@ -52,19 +81,24 @@
         <button
           type="button"
           class="body-md-medium item"
-          class:active={active_organization_id === null}
-          onclick={() => handle_select(null, close)}
+          class:active={is_freelance_active ||
+            active_organization_id === null}
+          onclick={() =>
+            handle_select(
+              freelance_organization ?? null,
+              close,
+            )}
         >
           <span>Personal</span>
         </button>
-        {#each organizations as organization (organization.id)}
+        {#each non_freelance_organizations as organization (organization.id)}
           <button
             type="button"
             class="body-md-medium item"
             class:active={organization.id ===
               active_organization_id}
             onclick={() =>
-              handle_select(organization.id, close)}
+              handle_select(organization, close)}
           >
             {#if organization.logo}
               <img
