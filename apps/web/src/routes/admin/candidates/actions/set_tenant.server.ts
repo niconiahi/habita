@@ -32,18 +32,18 @@ export async function set_tenant(form_data: FormData) {
       ACCESS_TYPE.TENANT,
     )
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        property_id: input.property_id,
-        candidate_id: input.candidate_id,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          property_id: input.property_id,
+          candidate_id: input.candidate_id,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message:
         "Error al revocar el acceso del inquilino",
@@ -57,18 +57,18 @@ export async function set_tenant(form_data: FormData) {
       ACCESS_TYPE.TENANT,
     )
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        property_id: input.property_id,
-        candidate_id: input.candidate_id,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          property_id: input.property_id,
+          candidate_id: input.candidate_id,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message:
         "Error al asignar el acceso del inquilino",

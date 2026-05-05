@@ -92,18 +92,18 @@ export async function create_property(form_data: FormData) {
         return { id: property.id }
       })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        user_id: input.user_id,
-        organization_id: input.organization_id,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          user_id: input.user_id,
+          organization_id: input.organization_id,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear la propiedad",
     })
@@ -116,15 +116,15 @@ export async function create_property(form_data: FormData) {
       ACCESS_TYPE.MANAGER,
     )
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { property_id: property.id, user_id: input.user_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id: property.id, user_id: input.user_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al asignar acceso a la propiedad",
     })

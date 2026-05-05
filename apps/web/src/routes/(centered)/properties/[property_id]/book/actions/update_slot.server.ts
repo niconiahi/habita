@@ -105,15 +105,15 @@ export async function update_slot(
   try {
     tx_result = await execute_transaction()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { slot_id: id, visitant_id, property_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { slot_id: id, visitant_id, property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message:
         "El turno ya fue reservado por otro visitante",
