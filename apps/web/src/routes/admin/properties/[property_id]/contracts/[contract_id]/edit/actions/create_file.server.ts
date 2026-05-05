@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ContractFileTypeSchema } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { upsert_file } from "$lib/server/upsert_file"
@@ -23,19 +23,14 @@ export async function create_file(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_file: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const file_id = await upsert_file(input.file, tx)
       await tx
         .insertInto("contract_file")
@@ -48,26 +43,22 @@ export async function create_file(form_data: FormData) {
         })
         .returning("id")
         .executeTakeFirstOrThrow()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      {
-        contract_id: input.contract_id,
-        file_type: input.file_type,
-      },
-      transaction_error,
-    )
-    return [
-      {
-        create_file: {
-          execution: "Error al crear el archivo",
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          contract_id: input.contract_id,
+          file_type: input.file_type,
         },
-      },
-      null,
-    ] as const
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al crear el archivo",
+    })
   }
-
-  return [null, null] as const
 }

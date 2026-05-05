@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { DateSchema } from "$lib/date"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -32,19 +32,14 @@ export async function update_contract(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_contract: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("contract")
       .set({
         property_id,
@@ -62,23 +57,19 @@ export async function update_contract(
         court_id: input.court_id,
       })
       .where("contract.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(
-      error.message,
-      { property_id, contract_id: input.id },
-      error,
-    )
-    return [
-      {
-        update_contract: {
-          execution: "Error al actualizar el contrato",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id, contract_id: input.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al actualizar el contrato",
+    })
   }
-
-  return [null, null] as const
 }

@@ -1,5 +1,5 @@
 import { require_authentication } from "$lib/server/auth"
-import { error, redirect } from "@sveltejs/kit"
+import { error } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import {
   fetch_organization_subscriptions,
@@ -82,13 +82,8 @@ export const actions: Actions = {
       error(400, "No hay organización activa")
     }
 
-    const [errors, data] =
-      await create_subscription_payment(
-        active_organization_id,
-      )
-    if (errors) {
-      return { errors }
-    }
-    redirect(303, data.init_point)
+    return create_subscription_payment(
+      active_organization_id,
+    )
   },
 }
