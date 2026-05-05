@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import {
   compose_html,
   fetch_contract_data,
@@ -30,14 +30,9 @@ export async function create_pdf(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_pdf: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -52,20 +47,12 @@ export async function create_pdf(
     data.tenant,
   )
   if (!validation.success) {
-    return [
-      { create_pdf: validation.errors },
-      null,
-    ] as const
+    return fail(400, validation.errors)
   }
   if (!data.warranty) {
-    return [
-      {
-        create_pdf: {
-          warranty: "Falta la garantía del contrato",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Falta la garantía del contrato",
+    })
   }
   const html = compose_html(
     validation.contract,
@@ -81,56 +68,36 @@ export async function create_pdf(
       pdf_error.type ===
       GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          create_pdf: {
-            execution:
-              "No se pudo conectar al servicio de PDF",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de PDF",
+      })
     }
     if (
       pdf_error.type ===
       GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR
     ) {
-      return [
-        {
-          create_pdf: {
-            execution:
-              "Error en el servicio de generación de PDF",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error en el servicio de generación de PDF",
+      })
     }
     if (
       pdf_error.type ===
       GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED
     ) {
-      return [
-        {
-          create_pdf: {
-            execution:
-              "Error al leer el contenido del PDF generado",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error al leer el contenido del PDF generado",
+      })
     }
-    return [
-      {
-        create_pdf: {
-          execution: "Error al generar el PDF",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al generar el PDF",
+    })
   }
 
-  const [tx_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const contract_file = await tx
         .selectFrom("contract_file")
         .select("file_id")
@@ -164,27 +131,23 @@ export async function create_pdf(
         })
         .returning("id")
         .executeTakeFirstOrThrow()
-    }),
-  )
-  if (tx_error) {
-    logger.error(
-      tx_error.message,
-      { property_id, contract_id: input.id },
-      tx_error,
-    )
-    return [
-      {
-        create_pdf: {
-          execution: "Error al guardar el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id, contract_id: input.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al guardar el PDF del contrato",
+    })
   }
   logger.info("contract pdf generated", {
     property_id,
     contract_id: input.id,
   })
-
-  return [null, null] as const
 }

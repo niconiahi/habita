@@ -1,8 +1,7 @@
-import { createHash } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
-import { safe_async } from "$lib/safe_async"
 import {
   API_FETCH_ERROR,
   verify_signature as api_verify_signature,
@@ -30,14 +29,9 @@ export async function verify_signature(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        verify_signature: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -46,94 +40,68 @@ export async function verify_signature(
       ? await fetch_landlord(property_id)
       : await fetch_tenant(property_id)
   if (!person?.cuil) {
-    return [
-      {
-        verify_signature: {
-          execution: "La persona no tiene CUIL configurado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "La persona no tiene CUIL configurado",
+    })
   }
-  const [signature_error, signature] = await safe_async(
-    query_builder
+  let signature: { document_id: string | null } | undefined
+  try {
+    signature = await query_builder
       .selectFrom("digital_signature")
       .where("contract_id", "=", contract_id)
       .select(["document_id"])
-      .executeTakeFirst(),
-  )
-  if (signature_error) {
-    logger.error(
-      signature_error.message,
-      {},
-      signature_error,
-    )
-    return [
-      {
-        verify_signature: {
-          execution: "Error al buscar la firma digital",
-        },
-      },
-      null,
-    ] as const
+      .executeTakeFirst()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al buscar la firma digital",
+    })
   }
   if (!signature?.document_id) {
-    return [
-      {
-        verify_signature: {
-          execution:
-            "No se encontró la firma digital del contrato",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "No se encontró la firma digital del contrato",
+    })
   }
-  const [contract_file_error, contract_file] =
-    await safe_async(
-      query_builder
-        .selectFrom("contract_file")
-        .innerJoin(
-          "file",
-          "file.id",
-          "contract_file.file_id",
-        )
-        .where(
-          "contract_file.contract_id",
-          "=",
-          contract_id,
-        )
-        .where(
-          "contract_file.type",
-          "=",
-          CONTRACT_FILE_TYPE.CONTRACT,
-        )
-        .select(["file.hash"])
-        .executeTakeFirst(),
-    )
-  if (contract_file_error) {
-    logger.error(
-      contract_file_error.message,
-      {},
-      contract_file_error,
-    )
-    return [
-      {
-        verify_signature: {
-          execution: "Error al buscar el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+  let contract_file: { hash: string } | undefined
+  try {
+    contract_file = await query_builder
+      .selectFrom("contract_file")
+      .innerJoin(
+        "file",
+        "file.id",
+        "contract_file.file_id",
+      )
+      .where(
+        "contract_file.contract_id",
+        "=",
+        contract_id,
+      )
+      .where(
+        "contract_file.type",
+        "=",
+        CONTRACT_FILE_TYPE.CONTRACT,
+      )
+      .select(["file.hash"])
+      .executeTakeFirst()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al buscar el PDF del contrato",
+    })
   }
   if (!contract_file) {
-    return [
-      {
-        verify_signature: {
-          execution: "No se encontró el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró el PDF del contrato",
+    })
   }
   const original_hash = contract_file.hash
   const [
@@ -148,143 +116,88 @@ export async function verify_signature(
       certificate_error.type ===
       API_FETCH_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "No se pudo conectar al servicio de certificados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de certificados",
+      })
     }
     if (
       certificate_error.type === API_FETCH_ERROR.API_ERROR
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Error en el servicio de certificados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error en el servicio de certificados",
+      })
     }
     if (
       certificate_error.type ===
       API_FETCH_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inválida del servicio de certificados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de certificados",
+      })
     }
     if (
       certificate_error.type ===
       API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inesperada del servicio de certificados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de certificados",
+      })
     }
-    return [
-      {
-        verify_signature: {
-          execution: "Error al obtener el certificado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al obtener el certificado",
+    })
   }
   if (signed_document_error) {
     if (
       signed_document_error.type ===
       API_FETCH_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "No se pudo conectar al servicio de documentos firmados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de documentos firmados",
+      })
     }
     if (
       signed_document_error.type ===
       API_FETCH_ERROR.API_ERROR
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Error en el servicio de documentos firmados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error en el servicio de documentos firmados",
+      })
     }
     if (
       signed_document_error.type ===
       API_FETCH_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inválida del servicio de documentos firmados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de documentos firmados",
+      })
     }
     if (
       signed_document_error.type ===
       API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inesperada del servicio de documentos firmados",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de documentos firmados",
+      })
     }
-    return [
-      {
-        verify_signature: {
-          execution:
-            "Error al obtener el documento firmado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al obtener el documento firmado",
+    })
   }
   if (certificate.CodigoResultado !== 1) {
-    return [
-      {
-        verify_signature: {
-          execution:
-            "No se pudo obtener el certificado de la persona",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "No se pudo obtener el certificado de la persona",
+    })
   }
 
   const [verify_error, verify_result] =
@@ -299,73 +212,42 @@ export async function verify_signature(
     if (
       verify_error.type === API_FETCH_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "No se pudo conectar al servicio de verificación",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de verificación",
+      })
     }
     if (verify_error.type === API_FETCH_ERROR.API_ERROR) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Error en el servicio de verificación",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error en el servicio de verificación",
+      })
     }
     if (
       verify_error.type ===
       API_FETCH_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inválida del servicio de verificación",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de verificación",
+      })
     }
     if (
       verify_error.type ===
       API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          verify_signature: {
-            execution:
-              "Respuesta inesperada del servicio de verificación",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de verificación",
+      })
     }
-    return [
-      {
-        verify_signature: {
-          execution: "Error al verificar la firma",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al verificar la firma",
+    })
   }
   if (verify_result.CodigoResultado !== 1) {
-    return [
-      {
-        verify_signature: {
-          execution: verify_result.MensajeResultado,
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: verify_result.MensajeResultado,
+    })
   }
-  return [null, null] as const
 }

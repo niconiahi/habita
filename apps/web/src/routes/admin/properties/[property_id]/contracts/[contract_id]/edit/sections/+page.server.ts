@@ -39,14 +39,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_contract_errors] = await update_contract(
-      form_data,
-      property_id,
-    )
-    if (update_contract_errors) {
-      return { errors: update_contract_errors }
-    }
-    return null
+    return update_contract(form_data, property_id)
   },
   [ACTION.CREATE_CONTRACT_ITEM]: async ({
     request,
@@ -73,12 +66,7 @@ export const actions: Actions = {
         message: "contract id should be a number",
       },
     )
-    const [create_contract_item_errors] =
-      await create_contract_item(contract_id)
-    if (create_contract_item_errors) {
-      return { errors: create_contract_item_errors }
-    }
-    return null
+    return create_contract_item(contract_id)
   },
   [ACTION.UPDATE_CONTRACT_ITEM]: async ({
     request,
@@ -99,12 +87,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_contract_item_errors] =
-      await update_contract_item(form_data)
-    if (update_contract_item_errors) {
-      return { errors: update_contract_item_errors }
-    }
-    return null
+    return update_contract_item(form_data)
   },
   [ACTION.DESTROY_CONTRACT_ITEM]: async ({
     request,
@@ -125,12 +108,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_contract_item_errors] =
-      await destroy_contract_item(form_data)
-    if (destroy_contract_item_errors) {
-      return { errors: destroy_contract_item_errors }
-    }
-    return null
+    return destroy_contract_item(form_data)
   },
   [ACTION.CREATE_CONTRACT_ITEM_FILE]: async ({
     request,
@@ -151,12 +129,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_contract_item_file_errors] =
-      await create_contract_item_file(form_data)
-    if (create_contract_item_file_errors) {
-      return { errors: create_contract_item_file_errors }
-    }
-    return null
+    return create_contract_item_file(form_data)
   },
   [ACTION.DESTROY_CONTRACT_ITEM_FILE]: async ({
     request,
@@ -177,12 +150,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_contract_item_file_errors] =
-      await destroy_contract_item_file(form_data)
-    if (destroy_contract_item_file_errors) {
-      return { errors: destroy_contract_item_file_errors }
-    }
-    return null
+    return destroy_contract_item_file(form_data)
   },
   [ACTION.CREATE_WARRANTY]: async ({
     request,
@@ -203,12 +171,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_warranty_errors] =
-      await create_warranty(form_data)
-    if (create_warranty_errors) {
-      return { errors: create_warranty_errors }
-    }
-    return null
+    return create_warranty(form_data)
   },
   [ACTION.UPDATE_WARRANTY]: async ({
     request,
@@ -229,12 +192,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_warranty_errors] =
-      await update_warranty(form_data)
-    if (update_warranty_errors) {
-      return { errors: update_warranty_errors }
-    }
-    return null
+    return update_warranty(form_data)
   },
   [ACTION.ADD_INCOME_GUARANTOR]: async ({
     request,
@@ -255,12 +213,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [add_income_guarantor_errors] =
-      await add_income_guarantor(form_data)
-    if (add_income_guarantor_errors) {
-      return { errors: add_income_guarantor_errors }
-    }
-    return null
+    return add_income_guarantor(form_data)
   },
   [ACTION.UPDATE_INCOME_GUARANTOR]: async ({
     request,
@@ -281,12 +234,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_income_guarantor_errors] =
-      await update_income_guarantor(form_data)
-    if (update_income_guarantor_errors) {
-      return { errors: update_income_guarantor_errors }
-    }
-    return null
+    return update_income_guarantor(form_data)
   },
   [ACTION.DESTROY_INCOME_GUARANTOR]: async ({
     request,
@@ -307,11 +255,6 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_income_guarantor_errors] =
-      await destroy_income_guarantor(form_data)
-    if (destroy_income_guarantor_errors) {
-      return { errors: destroy_income_guarantor_errors }
-    }
-    return null
+    return destroy_income_guarantor(form_data)
   },
 }

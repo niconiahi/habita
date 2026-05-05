@@ -1,6 +1,5 @@
 import { query_builder } from "db/query_builder"
-import { sql } from "kysely"
-import { safe_async } from "$lib/safe_async"
+import { fail, redirect } from "@sveltejs/kit"
 import {
   CREATE_PREFERENCE_ERROR,
   create_preference,
@@ -25,15 +24,10 @@ export async function create_subscription_payment(
     .execute()
 
   if (subscriptions.length === 0) {
-    return [
-      {
-        create_subscription_payment: {
-          execution:
-            "No se encontró una suscripción activa",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "No se encontró una suscripción activa",
+    })
   }
 
   const first_subscription = subscriptions[0]
@@ -64,28 +58,18 @@ export async function create_subscription_payment(
       preference_error.type ===
       CREATE_PREFERENCE_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          create_subscription_payment: {
-            execution:
-              "No se pudo conectar al servicio de pagos",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de pagos",
+      })
     }
-    return [
-      {
-        create_subscription_payment: {
-          execution: "Error en el servicio de pagos",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error en el servicio de pagos",
+    })
   }
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const payment = await tx
         .insertInto("payment")
         .values({
@@ -115,25 +99,23 @@ export async function create_subscription_payment(
           created_at: now,
         })
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      "failed to create subscription payment",
-      {
-        organization_id,
-        preference_id: preference.id,
-      },
-      transaction_error,
-    )
-    return [
-      {
-        create_subscription_payment: {
-          execution: "Error al crear el pago",
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          organization_id,
+          preference_id: preference.id,
         },
-      },
-      null,
-    ] as const
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al crear el pago",
+    })
   }
 
   logger.info("subscription payment preference created", {
@@ -143,8 +125,5 @@ export async function create_subscription_payment(
     seat_count,
   })
 
-  return [
-    null,
-    { init_point: preference.init_point },
-  ] as const
+  redirect(303, preference.init_point)
 }

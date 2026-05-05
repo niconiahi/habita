@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
 import { LocationSchema } from "$lib/location"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -100,14 +100,9 @@ export async function create_warranty(form_data: FormData) {
     form_data.get("warranty_type"),
   )
   if (!type_validation.success) {
-    return [
-      {
-        create_warranty: {
-          input: v.flatten(type_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(type_validation.issues),
+    })
   }
 
   switch (type_validation.output) {
@@ -117,94 +112,89 @@ export async function create_warranty(form_data: FormData) {
         normalize_input(form_data, PropertyWarrantySchema),
       )
       if (!input_validation.success) {
-        return [
-          {
-            create_warranty: {
-              input: v.flatten(input_validation.issues),
-            },
-          },
-          null,
-        ] as const
+        return fail(400, {
+          errors: v.flatten(input_validation.issues),
+        })
       }
       const input = input_validation.output
 
-      const [transaction_error] = await safe_async(
-        query_builder.transaction().execute(async (tx) => {
-          const warranty = await tx
-            .insertInto("warranty")
-            .values({
-              type: input.warranty_type,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
-          const location = await tx
-            .insertInto("location")
-            .values({
-              latitude: String(input.location.lat),
-              longitude: String(input.location.lon),
-              address: input.location.display_name,
-              road: input.location.address.road,
-              house_number:
-                input.location.address.house_number,
-              suburb: input.location.address.suburb,
-              city: input.location.address.city,
-              town: input.location.address.town,
-              state: input.location.address.state,
-              point: `POINT(${input.location.lon} ${input.location.lat})`,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
-          await tx
-            .insertInto("property_warranty")
-            .values({
-              warranty_id: warranty.id,
-              guarantor_name: input.guarantor_name,
-              guarantor_dni: input.guarantor_dni,
-              guarantor_email: input.guarantor_email,
-              location_id: location.id,
-              cadastral_district: input.cadastral_district,
-              cadastral_section: input.cadastral_section,
-              cadastral_block: input.cadastral_block,
-              cadastral_parcel: input.cadastral_parcel,
-              property_tax_id: input.property_tax_id,
-              created_at: now,
-              updated_at: now,
-            })
-            .execute()
-          await tx
-            .updateTable("contract")
-            .set({
-              warranty_id: warranty.id,
-              updated_at: now,
-            })
-            .where("contract.id", "=", input.contract_id)
-            .execute()
-        }),
-      )
-      if (transaction_error) {
-        logger.error(
-          transaction_error.message,
-          {
-            contract_id: input.contract_id,
-            warranty_type: input.warranty_type,
-          },
-          transaction_error,
-        )
-        return [
-          {
-            create_warranty: {
-              execution: "Error al crear la garantía",
+      try {
+        await query_builder
+          .transaction()
+          .execute(async (tx) => {
+            const warranty = await tx
+              .insertInto("warranty")
+              .values({
+                type: input.warranty_type,
+                created_at: now,
+                updated_at: now,
+              })
+              .returning("id")
+              .executeTakeFirstOrThrow()
+            const location = await tx
+              .insertInto("location")
+              .values({
+                latitude: String(input.location.lat),
+                longitude: String(input.location.lon),
+                address: input.location.display_name,
+                road: input.location.address.road,
+                house_number:
+                  input.location.address.house_number,
+                suburb: input.location.address.suburb,
+                city: input.location.address.city,
+                town: input.location.address.town,
+                state: input.location.address.state,
+                point: `POINT(${input.location.lon} ${input.location.lat})`,
+                created_at: now,
+                updated_at: now,
+              })
+              .returning("id")
+              .executeTakeFirstOrThrow()
+            await tx
+              .insertInto("property_warranty")
+              .values({
+                warranty_id: warranty.id,
+                guarantor_name: input.guarantor_name,
+                guarantor_dni: input.guarantor_dni,
+                guarantor_email: input.guarantor_email,
+                location_id: location.id,
+                cadastral_district: input.cadastral_district,
+                cadastral_section: input.cadastral_section,
+                cadastral_block: input.cadastral_block,
+                cadastral_parcel: input.cadastral_parcel,
+                property_tax_id: input.property_tax_id,
+                created_at: now,
+                updated_at: now,
+              })
+              .execute()
+            await tx
+              .updateTable("contract")
+              .set({
+                warranty_id: warranty.id,
+                updated_at: now,
+              })
+              .where("contract.id", "=", input.contract_id)
+              .execute()
+          })
+      } catch (error) {
+        if (error instanceof Error) {
+          logger.error(
+            error.message,
+            {
+              contract_id: input.contract_id,
+              warranty_type: input.warranty_type,
             },
-          },
-          null,
-        ] as const
+            error,
+          )
+        } else {
+          logger.unknown(error)
+        }
+        return fail(400, {
+          message: "Error al crear la garantía",
+        })
       }
 
-      return [null, null] as const
+      return
     }
     case WARRANTY_TYPE.INCOME: {
       const input_validation = v.safeParse(
@@ -212,66 +202,61 @@ export async function create_warranty(form_data: FormData) {
         normalize_input(form_data, IncomeWarrantySchema),
       )
       if (!input_validation.success) {
-        return [
-          {
-            create_warranty: {
-              input: v.flatten(input_validation.issues),
-            },
-          },
-          null,
-        ] as const
+        return fail(400, {
+          errors: v.flatten(input_validation.issues),
+        })
       }
       const input = input_validation.output
 
-      const [transaction_error] = await safe_async(
-        query_builder.transaction().execute(async (tx) => {
-          const warranty = await tx
-            .insertInto("warranty")
-            .values({
-              type: input.warranty_type,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
-          await tx
-            .insertInto("income_warranty")
-            .values({
-              warranty_id: warranty.id,
-              created_at: now,
-              updated_at: now,
-            })
-            .execute()
-          await tx
-            .updateTable("contract")
-            .set({
-              warranty_id: warranty.id,
-              updated_at: now,
-            })
-            .where("contract.id", "=", input.contract_id)
-            .execute()
-        }),
-      )
-      if (transaction_error) {
-        logger.error(
-          transaction_error.message,
-          {
-            contract_id: input.contract_id,
-            warranty_type: input.warranty_type,
-          },
-          transaction_error,
-        )
-        return [
-          {
-            create_warranty: {
-              execution: "Error al crear la garantía",
+      try {
+        await query_builder
+          .transaction()
+          .execute(async (tx) => {
+            const warranty = await tx
+              .insertInto("warranty")
+              .values({
+                type: input.warranty_type,
+                created_at: now,
+                updated_at: now,
+              })
+              .returning("id")
+              .executeTakeFirstOrThrow()
+            await tx
+              .insertInto("income_warranty")
+              .values({
+                warranty_id: warranty.id,
+                created_at: now,
+                updated_at: now,
+              })
+              .execute()
+            await tx
+              .updateTable("contract")
+              .set({
+                warranty_id: warranty.id,
+                updated_at: now,
+              })
+              .where("contract.id", "=", input.contract_id)
+              .execute()
+          })
+      } catch (error) {
+        if (error instanceof Error) {
+          logger.error(
+            error.message,
+            {
+              contract_id: input.contract_id,
+              warranty_type: input.warranty_type,
             },
-          },
-          null,
-        ] as const
+            error,
+          )
+        } else {
+          logger.unknown(error)
+        }
+        return fail(400, {
+          message: "Error al crear la garantía",
+        })
       }
 
-      return [null, null] as const
+      return
     }
     case WARRANTY_TYPE.SURETY: {
       const input_validation = v.safeParse(
@@ -279,72 +264,67 @@ export async function create_warranty(form_data: FormData) {
         normalize_input(form_data, SuretyWarrantySchema),
       )
       if (!input_validation.success) {
-        return [
-          {
-            create_warranty: {
-              input: v.flatten(input_validation.issues),
-            },
-          },
-          null,
-        ] as const
+        return fail(400, {
+          errors: v.flatten(input_validation.issues),
+        })
       }
       const input = input_validation.output
 
-      const [transaction_error] = await safe_async(
-        query_builder.transaction().execute(async (tx) => {
-          const warranty = await tx
-            .insertInto("warranty")
-            .values({
-              type: input.warranty_type,
-              created_at: now,
-              updated_at: now,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow()
-          await tx
-            .insertInto("surety_warranty")
-            .values({
-              warranty_id: warranty.id,
-              guarantor_name: input.guarantor_name,
-              guarantor_dni: input.guarantor_dni,
-              guarantor_email: input.guarantor_email,
-              company_name: input.company_name,
-              policy_number: input.policy_number,
-              company_email: input.company_email,
-              created_at: now,
-              updated_at: now,
-            })
-            .execute()
-          await tx
-            .updateTable("contract")
-            .set({
-              warranty_id: warranty.id,
-              updated_at: now,
-            })
-            .where("contract.id", "=", input.contract_id)
-            .execute()
-        }),
-      )
-      if (transaction_error) {
-        logger.error(
-          transaction_error.message,
-          {
-            contract_id: input.contract_id,
-            warranty_type: input.warranty_type,
-          },
-          transaction_error,
-        )
-        return [
-          {
-            create_warranty: {
-              execution: "Error al crear la garantía",
+      try {
+        await query_builder
+          .transaction()
+          .execute(async (tx) => {
+            const warranty = await tx
+              .insertInto("warranty")
+              .values({
+                type: input.warranty_type,
+                created_at: now,
+                updated_at: now,
+              })
+              .returning("id")
+              .executeTakeFirstOrThrow()
+            await tx
+              .insertInto("surety_warranty")
+              .values({
+                warranty_id: warranty.id,
+                guarantor_name: input.guarantor_name,
+                guarantor_dni: input.guarantor_dni,
+                guarantor_email: input.guarantor_email,
+                company_name: input.company_name,
+                policy_number: input.policy_number,
+                company_email: input.company_email,
+                created_at: now,
+                updated_at: now,
+              })
+              .execute()
+            await tx
+              .updateTable("contract")
+              .set({
+                warranty_id: warranty.id,
+                updated_at: now,
+              })
+              .where("contract.id", "=", input.contract_id)
+              .execute()
+          })
+      } catch (error) {
+        if (error instanceof Error) {
+          logger.error(
+            error.message,
+            {
+              contract_id: input.contract_id,
+              warranty_type: input.warranty_type,
             },
-          },
-          null,
-        ] as const
+            error,
+          )
+        } else {
+          logger.unknown(error)
+        }
+        return fail(400, {
+          message: "Error al crear la garantía",
+        })
       }
 
-      return [null, null] as const
+      return
     }
   }
 }
