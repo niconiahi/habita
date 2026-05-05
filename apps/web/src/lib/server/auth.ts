@@ -73,6 +73,7 @@ const realtor = ac.newRole({
 })
 
 const manager = ac.newRole({
+  organization: ["update"],
   property: ["read", "write"],
   contract: ["read", "write"],
   owner_invitation: ["create", "cancel"],
