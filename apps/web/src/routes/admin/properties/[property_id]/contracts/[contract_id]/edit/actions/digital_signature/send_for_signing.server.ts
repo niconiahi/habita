@@ -7,11 +7,15 @@ import { ForceNumberSchema } from "$lib/force_number"
 import { publish_send_signing_request } from "$lib/server/broker/producer/publish_send_signing_request"
 import {
   API_FETCH_ERROR,
+  ApiFetchError,
   submit_for_signing,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
 import { fetch_landlord } from "$lib/server/landlord"
-import { get_object } from "$lib/server/object_store"
+import {
+  ObjectStoreError,
+  get_object,
+} from "$lib/server/object_store"
 import { now } from "$lib/server/now"
 import { get_origin } from "$lib/server/origin"
 import { fetch_tenant } from "$lib/server/tenant"
@@ -73,14 +77,25 @@ export async function send_for_signing(
       message: "No se encontró el PDF del contrato",
     })
   }
-  const [object_error, pdf_content] = await get_object(
-    `files/${contract_file.hash}`,
-  )
-  if (object_error) {
+
+  let pdf_content: Buffer
+  try {
+    pdf_content = await get_object(
+      `files/${contract_file.hash}`,
+    )
+  } catch (error) {
+    if (error instanceof ObjectStoreError) {
+      return fail(400, {
+        message: "Error al obtener el PDF del contrato",
+      })
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al obtener el PDF del contrato",
     })
   }
+
   const [landlord, tenant] = await Promise.all([
     fetch_landlord(property_id),
     fetch_tenant(property_id),
@@ -103,8 +118,10 @@ export async function send_for_signing(
   const origin = get_origin()
   const base_path = `${origin}/webhooks/digital_signature/signing`
   const group_id = randomUUID()
-  const [submit_error, submit_result] =
-    await submit_for_signing({
+
+  let submit_result: Awaited<ReturnType<typeof submit_for_signing>>
+  try {
+    submit_result = await submit_for_signing({
       DocumentoBase64: document_base64,
       HashSHA256Hexadecimal: hash_sha256,
       IdentificadorGrupo: group_id,
@@ -126,43 +143,51 @@ export async function send_for_signing(
       ],
       UserIdCreador: 0,
     })
-  if (submit_error) {
-    if (
-      submit_error.type === API_FETCH_ERROR.FETCH_FAILED
-    ) {
+  } catch (error) {
+    if (error instanceof ApiFetchError) {
+      if (
+        error.type === API_FETCH_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de firma digital",
+        })
+      }
+      if (error.type === API_FETCH_ERROR.API_ERROR) {
+        return fail(400, {
+          message:
+            "Error en el servicio de firma digital",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.JSON_PARSE_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inválida del servicio de firma digital",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inesperada del servicio de firma digital",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de firma digital",
+        message: "Error al enviar para firma digital",
       })
-    }
-    if (submit_error.type === API_FETCH_ERROR.API_ERROR) {
-      return fail(400, {
-        message:
-          "Error en el servicio de firma digital",
-      })
-    }
-    if (
-      submit_error.type ===
-      API_FETCH_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de firma digital",
-      })
-    }
-    if (
-      submit_error.type ===
-      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de firma digital",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error al enviar para firma digital",
     })
   }
+
   if (submit_result.CodigoResultado !== 1) {
     return fail(400, {
       message: submit_result.MensajeResultado,

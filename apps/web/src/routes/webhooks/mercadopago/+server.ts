@@ -3,7 +3,6 @@ import { json } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { PAYMENT_STATUS } from "$lib/payment_status"
-import { safe_async } from "$lib/safe_async"
 import { publish_extend_subscription } from "$lib/server/broker/producer/publish_extend_subscription"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -97,25 +96,30 @@ async function handle_payment_notification(
   payment_id: string,
 ) {
   const access_token = get_access_token()
-  // NOTE: new safe implementation
-  const [fetch_error, response] = await safe_async(
-    fetch(
+
+  let response: Response
+  try {
+    response = await fetch(
       `https://api.mercadopago.com/v1/payments/${payment_id}`,
       {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
       },
-    ),
-  )
-  if (fetch_error) {
-    logger.error(
-      fetch_error.message,
-      { payment_id },
-      fetch_error,
     )
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { payment_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
+
   if (!response.ok) {
     logger.error(
       `Failed to fetch payment ${payment_id}: ${response.status}`,
@@ -124,15 +128,19 @@ async function handle_payment_notification(
     return
   }
 
-  const [json_error, data] = await safe_async(
-    response.json(),
-  )
-  if (json_error) {
-    logger.error(
-      json_error.message,
-      { payment_id },
-      json_error,
-    )
+  let data: unknown
+  try {
+    data = await response.json()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { payment_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
 
@@ -209,16 +217,19 @@ export const POST: RequestHandler = async ({ request }) => {
     )
   }
 
-  // NOTE: new safe implementation
-  const [json_error, data] = await safe_async(
-    request.json(),
-  )
-  if (json_error) {
-    logger.error(
-      json_error.message,
-      { request_id },
-      json_error,
-    )
+  let data: unknown
+  try {
+    data = await request.json()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { request_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return json(
       { error: "Invalid request body" },
       { status: 400 },

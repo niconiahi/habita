@@ -12,7 +12,6 @@ import {
   compose_no_available_slots_href,
   NOTIFICATION_TYPE,
 } from "$lib/notification_type"
-import { safe_async } from "$lib/safe_async"
 import { publish_send_no_slots_alert } from "$lib/server/broker/producer/publish_send_no_slots_alert"
 import { decrypt } from "$lib/server/encryption"
 import { kv } from "$lib/server/kv"
@@ -152,42 +151,63 @@ async function notify_no_available_slots(
   property_id: number,
   user: NonNullable<App.Locals["user"]>,
 ) {
-  const dedup_key = `no_slots_alert:${property_id}:${user.id}`
-  const [dedup_error, existing] = await safe_async(
-    kv.get(dedup_key),
-  )
-  if (dedup_error) {
-    logger.error(
-      dedup_error.message,
-      { property_id },
-      dedup_error,
-    )
+  let existing: string | null
+  try {
+    const dedup_key = `no_slots_alert:${property_id}:${user.id}`
+    existing = await kv.get(dedup_key)
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
   if (existing) return
 
-  const [manager_error, manager] = await safe_async(
-    fetch_property_manager(property_id),
-  )
-  if (manager_error) {
-    logger.error(
-      manager_error.message,
-      { property_id },
-      manager_error,
-    )
+  let manager: { email: string; name: string } | undefined
+  try {
+    manager = await fetch_property_manager(property_id)
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
   if (!manager) return
 
-  const [location_error, location] = await safe_async(
-    fetch_property_location(property_id),
-  )
-  if (location_error) {
-    logger.error(
-      location_error.message,
-      { property_id },
-      location_error,
-    )
+  let location:
+    | {
+        road: string
+        house_number: number
+        suburb: string | null
+        city: string | null
+        town: string | null
+        state: string | null
+      }
+    | undefined
+  try {
+    location = await fetch_property_location(property_id)
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
   if (!location) return
@@ -195,34 +215,44 @@ async function notify_no_available_slots(
   const notification_type =
     NOTIFICATION_TYPE.NO_AVAILABLE_SLOTS
   const now_date = new Date()
-  const [notification_error, notification] =
-    await safe_async(
-      query_builder
-        .insertInto("notification")
-        .values({
-          type: notification_type,
-          href: compose_no_available_slots_href(
-            property_id,
-          ),
+
+  let notification: {
+    id: number
+    type: number
+    href: string
+    property_id: number
+    created_at: Date
+  }
+  try {
+    notification = await query_builder
+      .insertInto("notification")
+      .values({
+        type: notification_type,
+        href: compose_no_available_slots_href(
           property_id,
-          created_at: now_date,
-          updated_at: now_date,
-        })
-        .returning([
-          "notification.id",
-          "notification.type",
-          "notification.href",
-          "notification.property_id",
-          "notification.created_at",
-        ])
-        .executeTakeFirstOrThrow(),
-    )
-  if (notification_error) {
-    logger.error(
-      notification_error.message,
-      { property_id },
-      notification_error,
-    )
+        ),
+        property_id,
+        created_at: now_date,
+        updated_at: now_date,
+      })
+      .returning([
+        "notification.id",
+        "notification.type",
+        "notification.href",
+        "notification.property_id",
+        "notification.created_at",
+      ])
+      .executeTakeFirstOrThrow()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return
   }
 
@@ -240,31 +270,38 @@ async function notify_no_available_slots(
   } satisfies NoAvailableSlotsNotification)
 
   const visits_url = `${get_origin()}${compose_no_available_slots_href(property_id)}`
-  const [publish_error] = await safe_async(
-    publish_send_no_slots_alert(property_id, user.id, {
+  try {
+    await publish_send_no_slots_alert(property_id, user.id, {
       manager_email: manager.email,
       manager_name: decrypt(manager.name),
       visitant_name: user.name ?? "Visitante",
       property_address: display_location(location),
       visits_url,
-    }),
-  )
-  if (publish_error) {
-    logger.error(
-      publish_error.message,
-      { property_id },
-      publish_error,
-    )
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
   }
 
-  const [kv_set_error] = await safe_async(
-    kv.set(dedup_key, "1", NO_SLOTS_ALERT_TTL_SECONDS),
-  )
-  if (kv_set_error) {
-    logger.error(
-      kv_set_error.message,
-      { property_id },
-      kv_set_error,
-    )
+  const dedup_key = `no_slots_alert:${property_id}:${user.id}`
+  try {
+    await kv.set(dedup_key, "1", NO_SLOTS_ALERT_TTL_SECONDS)
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
   }
 }

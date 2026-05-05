@@ -2,6 +2,7 @@ import { query_builder } from "db/query_builder"
 import { fail, redirect } from "@sveltejs/kit"
 import {
   CREATE_PREFERENCE_ERROR,
+  CreatePreferenceError,
   create_preference,
 } from "$lib/server/mercado_pago_payment"
 import { now } from "$lib/server/now"
@@ -43,8 +44,10 @@ export async function create_subscription_payment(
       : `Suscripción Habita - Inmobiliaria (${seat_count} ${seat_count === 1 ? "puesto" : "puestos"})`
 
   const origin = get_origin()
-  const [preference_error, preference] =
-    await create_preference({
+
+  let preference: { id: string; init_point: string }
+  try {
+    preference = await create_preference({
       title,
       amount,
       back_urls: {
@@ -53,15 +56,22 @@ export async function create_subscription_payment(
         pending: `${origin}/subscribe`,
       },
     })
-  if (preference_error) {
-    if (
-      preference_error.type ===
-      CREATE_PREFERENCE_ERROR.FETCH_FAILED
-    ) {
+  } catch (error) {
+    if (error instanceof CreatePreferenceError) {
+      if (
+        error.type ===
+        CREATE_PREFERENCE_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de pagos",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de pagos",
+        message: "Error en el servicio de pagos",
       })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error en el servicio de pagos",

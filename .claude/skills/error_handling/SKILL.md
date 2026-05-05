@@ -9,40 +9,16 @@ Full reference: `apps/web/docs/error_handling.md`
 
 Two layers of error handling:
 
-1. **Utility functions** — Go-style `[error, result]` tuples. Functions never throw. `safe_async` wraps promises, `safe_sync` wraps synchronous code. Typed errors colocated with their utility function.
+1. **Utility functions** — Custom `Error` subclasses with a `.type` discriminant. Functions throw on failure. Callers catch and match with `instanceof` + `.type`.
 2. **Actions** — SvelteKit-native `fail()` and `redirect()`. One action per form. Actions use try/catch internally and return `fail()` for errors or call `redirect()` for navigation. Callers just propagate the return.
-
-# Core primitives
-
-## `safe_async` (`$lib/safe_async.ts`)
-
-Wraps any `Promise<T>` into a tuple. Catches thrown errors:
-
-```ts
-const [error, data] = await safe_async(fetch("..."))
-// error: Error | null
-// data: T | null
-```
-
-Used in **utility functions** and **non-critical side effects**. NOT used in actions — actions use try/catch + `fail()` instead.
-
-## `safe_sync` (`$lib/safe_sync.ts`)
-
-Same pattern for synchronous code that might throw:
-
-```ts
-const [error, parsed] = safe_sync(() => JSON.parse(raw))
-```
-
-Both return plain `Error` — they don't know about typed errors. Typed errors are added by the utility functions that wrap them.
 
 # Typed errors (utility functions)
 
-Error constant + type ALWAYS colocated in the same file as the utility function. No separate `_error.ts` files.
+Error constant + Error subclass ALWAYS colocated in the same file as the utility function. No separate `_error.ts` files.
 
-## Defining error constants and type
+## Defining error constants and Error subclass
 
-Use `as const` + `ObjectValues` from `$lib/compose_types.ts`. Numeric values, SCREAMING_SNAKE keys. No `Typed` suffix on the type name. The type name matches the function name in PascalCase (e.g. `SendEmailError` for `send_email`):
+Use `as const` + `ObjectValues` from `$lib/compose_types.ts`. Numeric values, SCREAMING_SNAKE keys. The class name matches the function name in PascalCase (e.g. `SendEmailError` for `send_email`):
 
 ```ts
 import type { ObjectValues } from "$lib/compose_types"
@@ -52,19 +28,24 @@ export const SEND_EMAIL_ERROR = {
   SERVICE_ERROR: 1,
 } as const
 
-// NOTE: newly added error
-export type SendEmailError = {
-  type: ObjectValues<typeof SEND_EMAIL_ERROR>
-  error: Error
+export class SendEmailError extends Error {
+  constructor(
+    public type: ObjectValues<typeof SEND_EMAIL_ERROR>,
+    cause: Error,
+  ) {
+    super(cause.message, { cause })
+  }
 }
 ```
 
-## Return type signature
+## Function signatures
+
+Utility functions return their success value directly (or `void`). They throw the Error subclass on failure:
 
 ```ts
 export async function send_email(
-  body: object,
-): Promise<[SendEmailError, null] | [null, null]> {
+  body: SendEmailBody,
+): Promise<void> {
 ```
 
 When the function returns data on success:
@@ -72,24 +53,47 @@ When the function returns data on success:
 ```ts
 export async function generate_pdf_with_playwright(
   html: string,
-): Promise<[GeneratePdfWithPlaywrightError, null] | [null, Buffer]> {
+): Promise<Buffer> {
 ```
 
-## Returning errors from utilities
+## Throwing errors from utilities
 
-Each error site wraps with `{ type, error }` and logs before returning:
+Each error site uses try/catch with `if (error instanceof Error)` / `else logger.unknown(error)`:
 
 ```ts
-const [fetch_error, response] = await safe_async(fetch("..."))
-if (fetch_error) {
-  logger.error(fetch_error.message, {}, fetch_error)
-  return [
-    {
-      type: SEND_EMAIL_ERROR.FETCH_FAILED,
-      error: fetch_error,
-    },
-    null,
-  ]
+let response: Response
+try {
+  response = await fetch("...")
+} catch (error) {
+  if (error instanceof Error) {
+    logger.error(error.message, {}, error)
+    throw new SendEmailError(
+      SEND_EMAIL_ERROR.FETCH_FAILED,
+      error,
+    )
+  } else {
+    logger.unknown(error)
+    throw new SendEmailError(
+      SEND_EMAIL_ERROR.FETCH_FAILED,
+      new Error("unknown error"),
+    )
+  }
+}
+```
+
+For non-catch errors (e.g. `!response.ok`), construct an Error and throw directly:
+
+```ts
+if (!response.ok) {
+  const error_text = await response.text()
+  const service_error = new Error(
+    `Email service error: ${response.status} - ${error_text}`,
+  )
+  logger.error(service_error.message, {}, service_error)
+  throw new SendEmailError(
+    SEND_EMAIL_ERROR.SERVICE_ERROR,
+    service_error,
+  )
 }
 ```
 
@@ -268,18 +272,24 @@ If any operation inside the transaction throws, Kysely rolls back automatically 
 
 ## Actions calling typed-error utilities
 
-When an action calls a utility that returns typed errors, match each error type and map to `fail()`. Always include a fallback after all if-branches:
+When an action calls a utility that throws typed errors, catch and match with `instanceof` + `.type`. Always include a fallback after all if-branches:
 
 ```ts
-const [pdf_error, content] = await generate_pdf_with_playwright(html)
-if (pdf_error) {
-  if (pdf_error.type === GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED) {
-    return fail(400, { message: "No se pudo conectar al servicio de PDF" })
+let content: Buffer
+try {
+  content = await generate_pdf_with_playwright(html)
+} catch (error) {
+  if (error instanceof GeneratePdfWithPlaywrightError) {
+    if (error.type === GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED) {
+      return fail(400, { message: "No se pudo conectar al servicio de PDF" })
+    }
+    if (error.type === GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR) {
+      return fail(400, { message: "Error en el servicio de generación de PDF" })
+    }
+    return fail(400, { message: "Error al generar el PDF" })
+  } else {
+    logger.unknown(error)
   }
-  if (pdf_error.type === GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR) {
-    return fail(400, { message: "Error en el servicio de generación de PDF" })
-  }
-  // Fallback for forward-compatibility
   return fail(400, { message: "Error al generar el PDF" })
 }
 ```
@@ -422,40 +432,49 @@ if (!valid_state) {
 
 # API routes / webhooks (`+server.ts`)
 
-Log the error and return an HTTP response. No typed error wrapper needed since these are final consumers:
+Use try/catch directly. Log the error and return an HTTP response:
 
 ```ts
-if (signed_document_error) {
-  if (signed_document_error.type === API_FETCH_ERROR.FETCH_FAILED) {
-    logger.error(
-      signed_document_error.error.message,
-      { contract_id, error_type: API_FETCH_ERROR.FETCH_FAILED },
-      signed_document_error.error,
-    )
+let response: Response
+try {
+  response = await fetch("...")
+} catch (error) {
+  if (error instanceof Error) {
+    logger.error(error.message, { payment_id }, error)
+  } else {
+    logger.unknown(error)
   }
-  // ... other types
+  return
+}
+```
+
+When calling typed-error utilities from API routes, catch and match with `instanceof`:
+
+```ts
+try {
+  const result = await submit_for_signing(params)
+} catch (error) {
+  if (error instanceof ApiFetchError) {
+    logger.error(error.message, { contract_id }, error)
+  } else {
+    logger.unknown(error)
+  }
   redirect(302, "/digital_signature/error")
 }
 ```
 
 # Non-critical side effects
 
-When the error shouldn't block the main flow (e.g. sending notification emails), log and continue:
+When the error shouldn't block the main flow (e.g. sending notification emails), catch, log, and continue:
 
 ```ts
-const [email_error] = await send_email({ to: recipient, subject, html })
-if (email_error) {
-  if (email_error.type === SEND_EMAIL_ERROR.FETCH_FAILED) {
-    logger.error(email_error.error.message, {
-      recipient_email: recipient.email,
-      error_type: SEND_EMAIL_ERROR.FETCH_FAILED,
-    }, email_error.error)
-  }
-  if (email_error.type === SEND_EMAIL_ERROR.SERVICE_ERROR) {
-    logger.error(email_error.error.message, {
-      recipient_email: recipient.email,
-      error_type: SEND_EMAIL_ERROR.SERVICE_ERROR,
-    }, email_error.error)
+try {
+  await send_email({ to: recipient, subject, html })
+} catch (error) {
+  if (error instanceof SendEmailError) {
+    logger.error(error.message, { recipient_email }, error)
+  } else {
+    logger.unknown(error)
   }
 }
 // execution continues regardless
@@ -518,7 +537,7 @@ logger.warn("Payment status check timed out, will retry", {
 
 # Rules
 
-1. **No `throw` in utilities** — utility functions return tuples, never throw.
+1. **Utilities throw Error subclasses** — utility functions throw custom Error subclasses, never return tuples.
 2. **No `as` assertions** — use Valibot schemas for validation.
 3. **No magic strings** — always reference the constant (`SEND_EMAIL_ERROR.FETCH_FAILED`, not `"fetch_failed"`).
 4. **Log at the source** — the utility or action that detects the error logs it. Callers may log additional context.
@@ -532,7 +551,7 @@ logger.warn("Payment status check timed out, will retry", {
 
 # Existing error constants
 
-All constants and types are colocated in the same file as their utility function.
+All constants and Error subclasses are colocated in the same file as their utility function.
 
 | Constant | File | Variants |
 |---|---|---|
@@ -540,3 +559,4 @@ All constants and types are colocated in the same file as their utility function
 | `GENERATE_PDF_WITH_PLAYWRIGHT_ERROR` | `$lib/server/pdf_generator.ts` | `FETCH_FAILED`, `SERVICE_ERROR`, `BUFFER_READ_FAILED` |
 | `CREATE_PREFERENCE_ERROR` | `$lib/server/mercado_pago_payment.ts` | `FETCH_FAILED`, `API_ERROR`, `JSON_PARSE_FAILED`, `SCHEMA_VALIDATION_FAILED` |
 | `SEND_EMAIL_ERROR` | `$lib/server/send_email.ts` | `FETCH_FAILED`, `SERVICE_ERROR` |
+| `OBJECT_STORE_ERROR` | `$lib/server/object_store.ts` | `PUT_FAILED`, `GET_FAILED`, `DELETE_FAILED`, `NOT_FOUND` |

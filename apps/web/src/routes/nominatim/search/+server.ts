@@ -1,6 +1,4 @@
 import { error, json } from "@sveltejs/kit"
-import { safe_async } from "$lib/safe_async"
-import { safe_sync } from "$lib/safe_sync"
 import { logger } from "$lib/telemetry/logger"
 import type { RequestHandler } from "./$types"
 
@@ -32,21 +30,24 @@ export const GET: RequestHandler = async ({
     REQUEST_TIMEOUT_MS,
   )
 
-  // NOTE: new safe implementation
-  const [fetch_error, response] = await safe_async(
-    fetch(nominatim_url.toString(), {
+  let response: Response
+  try {
+    response = await fetch(nominatim_url.toString(), {
       signal: controller.signal,
-    }),
-  )
-  if (fetch_error) {
+    })
+  } catch (fetch_error) {
     clearTimeout(timeout)
-    logger.error(
-      fetch_error.message,
-      { query },
-      fetch_error,
-    )
-    if (fetch_error.name === "AbortError") {
-      error(504, "Nominatim timeout")
+    if (fetch_error instanceof Error) {
+      logger.error(
+        fetch_error.message,
+        { query },
+        fetch_error,
+      )
+      if (fetch_error.name === "AbortError") {
+        error(504, "Nominatim timeout")
+      }
+    } else {
+      logger.unknown(fetch_error)
     }
     return json(
       { error: "Nominatim fetch failed" },
@@ -70,16 +71,19 @@ export const GET: RequestHandler = async ({
     error(502, "Response too large")
   }
 
-  // NOTE: new safe implementation
-  const [parse_error, data] = safe_sync(() =>
-    JSON.parse(text),
-  )
-  if (parse_error) {
-    logger.error(
-      parse_error.message,
-      { query },
-      parse_error,
-    )
+  let data: unknown
+  try {
+    data = JSON.parse(text)
+  } catch (parse_error) {
+    if (parse_error instanceof Error) {
+      logger.error(
+        parse_error.message,
+        { query },
+        parse_error,
+      )
+    } else {
+      logger.unknown(parse_error)
+    }
     return json(
       { error: "Invalid JSON from Nominatim" },
       { status: 502 },

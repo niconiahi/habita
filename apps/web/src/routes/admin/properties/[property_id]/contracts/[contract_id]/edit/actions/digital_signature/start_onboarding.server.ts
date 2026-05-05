@@ -2,6 +2,7 @@ import * as v from "valibot"
 import { fail } from "@sveltejs/kit"
 import {
   API_FETCH_ERROR,
+  ApiFetchError,
   start_onboarding as api_start_onboarding,
 } from "$lib/server/digital_signature"
 import { normalize_input } from "$lib/server/form"
@@ -42,50 +43,60 @@ export async function start_onboarding(
   }
   const origin = get_origin()
   const base_path = `${origin}/webhooks/digital_signature/onboarding`
-  const [onboarding_error] = await api_start_onboarding({
-    Email: person.email,
-    UrlRedireccionOK: `${base_path}?party=${input.party}&result=ok`,
-    UrlRedireccionError: `${base_path}?party=${input.party}&result=error`,
-    UrlRedireccionRechazar: `${base_path}?party=${input.party}&result=rejected`,
-  })
-  if (onboarding_error) {
-    if (
-      onboarding_error.type === API_FETCH_ERROR.FETCH_FAILED
-    ) {
+
+  try {
+    await api_start_onboarding({
+      Email: person.email,
+      UrlRedireccionOK: `${base_path}?party=${input.party}&result=ok`,
+      UrlRedireccionError: `${base_path}?party=${input.party}&result=error`,
+      UrlRedireccionRechazar: `${base_path}?party=${input.party}&result=rejected`,
+    })
+  } catch (error) {
+    if (error instanceof ApiFetchError) {
+      if (
+        error.type === API_FETCH_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de registro",
+        })
+      }
+      if (
+        error.type === API_FETCH_ERROR.API_ERROR
+      ) {
+        return fail(400, {
+          message: "Error en el servicio de registro",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.JSON_PARSE_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inválida del servicio de registro",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inesperada del servicio de registro",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de registro",
+        message: "Error al iniciar el registro",
       })
-    }
-    if (
-      onboarding_error.type === API_FETCH_ERROR.API_ERROR
-    ) {
-      return fail(400, {
-        message: "Error en el servicio de registro",
-      })
-    }
-    if (
-      onboarding_error.type ===
-      API_FETCH_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de registro",
-      })
-    }
-    if (
-      onboarding_error.type ===
-      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de registro",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error al iniciar el registro",
     })
   }
+
   logger.info("digital signature onboarding started", {
     property_id,
     party: input.party,

@@ -25,4 +25,4 @@ Webhook signature verification (HMAC-SHA256). Returns 401 on invalid signature.
 ## Notes
 
 - Uses test access token in development, production token otherwise
-- `safe_async` wraps all external fetch calls
+- try/catch wraps all external fetch calls

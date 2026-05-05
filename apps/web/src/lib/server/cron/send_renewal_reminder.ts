@@ -2,7 +2,10 @@ import { sql } from "kysely"
 import { query_builder } from "../../../../db/query_builder"
 import { SUBSCRIPTION_TYPE } from "../../subscription_type"
 import { logger } from "../../telemetry/logger"
-import { send_email } from "../send_email"
+import {
+  SendEmailError,
+  send_email,
+} from "../send_email"
 
 const FREELANCE_PRICE_USD = 50
 const REALTOR_SEAT_PRICE_USD = 40
@@ -87,16 +90,21 @@ export async function send_renewal_reminder() {
          <p>Monto: <strong>$${amount} USD</strong></p>
          <p><a href="${origin}/subscribe">Renovar ahora</a></p>`
 
-    const [email_error] = await send_email({
-      to: { email: admin.email, name: admin.name ?? "" },
-      subject,
-      html,
-    })
-    if (email_error) {
-      logger.error("failed to send renewal reminder", {
-        organization_id: organization.organization_id,
-        email: admin.email,
+    try {
+      await send_email({
+        to: { email: admin.email, name: admin.name ?? "" },
+        subject,
+        html,
       })
+    } catch (error) {
+      if (error instanceof SendEmailError) {
+        logger.error("failed to send renewal reminder", {
+          organization_id: organization.organization_id,
+          email: admin.email,
+        })
+      } else {
+        logger.unknown(error)
+      }
       continue
     }
 

@@ -17,7 +17,7 @@ Proxies location search queries to the self-hosted Nominatim instance at `http:/
 
 ### Error handling
 
-Uses `safe_async` for fetch and `safe_sync` for JSON parsing. All errors logged with context.
+Uses try/catch for fetch and JSON parsing. All errors logged with context.
 
 ## Auth
 
