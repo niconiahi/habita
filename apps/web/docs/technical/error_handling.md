@@ -159,11 +159,11 @@ export async function update_thing(form_data: FormData) {
       .where("thing.id", "=", input.id)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al actualizar",
     })
@@ -199,11 +199,11 @@ export async function create_property(form_data: FormData) {
         return { id: result.id }
       })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear la propiedad",
     })
@@ -232,11 +232,11 @@ export async function create_room(property_id: number) {
       })
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear la habitación",
     })
@@ -305,11 +305,11 @@ export async function add_income_guarantor(
           .execute()
       })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear el garante",
     })
@@ -356,11 +356,11 @@ export async function update_room_positions(
         }
       })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al actualizar las posiciones",
     })

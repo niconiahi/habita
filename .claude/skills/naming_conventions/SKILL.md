@@ -69,7 +69,7 @@ const candidates = await query_builder...execute()
 | `get_` | Pure getters | `get_room_types()`, `get_property_states()` |
 | `compose_` | Build/compose values | `compose_point()`, `compose_html()` |
 | `handle_` | Event handlers (Svelte) | `handle_signup()`, `handle_file_change()` |
-| `is_` / `has_` | Boolean predicates | `is_webmaster()`, `has_action_error()` |
+| `is_` / `has_` | Boolean predicates | `is_webmaster()`, `has_credit_report` |
 
 ## Schema naming
 
