@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { publish_send_landlord_invite } from "$lib/server/broker/producer/publish_send_landlord_invite"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
@@ -24,14 +24,9 @@ export async function invite_landlord(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        invite_landlord: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -39,8 +34,9 @@ export async function invite_landlord(form_data: FormData) {
   const token_hash = compose_token_hash(token)
   const expires_at = new Date(Date.now() + DAY_IN_MS * 7)
 
-  const [insert_error, invitation_token] = await safe_async(
-    query_builder
+  let invitation_token: { id: number }
+  try {
+    invitation_token = await query_builder
       .insertInto("invitation_token")
       .values({
         email: input.email,
@@ -50,25 +46,23 @@ export async function invite_landlord(form_data: FormData) {
         expires_at,
       })
       .returning("id")
-      .executeTakeFirstOrThrow(),
-  )
-  if (insert_error) {
+      .executeTakeFirstOrThrow()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      insert_error.message,
+      typed_error.message,
       {
         property_id: input.property_id,
         email: input.email,
       },
-      insert_error,
+      typed_error,
     )
-    return [
-      {
-        invite_landlord: {
-          execution: "Error al crear la invitación",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al crear la invitación",
+    })
   }
 
   const subject =
@@ -96,6 +90,4 @@ export async function invite_landlord(form_data: FormData) {
     property_id: input.property_id,
     email: input.email,
   })
-
-  return [null, null] as const
 }

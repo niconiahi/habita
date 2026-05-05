@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { display_location } from "$lib/display_location"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { publish_send_slot_rejected_alert } from "$lib/server/broker/producer/publish_send_slot_rejected_alert"
 import { decrypt } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
@@ -20,19 +20,20 @@ export async function reject_slot(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        reject_slot: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const { id } = input_validation.output
 
-  const [fetch_error, slot] = await safe_async(
-    query_builder
+  let slot: {
+    start_date: Date
+    end_date: Date
+    visitant_id: number | null
+    property_id: number
+  }
+  try {
+    slot = await query_builder
       .selectFrom("slot")
       .where("slot.id", "=", id)
       .where("slot.state", "=", SLOT_STATE.RESERVED)
@@ -42,26 +43,24 @@ export async function reject_slot(form_data: FormData) {
         "slot.visitant_id",
         "slot.property_id",
       ])
-      .executeTakeFirstOrThrow(),
-  )
-  if (fetch_error) {
+      .executeTakeFirstOrThrow()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      fetch_error.message,
+      typed_error.message,
       { slot_id: id },
-      fetch_error,
+      typed_error,
     )
-    return [
-      {
-        reject_slot: {
-          execution: "No se pudo rechazar el turno",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se pudo rechazar el turno",
+    })
   }
 
-  const [update_error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("slot")
       .set({
         state: SLOT_STATE.FREE,
@@ -69,22 +68,20 @@ export async function reject_slot(form_data: FormData) {
       })
       .where("slot.id", "=", id)
       .where("slot.state", "=", SLOT_STATE.RESERVED)
-      .execute(),
-  )
-  if (update_error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      update_error.message,
+      typed_error.message,
       { slot_id: id },
-      update_error,
+      typed_error,
     )
-    return [
-      {
-        reject_slot: {
-          execution: "No se pudo rechazar el turno",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se pudo rechazar el turno",
+    })
   }
 
   const visitant_row = await query_builder
@@ -98,14 +95,9 @@ export async function reject_slot(form_data: FormData) {
     logger.error("property not found", {
       property_id: slot.property_id,
     })
-    return [
-      {
-        reject_slot: {
-          execution: "No se encontró la propiedad",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró la propiedad",
+    })
   }
 
   await publish_send_slot_rejected_alert(id, {
@@ -121,6 +113,4 @@ export async function reject_slot(form_data: FormData) {
     property_id: slot.property_id,
     visitant_id: slot.visitant_id,
   })
-
-  return [null, null] as const
 }

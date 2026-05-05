@@ -35,14 +35,7 @@ export const actions: Actions = {
     const form_data = await request.formData()
     const direction =
       form_data.get("direction") === "down" ? "down" : "up"
-    const [create_floor_errors] = await create_floor(
-      property_id,
-      direction,
-    )
-    if (create_floor_errors) {
-      return { errors: create_floor_errors }
-    }
-    return null
+    return create_floor(property_id, direction)
   },
   [ACTION.UPDATE_FLOOR]: async ({
     request,
@@ -61,12 +54,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_floor_errors] =
-      await update_floor(form_data)
-    if (update_floor_errors) {
-      return { errors: update_floor_errors }
-    }
-    return null
+    return update_floor(form_data)
   },
   [ACTION.DESTROY_FLOOR]: async ({
     request,
@@ -85,12 +73,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_floor_errors] =
-      await destroy_floor(form_data)
-    if (destroy_floor_errors) {
-      return { errors: destroy_floor_errors }
-    }
-    return null
+    return destroy_floor(form_data)
   },
   [ACTION.CREATE_ROOM]: async ({
     request,
@@ -113,11 +96,7 @@ export const actions: Actions = {
       ForceNumberSchema,
       form_data.get("floor_id"),
     )
-    const [create_room_errors] = await create_room(floor_id)
-    if (create_room_errors) {
-      return { errors: create_room_errors }
-    }
-    return null
+    return create_room(floor_id)
   },
   [ACTION.UPDATE_ROOM]: async ({
     request,
@@ -137,12 +116,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_room_errors] =
-      await update_room(form_data)
-    if (update_room_errors) {
-      return { errors: update_room_errors }
-    }
-    return null
+    return update_room(form_data)
   },
   [ACTION.UPDATE_ROOM_POSITIONS]: async ({
     request,
@@ -162,12 +136,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_room_positions_errors] =
-      await update_room_positions(form_data)
-    if (update_room_positions_errors) {
-      return { errors: update_room_positions_errors }
-    }
-    return null
+    return update_room_positions(form_data)
   },
   [ACTION.DESTROY_ROOM]: async ({
     request,
@@ -187,12 +156,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [destroy_room_errors] =
-      await destroy_room(form_data)
-    if (destroy_room_errors) {
-      return { errors: destroy_room_errors }
-    }
-    return null
+    return destroy_room(form_data)
   },
   [ACTION.REORDER_FLOORS]: async ({
     request,
@@ -211,14 +175,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [reorder_floors_errors] = await reorder_floors(
-      form_data,
-      property_id,
-    )
-    if (reorder_floors_errors) {
-      return { errors: reorder_floors_errors }
-    }
-    return null
+    return reorder_floors(form_data, property_id)
   },
   [ACTION.CREATE_ROOM_FILE]: async ({
     request,
@@ -237,12 +194,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_room_file_errors] =
-      await create_room_file(form_data)
-    if (create_room_file_errors) {
-      return { errors: create_room_file_errors }
-    }
-    return null
+    return create_room_file(form_data)
   },
   [ACTION.DESTROY_ROOM_FILE]: async ({
     request,
@@ -261,11 +213,6 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_room_file_errors] =
-      await destroy_room_file(form_data)
-    if (destroy_room_file_errors) {
-      return { errors: destroy_room_file_errors }
-    }
-    return null
+    return destroy_room_file(form_data)
   },
 }

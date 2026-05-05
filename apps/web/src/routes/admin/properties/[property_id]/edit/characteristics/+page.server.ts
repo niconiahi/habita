@@ -31,12 +31,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_location_errors] =
-      await update_location(form_data)
-    if (update_location_errors) {
-      return { errors: update_location_errors }
-    }
-    return null
+    return update_location(form_data)
   },
   [ACTION.UPDATE_DESTINIES]: async ({
     request,
@@ -56,12 +51,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_destinies_errors] =
-      await update_destinies(form_data, property_id)
-    if (update_destinies_errors) {
-      return { errors: update_destinies_errors }
-    }
-    return null
+    return update_destinies(form_data, property_id)
   },
   [ACTION.TOGGLE_TAG]: async ({
     request,
@@ -80,14 +70,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [toggle_tag_errors] = await toggle_tag(
-      form_data,
-      property_id,
-    )
-    if (toggle_tag_errors) {
-      return { errors: toggle_tag_errors }
-    }
-    return null
+    return toggle_tag(form_data, property_id)
   },
   [ACTION.UPDATE_CONSTRUCTION_YEAR]: async ({
     request,
@@ -106,12 +89,7 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_construction_year_errors] =
-      await update_construction_year(form_data, property_id)
-    if (update_construction_year_errors) {
-      return { errors: update_construction_year_errors }
-    }
-    return null
+    return update_construction_year(form_data, property_id)
   },
   [ACTION.CREATE_SERVICE]: async ({
     request,
@@ -129,12 +107,7 @@ export const actions: Actions = {
       property_id,
       locals.session.activeOrganizationId,
     )
-    const [create_service_errors] =
-      await create_service(property_id)
-    if (create_service_errors) {
-      return { errors: create_service_errors }
-    }
-    return null
+    return create_service(property_id)
   },
   [ACTION.UPDATE_SERVICE]: async ({
     request,
@@ -154,14 +127,7 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_service_errors] = await update_service(
-      form_data,
-      property_id,
-    )
-    if (update_service_errors) {
-      return { errors: update_service_errors }
-    }
-    return null
+    return update_service(form_data, property_id)
   },
   [ACTION.DESTROY_SERVICE]: async ({
     request,
@@ -181,11 +147,6 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [destroy_service_errors] =
-      await destroy_service(form_data)
-    if (destroy_service_errors) {
-      return { errors: destroy_service_errors }
-    }
-    return null
+    return destroy_service(form_data)
   },
 }

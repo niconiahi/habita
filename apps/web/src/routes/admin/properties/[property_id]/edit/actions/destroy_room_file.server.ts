@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 
@@ -17,39 +17,30 @@ export async function destroy_room_file(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        destroy_room_file: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .deleteFrom("room_file")
       .where("room_file.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      error.message,
+      typed_error.message,
       { room_file_id: input.id },
-      error,
+      typed_error,
     )
-    return [
-      {
-        destroy_room_file: {
-          execution:
-            "Error al eliminar la foto de la habitación",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al eliminar la foto de la habitación",
+    })
   }
-
-  return [null, null] as const
 }

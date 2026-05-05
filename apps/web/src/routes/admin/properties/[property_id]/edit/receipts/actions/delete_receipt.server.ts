@@ -1,8 +1,8 @@
 import { startOfMonth } from "date-fns"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { publish_delete_object } from "$lib/server/broker/producer/publish_delete_object"
 import { logger } from "$lib/telemetry/logger"
@@ -17,14 +17,9 @@ export async function delete_receipt(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        delete_receipt: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -41,14 +36,9 @@ export async function delete_receipt(form_data: FormData) {
     .executeTakeFirst()
 
   if (!receipt) {
-    return [
-      {
-        delete_receipt: {
-          execution: "Comprobante no encontrado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Comprobante no encontrado",
+    })
   }
 
   const receipt_month = startOfMonth(
@@ -56,19 +46,14 @@ export async function delete_receipt(form_data: FormData) {
   )
   const current_month = startOfMonth(new Date())
   if (receipt_month.getTime() !== current_month.getTime()) {
-    return [
-      {
-        delete_receipt: {
-          execution:
-            "Solo se pueden eliminar comprobantes del mes actual",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Solo se pueden eliminar comprobantes del mes actual",
+    })
   }
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       await tx
         .deleteFrom("receipt")
         .where("id", "=", input.receipt_id)
@@ -77,22 +62,20 @@ export async function delete_receipt(form_data: FormData) {
         .deleteFrom("file")
         .where("id", "=", receipt.file_id)
         .execute()
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       { receipt_id: input.receipt_id },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        delete_receipt: {
-          execution: "Error al eliminar el comprobante",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al eliminar el comprobante",
+    })
   }
 
   await publish_delete_object(`files/${receipt.hash}`)
@@ -100,6 +83,4 @@ export async function delete_receipt(form_data: FormData) {
   logger.info("receipt deleted", {
     receipt_id: input.receipt_id,
   })
-
-  return [null, null] as const
 }

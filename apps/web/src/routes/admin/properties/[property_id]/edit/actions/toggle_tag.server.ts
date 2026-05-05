@@ -1,8 +1,8 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { PropertyTagTypeSchema } from "$lib/property_tag_type"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -20,19 +20,14 @@ export async function toggle_tag(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        toggle_tag: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const existing = await tx
         .selectFrom("property_tag")
         .select("property_tag.id")
@@ -55,22 +50,19 @@ export async function toggle_tag(
           })
           .execute()
       }
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       { property_id, tag_type: input.type },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        toggle_tag: {
-          execution: "Error al actualizar el tag",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al actualizar el tag",
+    })
   }
-  return [null, null] as const
 }
