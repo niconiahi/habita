@@ -19,11 +19,6 @@ const InputSchema = v.object({
   type: v.pipe(ForceNumberSchema, SubscriptionTypeSchema),
 })
 
-const ORGANIZATION_NAME = {
-  [SUBSCRIPTION_TYPE.FREELANCE]: "Asesor",
-  [SUBSCRIPTION_TYPE.REALTOR]: "Inmobiliaria",
-} as const
-
 export async function create_account(
   form_data: FormData,
   user_id: number,
@@ -73,17 +68,16 @@ export async function create_account(
     }
   }
 
-  const type_label =
-    ORGANIZATION_NAME[
-    result.output
-      .type as keyof typeof ORGANIZATION_NAME
-    ]
+  const organization_name =
+    result.output.type === SUBSCRIPTION_TYPE.FREELANCE
+      ? "Personal"
+      : `La inmobiliaria de ${user_email}`
 
   const [organization_error, organization] =
     await safe_async(
       auth.api.createOrganization({
         body: {
-          name: `${type_label}: ${user_email}`,
+          name: organization_name,
           slug: crypto.randomUUID(),
           userId: String(user_id),
         },
@@ -174,6 +168,6 @@ export async function create_account(
 
   return [
     null,
-    { redirect_path: "/admin/properties" },
+    { redirect_path: "/admin/settings" },
   ] as const
 }
