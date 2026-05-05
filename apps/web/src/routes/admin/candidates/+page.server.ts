@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
@@ -40,11 +39,6 @@ export const actions: Actions = {
       property_id,
       locals.session.activeOrganizationId,
     )
-    const [set_tenant_errors, set_tenant_data] =
-      await set_tenant(form_data)
-    if (set_tenant_errors) {
-      return { errors: set_tenant_errors }
-    }
-    redirect(303, set_tenant_data.redirect_to)
+    return set_tenant(form_data)
   },
 }

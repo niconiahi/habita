@@ -1,8 +1,8 @@
+import { fail, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { CONTRACT_STATE } from "$lib/contract_state"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -21,63 +21,62 @@ export async function create_contract(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_contract: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error, contract] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
-      const contract = await tx
-        .insertInto("contract")
-        .values({
-          property_id,
-          created_at: now,
-          updated_at: now,
-          state: CONTRACT_STATE.EDITING,
-          type: input.type,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-      await tx
-        .insertInto("period")
-        .values({
-          contract_id: contract.id,
-          price: input.price,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-      return contract
-    }),
-  )
-  if (error) {
-    logger.error(error.message, { property_id }, error)
-    return [
-      {
-        create_contract: {
-          execution: "Error al crear el contrato",
-        },
-      },
-      null,
-    ] as const
+  let contract
+  try {
+    contract = await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const contract = await tx
+          .insertInto("contract")
+          .values({
+            property_id,
+            created_at: now,
+            updated_at: now,
+            state: CONTRACT_STATE.EDITING,
+            type: input.type,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
+        await tx
+          .insertInto("period")
+          .values({
+            contract_id: contract.id,
+            price: input.price,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
+        return contract
+      })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(
+      typed_error.message,
+      { property_id },
+      typed_error,
+    )
+    return fail(400, {
+      message: "Error al crear el contrato",
+    })
   }
+
   logger.info("contract created", {
     property_id,
     contract_id: contract.id,
   })
 
-  return [
-    null,
-    {
-      redirect_to: `/admin/properties/${property_id}/contracts/${contract.id}/edit`,
-    },
-  ] as const
+  redirect(
+    303,
+    `/admin/properties/${property_id}/contracts/${contract.id}/edit`,
+  )
 }
