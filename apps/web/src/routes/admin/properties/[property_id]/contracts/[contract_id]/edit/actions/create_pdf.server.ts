@@ -12,6 +12,7 @@ import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import {
   GENERATE_PDF_WITH_PLAYWRIGHT_ERROR,
+  GeneratePdfWithPlaywrightError,
   generate_pdf_with_playwright,
 } from "$lib/server/pdf_generator"
 import { upsert_file_from_buffer } from "$lib/server/upsert_file"
@@ -61,35 +62,44 @@ export async function create_pdf(
     validation.tenant,
     data.warranty,
   )
-  const [pdf_error, content] =
-    await generate_pdf_with_playwright(html)
-  if (pdf_error) {
-    if (
-      pdf_error.type ===
-      GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
-    ) {
+
+  let content: Buffer
+  try {
+    content = await generate_pdf_with_playwright(html)
+  } catch (error) {
+    if (error instanceof GeneratePdfWithPlaywrightError) {
+      if (
+        error.type ===
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de PDF",
+        })
+      }
+      if (
+        error.type ===
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR
+      ) {
+        return fail(400, {
+          message:
+            "Error en el servicio de generación de PDF",
+        })
+      }
+      if (
+        error.type ===
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Error al leer el contenido del PDF generado",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de PDF",
+        message: "Error al generar el PDF",
       })
-    }
-    if (
-      pdf_error.type ===
-      GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR
-    ) {
-      return fail(400, {
-        message:
-          "Error en el servicio de generación de PDF",
-      })
-    }
-    if (
-      pdf_error.type ===
-      GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Error al leer el contenido del PDF generado",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error al generar el PDF",

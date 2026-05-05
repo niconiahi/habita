@@ -31,22 +31,6 @@ const input = input_validation.output
 - `InputSchema` → `input_validation` (schema name drives variable name)
 - Parsed output is always `input`
 
-### safe_async tuples
-
-Error (first element) named after the operation:
-
-```ts
-const [transaction_error] = await safe_async(query_builder.transaction()...)
-const [insert_error] = await safe_async(query_builder.insertInto(...)...)
-const [fetch_error, response] = await safe_async(fetch(...))
-const [buffer_error, array_buffer] = await safe_async(response.arrayBuffer())
-const [revoke_error] = await safe_async(revoke_all_access_by_type(...))
-const [assign_error] = await safe_async(assign_property_access(...))
-const [json_error, data] = await safe_async(response.json())
-```
-
-Data (second element) named after its content type: `response`, `array_buffer`, `property`, `preference`, `data`.
-
 ### DB query results
 
 Singular for single record, plural for collections:

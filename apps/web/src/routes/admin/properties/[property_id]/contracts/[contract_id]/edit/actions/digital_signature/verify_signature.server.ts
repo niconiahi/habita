@@ -4,6 +4,7 @@ import { fail } from "@sveltejs/kit"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import {
   API_FETCH_ERROR,
+  ApiFetchError,
   verify_signature as api_verify_signature,
   check_certificate,
   fetch_signed_document,
@@ -104,95 +105,63 @@ export async function verify_signature(
     })
   }
   const original_hash = contract_file.hash
-  const [
-    [certificate_error, certificate],
-    [signed_document_error, signed_document],
-  ] = await Promise.all([
-    check_certificate(person.cuil),
-    fetch_signed_document(signature.document_id),
-  ])
-  if (certificate_error) {
-    if (
-      certificate_error.type ===
-      API_FETCH_ERROR.FETCH_FAILED
-    ) {
+
+  let certificate: Awaited<ReturnType<typeof check_certificate>>
+  let signed_document: Awaited<ReturnType<typeof fetch_signed_document>>
+  try {
+    ;[certificate, signed_document] = await Promise.all([
+      check_certificate(person.cuil),
+      fetch_signed_document(signature.document_id),
+    ])
+  } catch (error) {
+    if (error instanceof ApiFetchError) {
+      if (
+        error.type === API_FETCH_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de firma digital",
+        })
+      }
+      if (
+        error.type === API_FETCH_ERROR.API_ERROR
+      ) {
+        return fail(400, {
+          message:
+            "Error en el servicio de firma digital",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.JSON_PARSE_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inválida del servicio de firma digital",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inesperada del servicio de firma digital",
+        })
+      }
       return fail(400, {
         message:
-          "No se pudo conectar al servicio de certificados",
+          "Error al obtener datos de firma digital",
       })
-    }
-    if (
-      certificate_error.type === API_FETCH_ERROR.API_ERROR
-    ) {
-      return fail(400, {
-        message:
-          "Error en el servicio de certificados",
-      })
-    }
-    if (
-      certificate_error.type ===
-      API_FETCH_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de certificados",
-      })
-    }
-    if (
-      certificate_error.type ===
-      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de certificados",
-      })
-    }
-    return fail(400, {
-      message: "Error al obtener el certificado",
-    })
-  }
-  if (signed_document_error) {
-    if (
-      signed_document_error.type ===
-      API_FETCH_ERROR.FETCH_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "No se pudo conectar al servicio de documentos firmados",
-      })
-    }
-    if (
-      signed_document_error.type ===
-      API_FETCH_ERROR.API_ERROR
-    ) {
-      return fail(400, {
-        message:
-          "Error en el servicio de documentos firmados",
-      })
-    }
-    if (
-      signed_document_error.type ===
-      API_FETCH_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de documentos firmados",
-      })
-    }
-    if (
-      signed_document_error.type ===
-      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de documentos firmados",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message:
-        "Error al obtener el documento firmado",
+        "Error al obtener datos de firma digital",
     })
   }
+
   if (certificate.CodigoResultado !== 1) {
     return fail(400, {
       message:
@@ -200,51 +169,62 @@ export async function verify_signature(
     })
   }
 
-  const [verify_error, verify_result] =
-    await api_verify_signature({
+  let verify_result: Awaited<ReturnType<typeof api_verify_signature>>
+  try {
+    verify_result = await api_verify_signature({
       CertificadoBase64:
         certificate.Datos.CertificadoDerBase64,
       HashSHA256Hexadecimal: original_hash,
       HashSHA256FirmadoHexadecimal:
         signed_document.Datos.HashSHA256FirmadoHexadecimal,
     })
-  if (verify_error) {
-    if (
-      verify_error.type === API_FETCH_ERROR.FETCH_FAILED
-    ) {
+  } catch (error) {
+    if (error instanceof ApiFetchError) {
+      if (
+        error.type === API_FETCH_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de verificación",
+        })
+      }
+      if (
+        error.type === API_FETCH_ERROR.API_ERROR
+      ) {
+        return fail(400, {
+          message:
+            "Error en el servicio de verificación",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.JSON_PARSE_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inválida del servicio de verificación",
+        })
+      }
+      if (
+        error.type ===
+        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inesperada del servicio de verificación",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de verificación",
+        message: "Error al verificar la firma",
       })
-    }
-    if (verify_error.type === API_FETCH_ERROR.API_ERROR) {
-      return fail(400, {
-        message:
-          "Error en el servicio de verificación",
-      })
-    }
-    if (
-      verify_error.type ===
-      API_FETCH_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de verificación",
-      })
-    }
-    if (
-      verify_error.type ===
-      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de verificación",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error al verificar la firma",
     })
   }
+
   if (verify_result.CodigoResultado !== 1) {
     return fail(400, {
       message: verify_result.MensajeResultado,

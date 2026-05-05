@@ -24,18 +24,6 @@ Formats a SvelteKit action string. Use when building form action URLs.
 
 - `compose_action(action: string): string` — returns `?/${action}`
 
-## safe_async.ts
-
-Wraps a promise into a Go-style error tuple. Use for non-throwing async error handling.
-
-- `safe_async<T>(promise: Promise<T>): Promise<[null, T] | [Error, null]>`
-
-## safe_sync.ts
-
-Wraps a synchronous function into a Go-style error tuple. Use for non-throwing sync error handling.
-
-- `safe_sync<T>(fn: () => T): [null, T] | [Error, null]`
-
 ## date.ts
 
 Date parsing, formatting, and extraction helpers. Uses `es-AR` locale.
@@ -568,29 +556,30 @@ Authorization layer for property access control (ACL).
 
 ## object_store.ts
 
-S3-compatible object storage operations.
+S3-compatible object storage operations. Functions throw `ObjectStoreError` on failure.
 
-- `OBJECT_STORE_ERROR` — `{ NETWORK: 0, NOT_FOUND: 1, UNKNOWN: 2 }`
-- `ObjectStoreError` — type
-- `put_object(key: string, content: Buffer, mime: string): Promise<[ObjectStoreError, null] | [null, null]>`
-- `get_object(key: string): Promise<[ObjectStoreError, null] | [null, Buffer]>`
-- `delete_object(key: string): Promise<[ObjectStoreError, null] | [null, null]>`
-- `object_exists(key: string): Promise<[ObjectStoreError, null] | [null, boolean]>`
+- `OBJECT_STORE_ERROR` — `{ PUT_FAILED: 0, GET_FAILED: 1, DELETE_FAILED: 2, NOT_FOUND: 3 }`
+- `ObjectStoreError` — Error subclass with `.type` discriminant
+- `ensure_bucket(): Promise<void>`
+- `put_object(key: string, content: Buffer, mime: string): Promise<void>`
+- `get_object(key: string): Promise<Buffer>`
+- `delete_object(key: string): Promise<void>`
+- `object_exists(key: string): Promise<boolean>`
 
 ## send_email.ts
 
-Email sending via external API.
+Email sending via external API. Throws `SendEmailError` on failure.
 
-- `SEND_EMAIL_ERROR` — error codes
-- `SendEmailError` — type
-- `send_email(body: object, headers?: Record<string, string>): Promise<[SendEmailTypedError, null] | [null, null]>`
+- `SEND_EMAIL_ERROR` — `{ FETCH_FAILED: 0, SERVICE_ERROR: 1 }`
+- `SendEmailError` — Error subclass with `.type` discriminant
+- `send_email(body: SendEmailBody, headers?: Record<string, string>): Promise<void>`
 
 ## digital_signature.ts
 
-Digital signature API integration.
+Digital signature API integration. Functions throw `ApiFetchError` on failure.
 
-- `API_FETCH_ERROR` — error codes
-- `ApiFetchError` — type
+- `API_FETCH_ERROR` — `{ FETCH_FAILED: 0, API_ERROR: 1, JSON_PARSE_FAILED: 2, SCHEMA_VALIDATION_FAILED: 3 }`
+- `ApiFetchError` — Error subclass with `.type` discriminant
 - `check_certificate(cuil: string)`
 - `submit_for_signing(params: SubmitForSigningParams)`
 - `fetch_unsigned_document_status(document_id: string)`
@@ -601,20 +590,19 @@ Digital signature API integration.
 
 ## mercado_pago_payment.ts
 
-MercadoPago payment preference creation.
+MercadoPago payment preference creation. Throws `CreatePreferenceError` on failure.
 
-- `CREATE_PREFERENCE_ERROR` — error codes
-- `CreatePreferenceError` — type
-- `MercadoPagoPreferenceSchema` — Valibot schema for API response
-- `create_preference(options: CreatePreferenceOptions): Promise<[CreatePreferenceError, null] | [null, { id: string; init_point: string }]>`
+- `CREATE_PREFERENCE_ERROR` — `{ FETCH_FAILED: 0, API_ERROR: 1, JSON_PARSE_FAILED: 2, SCHEMA_VALIDATION_FAILED: 3 }`
+- `CreatePreferenceError` — Error subclass with `.type` discriminant
+- `create_preference(options: CreatePreferenceOptions): Promise<{ id: string; init_point: string }>`
 
 ## pdf_generator.ts
 
-PDF generation via Playwright.
+PDF generation via Playwright. Throws `GeneratePdfWithPlaywrightError` on failure.
 
-- `GENERATE_PDF_WITH_PLAYWRIGHT_ERROR` — error codes
-- `GeneratePdfWithPlaywrightError` — type
-- `generate_pdf_with_playwright(html: string): Promise<[GeneratePdfWithPlaywrightError, null] | [null, Buffer]>`
+- `GENERATE_PDF_WITH_PLAYWRIGHT_ERROR` — `{ FETCH_FAILED: 0, SERVICE_ERROR: 1, BUFFER_READ_FAILED: 2 }`
+- `GeneratePdfWithPlaywrightError` — Error subclass with `.type` discriminant
+- `generate_pdf_with_playwright(html: string): Promise<Buffer>`
 
 ## upsert_file.ts
 
@@ -655,10 +643,6 @@ Browser-side OpenTelemetry initialization.
 # Observability App (`apps/observability/src/lib/`)
 
 Separate SvelteKit app for viewing telemetry data. Not shared with the main app.
-
-## safe_async.ts
-
-- `safe_async<T>(promise: Promise<T>): Promise<[Error, null] | [null, T]>`
 
 ## server/auth.ts
 

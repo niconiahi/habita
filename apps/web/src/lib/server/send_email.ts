@@ -1,5 +1,4 @@
 import type { ObjectValues } from "$lib/compose_types"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 
 export const SEND_EMAIL_ERROR = {
@@ -7,14 +6,13 @@ export const SEND_EMAIL_ERROR = {
   SERVICE_ERROR: 1,
 } as const
 
-export type SendEmailError = ObjectValues<
-  typeof SEND_EMAIL_ERROR
->
-
-// NOTE: newly added error
-type SendEmailTypedError = {
-  type: SendEmailError
-  error: Error
+export class SendEmailError extends Error {
+  constructor(
+    public type: ObjectValues<typeof SEND_EMAIL_ERROR>,
+    cause: Error,
+  ) {
+    super(cause.message, { cause })
+  }
 }
 
 type SendEmailBody = {
@@ -27,28 +25,33 @@ type SendEmailBody = {
 export async function send_email(
   body: SendEmailBody,
   headers?: Record<string, string>,
-): Promise<[SendEmailTypedError, null] | [null, null]> {
+): Promise<void> {
   const merged_headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...headers,
   }
 
-  const [fetch_error, response] = await safe_async(
-    fetch("http://go:8081/send-email", {
+  let response: Response
+  try {
+    response = await fetch("http://go:8081/send-email", {
       method: "POST",
       headers: merged_headers,
       body: JSON.stringify(body),
-    }),
-  )
-  if (fetch_error) {
-    logger.error(fetch_error.message, {}, fetch_error)
-    return [
-      {
-        type: SEND_EMAIL_ERROR.FETCH_FAILED,
-        error: fetch_error,
-      },
-      null,
-    ]
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+      throw new SendEmailError(
+        SEND_EMAIL_ERROR.FETCH_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new SendEmailError(
+        SEND_EMAIL_ERROR.FETCH_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   if (!response.ok) {
@@ -57,14 +60,9 @@ export async function send_email(
       `Email service error: ${response.status} - ${error_text}`,
     )
     logger.error(service_error.message, {}, service_error)
-    return [
-      {
-        type: SEND_EMAIL_ERROR.SERVICE_ERROR,
-        error: service_error,
-      },
-      null,
-    ]
+    throw new SendEmailError(
+      SEND_EMAIL_ERROR.SERVICE_ERROR,
+      service_error,
+    )
   }
-
-  return [null, null]
 }

@@ -18,5 +18,5 @@ Requires authenticated user.
 ## Notes
 
 - Idempotent — won't re-update already read notifications
-- Uses `safe_async()` for error handling
+- Uses try/catch for error handling
 - Error messages in Spanish

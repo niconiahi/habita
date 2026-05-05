@@ -1,5 +1,4 @@
 import type { ObjectValues } from "$lib/compose_types"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 
 export const GENERATE_PDF_WITH_PLAYWRIGHT_ERROR = {
@@ -8,35 +7,41 @@ export const GENERATE_PDF_WITH_PLAYWRIGHT_ERROR = {
   BUFFER_READ_FAILED: 2,
 } as const
 
-// NOTE: newly added error
-export type GeneratePdfWithPlaywrightError = {
-  type: ObjectValues<
-    typeof GENERATE_PDF_WITH_PLAYWRIGHT_ERROR
-  >
-  error: Error
+export class GeneratePdfWithPlaywrightError extends Error {
+  constructor(
+    public type: ObjectValues<
+      typeof GENERATE_PDF_WITH_PLAYWRIGHT_ERROR
+    >,
+    cause: Error,
+  ) {
+    super(cause.message, { cause })
+  }
 }
 
 export async function generate_pdf_with_playwright(
   html: string,
-): Promise<
-  [GeneratePdfWithPlaywrightError, null] | [null, Buffer]
-> {
-  const [fetch_error, response] = await safe_async(
-    fetch("http://pdf:8082/generate", {
+): Promise<Buffer> {
+  let response: Response
+  try {
+    response = await fetch("http://pdf:8082/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ html }),
-    }),
-  )
-  if (fetch_error) {
-    logger.error(fetch_error.message, {}, fetch_error)
-    return [
-      {
-        type: GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED,
-        error: fetch_error,
-      },
-      null,
-    ]
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+      throw new GeneratePdfWithPlaywrightError(
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new GeneratePdfWithPlaywrightError(
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   if (!response.ok) {
@@ -45,28 +50,30 @@ export async function generate_pdf_with_playwright(
       `PDF generation failed: ${error_text}`,
     )
     logger.error(pdf_error.message, {}, pdf_error)
-    return [
-      {
-        type: GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR,
-        error: pdf_error,
-      },
-      null,
-    ]
+    throw new GeneratePdfWithPlaywrightError(
+      GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.SERVICE_ERROR,
+      pdf_error,
+    )
   }
 
-  const [buffer_error, array_buffer] = await safe_async(
-    response.arrayBuffer(),
-  )
-  if (buffer_error) {
-    logger.error(buffer_error.message, {}, buffer_error)
-    return [
-      {
-        type: GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED,
-        error: buffer_error,
-      },
-      null,
-    ]
+  let array_buffer: ArrayBuffer
+  try {
+    array_buffer = await response.arrayBuffer()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+      throw new GeneratePdfWithPlaywrightError(
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new GeneratePdfWithPlaywrightError(
+        GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.BUFFER_READ_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
-  return [null, Buffer.from(array_buffer)]
+  return Buffer.from(array_buffer)
 }

@@ -111,11 +111,11 @@ function make_auth() {
           )
           return
         }
-        void send_email({
+        send_email({
           to: { email: user.email, name: user.name },
           subject: "Verificá tu email",
           html: `<p>Hacé clic en el enlace para verificar tu email: <a href="${url}">${url}</a></p>`,
-        })
+        }).catch(() => {})
       },
     },
     database: new Pool({

@@ -2,6 +2,7 @@ import { query_builder } from "db/query_builder"
 import { fail, redirect } from "@sveltejs/kit"
 import {
   CREATE_PREFERENCE_ERROR,
+  CreatePreferenceError,
   create_preference,
 } from "$lib/server/mercado_pago_payment"
 import { now } from "$lib/server/now"
@@ -11,46 +12,54 @@ const PAYMENT_METHOD_MERCADO_PAGO = 1
 const PAYMENT_STATUS_PENDING = 0
 
 export async function create_payment() {
-  const [preference_error, preference] =
-    await create_preference({
+  let preference: { id: string; init_point: string }
+  try {
+    preference = await create_preference({
       title: "Pago de prueba",
       amount: 50,
     })
-  if (preference_error) {
-    if (
-      preference_error.type ===
-      CREATE_PREFERENCE_ERROR.FETCH_FAILED
-    ) {
+  } catch (error) {
+    if (error instanceof CreatePreferenceError) {
+      if (
+        error.type ===
+        CREATE_PREFERENCE_ERROR.FETCH_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "No se pudo conectar al servicio de pagos",
+        })
+      }
+      if (
+        error.type ===
+        CREATE_PREFERENCE_ERROR.API_ERROR
+      ) {
+        return fail(400, {
+          message: "Error en el servicio de pagos",
+        })
+      }
+      if (
+        error.type ===
+        CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inválida del servicio de pagos",
+        })
+      }
+      if (
+        error.type ===
+        CREATE_PREFERENCE_ERROR.SCHEMA_VALIDATION_FAILED
+      ) {
+        return fail(400, {
+          message:
+            "Respuesta inesperada del servicio de pagos",
+        })
+      }
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de pagos",
+        message: "Error al crear el pago",
       })
-    }
-    if (
-      preference_error.type ===
-      CREATE_PREFERENCE_ERROR.API_ERROR
-    ) {
-      return fail(400, {
-        message: "Error en el servicio de pagos",
-      })
-    }
-    if (
-      preference_error.type ===
-      CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inválida del servicio de pagos",
-      })
-    }
-    if (
-      preference_error.type ===
-      CREATE_PREFERENCE_ERROR.SCHEMA_VALIDATION_FAILED
-    ) {
-      return fail(400, {
-        message:
-          "Respuesta inesperada del servicio de pagos",
-      })
+    } else {
+      logger.unknown(error)
     }
     return fail(400, {
       message: "Error al crear el pago",

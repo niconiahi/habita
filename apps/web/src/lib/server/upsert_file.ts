@@ -29,14 +29,7 @@ export async function upsert_file(
     return existing_file.id
   }
 
-  const [put_error] = await put_object(
-    `files/${hash}`,
-    content,
-    file.type,
-  )
-  if (put_error) {
-    throw put_error.error
-  }
+  await put_object(`files/${hash}`, content, file.type)
 
   const inserted_file = await db
     .insertInto("file")
@@ -70,14 +63,7 @@ export async function upsert_file_from_buffer(
     return existing_file.id
   }
 
-  const [put_error] = await put_object(
-    `files/${hash}`,
-    content,
-    mime,
-  )
-  if (put_error) {
-    throw put_error.error
-  }
+  await put_object(`files/${hash}`, content, mime)
 
   const inserted_file = await db
     .insertInto("file")

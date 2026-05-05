@@ -4,8 +4,9 @@ import { sql } from "kysely"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import {
-  get_object,
+  ObjectStoreError,
   OBJECT_STORE_ERROR,
+  get_object,
 } from "$lib/server/object_store"
 import {
   is_manager_of_visitant_file,
@@ -150,19 +151,24 @@ export const GET: RequestHandler = async ({
     error(404, "file not found")
   }
 
-  const [object_error, content] = await get_object(
-    `files/${file.hash}`,
-  )
-  if (object_error) {
-    if (
-      object_error.type === OBJECT_STORE_ERROR.NOT_FOUND
-    ) {
-      error(404, "file content not found")
-    }
-    if (
-      object_error.type === OBJECT_STORE_ERROR.GET_FAILED
-    ) {
+  let content: Buffer
+  try {
+    content = await get_object(`files/${file.hash}`)
+  } catch (object_error) {
+    if (object_error instanceof ObjectStoreError) {
+      if (
+        object_error.type === OBJECT_STORE_ERROR.NOT_FOUND
+      ) {
+        error(404, "file content not found")
+      }
+      if (
+        object_error.type === OBJECT_STORE_ERROR.GET_FAILED
+      ) {
+        error(500, "failed to retrieve file")
+      }
       error(500, "failed to retrieve file")
+    } else {
+      logger.unknown(object_error)
     }
     error(500, "failed to retrieve file")
   }

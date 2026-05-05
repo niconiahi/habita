@@ -1,6 +1,5 @@
 import * as v from "valibot"
 import type { ObjectValues } from "$lib/compose_types"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 import { get_origin } from "./origin"
 
@@ -11,10 +10,15 @@ export const CREATE_PREFERENCE_ERROR = {
   SCHEMA_VALIDATION_FAILED: 3,
 } as const
 
-// NOTE: newly added error
-export type CreatePreferenceError = {
-  type: ObjectValues<typeof CREATE_PREFERENCE_ERROR>
-  error: Error
+export class CreatePreferenceError extends Error {
+  constructor(
+    public type: ObjectValues<
+      typeof CREATE_PREFERENCE_ERROR
+    >,
+    cause: Error,
+  ) {
+    super(cause.message, { cause })
+  }
 }
 
 function get_config() {
@@ -55,10 +59,7 @@ interface CreatePreferenceOptions {
 
 export async function create_preference(
   options: CreatePreferenceOptions,
-): Promise<
-  | [CreatePreferenceError, null]
-  | [null, { id: string; init_point: string }]
-> {
+): Promise<{ id: string; init_point: string }> {
   const { title, amount, back_urls } = options
   const { is_development, access_token } = get_config()
   const origin = get_origin()
@@ -67,9 +68,10 @@ export async function create_preference(
     failure: `${origin}/pay/failure`,
     pending: `${origin}/pay/pending`,
   }
-  // NOTE: new safe implementation
-  const [fetch_error, response] = await safe_async(
-    fetch(
+
+  let response: Response
+  try {
+    response = await fetch(
       "https://api.mercadopago.com/checkout/preferences",
       {
         method: "POST",
@@ -90,17 +92,21 @@ export async function create_preference(
           notification_url: `${origin}/webhooks/mercadopago`,
         }),
       },
-    ),
-  )
-  if (fetch_error) {
-    logger.error(fetch_error.message, {}, fetch_error)
-    return [
-      {
-        type: CREATE_PREFERENCE_ERROR.FETCH_FAILED,
-        error: fetch_error,
-      },
-      null,
-    ]
+    )
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+      throw new CreatePreferenceError(
+        CREATE_PREFERENCE_ERROR.FETCH_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new CreatePreferenceError(
+        CREATE_PREFERENCE_ERROR.FETCH_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   if (!response.ok) {
@@ -113,27 +119,29 @@ export async function create_preference(
       {},
       preference_error,
     )
-    return [
-      {
-        type: CREATE_PREFERENCE_ERROR.API_ERROR,
-        error: preference_error,
-      },
-      null,
-    ]
+    throw new CreatePreferenceError(
+      CREATE_PREFERENCE_ERROR.API_ERROR,
+      preference_error,
+    )
   }
 
-  const [json_error, data] = await safe_async(
-    response.json(),
-  )
-  if (json_error) {
-    logger.error(json_error.message, {}, json_error)
-    return [
-      {
-        type: CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED,
-        error: json_error,
-      },
-      null,
-    ]
+  let data: unknown
+  try {
+    data = await response.json()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+      throw new CreatePreferenceError(
+        CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new CreatePreferenceError(
+        CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   const preference_validation = v.safeParse(
@@ -145,23 +153,17 @@ export async function create_preference(
       "Schema validation failed",
     )
     logger.error(parse_error.message, {}, parse_error)
-    return [
-      {
-        type: CREATE_PREFERENCE_ERROR.SCHEMA_VALIDATION_FAILED,
-        error: parse_error,
-      },
-      null,
-    ]
+    throw new CreatePreferenceError(
+      CREATE_PREFERENCE_ERROR.SCHEMA_VALIDATION_FAILED,
+      parse_error,
+    )
   }
   const preference = preference_validation.output
 
-  return [
-    null,
-    {
-      id: preference.id,
-      init_point: is_development
-        ? preference.sandbox_init_point
-        : preference.init_point,
-    },
-  ]
+  return {
+    id: preference.id,
+    init_point: is_development
+      ? preference.sandbox_init_point
+      : preference.init_point,
+  }
 }
