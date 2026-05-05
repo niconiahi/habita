@@ -151,11 +151,18 @@ try {
     .set({ name: input.name })
     .execute()
 } catch (error) {
-  const typed_error = error instanceof Error ? error : new Error("unknown error")
-  logger.error(typed_error.message, {}, typed_error)
+  if (error instanceof Error) {
+    logger.error(error.message, {}, error)
+  } else {
+    logger.unknown(error)
+  }
   return fail(400, { message: "Error al actualizar" })
 }
 ```
+
+### `logger.unknown(error)`
+
+Handles non-Error values thrown in catch blocks. Coerces the unknown value into an Error-shaped log entry so nothing is silently lost in telemetry. Always use it in the `else` branch of `error instanceof Error`.
 
 ## Actions without FormData input
 
@@ -495,6 +502,7 @@ logger.warn("Payment status check timed out, will retry", {
 | `logger.error` | Something broke — unexpected crash or expected operation that failed |
 | `logger.warn` | Something is off but not broken — timeouts, retries, degraded state |
 | `logger.info` | Notable event for debugging — user completed a flow, feature flag activated |
+| `logger.unknown` | Non-Error value caught — coerces to Error and logs at error severity |
 
 # Rules
 

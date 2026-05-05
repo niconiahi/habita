@@ -35,18 +35,18 @@ export async function update_construction_year(
       .where("property.id", "=", property_id)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        property_id,
-        construction_year: input.construction_year,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          property_id,
+          construction_year: input.construction_year,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message:
         "Error al actualizar el año de construcción",

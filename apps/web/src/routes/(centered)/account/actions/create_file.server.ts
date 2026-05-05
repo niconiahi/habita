@@ -44,15 +44,15 @@ export async function create_file(
         .executeTakeFirstOrThrow()
     })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { user_id, file_type: input.type },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { user_id, file_type: input.type },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear el archivo",
     })

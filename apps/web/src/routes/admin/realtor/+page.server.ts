@@ -1,5 +1,5 @@
 import { require_authentication } from "$lib/server/auth"
-import { error, redirect } from "@sveltejs/kit"
+import { error } from "@sveltejs/kit"
 import { get_user_realtor_organization } from "$lib/server/organization"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
@@ -39,15 +39,11 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    const [invite_manager_errors] = await invite_manager(
+    return invite_manager(
       form_data,
       realtor_org.id,
       locals.user.id,
     )
-    if (invite_manager_errors) {
-      return { errors: invite_manager_errors }
-    }
-    return null
   },
 
   [ACTION.REMOVE_MANAGER]: async ({ request, locals }) => {
@@ -58,14 +54,7 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    const [remove_manager_errors] = await remove_manager(
-      form_data,
-      realtor_org.id,
-    )
-    if (remove_manager_errors) {
-      return { errors: remove_manager_errors }
-    }
-    return null
+    return remove_manager(form_data, realtor_org.id)
   },
 
   [ACTION.REASSIGN_PROPERTY]: async ({
@@ -79,11 +68,6 @@ export const actions: Actions = {
     if (!realtor_org) error(403, "Forbidden")
 
     const form_data = await request.formData()
-    const [reassign_property_errors] =
-      await reassign_property(form_data)
-    if (reassign_property_errors) {
-      return { errors: reassign_property_errors }
-    }
-    return null
+    return reassign_property(form_data)
   },
 }

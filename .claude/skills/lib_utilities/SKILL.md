@@ -629,6 +629,15 @@ Processes pending rent escalations.
 
 - `calculate_all_due_escalations(): Promise<{ processed: number }>`
 
+## telemetry/logger.ts
+
+Isomorphic logger for server and client. Uses OpenTelemetry log API.
+
+- `logger.info(message: string, attributes?: LogAttributes): void`
+- `logger.warn(message: string, attributes?: LogAttributes): void`
+- `logger.error(message: string, attributes?: LogAttributes, thrown_error?: Error): void`
+- `logger.unknown(thrown: unknown): void` — handles non-Error values in catch blocks, coerces to Error and logs at error severity
+
 ## telemetry/sdk.ts
 
 Server-side OpenTelemetry initialization. Called in `hooks.server.ts` init hook before any HTTP calls.

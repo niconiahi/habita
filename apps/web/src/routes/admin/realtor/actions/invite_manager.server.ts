@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import { sql } from "kysely"
 import * as v from "valibot"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 
@@ -35,14 +35,9 @@ export async function invite_manager(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        invite_manager: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -55,15 +50,10 @@ export async function invite_manager(
       .executeTakeFirst()
     const member_count = result?.count ?? 0
     if (member_count >= 2) {
-      return [
-        {
-          invite_manager: {
-            execution:
-              "Durante el período de prueba solo podés tener 1 administrador",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Durante el período de prueba solo podés tener 1 administrador",
+      })
     }
   }
 
@@ -73,8 +63,8 @@ export async function invite_manager(
     now.getTime() + 7 * 24 * 60 * 60 * 1000,
   ) // 7 days
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("invitation")
       .values({
         id: invitation_id,
@@ -87,22 +77,20 @@ export async function invite_manager(
         created_at: now,
         updated_at: now,
       })
-      .execute(),
-  )
-  if (error) {
-    logger.error(
-      error.message,
-      { email: input.email, organization_id, inviter_id },
-      error,
-    )
-    return [
-      {
-        invite_manager: {
-          execution: "Error al enviar la invitación",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { email: input.email, organization_id, inviter_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al enviar la invitación",
+    })
   }
 
   // TODO: Send invitation email
@@ -111,6 +99,4 @@ export async function invite_manager(
     organization_id,
     email: input.email,
   })
-
-  return [null, null] as const
 }

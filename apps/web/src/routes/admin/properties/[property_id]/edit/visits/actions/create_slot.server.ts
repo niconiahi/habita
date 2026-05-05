@@ -56,19 +56,19 @@ export async function create_slot(form_data: FormData) {
       })
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        property_id: input.property_id,
-        host_id: input.host_id,
-        date: input.date,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          property_id: input.property_id,
+          host_id: input.host_id,
+          date: input.date,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear el turno",
     })

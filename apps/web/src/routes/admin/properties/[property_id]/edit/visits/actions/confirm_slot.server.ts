@@ -57,15 +57,15 @@ export async function confirm_slot(form_data: FormData) {
       ])
       .executeTakeFirstOrThrow()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { slot_id: id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { slot_id: id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "No se pudo confirmar el turno",
     })

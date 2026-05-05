@@ -32,15 +32,15 @@ export async function update_organization_name(
       headers: request_headers,
     })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      "failed to update organization name",
-      { organization_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { organization_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message:
         "Error al actualizar el nombre de la organización",

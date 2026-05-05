@@ -1,8 +1,8 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 
@@ -19,19 +19,14 @@ export async function remove_manager(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        remove_manager: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       await tx
         .deleteFrom("property_access")
         .where("user_id", "=", input.manager_id)
@@ -43,27 +38,24 @@ export async function remove_manager(
         .where("user_id", "=", input.manager_id)
         .where("role", "=", "manager")
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      { manager_id: input.manager_id, organization_id },
-      transaction_error,
-    )
-    return [
-      {
-        remove_manager: {
-          execution: "Error al eliminar el manager",
-        },
-      },
-      null,
-    ] as const
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { manager_id: input.manager_id, organization_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al eliminar el manager",
+    })
   }
+
   logger.info("manager removed from organization", {
     organization_id,
     manager_id: input.manager_id,
   })
-
-  return [null, null] as const
 }
