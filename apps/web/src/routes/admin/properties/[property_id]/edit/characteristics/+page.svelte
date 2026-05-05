@@ -4,7 +4,7 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import LocationInput from "$lib/components/LocationInput.svelte"
-  import { has_action_error } from "$lib/has_action_error"
+
   import {
     get_property_destinies,
     get_property_destiny_label,
@@ -237,8 +237,8 @@
         </li>
       {/each}
     </ul>
-    {#if has_action_error(form, "update_service")}
-      <p class="error">{form.errors.update_service}</p>
+    {#if form?.message}
+      <p class="error">{form.message}</p>
     {/if}
     <form
       method="POST"

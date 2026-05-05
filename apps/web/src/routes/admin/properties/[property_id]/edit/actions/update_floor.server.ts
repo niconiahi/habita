@@ -1,8 +1,8 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { FloorNumberSchema } from "$lib/floor_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -22,42 +22,33 @@ export async function update_floor(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_floor: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("floor")
       .set({
         number: input.number,
         updated_at: now,
       })
       .where("floor.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      error.message,
+      typed_error.message,
       { floor_id: input.id },
-      error,
+      typed_error,
     )
-    return [
-      {
-        update_floor: {
-          execution: "Error al actualizar el piso",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al actualizar el piso",
+    })
   }
-
-  return [null, null] as const
 }

@@ -1,6 +1,7 @@
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { normalize_input } from "$lib/server/form"
-import { safe_async } from "$lib/safe_async"
+
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { send_email } from "$lib/server/send_email"
@@ -21,19 +22,14 @@ export async function create_conversation_reply(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_conversation_reply: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [message_error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("conversation_message")
       .values({
         conversation_id: input.conversation_id,
@@ -41,42 +37,47 @@ export async function create_conversation_reply(
         message: input.message,
         created_at: now,
       })
-      .execute(),
-  )
-  if (message_error) {
-    logger.error(message_error.message, {}, message_error)
-    return [
-      {
-        create_conversation_reply: {
-          execution: "Error al enviar la respuesta",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al enviar la respuesta",
+    })
   }
 
-  const [update_error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("conversation")
       .set({ updated_at: now })
       .where("conversation.id", "=", input.conversation_id)
-      .execute(),
-  )
-  if (update_error) {
-    logger.error(update_error.message, {}, update_error)
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
   }
 
-  const [user_error, conversation_user] = await safe_async(
-    query_builder
+  let conversation_user: { email: string }
+  try {
+    conversation_user = await query_builder
       .selectFrom("conversation")
       .innerJoin("user", "user.id", "conversation.user_id")
       .where("conversation.id", "=", input.conversation_id)
       .select(["user.email"])
-      .executeTakeFirstOrThrow(),
-  )
-  if (user_error) {
-    logger.error(user_error.message, {}, user_error)
-    return [null, null] as const
+      .executeTakeFirstOrThrow()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return
   }
 
   const [email_error] = await send_email({
@@ -91,6 +92,4 @@ export async function create_conversation_reply(
       email_error.error,
     )
   }
-
-  return [null, null] as const
 }

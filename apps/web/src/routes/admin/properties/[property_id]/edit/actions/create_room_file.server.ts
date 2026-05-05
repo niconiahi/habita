@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { upsert_file } from "$lib/server/upsert_file"
@@ -20,19 +20,14 @@ export async function create_room_file(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_room_file: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const file_id = await upsert_file(input.file, tx)
       await tx
         .insertInto("room_file")
@@ -44,24 +39,20 @@ export async function create_room_file(
         })
         .returning("id")
         .executeTakeFirstOrThrow()
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       { room_id: input.room_id },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        create_room_file: {
-          execution:
-            "Error al agregar la foto a la habitación",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al agregar la foto a la habitación",
+    })
   }
-
-  return [null, null] as const
 }

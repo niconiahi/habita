@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -19,46 +19,37 @@ export async function update_construction_year(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_construction_year: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("property")
       .set({
         construction_year: input.construction_year ?? null,
         updated_at: now,
       })
       .where("property.id", "=", property_id)
-      .execute(),
-  )
-  if (error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      error.message,
+      typed_error.message,
       {
         property_id,
         construction_year: input.construction_year,
       },
-      error,
+      typed_error,
     )
-    return [
-      {
-        update_construction_year: {
-          execution:
-            "Error al actualizar el año de construcción",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al actualizar el año de construcción",
+    })
   }
-
-  return [null, null] as const
 }

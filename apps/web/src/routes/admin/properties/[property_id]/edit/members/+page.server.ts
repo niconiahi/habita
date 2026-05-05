@@ -25,11 +25,6 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [invite_landlord_errors] =
-      await invite_landlord(form_data)
-    if (invite_landlord_errors) {
-      return { errors: invite_landlord_errors }
-    }
-    return null
+    return invite_landlord(form_data)
   },
 }

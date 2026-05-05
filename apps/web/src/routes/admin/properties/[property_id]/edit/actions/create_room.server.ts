@@ -1,12 +1,12 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import { ROOM_TYPE } from "$lib/room_type"
-import { safe_async } from "$lib/safe_async"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
 
 export async function create_room(floor_id: number) {
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("room")
       .values({
         width: 0,
@@ -16,18 +16,19 @@ export async function create_room(floor_id: number) {
         created_at: now,
         floor_id,
       })
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, { floor_id }, error)
-    return [
-      {
-        create_room: {
-          execution: "Error al crear la habitación",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(
+      typed_error.message,
+      { floor_id },
+      typed_error,
+    )
+    return fail(400, {
+      message: "Error al crear la habitación",
+    })
   }
-  return [null, null] as const
 }
