@@ -7,6 +7,10 @@ description: Server-side action patterns with intent-based routing. Use when add
 
 Whenever new functionality is added to the application, it will be added as a server side action using SvelteKit named actions.
 
+## One action per form
+
+Every form submits to exactly one action. The `form` prop always belongs to the form that submitted it — no disambiguation needed.
+
 ## Action constants
 
 Each route with actions defines an `ACTION` constant object in `actions/action.ts`:
@@ -20,10 +24,9 @@ export const ACTION = {
 
 ## +page.server.ts caller pattern
 
-ALWAYS explicit destructure. Never `return await action()`. The action produces the error payload, the caller wraps it in `{ errors }` for SvelteKit:
+Callers propagate the action's return directly. `fail()` returns `ActionFailure` that SvelteKit recognizes. `redirect()` throws and SvelteKit catches it. No destructuring needed:
 
 ```ts
-import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { require_edit_access } from "$lib/server/property_access"
@@ -38,9 +41,7 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -53,21 +54,14 @@ export const actions: Actions = {
     )
     const form_data = await request.formData()
     form_data.set("property_id", String(property_id))
-    const [update_location_errors] =
-      await update_location(form_data)
-    if (update_location_errors) {
-      return { errors: update_location_errors }
-    }
-    return null
+    return update_location(form_data)
   },
   [ACTION.CREATE_ROOM]: async ({
     request,
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/auth/google")
-    }
+    require_authentication(locals)
     const property_id = v.parse(
       ForceNumberSchema,
       params.property_id,
@@ -78,26 +72,25 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const [create_room_errors] =
-      await create_room(property_id)
-    if (create_room_errors) {
-      return { errors: create_room_errors }
-    }
-    return null
+    return create_room(property_id)
   },
 }
 ```
 
-No try-catch. No `execute`/`get_errors` pattern. The action owns all error handling internally.
+No try-catch. No destructuring. The action owns all error handling internally via `fail()` and `redirect()`.
 
 ## Modular action functions
 
-Each action is a modular function in its own `.server.ts` file. Actions return Go-style tuples `[errors, data]` with `as const`. Use `v.safeParse` (never `v.parse`) for input validation, `safe_async` for DB operations:
+Each action is a modular function in its own `.server.ts` file. Actions use SvelteKit's `fail()` for errors and `redirect()` for navigation directly. Use `v.safeParse` (never `v.parse`) for input validation, try/catch for operations.
+
+Two `fail()` shapes:
+- **Validation errors**: `fail(400, { errors: v.flatten(issues) })`
+- **Execution errors**: `fail(400, { message: "Spanish error string" })`
 
 ```ts
+import { fail } from "@sveltejs/kit"
 import * as v from "valibot"
 import { normalize_input } from "$lib/server/form"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
 import { ForceNumberSchema } from "$lib/force_number"
@@ -117,19 +110,14 @@ export async function update_service(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_service: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("service")
       .set({
         property_id,
@@ -137,25 +125,21 @@ export async function update_service(
         id: input.id,
       })
       .where("service.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, {}, error)
-    return [
-      {
-        update_service: {
-          execution: "Error al actualizar el servicio",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(typed_error.message, {}, typed_error)
+    return fail(400, {
+      message: "Error al actualizar el servicio",
+    })
   }
-
-  return [null, null] as const
 }
 ```
 
-For full error handling patterns (data-returning actions, transactions, typed-error utilities, templates), see the `error_handling` skill.
+For full error handling patterns (transactions, typed-error utilities, templates), see the `error_handling` skill.
 
 ## File organization
 

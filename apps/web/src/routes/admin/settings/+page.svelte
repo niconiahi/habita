@@ -4,7 +4,6 @@
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
   import { compose_action } from "$lib/compose_action"
-  import { has_action_error } from "$lib/has_action_error"
   import type { ActionData, PageData } from "./$types"
   import { ACTION } from "./actions/action"
 
@@ -29,10 +28,8 @@
         label="Nombre"
         name="name"
         value={data.organization.name}
-        error={has_action_error(form, "update_organization_name")
-          ? (form.errors.update_organization_name.input?.nested?.name?.[0] ??
-            form.errors.update_organization_name.execution)
-          : undefined}
+        error={form?.errors?.nested?.name?.[0] ??
+          form?.message}
         required
       />
       <Formulary.Actions>
