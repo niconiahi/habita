@@ -30,6 +30,9 @@ export default defineConfig({
     devtoolsJson(),
     font_cache_plugin(),
   ],
+  resolve: {
+    dedupe: ["svelte", "@sveltejs/kit"],
+  },
   server: {
     host: "0.0.0.0",
     port: 5174,
