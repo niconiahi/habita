@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import { get_property_destinies } from "$lib/property_destiny"
 import { get_property_types } from "$lib/property_type"
@@ -28,11 +27,6 @@ export const actions: Actions = {
         locals.session.activeOrganizationId,
       )
     }
-    const [create_property_errors, create_property_data] =
-      await create_property(form_data)
-    if (create_property_errors) {
-      return { errors: create_property_errors }
-    }
-    redirect(303, create_property_data.redirect_to)
+    return create_property(form_data)
   },
 }
