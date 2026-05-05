@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit"
 import { display_location } from "$lib/display_location"
 import { mask_house_number } from "$lib/mask_house_number"
 import { fetch_properties } from "$lib/server/fetchers/properties"
@@ -118,11 +117,6 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions: Actions = {
   [ACTION.SET_FILTERS]: async ({ request }) => {
     const form_data = await request.formData()
-    const [set_filters_errors, set_filters_data] =
-      await set_filters(request, form_data)
-    if (set_filters_errors) {
-      return { errors: set_filters_errors }
-    }
-    redirect(303, set_filters_data.redirect_to)
+    return set_filters(request, form_data)
   },
 }

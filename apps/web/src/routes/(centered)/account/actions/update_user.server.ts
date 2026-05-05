@@ -1,6 +1,6 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { safe_async } from "$lib/safe_async"
 import { encrypt } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
@@ -81,14 +81,9 @@ export async function update_user(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_user: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -104,8 +99,8 @@ export async function update_user(
       : encrypt(input.document_number)
   const cuil =
     input.cuil === "" ? null : encrypt(input.cuil)
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("user")
       .set({
         name,
@@ -116,19 +111,19 @@ export async function update_user(
         updated_at: new Date(),
       })
       .where("user.id", "=", user_id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, { user_id }, error)
-    return [
-      {
-        update_user: {
-          execution: "Error al actualizar el perfil",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(
+      typed_error.message,
+      { user_id },
+      typed_error,
+    )
+    return fail(400, {
+      message: "Error al actualizar el perfil",
+    })
   }
-
-  return [null, null] as const
 }

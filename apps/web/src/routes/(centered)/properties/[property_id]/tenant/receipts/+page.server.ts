@@ -154,11 +154,6 @@ export const actions: Actions = {
       { property: ["read"] },
     )
     const form_data = await request.formData()
-    const [upload_receipt_errors] =
-      await upload_receipt(form_data)
-    if (upload_receipt_errors) {
-      return { errors: upload_receipt_errors }
-    }
-    return null
+    return upload_receipt(form_data)
   },
 }

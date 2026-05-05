@@ -1,3 +1,4 @@
+import { fail } from "@sveltejs/kit"
 import type { Span } from "@opentelemetry/api"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
@@ -7,7 +8,6 @@ import {
   compose_property_visit_href,
   NOTIFICATION_TYPE,
 } from "$lib/notification_type"
-import { safe_async } from "$lib/safe_async"
 import { display_location } from "$lib/display_location"
 import { publish_send_slot_reserved_alert } from "$lib/server/broker/producer/publish_send_slot_reserved_alert"
 import { decrypt } from "$lib/server/encryption"
@@ -37,14 +37,9 @@ export async function update_slot(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_slot: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
   const { visitant_id, id, property_id } = input
@@ -54,76 +49,75 @@ export async function update_slot(
     (file) => file.type === USER_FILE_TYPE.CREDIT_REPORT,
   )
   if (!has_credit_report) {
-    return [
-      {
-        update_slot: {
-          execution: "Se requiere un informe crediticio",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Se requiere un informe crediticio",
+    })
   }
 
   span.setAttribute("slot.id", id)
   span.setAttribute("visitant.id", visitant_id)
 
   const notification_type = NOTIFICATION_TYPE.PROPERTY_VISIT
-  const [tx_error, tx_result] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
-      const slot = await tx
-        .updateTable("slot")
-        .set({
-          visitant_id,
-          state: SLOT_STATE.RESERVED,
-        })
-        .where("slot.id", "=", id)
-        .where("slot.state", "=", SLOT_STATE.FREE)
-        .returning([
-          "slot.start_date",
-          "slot.end_date",
-          "slot.host_id",
-          "slot.property_id",
-          "slot.visitant_id",
-        ])
-        .executeTakeFirstOrThrow()
-      const now = new Date()
-      const notification = await tx
-        .insertInto("notification")
-        .values({
-          type: notification_type,
-          href: compose_property_visit_href(
-            slot.property_id,
-          ),
-          property_id: slot.property_id,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning([
-          "notification.id",
-          "notification.type",
-          "notification.href",
-          "notification.property_id",
-          "notification.created_at",
-        ])
-        .executeTakeFirstOrThrow()
-      return { slot, notification }
-    }),
-  )
-  if (tx_error) {
+  let tx_result: Awaited<ReturnType<typeof execute_transaction>>
+  async function execute_transaction() {
+    return query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const slot = await tx
+          .updateTable("slot")
+          .set({
+            visitant_id,
+            state: SLOT_STATE.RESERVED,
+          })
+          .where("slot.id", "=", id)
+          .where("slot.state", "=", SLOT_STATE.FREE)
+          .returning([
+            "slot.start_date",
+            "slot.end_date",
+            "slot.host_id",
+            "slot.property_id",
+            "slot.visitant_id",
+          ])
+          .executeTakeFirstOrThrow()
+        const now = new Date()
+        const notification = await tx
+          .insertInto("notification")
+          .values({
+            type: notification_type,
+            href: compose_property_visit_href(
+              slot.property_id,
+            ),
+            property_id: slot.property_id,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning([
+            "notification.id",
+            "notification.type",
+            "notification.href",
+            "notification.property_id",
+            "notification.created_at",
+          ])
+          .executeTakeFirstOrThrow()
+        return { slot, notification }
+      })
+  }
+  try {
+    tx_result = await execute_transaction()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      tx_error.message,
+      typed_error.message,
       { slot_id: id, visitant_id, property_id },
-      tx_error,
+      typed_error,
     )
-    return [
-      {
-        update_slot: {
-          execution:
-            "El turno ya fue reservado por otro visitante",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "El turno ya fue reservado por otro visitante",
+    })
   }
   const { slot, notification } = tx_result
 
@@ -140,14 +134,9 @@ export async function update_slot(
   const property = await fetch_property(property_id)
   if (!property) {
     logger.error("property not found", { property_id })
-    return [
-      {
-        update_slot: {
-          execution: "No se encontró la propiedad",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró la propiedad",
+    })
   }
 
   notification_emitter.emit(NOTIFICATION_EVENT, {
@@ -188,6 +177,4 @@ export async function update_slot(
     property_id,
     visitant_id,
   })
-
-  return [null, null] as const
 }

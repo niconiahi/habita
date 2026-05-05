@@ -36,26 +36,12 @@ export const actions: Actions = {
   [ACTION.CREATE_FILE]: async ({ request, locals }) => {
     require_authentication(locals)
     const form_data = await request.formData()
-    const [create_file_errors] = await create_file(
-      form_data,
-      locals.user.id,
-    )
-    if (create_file_errors) {
-      return { errors: create_file_errors }
-    }
-    return null
+    return create_file(form_data, locals.user.id)
   },
   [ACTION.UPDATE_USER]: async ({ request, locals }) => {
     require_authentication(locals)
     const form_data = await request.formData()
-    const [update_user_errors] = await update_user(
-      form_data,
-      locals.user.id,
-    )
-    if (update_user_errors) {
-      return { errors: update_user_errors }
-    }
-    return null
+    return update_user(form_data, locals.user.id)
   },
 }
 

@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import { require_authentication } from "$lib/server/auth"
 import type { Actions, PageServerLoad } from "./$types"
@@ -36,15 +35,11 @@ export const actions: Actions = {
   }) => {
     require_authentication(locals)
     const form_data = await request.formData()
-    const [errors, data] = await create_account(
+    return create_account(
       form_data,
       locals.user.id,
       locals.user.email,
       request.headers,
     )
-    if (errors) {
-      return { errors }
-    }
-    redirect(303, data.redirect_path)
   },
 }

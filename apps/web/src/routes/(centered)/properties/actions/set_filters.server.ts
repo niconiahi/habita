@@ -1,3 +1,4 @@
+import { fail, redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { PropertyTagTypeSchema } from "$lib/property_tag_type"
@@ -93,14 +94,9 @@ export async function set_filters(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        set_filters: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -142,12 +138,8 @@ export async function set_filters(
     }
   }
 
-  return [
-    null,
-    {
-      redirect_to: decodeURIComponent(
-        url.pathname + url.search,
-      ),
-    },
-  ] as const
+  redirect(
+    303,
+    decodeURIComponent(url.pathname + url.search),
+  )
 }
