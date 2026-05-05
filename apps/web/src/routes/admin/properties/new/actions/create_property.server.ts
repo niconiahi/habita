@@ -1,3 +1,4 @@
+import { fail, redirect } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ACCESS_TYPE } from "$lib/access_type"
@@ -9,7 +10,6 @@ import {
   PROPERTY_TYPE,
   PropertyTypeSchema,
 } from "$lib/property_type"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { compose_point } from "$lib/server/point"
@@ -37,14 +37,9 @@ export async function create_property(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_property: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -53,87 +48,86 @@ export async function create_property(form_data: FormData) {
       ? (input.unit ?? null)
       : null
 
-  const [tx_error, property] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
-      const location = await tx
-        .insertInto("location")
-        .values({
-          latitude: input.location.lat,
-          longitude: input.location.lon,
-          road: input.location.address.road,
-          house_number: input.location.address.house_number,
-          suburb: input.location.address.suburb,
-          town: input.location.address.town,
-          city: input.location.address.city,
-          state: input.location.address.state,
-          point: compose_point(
-            input.location.lat,
-            input.location.lon,
-          ),
-          address: input.location.display_name,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-      const property = await tx
-        .insertInto("property")
-        .values({
-          type: input.type,
-          unit,
-          destinies: input.destiny,
-          state: PROPERTY_STATE.EDITING,
-          realtor_id: input.organization_id ?? null,
-          created_at: now,
-          updated_at: now,
-          location_id: location.id,
-        })
-        .returning("property.id")
-        .executeTakeFirstOrThrow()
-      return { id: property.id }
-    }),
-  )
-  if (tx_error) {
+  let property
+  try {
+    property = await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const location = await tx
+          .insertInto("location")
+          .values({
+            latitude: input.location.lat,
+            longitude: input.location.lon,
+            road: input.location.address.road,
+            house_number:
+              input.location.address.house_number,
+            suburb: input.location.address.suburb,
+            town: input.location.address.town,
+            city: input.location.address.city,
+            state: input.location.address.state,
+            point: compose_point(
+              input.location.lat,
+              input.location.lon,
+            ),
+            address: input.location.display_name,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
+        const property = await tx
+          .insertInto("property")
+          .values({
+            type: input.type,
+            unit,
+            destinies: input.destiny,
+            state: PROPERTY_STATE.EDITING,
+            realtor_id: input.organization_id ?? null,
+            created_at: now,
+            updated_at: now,
+            location_id: location.id,
+          })
+          .returning("property.id")
+          .executeTakeFirstOrThrow()
+        return { id: property.id }
+      })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      tx_error.message,
+      typed_error.message,
       {
         user_id: input.user_id,
         organization_id: input.organization_id,
       },
-      tx_error,
+      typed_error,
     )
-    return [
-      {
-        create_property: {
-          execution: "Error al crear la propiedad",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al crear la propiedad",
+    })
   }
 
-  const [access_error] = await safe_async(
-    assign_property_access(
+  try {
+    await assign_property_access(
       property.id,
       input.user_id,
       ACCESS_TYPE.MANAGER,
-    ),
-  )
-  if (access_error) {
-    logger.error(
-      access_error.message,
-      { property_id: property.id, user_id: input.user_id },
-      access_error,
     )
-    return [
-      {
-        create_property: {
-          execution:
-            "Error al asignar acceso a la propiedad",
-        },
-      },
-      null,
-    ] as const
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
+    logger.error(
+      typed_error.message,
+      { property_id: property.id, user_id: input.user_id },
+      typed_error,
+    )
+    return fail(400, {
+      message: "Error al asignar acceso a la propiedad",
+    })
   }
 
   logger.info("property created", {
@@ -141,10 +135,8 @@ export async function create_property(form_data: FormData) {
     user_id: input.user_id,
   })
 
-  return [
-    null,
-    {
-      redirect_to: `/admin/properties/${property.id}/edit/characteristics`,
-    },
-  ] as const
+  redirect(
+    303,
+    `/admin/properties/${property.id}/edit/characteristics`,
+  )
 }

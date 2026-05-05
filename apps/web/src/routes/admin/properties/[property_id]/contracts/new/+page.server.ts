@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import * as v from "valibot"
 import { get_contract_types } from "$lib/contract_type"
@@ -47,13 +46,6 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [errors, data] = await create_contract(
-      form_data,
-      property_id,
-    )
-    if (errors) {
-      return { errors }
-    }
-    redirect(303, data.redirect_to)
+    return create_contract(form_data, property_id)
   },
 }
