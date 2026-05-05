@@ -1,7 +1,7 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
 
@@ -21,14 +21,9 @@ export async function reorder_floors(
     floor_ids: form_data.get("floor_ids"),
   })
   if (!input_validation.success) {
-    return [
-      {
-        reorder_floors: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const { floor_ids } = input_validation.output
 
@@ -46,8 +41,8 @@ export async function reorder_floors(
     .map((f) => f.number)
     .sort((a, b) => a - b)
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       for (let i = 0; i < floor_ids.length; i++) {
         await tx
           .updateTable("floor")
@@ -58,23 +53,19 @@ export async function reorder_floors(
           .where("floor.id", "=", floor_ids[i])
           .execute()
       }
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       { property_id },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        reorder_floors: {
-          execution: "Error al reordenar los pisos",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al reordenar los pisos",
+    })
   }
-
-  return [null, null] as const
 }

@@ -1,8 +1,8 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
 import { LocationSchema } from "$lib/location"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { compose_point } from "$lib/server/point"
@@ -23,19 +23,14 @@ export async function update_location(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_location: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("location")
       .set({
         id: input.id,
@@ -57,23 +52,19 @@ export async function update_location(form_data: FormData) {
         updated_at: now,
       })
       .where("location.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      error.message,
+      typed_error.message,
       { location_id: input.id },
-      error,
+      typed_error,
     )
-    return [
-      {
-        update_location: {
-          execution: "Error al actualizar la ubicación",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al actualizar la ubicación",
+    })
   }
-
-  return [null, null] as const
 }

@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { SLOT_STATE } from "$lib/slot_state"
 import { logger } from "$lib/telemetry/logger"
@@ -16,39 +16,30 @@ export async function destroy_slot(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        destroy_slot: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .deleteFrom("slot")
       .where("slot.id", "=", input.id)
       .where("slot.state", "=", SLOT_STATE.FREE)
-      .execute(),
-  )
-  if (error) {
+      .execute()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      error.message,
+      typed_error.message,
       { slot_id: input.id },
-      error,
+      typed_error,
     )
-    return [
-      {
-        destroy_slot: {
-          execution: "Error al eliminar el turno",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al eliminar el turno",
+    })
   }
-
-  return [null, null] as const
 }

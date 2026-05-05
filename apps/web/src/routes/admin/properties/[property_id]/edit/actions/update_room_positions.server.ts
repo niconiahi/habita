@@ -1,6 +1,6 @@
+import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -27,19 +27,14 @@ export async function update_room_positions(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_room_positions: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       for (const pos of input.positions) {
         await tx
           .insertInto("room_map")
@@ -59,23 +54,20 @@ export async function update_room_positions(
           )
           .execute()
       }
-    }),
-  )
-  if (transaction_error) {
+    })
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      transaction_error.message,
+      typed_error.message,
       { room_count: input.positions.length },
-      transaction_error,
+      typed_error,
     )
-    return [
-      {
-        update_room_positions: {
-          execution:
-            "Error al guardar las posiciones del mapa",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message:
+        "Error al guardar las posiciones del mapa",
+    })
   }
-  return [null, null] as const
 }

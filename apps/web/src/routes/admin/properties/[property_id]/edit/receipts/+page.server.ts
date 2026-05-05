@@ -58,11 +58,6 @@ export const actions: Actions = {
       locals.session.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [delete_receipt_errors] =
-      await delete_receipt(form_data)
-    if (delete_receipt_errors) {
-      return { errors: delete_receipt_errors }
-    }
-    return null
+    return delete_receipt(form_data)
   },
 }

@@ -58,13 +58,9 @@ export const actions: Actions = {
       error(403, "forbidden")
     }
     const form_data = await request.formData()
-    const [reply_errors] = await create_conversation_reply(
+    return create_conversation_reply(
       form_data,
       locals.user.id,
     )
-    if (reply_errors) {
-      return { errors: reply_errors }
-    }
-    return null
   },
 }

@@ -1,8 +1,8 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { display_location } from "$lib/display_location"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { publish_send_booking_confirmation } from "$lib/server/broker/producer/publish_send_booking_confirmation"
 import { decrypt } from "$lib/server/encryption"
 import { normalize_input } from "$lib/server/form"
@@ -29,19 +29,21 @@ export async function confirm_slot(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        confirm_slot: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const { id } = input_validation.output
 
-  const [update_error, slot] = await safe_async(
-    query_builder
+  let slot: {
+    start_date: Date
+    end_date: Date
+    host_id: number
+    visitant_id: number | null
+    property_id: number
+  }
+  try {
+    slot = await query_builder
       .updateTable("slot")
       .set({ state: SLOT_STATE.CONFIRMED })
       .where("slot.id", "=", id)
@@ -53,22 +55,20 @@ export async function confirm_slot(form_data: FormData) {
         "slot.visitant_id",
         "slot.property_id",
       ])
-      .executeTakeFirstOrThrow(),
-  )
-  if (update_error) {
+      .executeTakeFirstOrThrow()
+  } catch (error) {
+    const typed_error =
+      error instanceof Error
+        ? error
+        : new Error("unknown error")
     logger.error(
-      update_error.message,
+      typed_error.message,
       { slot_id: id },
-      update_error,
+      typed_error,
     )
-    return [
-      {
-        confirm_slot: {
-          execution: "No se pudo confirmar el turno",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se pudo confirmar el turno",
+    })
   }
 
   const host_row = await query_builder
@@ -96,14 +96,9 @@ export async function confirm_slot(form_data: FormData) {
     logger.error("property not found", {
       property_id: slot.property_id,
     })
-    return [
-      {
-        confirm_slot: {
-          execution: "No se encontró la propiedad",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró la propiedad",
+    })
   }
 
   const summary = `Visita a la propiedad ubicada en ${display_location(property.location)}`
@@ -158,6 +153,4 @@ Te adjuntamos una invitación al calendario con los detalles.`
     property_id: slot.property_id,
     visitant_id: slot.visitant_id,
   })
-
-  return [null, null] as const
 }
