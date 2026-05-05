@@ -176,8 +176,11 @@ export async function create_room(property_id: number) {
       .values({ property_id, created_at: now, updated_at: now })
       .execute()
   } catch (error) {
-    const typed_error = error instanceof Error ? error : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, { message: "Error al crear la habitación" })
   }
 }
@@ -202,8 +205,11 @@ export async function create_property(form_data: FormData) {
       return { id: result.id }
     })
   } catch (error) {
-    const typed_error = error instanceof Error ? error : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, { message: "Error al crear la propiedad" })
   }
 
@@ -224,8 +230,11 @@ try {
     await tx.insertInto("bar").values({ foo_id: row.id }).execute()
   })
 } catch (error) {
-  const typed_error = error instanceof Error ? error : new Error("unknown error")
-  logger.error(typed_error.message, {}, typed_error)
+  if (error instanceof Error) {
+    logger.error(error.message, {}, error)
+  } else {
+    logger.unknown(error)
+  }
   return fail(400, { message: "Error message" })
 }
 ```
@@ -246,8 +255,11 @@ try {
     }
   })
 } catch (error) {
-  const typed_error = error instanceof Error ? error : new Error("unknown error")
-  logger.error(typed_error.message, {}, typed_error)
+  if (error instanceof Error) {
+    logger.error(error.message, {}, error)
+  } else {
+    logger.unknown(error)
+  }
   return fail(400, { message: "Error al actualizar las posiciones" })
 }
 ```

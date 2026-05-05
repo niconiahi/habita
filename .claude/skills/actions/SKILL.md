@@ -127,11 +127,11 @@ export async function update_service(
       .where("service.id", "=", input.id)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al actualizar el servicio",
     })
