@@ -1,7 +1,6 @@
 import { createCipheriv, pbkdf2Sync } from "node:crypto"
 import * as v from "valibot"
 import type { ObjectValues } from "$lib/compose_types"
-import { safe_async } from "$lib/safe_async"
 import { logger } from "$lib/telemetry/logger"
 
 export const API_FETCH_ERROR = {
@@ -11,10 +10,13 @@ export const API_FETCH_ERROR = {
   SCHEMA_VALIDATION_FAILED: 3,
 } as const
 
-// NOTE: newly added error
-export type ApiFetchError = {
-  type: ObjectValues<typeof API_FETCH_ERROR>
-  error: Error
+export class ApiFetchError extends Error {
+  constructor(
+    public type: ObjectValues<typeof API_FETCH_ERROR>,
+    cause: Error,
+  ) {
+    super(cause.message, { cause })
+  }
 }
 
 function get_config() {
@@ -103,11 +105,12 @@ async function api_fetch<T>(
   endpoint: string,
   body: object,
   schema: v.GenericSchema<T>,
-): Promise<[ApiFetchError, null] | [null, T]> {
+): Promise<T> {
   const { base_url, user_id } = get_config()
-  // NOTE: new safe implementation
-  const [fetch_error, response] = await safe_async(
-    fetch(`${base_url}${endpoint}`, {
+
+  let response: Response
+  try {
+    response = await fetch(`${base_url}${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -115,21 +118,21 @@ async function api_fetch<T>(
         IdentificadorUsuario: user_id,
       },
       body: JSON.stringify(body),
-    }),
-  )
-  if (fetch_error) {
-    logger.error(
-      fetch_error.message,
-      { endpoint },
-      fetch_error,
-    )
-    return [
-      {
-        type: API_FETCH_ERROR.FETCH_FAILED,
-        error: fetch_error,
-      },
-      null,
-    ]
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, { endpoint }, error)
+      throw new ApiFetchError(
+        API_FETCH_ERROR.FETCH_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new ApiFetchError(
+        API_FETCH_ERROR.FETCH_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   if (!response.ok) {
@@ -138,31 +141,29 @@ async function api_fetch<T>(
       `Digital signature API error (${endpoint}): ${error_text}`,
     )
     logger.error(api_error.message, { endpoint }, api_error)
-    return [
-      {
-        type: API_FETCH_ERROR.API_ERROR,
-        error: api_error,
-      },
-      null,
-    ]
+    throw new ApiFetchError(
+      API_FETCH_ERROR.API_ERROR,
+      api_error,
+    )
   }
 
-  const [json_error, data] = await safe_async(
-    response.json(),
-  )
-  if (json_error) {
-    logger.error(
-      json_error.message,
-      { endpoint },
-      json_error,
-    )
-    return [
-      {
-        type: API_FETCH_ERROR.JSON_PARSE_FAILED,
-        error: json_error,
-      },
-      null,
-    ]
+  let data: unknown
+  try {
+    data = await response.json()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, { endpoint }, error)
+      throw new ApiFetchError(
+        API_FETCH_ERROR.JSON_PARSE_FAILED,
+        error,
+      )
+    } else {
+      logger.unknown(error)
+      throw new ApiFetchError(
+        API_FETCH_ERROR.JSON_PARSE_FAILED,
+        new Error("unknown error"),
+      )
+    }
   }
 
   const parsed_validation = v.safeParse(schema, data)
@@ -175,17 +176,13 @@ async function api_fetch<T>(
       { endpoint },
       parse_error,
     )
-    return [
-      {
-        type: API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED,
-        error: parse_error,
-      },
-      null,
-    ]
+    throw new ApiFetchError(
+      API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED,
+      parse_error,
+    )
   }
-  const parsed = parsed_validation.output
 
-  return [null, parsed]
+  return parsed_validation.output
 }
 
 const BaseResponseSchema = v.object({

@@ -215,7 +215,7 @@ Static page — no loader, no server file. Displays confirmation message.
 ### Style rules
 
 - Terse — no filler words
-- Inline code for function names, variable names, constants, patterns (`safe_async`, `require_edit_access()`, `fetch_property()`)
+- Inline code for function names, variable names, constants, patterns (`require_edit_access()`, `fetch_property()`, `SendEmailError`)
 - For complex pages with many actions, group them by domain:
 
 ```md

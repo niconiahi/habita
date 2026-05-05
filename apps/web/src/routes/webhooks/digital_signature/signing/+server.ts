@@ -6,6 +6,7 @@ import { CONTRACT_STATE } from "$lib/contract_state"
 import { ForceNumberSchema } from "$lib/force_number"
 import {
   API_FETCH_ERROR,
+  ApiFetchError,
   fetch_signed_document,
 } from "$lib/server/digital_signature"
 import { now } from "$lib/server/now"
@@ -82,65 +83,51 @@ export const GET: RequestHandler = async ({ url }) => {
     signature.tenant_status === SIGNATURE_STATUS.SIGNED &&
     signature.document_id
   ) {
-    const [signed_document_error, signed_document] =
-      await fetch_signed_document(signature.document_id)
-    if (signed_document_error) {
-      if (
-        signed_document_error.type ===
-        API_FETCH_ERROR.FETCH_FAILED
-      ) {
-        // NOTE: fill the action message
-        logger.error(
-          signed_document_error.error.message,
-          {
+    let signed_document: Awaited<ReturnType<typeof fetch_signed_document>>
+    try {
+      signed_document = await fetch_signed_document(
+        signature.document_id,
+      )
+    } catch (error) {
+      if (error instanceof ApiFetchError) {
+        if (
+          error.type === API_FETCH_ERROR.FETCH_FAILED
+        ) {
+          logger.error(error.message, {
             contract_id,
             error_type: API_FETCH_ERROR.FETCH_FAILED,
-          },
-          signed_document_error.error,
-        )
-      }
-      if (
-        signed_document_error.type ===
-        API_FETCH_ERROR.API_ERROR
-      ) {
-        // NOTE: fill the action message
-        logger.error(
-          signed_document_error.error.message,
-          {
+          }, error)
+        }
+        if (
+          error.type === API_FETCH_ERROR.API_ERROR
+        ) {
+          logger.error(error.message, {
             contract_id,
             error_type: API_FETCH_ERROR.API_ERROR,
-          },
-          signed_document_error.error,
-        )
-      }
-      if (
-        signed_document_error.type ===
-        API_FETCH_ERROR.JSON_PARSE_FAILED
-      ) {
-        // NOTE: fill the action message
-        logger.error(
-          signed_document_error.error.message,
-          {
+          }, error)
+        }
+        if (
+          error.type ===
+          API_FETCH_ERROR.JSON_PARSE_FAILED
+        ) {
+          logger.error(error.message, {
             contract_id,
-            error_type: API_FETCH_ERROR.JSON_PARSE_FAILED,
-          },
-          signed_document_error.error,
-        )
-      }
-      if (
-        signed_document_error.type ===
-        API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
-      ) {
-        // NOTE: fill the action message
-        logger.error(
-          signed_document_error.error.message,
-          {
+            error_type:
+              API_FETCH_ERROR.JSON_PARSE_FAILED,
+          }, error)
+        }
+        if (
+          error.type ===
+          API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
+        ) {
+          logger.error(error.message, {
             contract_id,
             error_type:
               API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED,
-          },
-          signed_document_error.error,
-        )
+          }, error)
+        }
+      } else {
+        logger.unknown(error)
       }
       redirect(302, "/digital_signature/error")
     }

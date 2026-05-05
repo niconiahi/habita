@@ -4,7 +4,10 @@ import { normalize_input } from "$lib/server/form"
 
 import { logger } from "$lib/telemetry/logger"
 import { now } from "$lib/server/now"
-import { send_email } from "$lib/server/send_email"
+import {
+  SendEmailError,
+  send_email,
+} from "$lib/server/send_email"
 import { ForceNumberSchema } from "$lib/force_number"
 import { query_builder } from "db/query_builder"
 
@@ -80,16 +83,21 @@ export async function create_conversation_reply(
     return
   }
 
-  const [email_error] = await send_email({
-    to: { email: conversation_user.email, name: "" },
-    subject: "Te respondimos en Habita",
-    html: `<p>Te respondimos en Habita:</p><blockquote>${input.message}</blockquote><p><a href="https://dev.habita.rent">Volver a Habita</a></p>`,
-  })
-  if (email_error) {
-    logger.error(
-      "failed to send conversation reply email",
-      {},
-      email_error.error,
-    )
+  try {
+    await send_email({
+      to: { email: conversation_user.email, name: "" },
+      subject: "Te respondimos en Habita",
+      html: `<p>Te respondimos en Habita:</p><blockquote>${input.message}</blockquote><p><a href="https://dev.habita.rent">Volver a Habita</a></p>`,
+    })
+  } catch (error) {
+    if (error instanceof SendEmailError) {
+      logger.error(
+        "failed to send conversation reply email",
+        {},
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
   }
 }

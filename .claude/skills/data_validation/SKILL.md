@@ -56,10 +56,20 @@ const InputSchema = v.object({
 })
 ```
 
-If you're outside a Valibot pipeline (e.g. API route), use `safe_sync`:
+If you're outside a Valibot pipeline (e.g. API route), use try/catch:
 
 ```ts
-const [error, parsed] = safe_sync(() => JSON.parse(text))
+let parsed: unknown
+try {
+  parsed = JSON.parse(text)
+} catch (error) {
+  if (error instanceof Error) {
+    logger.error(error.message, {}, error)
+  } else {
+    logger.unknown(error)
+  }
+  return json({ error: "Invalid JSON" }, { status: 400 })
+}
 ```
 
 ## Locally constructed data — use `satisfies`, not `v.parse`
