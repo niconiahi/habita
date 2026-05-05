@@ -1,5 +1,5 @@
 import { query_builder } from "db/query_builder"
-import { safe_async } from "$lib/safe_async"
+import { fail, redirect } from "@sveltejs/kit"
 import {
   CREATE_PREFERENCE_ERROR,
   create_preference,
@@ -21,69 +21,44 @@ export async function create_payment() {
       preference_error.type ===
       CREATE_PREFERENCE_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          create_payment: {
-            execution:
-              "No se pudo conectar al servicio de pagos",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de pagos",
+      })
     }
     if (
       preference_error.type ===
       CREATE_PREFERENCE_ERROR.API_ERROR
     ) {
-      return [
-        {
-          create_payment: {
-            execution: "Error en el servicio de pagos",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message: "Error en el servicio de pagos",
+      })
     }
     if (
       preference_error.type ===
       CREATE_PREFERENCE_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          create_payment: {
-            execution:
-              "Respuesta inválida del servicio de pagos",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de pagos",
+      })
     }
     if (
       preference_error.type ===
       CREATE_PREFERENCE_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          create_payment: {
-            execution:
-              "Respuesta inesperada del servicio de pagos",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de pagos",
+      })
     }
-    return [
-      {
-        create_payment: {
-          execution: "Error al crear el pago",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al crear el pago",
+    })
   }
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const payment = await tx
         .insertInto("payment")
         .values({
@@ -103,30 +78,25 @@ export async function create_payment() {
           updated_at: now,
         })
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      { preference_id: preference.id },
-      transaction_error,
-    )
-    return [
-      {
-        create_payment: {
-          execution: "Error al crear el pago",
-        },
-      },
-      null,
-    ] as const
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { preference_id: preference.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al crear el pago",
+    })
   }
 
   logger.info("payment preference created", {
     preference_id: preference.id,
   })
 
-  return [
-    null,
-    { init_point: preference.init_point },
-  ] as const
+  redirect(303, preference.init_point)
 }

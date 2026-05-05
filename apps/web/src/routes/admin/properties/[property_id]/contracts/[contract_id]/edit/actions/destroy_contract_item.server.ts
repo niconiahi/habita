@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { publish_delete_object } from "$lib/server/broker/producer/publish_delete_object"
 import { delete_object } from "$lib/server/object_store"
@@ -19,14 +19,9 @@ export async function destroy_contract_item(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        destroy_contract_item: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -41,8 +36,8 @@ export async function destroy_contract_item(
     .where("contract_item_id", "=", input.id)
     .execute()
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       await tx
         .deleteFrom("contract_item_file")
         .where("contract_item_id", "=", input.id)
@@ -59,23 +54,20 @@ export async function destroy_contract_item(
         .deleteFrom("contract_item")
         .where("id", "=", input.id)
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      { contract_item_id: input.id },
-      transaction_error,
-    )
-    return [
-      {
-        destroy_contract_item: {
-          execution:
-            "Error al eliminar el ítem del contrato",
-        },
-      },
-      null,
-    ] as const
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { contract_item_id: input.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al eliminar el ítem del contrato",
+    })
   }
 
   for (const file_hash of file_hashes) {
@@ -97,6 +89,4 @@ export async function destroy_contract_item(
       }
     }
   }
-
-  return [null, null] as const
 }

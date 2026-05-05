@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -21,19 +21,14 @@ export async function update_income_guarantor(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_income_guarantor: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("income_warranty_guarantor")
       .set({
         guarantor_name: input.guarantor_name,
@@ -42,26 +37,22 @@ export async function update_income_guarantor(
         updated_at: now,
       })
       .where("income_warranty_guarantor.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(
-      error.message,
-      {
-        guarantor_id: input.id,
-        guarantor_dni: input.guarantor_dni,
-      },
-      error,
-    )
-    return [
-      {
-        update_income_guarantor: {
-          execution: "Error al actualizar el garante",
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          guarantor_id: input.id,
+          guarantor_dni: input.guarantor_dni,
         },
-      },
-      null,
-    ] as const
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al actualizar el garante",
+    })
   }
-
-  return [null, null] as const
 }

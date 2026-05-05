@@ -33,14 +33,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_pdf_errors] = await create_pdf(
-      form_data,
-      property_id,
-    )
-    if (create_pdf_errors) {
-      return { errors: create_pdf_errors }
-    }
-    return null
+    return create_pdf(form_data, property_id)
   },
   [ACTION.CHECK_CERTIFICATES]: async ({
     request,
@@ -60,14 +53,7 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
-    const [
-      check_certificates_errors,
-      check_certificates_data,
-    ] = await check_certificates(property_id)
-    if (check_certificates_errors) {
-      return { errors: check_certificates_errors }
-    }
-    return check_certificates_data
+    return check_certificates(property_id)
   },
   [ACTION.START_ONBOARDING]: async ({
     request,
@@ -88,12 +74,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [start_onboarding_errors] =
-      await start_onboarding(form_data, property_id)
-    if (start_onboarding_errors) {
-      return { errors: start_onboarding_errors }
-    }
-    return null
+    return start_onboarding(form_data, property_id)
   },
   [ACTION.SEND_FOR_SIGNING]: async ({
     request,
@@ -114,12 +95,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [send_for_signing_errors] =
-      await send_for_signing(form_data, property_id)
-    if (send_for_signing_errors) {
-      return { errors: send_for_signing_errors }
-    }
-    return null
+    return send_for_signing(form_data, property_id)
   },
   [ACTION.VERIFY_SIGNATURE]: async ({
     request,
@@ -144,15 +120,10 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [verify_signature_errors] =
-      await verify_signature(
-        form_data,
-        property_id,
-        contract_id,
-      )
-    if (verify_signature_errors) {
-      return { errors: verify_signature_errors }
-    }
-    return null
+    return verify_signature(
+      form_data,
+      property_id,
+      contract_id,
+    )
   },
 }

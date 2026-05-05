@@ -1,9 +1,9 @@
 import { createHash, randomUUID } from "node:crypto"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { publish_send_signing_request } from "$lib/server/broker/producer/publish_send_signing_request"
 import {
   API_FETCH_ERROR,
@@ -31,101 +31,69 @@ export async function send_for_signing(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        send_for_signing: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [contract_file_error, contract_file] =
-    await safe_async(
-      query_builder
-        .selectFrom("contract_file")
-        .innerJoin(
-          "file",
-          "file.id",
-          "contract_file.file_id",
-        )
-        .where(
-          "contract_file.contract_id",
-          "=",
-          input.contract_id,
-        )
-        .where(
-          "contract_file.type",
-          "=",
-          CONTRACT_FILE_TYPE.CONTRACT,
-        )
-        .select(["file.hash", "file.id as file_id"])
-        .executeTakeFirst(),
-    )
-  if (contract_file_error) {
-    logger.error(
-      contract_file_error.message,
-      {},
-      contract_file_error,
-    )
-    return [
-      {
-        send_for_signing: {
-          execution: "Error al buscar el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+  let contract_file: { hash: string; file_id: number } | undefined
+  try {
+    contract_file = await query_builder
+      .selectFrom("contract_file")
+      .innerJoin(
+        "file",
+        "file.id",
+        "contract_file.file_id",
+      )
+      .where(
+        "contract_file.contract_id",
+        "=",
+        input.contract_id,
+      )
+      .where(
+        "contract_file.type",
+        "=",
+        CONTRACT_FILE_TYPE.CONTRACT,
+      )
+      .select(["file.hash", "file.id as file_id"])
+      .executeTakeFirst()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al buscar el PDF del contrato",
+    })
   }
   if (!contract_file) {
-    return [
-      {
-        send_for_signing: {
-          execution: "No se encontró el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró el PDF del contrato",
+    })
   }
   const [object_error, pdf_content] = await get_object(
     `files/${contract_file.hash}`,
   )
   if (object_error) {
-    return [
-      {
-        send_for_signing: {
-          execution: "Error al obtener el PDF del contrato",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al obtener el PDF del contrato",
+    })
   }
   const [landlord, tenant] = await Promise.all([
     fetch_landlord(property_id),
     fetch_tenant(property_id),
   ])
   if (!landlord?.cuil) {
-    return [
-      {
-        send_for_signing: {
-          execution: "El locador no tiene CUIL configurado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "El locador no tiene CUIL configurado",
+    })
   }
   if (!tenant?.cuil) {
-    return [
-      {
-        send_for_signing: {
-          execution:
-            "El locatario no tiene CUIL configurado",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "El locatario no tiene CUIL configurado",
+    })
   }
   const pdf_buffer = pdf_content
   const document_base64 = pdf_buffer.toString("base64")
@@ -162,73 +130,43 @@ export async function send_for_signing(
     if (
       submit_error.type === API_FETCH_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          send_for_signing: {
-            execution:
-              "No se pudo conectar al servicio de firma digital",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de firma digital",
+      })
     }
     if (submit_error.type === API_FETCH_ERROR.API_ERROR) {
-      return [
-        {
-          send_for_signing: {
-            execution:
-              "Error en el servicio de firma digital",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Error en el servicio de firma digital",
+      })
     }
     if (
       submit_error.type ===
       API_FETCH_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          send_for_signing: {
-            execution:
-              "Respuesta inválida del servicio de firma digital",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de firma digital",
+      })
     }
     if (
       submit_error.type ===
       API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          send_for_signing: {
-            execution:
-              "Respuesta inesperada del servicio de firma digital",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de firma digital",
+      })
     }
-    return [
-      {
-        send_for_signing: {
-          execution: "Error al enviar para firma digital",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al enviar para firma digital",
+    })
   }
   if (submit_result.CodigoResultado !== 1) {
-    return [
-      {
-        send_for_signing: {
-          execution: submit_result.MensajeResultado,
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: submit_result.MensajeResultado,
+    })
   }
   const landlord_auth =
     submit_result.Datos.Autorizaciones.find(
@@ -238,8 +176,8 @@ export async function send_for_signing(
     submit_result.Datos.Autorizaciones.find(
       (a) => a.CodigoUnicoIdentificacion === tenant.cuil,
     )
-  const [insert_error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("digital_signature")
       .values({
         contract_id: input.contract_id,
@@ -254,18 +192,16 @@ export async function send_for_signing(
         created_at: now,
         updated_at: now,
       })
-      .execute(),
-  )
-  if (insert_error) {
-    logger.error(insert_error.message, {}, insert_error)
-    return [
-      {
-        send_for_signing: {
-          execution: "Error al guardar la firma digital",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al guardar la firma digital",
+    })
   }
   logger.info("contract sent for signing", {
     contract_id: input.contract_id,
@@ -283,6 +219,4 @@ export async function send_for_signing(
     subject: "Tiene un documento para firmar en Habita",
     html: email_html,
   })
-
-  return [null, null] as const
 }

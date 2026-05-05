@@ -1,4 +1,5 @@
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import {
   API_FETCH_ERROR,
   start_onboarding as api_start_onboarding,
@@ -24,14 +25,9 @@ export async function start_onboarding(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        start_onboarding: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -40,14 +36,9 @@ export async function start_onboarding(
       ? await fetch_landlord(property_id)
       : await fetch_tenant(property_id)
   if (!person) {
-    return [
-      {
-        start_onboarding: {
-          execution: "No se encontró la persona",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "No se encontró la persona",
+    })
   }
   const origin = get_origin()
   const base_path = `${origin}/webhooks/digital_signature/onboarding`
@@ -61,69 +52,42 @@ export async function start_onboarding(
     if (
       onboarding_error.type === API_FETCH_ERROR.FETCH_FAILED
     ) {
-      return [
-        {
-          start_onboarding: {
-            execution:
-              "No se pudo conectar al servicio de registro",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "No se pudo conectar al servicio de registro",
+      })
     }
     if (
       onboarding_error.type === API_FETCH_ERROR.API_ERROR
     ) {
-      return [
-        {
-          start_onboarding: {
-            execution: "Error en el servicio de registro",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message: "Error en el servicio de registro",
+      })
     }
     if (
       onboarding_error.type ===
       API_FETCH_ERROR.JSON_PARSE_FAILED
     ) {
-      return [
-        {
-          start_onboarding: {
-            execution:
-              "Respuesta inválida del servicio de registro",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inválida del servicio de registro",
+      })
     }
     if (
       onboarding_error.type ===
       API_FETCH_ERROR.SCHEMA_VALIDATION_FAILED
     ) {
-      return [
-        {
-          start_onboarding: {
-            execution:
-              "Respuesta inesperada del servicio de registro",
-          },
-        },
-        null,
-      ] as const
+      return fail(400, {
+        message:
+          "Respuesta inesperada del servicio de registro",
+      })
     }
-    return [
-      {
-        start_onboarding: {
-          execution: "Error al iniciar el registro",
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      message: "Error al iniciar el registro",
+    })
   }
   logger.info("digital signature onboarding started", {
     property_id,
     party: input.party,
   })
-
-  return [null, null] as const
 }

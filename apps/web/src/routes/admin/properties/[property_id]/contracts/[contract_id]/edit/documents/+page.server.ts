@@ -51,12 +51,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_file_errors] =
-      await create_file(form_data)
-    if (create_file_errors) {
-      return { errors: create_file_errors }
-    }
-    return null
+    return create_file(form_data)
   },
   [ACTION.DESTROY_FILE]: async ({
     request,
@@ -77,11 +72,6 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [destroy_file_errors] =
-      await destroy_file(form_data)
-    if (destroy_file_errors) {
-      return { errors: destroy_file_errors }
-    }
-    return null
+    return destroy_file(form_data)
   },
 }

@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { publish_delete_object } from "$lib/server/broker/producer/publish_delete_object"
 import { delete_object } from "$lib/server/object_store"
@@ -20,14 +20,9 @@ export async function destroy_contract_item_file(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        destroy_contract_item_file: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
@@ -37,8 +32,8 @@ export async function destroy_contract_item_file(
     .where("id", "=", input.id)
     .executeTakeFirst()
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       await tx
         .deleteFrom("contract_item_file")
         .where((eb) =>
@@ -56,26 +51,23 @@ export async function destroy_contract_item_file(
         .deleteFrom("file")
         .where("file.id", "=", input.id)
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      {
-        file_id: input.id,
-        contract_item_id: input.contract_item_id,
-      },
-      transaction_error,
-    )
-    return [
-      {
-        destroy_contract_item_file: {
-          execution:
-            "Error al eliminar el archivo del ítem",
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          file_id: input.id,
+          contract_item_id: input.contract_item_id,
         },
-      },
-      null,
-    ] as const
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al eliminar el archivo del ítem",
+    })
   }
 
   if (file) {
@@ -97,6 +89,4 @@ export async function destroy_contract_item_file(
       }
     }
   }
-
-  return [null, null] as const
 }

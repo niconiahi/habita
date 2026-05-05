@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -17,42 +17,33 @@ export async function update_period(form_data: FormData) {
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        update_period: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .updateTable("period")
       .set({
         price: input.price,
         updated_at: now,
       })
       .where("period.id", "=", input.id)
-      .execute(),
-  )
-  if (error) {
-    logger.error(
-      error.message,
-      { period_id: input.id },
-      error,
-    )
-    return [
-      {
-        update_period: {
-          execution: "Error al actualizar el período",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { period_id: input.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al actualizar el período",
+    })
   }
-
-  return [null, null] as const
 }

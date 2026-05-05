@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -19,19 +19,14 @@ export async function create_period(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        create_period: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [error] = await safe_async(
-    query_builder
+  try {
+    await query_builder
       .insertInto("period")
       .values({
         contract_id,
@@ -39,19 +34,15 @@ export async function create_period(
         created_at: now,
         updated_at: now,
       })
-      .execute(),
-  )
-  if (error) {
-    logger.error(error.message, { contract_id }, error)
-    return [
-      {
-        create_period: {
-          execution: "Error al crear el período",
-        },
-      },
-      null,
-    ] as const
+      .execute()
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message, { contract_id }, error)
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al crear el período",
+    })
   }
-
-  return [null, null] as const
 }

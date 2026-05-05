@@ -31,14 +31,7 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [create_period_errors] = await create_period(
-      form_data,
-      contract_id,
-    )
-    if (create_period_errors) {
-      return { errors: create_period_errors }
-    }
-    return null
+    return create_period(form_data, contract_id)
   },
   [ACTION.UPDATE_PERIOD]: async ({
     request,
@@ -59,11 +52,6 @@ export const actions: Actions = {
       locals.session?.activeOrganizationId,
     )
     const form_data = await request.formData()
-    const [update_period_errors] =
-      await update_period(form_data)
-    if (update_period_errors) {
-      return { errors: update_period_errors }
-    }
-    return null
+    return update_period(form_data)
   },
 }

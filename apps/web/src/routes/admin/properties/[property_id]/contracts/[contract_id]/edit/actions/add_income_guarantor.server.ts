@@ -1,7 +1,7 @@
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { fail } from "@sveltejs/kit"
 import { ForceNumberSchema } from "$lib/force_number"
-import { safe_async } from "$lib/safe_async"
 import { normalize_input } from "$lib/server/form"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -21,19 +21,14 @@ export async function add_income_guarantor(
     normalize_input(form_data, InputSchema),
   )
   if (!input_validation.success) {
-    return [
-      {
-        add_income_guarantor: {
-          input: v.flatten(input_validation.issues),
-        },
-      },
-      null,
-    ] as const
+    return fail(400, {
+      errors: v.flatten(input_validation.issues),
+    })
   }
   const input = input_validation.output
 
-  const [transaction_error] = await safe_async(
-    query_builder.transaction().execute(async (tx) => {
+  try {
+    await query_builder.transaction().execute(async (tx) => {
       const income_warranty = await tx
         .selectFrom("income_warranty")
         .select("id")
@@ -54,25 +49,22 @@ export async function add_income_guarantor(
           updated_at: now,
         })
         .execute()
-    }),
-  )
-  if (transaction_error) {
-    logger.error(
-      transaction_error.message,
-      {
-        warranty_id: input.warranty_id,
-        guarantor_dni: input.guarantor_dni,
-      },
-      transaction_error,
-    )
-    return [
-      {
-        add_income_guarantor: {
-          execution: "Error al agregar el garante",
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          warranty_id: input.warranty_id,
+          guarantor_dni: input.guarantor_dni,
         },
-      },
-      null,
-    ] as const
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
+    return fail(400, {
+      message: "Error al agregar el garante",
+    })
   }
-  return [null, null] as const
 }
