@@ -29,15 +29,15 @@ export async function destroy_slot(form_data: FormData) {
       .where("slot.state", "=", SLOT_STATE.FREE)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { slot_id: input.id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { slot_id: input.id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al eliminar el turno",
     })

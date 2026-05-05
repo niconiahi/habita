@@ -35,15 +35,15 @@ export async function publish_property(
       .where("property.id", "=", input.property_id)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      { property_id: input.property_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { property_id: input.property_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al publicar la propiedad",
     })

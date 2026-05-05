@@ -74,15 +74,15 @@ export async function create_account(
       },
     })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      "failed to create organization",
-      { user_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { user_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear la organización",
     })
@@ -114,15 +114,15 @@ export async function create_account(
       })
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      "failed to create subscription",
-      { user_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { user_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al crear la suscripción",
     })
@@ -134,32 +134,32 @@ export async function create_account(
       headers: request_headers,
     })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      "failed to set active organization",
-      {
-        user_id,
-        organization_id: organization.id,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          user_id,
+          organization_id: organization.id,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
   }
 
   try {
     await invalidate_user_subscriptions_cache(user_id)
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      "failed to invalidate subscriptions cache",
-      { user_id },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        { user_id },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
   }
 
   redirect(303, "/admin/settings")

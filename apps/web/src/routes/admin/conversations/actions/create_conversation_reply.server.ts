@@ -39,11 +39,11 @@ export async function create_conversation_reply(
       })
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al enviar la respuesta",
     })
@@ -56,11 +56,11 @@ export async function create_conversation_reply(
       .where("conversation.id", "=", input.conversation_id)
       .execute()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
   }
 
   let conversation_user: { email: string }
@@ -72,11 +72,11 @@ export async function create_conversation_reply(
       .select(["user.email"])
       .executeTakeFirstOrThrow()
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(typed_error.message, {}, typed_error)
+    if (error instanceof Error) {
+      logger.error(error.message, {}, error)
+    } else {
+      logger.unknown(error)
+    }
     return
   }
 

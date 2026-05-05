@@ -42,18 +42,18 @@ export async function upload_receipt(form_data: FormData) {
         .executeTakeFirstOrThrow()
     })
   } catch (error) {
-    const typed_error =
-      error instanceof Error
-        ? error
-        : new Error("unknown error")
-    logger.error(
-      typed_error.message,
-      {
-        contract_id: input.contract_id,
-        receipt_type: input.type,
-      },
-      typed_error,
-    )
+    if (error instanceof Error) {
+      logger.error(
+        error.message,
+        {
+          contract_id: input.contract_id,
+          receipt_type: input.type,
+        },
+        error,
+      )
+    } else {
+      logger.unknown(error)
+    }
     return fail(400, {
       message: "Error al subir el comprobante",
     })
