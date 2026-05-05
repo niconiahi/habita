@@ -2,9 +2,24 @@
   import { goto } from "$app/navigation"
   import { authClient } from "$lib/auth-client"
   import { ACCESS_TYPE } from "$lib/access_type"
+  import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
+
+  const freelance_organizations = $derived(
+    data.organizations.filter(
+      (organization) =>
+        organization.type === SUBSCRIPTION_TYPE.FREELANCE,
+    ),
+  )
+
+  const realtor_organizations = $derived(
+    data.organizations.filter(
+      (organization) =>
+        organization.type === SUBSCRIPTION_TYPE.REALTOR,
+    ),
+  )
 
   async function handle_go_to_organization(
     organization_id: string,
@@ -19,13 +34,36 @@
 <div class="page">
   <h1 class="heading-lg title">Mis accesos</h1>
 
-  {#if data.organizations.length > 0}
+  {#if freelance_organizations.length > 0}
+    <section class="section">
+      <h2 class="heading-md section-title">Personal</h2>
+      <ul class="list">
+        {#each freelance_organizations as organization (organization.id)}
+          <li class="list-item">
+            <span class="item-name">Personal</span>
+            <button
+              class="body-md-medium go-link"
+              type="button"
+              onclick={() =>
+                handle_go_to_organization(
+                  organization.id,
+                )}
+            >
+              Ir a administrar
+            </button>
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
+
+  {#if realtor_organizations.length > 0}
     <section class="section">
       <h2 class="heading-md section-title">
         Inmobiliarias
       </h2>
       <ul class="list">
-        {#each data.organizations as organization (organization.id)}
+        {#each realtor_organizations as organization (organization.id)}
           <li class="list-item">
             <span class="item-name">
               {organization.name}

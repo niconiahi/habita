@@ -3,7 +3,6 @@ import { query_builder } from "db/query_builder"
 import { jsonObjectFrom } from "kysely/helpers/postgres"
 import type { AccessType } from "$lib/access_type"
 import { display_location } from "$lib/display_location"
-import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async ({
@@ -34,11 +33,6 @@ async function fetch_user_organizations(
       "member.organization_id",
     )
     .where("member.user_id", "=", user_id)
-    .where(
-      "subscription.type",
-      "=",
-      SUBSCRIPTION_TYPE.REALTOR,
-    )
     .select([
       "organization.id",
       "organization.name",
