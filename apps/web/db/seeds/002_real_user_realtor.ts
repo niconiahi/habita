@@ -117,7 +117,7 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seeder.add_member(
     organization_id,
     real_user_id,
-    "manager",
+    "realtor",
   )
 
   const team_id = await seeder.create_team(
@@ -130,6 +130,6 @@ export async function seed(_db: Kysely<DB>): Promise<void> {
   await seed_ejemplo_demo_data(organization_id, team_id)
 
   console.log(
-    "added real user to Inmobiliaria Demo with Ejemplo team and demo data",
+    "added real user as realtor to Inmobiliaria Demo with Ejemplo team and demo data",
   )
 }
