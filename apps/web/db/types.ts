@@ -183,6 +183,7 @@ export interface Invitation {
   organization_id: string;
   role: string;
   status: string;
+  team_id: string | null;
   updated_at: Generated<Timestamp>;
 }
 
