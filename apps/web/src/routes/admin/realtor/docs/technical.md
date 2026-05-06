@@ -1,20 +1,11 @@
-# /admin/realtor
+# /admin/realtor (retired)
 
-## Loader
+Permanent redirect (308) to `/admin/teams`. No loader logic, no actions, no UI.
 
-Requires auth. Checks `get_user_realtor_organization()` — returns 403 if user isn't a realtor. Loads in parallel:
+The previous implementation (loader + invite/remove/reassign actions) was deleted and equivalent functionality lives at:
 
-- `organization` via `fetch_organization_details()`
-- `managers` via `fetch_managers_with_property_counts()`
+- `/admin/teams` — list teams, create team
+- `/admin/teams/[team_id]` — invite to team, remove from team
+- `/admin/teams/[team_id]/members/[user_id]` — view managed properties, reassign property
 
-## Actions
-
-- `INVITE_MANAGER` — sends invitation to join the agency. Requires realtor org ownership.
-- `REMOVE_MANAGER` — removes a manager from the agency.
-- `REASSIGN_PROPERTY` — transfers a property from one manager to another.
-
-All actions verify realtor organization ownership.
-
-## Auth
-
-Requires authenticated user who owns a realtor organization. Returns 403 otherwise.
+The redirect uses 308 (permanent) so caches and search engines update the canonical URL.
