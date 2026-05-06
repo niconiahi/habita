@@ -109,7 +109,7 @@ export async function seed(db: Kysely<DB>): Promise<void> {
       .insertInto("team")
       .values({
         id: team_id,
-        name: "Principal",
+        name: "Ejemplo",
         organization_id,
         created_at: now,
         updated_at: now,

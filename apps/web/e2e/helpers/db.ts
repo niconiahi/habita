@@ -115,7 +115,7 @@ export async function create_test_user(
       .insertInto("team")
       .values({
         id: team_id,
-        name: "Principal",
+        name: "Ejemplo",
         organization_id: organization_id,
         created_at: now,
         updated_at: now,

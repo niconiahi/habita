@@ -770,6 +770,8 @@ Test and seed data helpers. All exported from `apps/web/src/lib/seeder/index.ts`
 - `find_user_by_email(email: string): Promise<number | null>`
 - `create_organization(name: string): Promise<string>`
 - `add_member(organization_id: string, user_id: number, role: string): Promise<string>`
+- `create_team(organization_id: string, name: string): Promise<string>`
+- `add_team_member(team_id: string, user_id: number): Promise<string>`
 - `create_location(data: { address, latitude, longitude, road, house_number, ... }): Promise<number>`
 - `create_property(data: { location_id, state, type, unit?, destinies }): Promise<number>`
 - `update_property_state(property_id: number, state: number): Promise<void>`
