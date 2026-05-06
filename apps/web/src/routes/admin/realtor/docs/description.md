@@ -1,9 +1,5 @@
-# Real estate agency management
+# Realtor agency management (retired)
 
-This page is exclusively for real estate agency owners. Here they can manage their agency team:
+This route used to be the home for managing the agency's managers (invite, remove, reassign properties). It has been consolidated into `/admin/teams`, which now exposes the same operations scoped to teams.
 
-- **Invite managers** — bring new property managers into the agency by sending them an email invitation
-- **Remove managers** — remove team members who no longer work with the agency
-- **Reassign properties** — move a property from one manager to another within the agency
-
-They can also see the agency's details and a list of all managers with how many properties each one handles.
+The route still exists only to redirect any old bookmark or external link to the new home.
