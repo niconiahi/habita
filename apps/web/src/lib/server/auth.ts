@@ -281,6 +281,7 @@ function make_auth() {
               organizationId: "organization_id",
               inviterId: "inviter_id",
               expiresAt: "expires_at",
+              teamId: "team_id",
               createdAt: "created_at",
               updatedAt: "updated_at",
             },
