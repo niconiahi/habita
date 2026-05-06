@@ -79,7 +79,7 @@ Authorization happens in two distinct layers:
 │   ├── realtor role user (company owner)                     │
 │   ├── manager role users (employees)                        │
 │   └── teams:                                                │
-│         ├── "Principal" (default, undeletable)              │
+│         ├── "Ejemplo" (default, undeletable)                │
 │         └── other teams for property grouping               │
 │                                                             │
 │ property                                                    │
@@ -232,13 +232,13 @@ export const load: PageServerLoad = async ({
 ### Scenario 1: Realtor Creates Organization
 
 1. User signs up, is invited as realtor to new organization
-2. System creates "Principal" team automatically (via `organizationHooks.afterCreateOrganization`)
+2. System creates "Ejemplo" team automatically (via `organizationHooks.afterCreateOrganization`)
 3. Realtor can now create properties and assign managers
 
 ```
 Organization: "ABC Inmobiliaria"
     ├── Member: realtor@abc.com (realtor)
-    └── Team: "Principal" (default)
+    └── Team: "Ejemplo" (default)
 ```
 
 ### Scenario 2: Property with Landlord and Manager

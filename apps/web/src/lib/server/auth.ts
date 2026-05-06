@@ -255,7 +255,7 @@ function make_auth() {
           }) => {
             await auth.api.createTeam({
               body: {
-                name: "Principal",
+                name: "Ejemplo",
                 organizationId: organization.id,
               },
             })

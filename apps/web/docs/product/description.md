@@ -265,7 +265,7 @@ Organizations are the unit of subscription billing. The `subscription` table lin
 
 ### Team structure
 
-Within an agency organization, teams group properties. There's a default "Principal" team that can't be deleted. When managers are invited, they join a team. When properties are reassigned between managers, they move within the team structure. Teams exist primarily to support the property-to-manager assignment model — they're the organizational unit that connects a set of properties to a set of people.
+Within an agency organization, teams group properties. There's a default "Ejemplo" team (pre-seeded with sample data so new realtors can see the UI populated) that can't be deleted. When managers are invited, they join a team. When properties are reassigned between managers, they move within the team structure. Teams exist primarily to support the property-to-manager assignment model — they're the organizational unit that connects a set of properties to a set of people.
 
 ### Subscription lifecycle
 
