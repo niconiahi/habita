@@ -95,13 +95,13 @@ export async function seed(db: Kysely<DB>): Promise<void> {
     .insertInto("team")
     .values({
       id: teamId,
-      name: "Principal",
+      name: "Ejemplo",
       organization_id: orgId,
       created_at: now,
       updated_at: now,
     })
     .execute()
 
-  console.log(`created team "Principal" in organization`)
+  console.log(`created team "Ejemplo" in organization`)
   console.log("real user setup complete")
 }
