@@ -7,11 +7,11 @@ GET-driven side-effect route. The loader does the work — there are no actions.
 1. **No session** → `redirect(302, /login?redirect_to=/invitations/{id}/accept)`. The login page (`(centered)/login/+page.svelte`) reads `redirect_to` from `searchParams` and routes back here after auth.
 2. **Read invitation** via `query_builder` — Better Auth owns the row, but we read directly to branch on status without round-tripping through the API.
 3. **Branch on status / state** (returns one of `not_found | expired | canceled | rejected | mismatch | error`, or redirects):
-   - `accepted` → `redirect(303, /admin/teams/{team_id})` — idempotent re-click of an already-accepted invite lands on the team.
+   - `accepted` → `redirect(303, /admin/properties)` — idempotent re-click of an already-accepted invite lands on the manager's property dashboard.
    - `canceled` / `rejected` → render friendly page (no DB write).
    - `expires_at <= now()` → render expired page.
    - `email !== locals.user.email` → render mismatch page naming the invited address.
-   - Otherwise → `auth.api.acceptInvitation` then `auth.api.setActiveOrganization`, then `redirect(303, /admin/teams/{team_id})`.
+   - Otherwise → `auth.api.acceptInvitation` then `auth.api.setActiveOrganization`, then `redirect(303, /admin/properties)`. The invitee is becoming a `manager` (no realtor subscription), so we land them at the manager view, not the realtor-only `/admin/teams/{team_id}`.
 
 The "no `query_builder` writes to `invitation`" invariant holds — reads only.
 

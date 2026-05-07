@@ -37,10 +37,7 @@ export const load: PageServerLoad = async ({
   }
 
   if (invitation.status === "accepted") {
-    if (invitation.team_id) {
-      redirect(303, `/admin/teams/${invitation.team_id}`)
-    }
-    redirect(303, "/admin/teams")
+    redirect(303, "/admin/properties")
   }
 
   if (invitation.status === "canceled") {
@@ -93,8 +90,5 @@ export const load: PageServerLoad = async ({
     organization_id: invitation.organization_id,
   })
 
-  if (invitation.team_id) {
-    redirect(303, `/admin/teams/${invitation.team_id}`)
-  }
-  redirect(303, "/admin/teams")
+  redirect(303, "/admin/properties")
 }
