@@ -136,7 +136,11 @@ export const actions: Actions = {
     )
   },
 
-  [ACTION.DESTROY_TEAM]: async ({ locals, params }) => {
+  [ACTION.DESTROY_TEAM]: async ({
+    request,
+    locals,
+    params,
+  }) => {
     require_authentication(locals)
     const realtor_org = require_active_realtor_organization(
       locals.session.activeOrganizationId,
@@ -149,6 +153,6 @@ export const actions: Actions = {
     )
     if (!team) error(404, "Equipo no encontrado")
 
-    return destroy_team(team.id)
+    return destroy_team(team.id, request.headers)
   },
 }
