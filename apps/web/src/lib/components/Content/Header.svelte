@@ -15,7 +15,6 @@
     justify-content: flex-start;
     position: sticky;
     top: var(--header-height);
-    background-color: var(--gray-900);
     z-index: 10;
     padding-block: var(--spacing-4);
     margin-top: calc(var(--spacing-4) * -1);
