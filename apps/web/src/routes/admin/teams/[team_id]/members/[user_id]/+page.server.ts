@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
-import { get_user_realtor_organization } from "$lib/server/organization"
+import { require_active_realtor_organization } from "$lib/server/organization"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { reassign_property } from "./actions/reassign_property.server"
@@ -20,12 +20,10 @@ export const load: PageServerLoad = async ({
 }) => {
   require_authentication(locals, url)
 
-  const realtor_org = await get_user_realtor_organization(
-    locals.user.id,
+  const realtor_org = require_active_realtor_organization(
+    locals.session.activeOrganizationId,
+    locals.subscriptions,
   )
-  if (!realtor_org) {
-    error(403, "Not authorized - realtor access required")
-  }
 
   const team = await fetch_team(
     params.team_id,
@@ -59,10 +57,10 @@ export const actions: Actions = {
     params,
   }) => {
     require_authentication(locals)
-    const realtor_org = await get_user_realtor_organization(
-      locals.user.id,
+    const realtor_org = require_active_realtor_organization(
+      locals.session.activeOrganizationId,
+      locals.subscriptions,
     )
-    if (!realtor_org) error(403, "Forbidden")
 
     const team = await fetch_team(
       params.team_id,

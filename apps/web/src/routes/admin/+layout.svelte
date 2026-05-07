@@ -29,8 +29,6 @@
             <Dashboard.Link href="/admin/settings">
               Configuración
             </Dashboard.Link>
-          {/if}
-          {#if data.is_realtor}
             <Dashboard.Link href="/admin/teams">
               Equipos
             </Dashboard.Link>
