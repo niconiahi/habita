@@ -1,10 +1,28 @@
+import { error } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
+import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 
 export type OrganizationRole =
   | "landlord"
   | "realtor"
   | "manager"
   | "tenant"
+
+export function require_active_realtor_organization(
+  active_organization_id: string | null,
+  subscriptions: App.Locals["subscriptions"],
+): { id: string } {
+  if (!active_organization_id) {
+    error(403, "No hay organización activa")
+  }
+  const subscription = subscriptions.find(
+    (s) => s.organization_id === active_organization_id,
+  )
+  if (subscription?.type !== SUBSCRIPTION_TYPE.REALTOR) {
+    error(403, "La organización activa no es una inmobiliaria")
+  }
+  return { id: active_organization_id }
+}
 
 export async function get_user_realtor_organization(
   user_id: number,
