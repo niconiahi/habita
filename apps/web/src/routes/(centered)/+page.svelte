@@ -1,5 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
+  import * as Card from "$lib/components/Card"
   import Tooltip from "$lib/components/Tooltip.svelte"
 </script>
 
@@ -33,8 +34,8 @@
       un solo alquiler
     </h2>
     <div class="problem-grid">
-      <div class="problem-block">
-        <div class="problem-icon">
+      <Card.Root>
+        <Card.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -49,14 +50,14 @@
             <path d="m3 11 18-5v12L3 13v-2z" />
             <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
           </svg>
-        </div>
-        <h3 class="body-md-bold">Publicación</h3>
-        <p class="body-sm-regular">
+        </Card.Icon>
+        <Card.Title>Publicación</Card.Title>
+        <Card.Content>
           Cargás la misma propiedad en 2 portales distintos
-        </p>
-      </div>
-      <div class="problem-block">
-        <div class="problem-icon">
+        </Card.Content>
+      </Card.Root>
+      <Card.Root>
+        <Card.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -82,14 +83,14 @@
             <path d="M12 11h4" /><path d="M12 16h4" />
             <path d="M8 11h.01" /><path d="M8 16h.01" />
           </svg>
-        </div>
-        <h3 class="body-md-bold">Gestión</h3>
-        <p class="body-sm-regular">
+        </Card.Icon>
+        <Card.Title>Gestión</Card.Title>
+        <Card.Content>
           Saltás entre Tokko y 2clics para cada operación
-        </p>
-      </div>
-      <div class="problem-block">
-        <div class="problem-icon">
+        </Card.Content>
+      </Card.Root>
+      <Card.Root>
+        <Card.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -105,15 +106,15 @@
               d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"
             />
           </svg>
-        </div>
-        <h3 class="body-md-bold">Documentos</h3>
-        <p class="body-sm-regular">
+        </Card.Icon>
+        <Card.Title>Documentos</Card.Title>
+        <Card.Content>
           Buscás contratos entre Google Drive y carpetas
           sueltas
-        </p>
-      </div>
-      <div class="problem-block">
-        <div class="problem-icon">
+        </Card.Content>
+      </Card.Root>
+      <Card.Root>
+        <Card.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -130,13 +131,13 @@
               d="M12 12h.01"
             /><path d="M16 12h.01" />
           </svg>
-        </div>
-        <h3 class="body-md-bold">Comunicación</h3>
-        <p class="body-sm-regular">
+        </Card.Icon>
+        <Card.Title>Comunicación</Card.Title>
+        <Card.Content>
           Seguís hilos en WhatsApp, email y no encontrás
           nada
-        </p>
-      </div>
+        </Card.Content>
+      </Card.Root>
     </div>
   </section>
 
@@ -573,26 +574,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--dimension-spacing-4);
-  }
-
-  .problem-block {
-    display: flex;
-    flex-direction: column;
-    gap: var(--dimension-spacing-2);
-    padding: var(--dimension-spacing-5);
-    border: 1px solid var(--color-border-primary);
-    border-radius: var(--dimension-radius-xl);
-  }
-
-  .problem-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--dimension-spacing-10);
-    height: var(--dimension-spacing-10);
-    border-radius: var(--dimension-radius-lg);
-    background-color: var(--color-blue-50);
-    color: var(--color-blue-500);
   }
 
   /* solution */
