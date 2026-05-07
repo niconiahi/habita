@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({
   if (!member) error(404, "Miembro no encontrado")
 
   const [properties, peers] = await Promise.all([
-    fetch_managed_properties(member.id),
+    fetch_managed_properties(member.id, realtor_org.id),
     fetch_team_peers(team.id, member.id),
   ])
 

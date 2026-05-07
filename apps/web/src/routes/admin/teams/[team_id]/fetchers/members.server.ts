@@ -5,6 +5,7 @@ import { decrypt } from "$lib/server/encryption"
 
 export async function fetch_team_members_with_property_counts(
   team_id: string,
+  organization_id: string,
 ) {
   const members = await query_builder
     .selectFrom("team_member")
@@ -22,8 +23,14 @@ export async function fetch_team_members_with_property_counts(
     members.map(async (member) => {
       const result = await query_builder
         .selectFrom("property_access")
-        .where("user_id", "=", member.id)
-        .where("type", "=", ACCESS_TYPE.MANAGER)
+        .innerJoin(
+          "property",
+          "property.id",
+          "property_access.property_id",
+        )
+        .where("property_access.user_id", "=", member.id)
+        .where("property_access.type", "=", ACCESS_TYPE.MANAGER)
+        .where("property.realtor_id", "=", organization_id)
         .select(sql<number>`count(*)::int`.as("count"))
         .executeTakeFirst()
       return {
