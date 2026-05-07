@@ -28,6 +28,26 @@ services:
       retries: 3
       start_period: 60s
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    labels:
+      - "habita.role=tunnel"
+    command:
+      - tunnel
+      - --config
+      - /etc/cloudflared/config.yml
+      - run
+      - habita-dev
+    volumes:
+      - ../cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+      - ${HOME}/.cloudflared/01fd224f-a226-4077-960f-bfd161e6b0a1.json:/etc/cloudflared/credentials.json:ro
+    networks:
+      - internal
+    depends_on:
+      svelte:
+        condition: service_started
+
   # E2E test runner
   test:
     image: mcr.microsoft.com/playwright:v1.58.2-noble
