@@ -11,5 +11,9 @@ case "$service" in
     docker volume rm app_deps 2>/dev/null || true
     compose app up -d --build svelte
     ;;
+  go)
+    compose api rm -sf go
+    compose api up -d --build go
+    ;;
   *) echo "unknown service: $service"; exit 1 ;;
 esac
