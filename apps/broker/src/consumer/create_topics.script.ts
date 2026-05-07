@@ -3,6 +3,7 @@ import { CALCULATE_ESCALATION_TOPIC } from "../event/calculate_escalation"
 import { EXTEND_SUBSCRIPTION_TOPIC } from "../event/extend_subscription"
 import { SEND_BOOKING_CONFIRMATION_TOPIC } from "../event/send_booking_confirmation"
 import { SEND_LANDLORD_INVITE_TOPIC } from "../event/send_landlord_invite"
+import { SEND_TEAM_INVITE_TOPIC } from "../event/send_team_invite"
 import { SEND_RENEWAL_REMINDER_TOPIC } from "../event/send_renewal_reminder"
 import { SEND_SIGNING_REQUEST_TOPIC } from "../event/send_signing_request"
 import { SEND_NO_SLOTS_ALERT_TOPIC } from "../event/send_no_slots_alert"
@@ -24,6 +25,7 @@ const topics = [
   SEND_BOOKING_CONFIRMATION_TOPIC,
   SEND_SIGNING_REQUEST_TOPIC,
   SEND_LANDLORD_INVITE_TOPIC,
+  SEND_TEAM_INVITE_TOPIC,
   SEND_SLOT_RESERVED_ALERT_TOPIC,
   SEND_SLOT_REJECTED_ALERT_TOPIC,
   SEND_NO_SLOTS_ALERT_TOPIC,
