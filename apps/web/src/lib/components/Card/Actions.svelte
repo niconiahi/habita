@@ -6,11 +6,7 @@
     children: Snippet
   }
 
-  let {
-    children,
-    class: className,
-    ...rest
-  }: Props = $props()
+  let { children, ...rest }: Props = $props()
 </script>
 
 <ul
@@ -24,10 +20,10 @@
 
 <style>
   .actions {
-    grid-column: 2;
-    grid-row: 1;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
+    gap: var(--dimension-spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 </style>
