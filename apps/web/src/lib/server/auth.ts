@@ -50,7 +50,7 @@ function get_config() {
 const statement = {
   organization: ["update", "delete"],
   member: ["create", "update", "delete"],
-  member_invitation: ["create", "cancel"],
+  invitation: ["create", "cancel"],
   owner_invitation: ["create", "cancel"],
   property_assignment: ["create", "update"],
   property: ["read", "write"],
@@ -68,7 +68,7 @@ const landlord = ac.newRole({
 
 const realtor = ac.newRole({
   organization: ["update", "delete"],
-  member_invitation: ["create", "cancel"],
+  invitation: ["create", "cancel"],
   member: ["create", "update", "delete"],
   property_assignment: ["create", "update"],
   property: ["read"],
@@ -239,7 +239,7 @@ function make_auth() {
     plugins: [
       organization({
         allowUserToCreateOrganization: false,
-        creatorRole: "manager",
+        creatorRole: "realtor",
         ac,
         roles: {
           landlord,

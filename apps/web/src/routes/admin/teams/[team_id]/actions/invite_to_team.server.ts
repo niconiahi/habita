@@ -32,6 +32,7 @@ export async function invite_to_team(
         organizationId: organization_id,
         teamId: team_id,
         role: "manager",
+        resend: true,
       },
       headers,
     })
