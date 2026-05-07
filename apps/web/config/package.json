@@ -38,11 +38,6 @@
     "vitest": "^4.0.15",
     "vitest-browser-svelte": "^2.0.1"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.208.0",
