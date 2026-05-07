@@ -1,7 +1,7 @@
 const TIMEZONE = "America/Argentina/Buenos_Aires"
 
 export function display_date(
-  date: Date,
+  date: Date | string | number,
   options?: Intl.DateTimeFormatOptions,
 ) {
   return new Intl.DateTimeFormat("es-AR", {
