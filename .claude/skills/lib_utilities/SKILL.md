@@ -706,6 +706,7 @@ Publish functions that send messages to Kafka topics.
 - `publish_extend_subscription(subscription_payment_id: number): Promise<void>`
 - `publish_send_booking_confirmation(slot_id: number, payload: SendBookingConfirmationEvent): Promise<void>`
 - `publish_send_landlord_invite(property_id: number, invitation_token_id: number, payload: SendLandlordInviteEvent): Promise<void>`
+- `publish_send_team_invite(invitation_id: string, payload: SendTeamInviteEvent): Promise<void>`
 - `publish_send_renewal_reminder(): Promise<void>`
 - `publish_send_signing_request(contract_id: number, payload: SendSigningRequestEvent): Promise<void>`
 - `publish_delete_object(key: string): Promise<void>`
