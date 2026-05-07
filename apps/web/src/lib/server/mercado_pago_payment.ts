@@ -50,6 +50,7 @@ const MercadoPagoPreferenceSchema = v.object({
 interface CreatePreferenceOptions {
   title: string
   amount: number
+  external_reference?: string
   back_urls?: {
     success: string
     failure: string
@@ -60,7 +61,8 @@ interface CreatePreferenceOptions {
 export async function create_preference(
   options: CreatePreferenceOptions,
 ): Promise<{ id: string; init_point: string }> {
-  const { title, amount, back_urls } = options
+  const { title, amount, back_urls, external_reference } =
+    options
   const { is_development, access_token } = get_config()
   const origin = get_origin()
   const resolved_back_urls = back_urls ?? {
@@ -68,6 +70,18 @@ export async function create_preference(
     failure: `${origin}/pay/failure`,
     pending: `${origin}/pay/pending`,
   }
+
+  const webhook_base_url =
+    process.env.WEBHOOK_BASE_URL ?? origin
+  const notification_url = `${webhook_base_url}/webhooks/mercadopago`
+  console.log("[mp/lib] create_preference entered", {
+    notification_url,
+    external_reference,
+    is_development,
+    title,
+    amount,
+    WEBHOOK_BASE_URL_env: process.env.WEBHOOK_BASE_URL,
+  })
 
   let response: Response
   try {
@@ -89,7 +103,8 @@ export async function create_preference(
           ],
           back_urls: resolved_back_urls,
           auto_return: "approved",
-          notification_url: `${origin}/webhooks/mercadopago`,
+          external_reference,
+          notification_url,
         }),
       },
     )
@@ -109,8 +124,10 @@ export async function create_preference(
     }
   }
 
+  console.log("[mp/lib] MP preferences API response", { status: response.status, ok: response.ok })
   if (!response.ok) {
     const error_text = await response.text()
+    console.log("[mp/lib] MP API non-OK body", error_text)
     const preference_error = new Error(
       `Failed to create Mercado Pago preference: ${error_text}`,
     )
