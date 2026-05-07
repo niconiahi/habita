@@ -47,6 +47,13 @@
       >
         Accesos
       </a>
+      <a
+        href="/subscriptions"
+        class="body-md-medium item"
+        onclick={close}
+      >
+        Suscripciones
+      </a>
       <button
         type="button"
         class="body-md-medium item"

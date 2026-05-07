@@ -41,7 +41,7 @@ Date parsing, formatting, and extraction helpers. Uses `es-AR` locale.
 
 Formats dates for user-facing display in Spanish.
 
-- `display_date(date: Date | string, options?: { time?: boolean }): string` — Spanish format, Buenos Aires timezone
+- `display_date(date: Date | string | number, options?: Intl.DateTimeFormatOptions): string` — Spanish format, Buenos Aires timezone. Accepts strings/numbers directly (coerces via `new Date(date)` internally) — DO NOT wrap call sites with `new Date(...)`. Loaders that serialize timestamps to strings (e.g. `String(row.ends_at)`) can be passed straight in.
 
 ## display_name.ts
 
@@ -539,6 +539,7 @@ Subscription lifecycle management.
 - `fetch_user_subscriptions_cached(user_id: number)` — Redis-cached version
 - `invalidate_user_subscriptions_cache(user_id: number)`
 - `fetch_organization_subscriptions(organization_id: string)`
+- `fetch_subscription_payments(subscription_ids: number[])` — fetches MercadoPago payments for the given subscription ids (joins subscription_payment × payment × payment_mercado_pago)
 - `require_active_subscription(subscriptions, active_organization_id): SubscriptionCheck`
 
 ## property_access.ts
