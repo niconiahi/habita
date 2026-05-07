@@ -28,6 +28,7 @@
     total_surface: number
     bathroom_count: number
     href: string
+    on_image_click?: (index: number) => void
   }
 
   let {
@@ -40,6 +41,7 @@
     total_surface,
     bathroom_count,
     href,
+    on_image_click,
   }: Props = $props()
 </script>
 
@@ -48,7 +50,7 @@
     class="carousel-wrapper"
     style="--carousel-aspect-ratio: 1;"
   >
-    <Carousel {images} {label} />
+    <Carousel {images} {label} {on_image_click} />
   </div>
   <div class="content">
     <div class="information">
