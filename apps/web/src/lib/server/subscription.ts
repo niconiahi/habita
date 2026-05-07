@@ -97,6 +97,48 @@ export async function invalidate_user_subscriptions_cache(
   await kv.del(cache_key)
 }
 
+export async function fetch_subscription_payments(
+  subscription_ids: number[],
+) {
+  if (subscription_ids.length === 0) {
+    return []
+  }
+  const rows = await query_builder
+    .selectFrom("subscription_payment")
+    .innerJoin(
+      "payment",
+      "payment.id",
+      "subscription_payment.payment_id",
+    )
+    .innerJoin(
+      "payment_mercado_pago",
+      "payment_mercado_pago.payment_id",
+      "payment.id",
+    )
+    .where(
+      "subscription_payment.subscription_id",
+      "in",
+      subscription_ids,
+    )
+    .select([
+      "subscription_payment.subscription_id",
+      "subscription_payment.processed_at",
+      "payment.id as payment_id",
+      "payment.created_at as payment_created_at",
+      "payment_mercado_pago.operation_id",
+      "payment_mercado_pago.status as mp_status",
+    ])
+    .orderBy("payment.created_at", "desc")
+    .execute()
+  return rows.map((row) => ({
+    ...row,
+    payment_created_at: String(row.payment_created_at),
+    processed_at: row.processed_at
+      ? String(row.processed_at)
+      : null,
+  }))
+}
+
 export async function fetch_organization_subscriptions(
   organization_id: string,
 ) {
