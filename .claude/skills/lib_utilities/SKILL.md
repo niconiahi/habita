@@ -501,6 +501,7 @@ Organization queries and role checks.
 - `get_user_realtor_organization(user_id: number)`
 - `get_user_organization(user_id: number)`
 - `is_realtor(user_id: number): Promise<boolean>`
+- `require_active_realtor_organization(active_organization_id, subscriptions): { id: string }` — 403s unless the user owns a `REALTOR` subscription for the **active** organization (`subscriptions` in `App.Locals` is already filtered by `user_id`, so the type check is sufficient — no `member.role` lookup needed)
 - `get_user_selectable_organizations(user_id: number)`
 - `get_organization_managers(organization_id: string)`
 

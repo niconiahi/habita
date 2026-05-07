@@ -7,21 +7,18 @@
   import type { ActionData, PageData } from "./$types"
   import { ACTION } from "./actions/action"
 
-  let {
-    data,
-    form,
-  }: { data: PageData; form: ActionData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
 </script>
 
 <Content.Root>
   <Content.Title>Configuración</Content.Title>
 
   <Content.Section>
-    <Section.Header>
-      <Section.Title>Organización</Section.Title>
-    </Section.Header>
     <Formulary.Root
-      action={compose_action(ACTION.UPDATE_ORGANIZATION_NAME)}
+      action={compose_action(
+        ACTION.UPDATE_ORGANIZATION_NAME,
+      )}
       method="POST"
     >
       <Formulary.Input

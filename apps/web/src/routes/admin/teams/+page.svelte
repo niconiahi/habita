@@ -1,9 +1,8 @@
 <script lang="ts">
   import { enhance } from "$app/forms"
   import Button from "$lib/components/Button.svelte"
-  import * as Content from "$lib/components/Content"
+  import * as Dialog from "$lib/components/Dialog"
   import * as Formulary from "$lib/components/Formulary"
-  import * as Section from "$lib/components/Section"
   import * as Table from "$lib/components/Table"
   import { compose_action } from "$lib/compose_action"
   import { ACTION } from "./actions/action"
@@ -13,6 +12,9 @@
     data,
     form,
   }: { data: PageData; form: ActionData } = $props()
+
+  let dialog_element: HTMLDialogElement | undefined =
+    $state()
 
   const date_formatter = new Intl.DateTimeFormat("es-AR", {
     day: "numeric",
@@ -26,86 +28,115 @@
   }
 </script>
 
-<Content.Root>
-  <Content.Title>Equipos</Content.Title>
-
-  <Content.Section>
-    <Section.Header>
-      <Section.Title>Crear equipo</Section.Title>
-    </Section.Header>
-    <form
-      method="POST"
-      action={compose_action(ACTION.CREATE_TEAM)}
-      use:enhance
-      class="create-form"
+<div class="page">
+  <div class="header">
+    <h1 class="heading-md title">Equipos</h1>
+    <Button
+      variant="primary"
+      onclick={() => dialog_element?.showModal()}
     >
-      <Formulary.Field>
-        <Formulary.Label for="name">Nombre</Formulary.Label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          required
-          maxlength="50"
-          placeholder="Equipo Norte"
-        />
-        {#if form?.errors?.nested?.name?.[0]}
-          <Formulary.Error
-            >{form.errors.nested.name[0]}</Formulary.Error
-          >
-        {/if}
-      </Formulary.Field>
-      <Button variant="primary" type="submit">Crear</Button>
-    </form>
-    {#if form?.message}
-      <p class="form-message">{form.message}</p>
-    {/if}
-  </Content.Section>
-
-  <Content.Section>
-    <Section.Header>
-      <Section.Title
-        >{data.organization.name}</Section.Title
-      >
-    </Section.Header>
-    {#if data.teams.length === 0}
-      <p class="empty-state">
-        No hay equipos en tu organizacion todavia.
-      </p>
-    {:else}
-      <Table.Root>
-        <Table.Header>
-          <Table.Cell header>Nombre</Table.Cell>
-          <Table.Cell header>Miembros</Table.Cell>
-          <Table.Cell header>Creado</Table.Cell>
-        </Table.Header>
-        <Table.Body>
-          {#each data.teams as team (team.id)}
-            <Table.Row>
-              <Table.Cell>
-                <a class="team-link" href="/admin/teams/{team.id}"
-                  >{team.name}</a
-                >
-              </Table.Cell>
-              <Table.Cell>{team.member_count}</Table.Cell>
-              <Table.Cell
-                >{format_short_date(
-                  team.created_at,
-                )}</Table.Cell
+      Crear equipo
+    </Button>
+  </div>
+  {#if data.teams.length === 0}
+    <p class="empty-state">
+      No hay equipos en tu organizacion todavia.
+    </p>
+  {:else}
+    <Table.Root>
+      <Table.Header>
+        <Table.Cell header>Nombre</Table.Cell>
+        <Table.Cell header>Miembros</Table.Cell>
+        <Table.Cell header>Creado</Table.Cell>
+      </Table.Header>
+      <Table.Body>
+        {#each data.teams as team (team.id)}
+          <Table.Row>
+            <Table.Cell>
+              <a href="/admin/teams/{team.id}"
+                >{team.name}</a
               >
-            </Table.Row>
-          {/each}
-        </Table.Body>
-      </Table.Root>
-    {/if}
-  </Content.Section>
-</Content.Root>
+            </Table.Cell>
+            <Table.Cell>{team.member_count}</Table.Cell>
+            <Table.Cell
+              >{format_short_date(team.created_at)}</Table.Cell
+            >
+          </Table.Row>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  {/if}
+</div>
+
+<Dialog.Root bind:element={dialog_element}>
+  {#snippet children({ close })}
+    <Dialog.Content>
+      <Dialog.Header>
+        <Dialog.Title>Crear equipo</Dialog.Title>
+        <Dialog.Close onclick={close} />
+      </Dialog.Header>
+      <form
+        method="POST"
+        action={compose_action(ACTION.CREATE_TEAM)}
+        class="form"
+        use:enhance={() => {
+          return async ({ update }) => {
+            await update({ reset: false })
+            close()
+          }
+        }}
+      >
+        <Formulary.Field>
+          <Formulary.Label for="name">Nombre</Formulary.Label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            maxlength="50"
+            placeholder="Equipo Norte"
+          />
+          {#if form?.errors?.nested?.name?.[0]}
+            <Formulary.Error
+              >{form.errors.nested.name[0]}</Formulary.Error
+            >
+          {/if}
+        </Formulary.Field>
+        {#if form?.message}
+          <p class="form-message">{form.message}</p>
+        {/if}
+        <Dialog.Actions>
+          <Button
+            variant="secondary"
+            type="button"
+            onclick={close}
+          >
+            Cancelar
+          </Button>
+          <Button variant="primary" type="submit"
+            >Crear</Button
+          >
+        </Dialog.Actions>
+      </form>
+    </Dialog.Content>
+  {/snippet}
+</Dialog.Root>
 
 <style>
-  .create-form {
+  .page {
     display: flex;
-    gap: var(--dimension-spacing-4);
-    align-items: flex-end;
+    flex-direction: column;
+    gap: var(--dimension-spacing-6);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .title {
+    color: var(--color-text-heading);
   }
 
   .empty-state {
@@ -113,11 +144,13 @@
     font-style: italic;
   }
 
-  .form-message {
-    color: var(--color-text-error);
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-spacing-4);
   }
 
-  .team-link {
-    color: var(--color-text-link);
+  .form-message {
+    color: var(--color-text-error);
   }
 </style>
