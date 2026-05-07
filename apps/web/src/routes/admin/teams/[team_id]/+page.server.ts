@@ -33,7 +33,10 @@ export const load: PageServerLoad = async ({
   }
 
   const members =
-    await fetch_team_members_with_property_counts(team.id)
+    await fetch_team_members_with_property_counts(
+      team.id,
+      realtor_org.id,
+    )
 
   const pending_invitations =
     await fetch_pending_team_invitations(team.id)

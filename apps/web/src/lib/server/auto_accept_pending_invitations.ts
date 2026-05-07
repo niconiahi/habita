@@ -22,7 +22,7 @@ export async function auto_accept_pending_invitations(
     .where("email", "=", email)
     .where("status", "=", "pending")
     .where("expires_at", ">", new Date())
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .select(["id", "organization_id"])
     .execute()
   if (pending.length === 0) {

@@ -38,5 +38,5 @@ Requires authenticated user who owns a `REALTOR` subscription for the **active**
 
 ## Data model notes
 
-- "Properties of a member" is computed via `property_access (user_id, type=MANAGER)`. There is no direct `property.team_id` lookup in this loader — the chain is property → manager → team.
+- "Properties of a member" is computed via `property_access (user_id, type=MANAGER)` joined to `property` filtered by `property.realtor_id = organization_id`. The org filter is the correctness boundary — without it, a manager who's also been assigned properties in another org sees an inflated count on this team's page. We use `realtor_id` rather than `team_id` because `property.team_id` is not consistently set when managers create properties, while `property.realtor_id` is. Since the app currently has one team per realtor org, filtering by org is equivalent to filtering by team.
 - The `invitation.team_id` column was added in migration `1778089630640_add_team_id_to_invitation` (nullable so existing org-level invitations still work).
