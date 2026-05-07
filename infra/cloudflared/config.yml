@@ -1,0 +1,9 @@
+tunnel: habita-dev
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  - hostname: tunnel.habita.rent
+    service: https://svelte:5174
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
