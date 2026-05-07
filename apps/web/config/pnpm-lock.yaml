@@ -151,166 +151,7 @@ importers:
         specifier: ^2.0.1
         version: 2.0.2(svelte@5.51.3)(vitest@4.0.18)
 
-  ../pdf: {}
-
-  config:
-    dependencies:
-      '@anthropic-ai/sdk':
-        specifier: ^0.80.0
-        version: 0.80.0(zod@4.3.6)
-      '@formisch/svelte':
-        specifier: ^0.7.5
-        version: 0.7.5(svelte@5.51.3)(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))
-      '@opentelemetry/api':
-        specifier: ^1.9.0
-        version: 1.9.0
-      '@opentelemetry/api-logs':
-        specifier: ^0.208.0
-        version: 0.208.0
-      '@opentelemetry/auto-instrumentations-node':
-        specifier: ^0.67.2
-        version: 0.67.3(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.6.0(@opentelemetry/api@1.9.0))
-      '@opentelemetry/exporter-logs-otlp-http':
-        specifier: ^0.208.0
-        version: 0.208.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-trace-otlp-http':
-        specifier: ^0.208.0
-        version: 0.208.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources':
-        specifier: ^2.2.0
-        version: 2.6.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-logs':
-        specifier: ^0.208.0
-        version: 0.208.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-node':
-        specifier: ^0.208.0
-        version: 0.208.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base':
-        specifier: ^2.6.0
-        version: 2.6.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions':
-        specifier: ^1.38.0
-        version: 1.39.0
-      '@xstate/svelte':
-        specifier: ^3.0.5
-        version: 3.0.5(svelte@5.51.3)(xstate@5.28.0)
-      better-auth:
-        specifier: ^1.4.18
-        version: 1.4.18(@sveltejs/kit@2.52.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.51.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)))(svelte@5.51.3)(typescript@5.9.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)))(pg@8.18.0)(svelte@5.51.3)(vitest@4.0.18)
-      date-fns:
-        specifier: ^4.1.0
-        version: 4.1.0
-      ioredis:
-        specifier: ^5.8.2
-        version: 5.9.3
-      kafkajs:
-        specifier: ^2.2.4
-        version: 2.2.4
-      kysely:
-        specifier: ^0.28.8
-        version: 0.28.11
-      maplibre-gl:
-        specifier: ^5.23.0
-        version: 5.23.0
-      marked:
-        specifier: ^17.0.1
-        version: 17.0.2
-      n2words:
-        specifier: ^1.23.1
-        version: 1.24.0
-      openai:
-        specifier: ^6.32.0
-        version: 6.32.0(ws@8.19.0)(zod@4.3.6)
-      pg:
-        specifier: ^8.16.3
-        version: 8.18.0
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
-      valibot:
-        specifier: ^1.2.0
-        version: 1.2.0(typescript@5.9.3)
-      xstate:
-        specifier: ^5.19.0
-        version: 5.28.0
-      zod:
-        specifier: ^4
-        version: 4.3.6
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 2.1.1
-        version: 2.1.1
-      '@playwright/test':
-        specifier: ^1.57.0
-        version: 1.58.2
-      '@sveltejs/adapter-node':
-        specifier: ^5.4.0
-        version: 5.5.3(@sveltejs/kit@2.52.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.51.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)))(svelte@5.51.3)(typescript@5.9.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)))
-      '@sveltejs/kit':
-        specifier: ^2.49.1
-        version: 2.52.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.51.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)))(svelte@5.51.3)(typescript@5.9.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0))
-      '@sveltejs/vite-plugin-svelte':
-        specifier: ^6.2.1
-        version: 6.2.4(svelte@5.51.3)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0))
-      '@types/node':
-        specifier: ^25.0.1
-        version: 25.2.3
-      '@types/pg':
-        specifier: ^8.16.0
-        version: 8.16.0
-      '@vitest/browser-playwright':
-        specifier: ^4.0.15
-        version: 4.0.18(playwright@1.58.2)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0))(vitest@4.0.18)
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.3.1
-      kysely-codegen:
-        specifier: ^0.18.5
-        version: 0.18.5(kysely@0.28.11)(pg@8.18.0)(typescript@5.9.3)
-      kysely-ctl:
-        specifier: ^0.18.0
-        version: 0.18.0(kysely@0.28.11)(typescript@5.9.3)
-      mdsvex:
-        specifier: ^0.12.6
-        version: 0.12.6(svelte@5.51.3)
-      prettier:
-        specifier: ^3.7.4
-        version: 3.8.1
-      prettier-plugin-svelte:
-        specifier: ^3.4.0
-        version: 3.4.1(prettier@3.8.1)(svelte@5.51.3)
-      svelte:
-        specifier: ^5.45.6
-        version: 5.51.3
-      svelte-check:
-        specifier: ^4.3.4
-        version: 4.4.0(picomatch@4.0.3)(svelte@5.51.3)(typescript@5.9.3)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^7.2.6
-        version: 7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0)
-      vite-plugin-devtools-json:
-        specifier: ^1.0.0
-        version: 1.0.0(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(tsx@4.21.0))
-      vitest:
-        specifier: ^4.0.15
-        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(tsx@4.21.0)
-      vitest-browser-svelte:
-        specifier: ^2.0.1
-        version: 2.0.2(svelte@5.51.3)(vitest@4.0.18)
-
 packages:
-
-  '@anthropic-ai/sdk@0.80.0':
-    resolution: {integrity: sha512-WeXLn7zNVk3yjeshn+xZHvld6AoFUOR3Sep6pSoHho5YbSi6HwcirqgPA5ccFuW8QTVJAAU7N8uQQC6Wa9TG+g==}
-    hasBin: true
-    peerDependencies:
-      zod: ^3.25.0 || ^4.0.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -318,10 +159,6 @@ packages:
 
   '@babel/helper-validator-identifier@7.28.5':
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/runtime@7.29.2':
-    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
     engines: {node: '>=6.9.0'}
 
   '@better-auth/core@1.4.18':
@@ -367,24 +204,28 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-arm64@2.1.1':
     resolution: {integrity: sha512-tw4BEbhAUkWPe4WBr6IX04DJo+2jz5qpPzpW/SWvqMjb9QuHY8+J0M23V8EPY/zWU4IG8Ui0XESapR1CB49Q7g==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-linux-x64-musl@2.1.1':
     resolution: {integrity: sha512-kUu+loNI3OCD2c12cUt7M5yaaSjDnGIksZwKnueubX6c/HWUyi/0mPbTBHR49Me3F0KKjWiKM+ZOjsmC+lUt9g==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-x64@2.1.1':
     resolution: {integrity: sha512-3WJ1GKjU7NzZb6RTbwLB59v9cTIlzjbiFLDB0z4376TkDqoNYilJaC37IomCr/aXwuU8QKkrYoHrgpSq5ffJ4Q==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-win32-arm64@2.1.1':
     resolution: {integrity: sha512-vEHK0v0oW+E6RUWLoxb2isI3rZo57OX9ZNyyGH701fZPj6Il0Rn1f5DMNyCmyflMwTnIQstEbs7n2BxYSqQx4Q==}
@@ -553,16 +394,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@formisch/svelte@0.7.5':
-    resolution: {integrity: sha512-a17X4EaEtpIB26rnJ/IMjpWdEzJhGglffVlbpMVSwTpHiEpvmj/aUxUp7IZePAiZohYnOBd2wBNB5hldE619Mw==}
-    peerDependencies:
-      svelte: ^5.29.0
-      typescript: '>=5'
-      valibot: ^1.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
 
   '@grpc/grpc-js@1.14.3':
     resolution: {integrity: sha512-Iq8QQQ/7X3Sac15oB6p0FmUg/klxQvXLeileoqrTRGJYLV+/9tubbr9ipz0GKHjmXVsgFPo/+W+2cA8eNcR+XA==}
@@ -1232,66 +1063,79 @@ packages:
     resolution: {integrity: sha512-F8sWbhZ7tyuEfsmOxwc2giKDQzN3+kuBLPwwZGyVkLlKGdV1nvnNwYD0fKQ8+XS6hp9nY7B+ZeK01EBUE7aHaw==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.57.1':
     resolution: {integrity: sha512-rGfNUfn0GIeXtBP1wL5MnzSj98+PZe/AXaGBCRmT0ts80lU5CATYGxXukeTX39XBKsxzFpEeK+Mrp9faXOlmrw==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.57.1':
     resolution: {integrity: sha512-MMtej3YHWeg/0klK2Qodf3yrNzz6CGjo2UntLvk2RSPlhzgLvYEB3frRvbEF2wRKh1Z2fDIg9KRPe1fawv7C+g==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.57.1':
     resolution: {integrity: sha512-1a/qhaaOXhqXGpMFMET9VqwZakkljWHLmZOX48R0I/YLbhdxr1m4gtG1Hq7++VhVUmf+L3sTAf9op4JlhQ5u1Q==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.57.1':
     resolution: {integrity: sha512-QWO6RQTZ/cqYtJMtxhkRkidoNGXc7ERPbZN7dVW5SdURuLeVU7lwKMpo18XdcmpWYd0qsP1bwKPf7DNSUinhvA==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.57.1':
     resolution: {integrity: sha512-xpObYIf+8gprgWaPP32xiN5RVTi/s5FCR+XMXSKmhfoJjrpRAjCuuqQXyxUa/eJTdAE6eJ+KDKaoEqjZQxh3Gw==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.57.1':
     resolution: {integrity: sha512-4BrCgrpZo4hvzMDKRqEaW1zeecScDCR+2nZ86ATLhAoJ5FQ+lbHVD3ttKe74/c7tNT9c6F2viwB3ufwp01Oh2w==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.57.1':
     resolution: {integrity: sha512-NOlUuzesGauESAyEYFSe3QTUguL+lvrN1HtwEEsU2rOwdUDeTMJdO5dUYl/2hKf9jWydJrO9OL/XSSf65R5+Xw==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.57.1':
     resolution: {integrity: sha512-ptA88htVp0AwUUqhVghwDIKlvJMD/fmL/wrQj99PRHFRAG6Z5nbWoWG4o81Nt9FT+IuqUQi+L31ZKAFeJ5Is+A==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.57.1':
     resolution: {integrity: sha512-S51t7aMMTNdmAMPpBg7OOsTdn4tySRQvklmL3RpDRyknk87+Sp3xaumlatU+ppQ+5raY7sSTcC2beGgvhENfuw==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.57.1':
     resolution: {integrity: sha512-Bl00OFnVFkL82FHbEqy3k5CUCKH6OEJL54KCyx2oqsmZnFTR8IoNqBF+mjQVcRCT5sB6yOvK8A37LNm/kPJiZg==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.57.1':
     resolution: {integrity: sha512-ABca4ceT4N+Tv/GtotnWAeXZUZuM/9AQyCyKYyKnpk4yoA7QIAuBt6Hkgpw8kActYlew2mvckXkvx0FfoInnLg==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.57.1':
     resolution: {integrity: sha512-HFps0JeGtuOR2convgRRkHCekD7j+gdAuXM+/i6kGzQtFhlCtQkpwtNzkNj6QhCDp7DRJ7+qC/1Vg2jt5iSOFw==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.57.1':
     resolution: {integrity: sha512-H+hXEv9gdVQuDTgnqD+SQffoWoc0Of59AStSzTEj/feWTBAnSfSD3+Dql1ZruJQxmykT/JVY0dE8Ka7z0DH1hw==}
@@ -1949,10 +1793,6 @@ packages:
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
-  json-schema-to-ts@3.1.1:
-    resolution: {integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==}
-    engines: {node: '>=16'}
-
   json-stringify-pretty-compact@4.0.0:
     resolution: {integrity: sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==}
 
@@ -2450,9 +2290,6 @@ packages:
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
 
-  ts-algebra@2.0.0:
-    resolution: {integrity: sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==}
-
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
@@ -2663,12 +2500,6 @@ packages:
 
 snapshots:
 
-  '@anthropic-ai/sdk@0.80.0(zod@4.3.6)':
-    dependencies:
-      json-schema-to-ts: 3.1.1
-    optionalDependencies:
-      zod: 4.3.6
-
   '@babel/code-frame@7.29.0':
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
@@ -2676,8 +2507,6 @@ snapshots:
       picocolors: 1.1.1
 
   '@babel/helper-validator-identifier@7.28.5': {}
-
-  '@babel/runtime@7.29.2': {}
 
   '@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.3.6))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0)':
     dependencies:
@@ -2812,13 +2641,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.27.3':
     optional: true
-
-  '@formisch/svelte@0.7.5(svelte@5.51.3)(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))':
-    dependencies:
-      svelte: 5.51.3
-      valibot: 1.2.0(typescript@5.9.3)
-    optionalDependencies:
-      typescript: 5.9.3
 
   '@grpc/grpc-js@1.14.3':
     dependencies:
@@ -4360,11 +4182,6 @@ snapshots:
 
   json-parse-even-better-errors@2.3.1: {}
 
-  json-schema-to-ts@3.1.1:
-    dependencies:
-      '@babel/runtime': 7.29.2
-      ts-algebra: 2.0.0
-
   json-stringify-pretty-compact@4.0.0: {}
 
   kafkajs@2.2.4: {}
@@ -4842,8 +4659,6 @@ snapshots:
   totalist@3.0.1: {}
 
   tr46@0.0.3: {}
-
-  ts-algebra@2.0.0: {}
 
   tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:
