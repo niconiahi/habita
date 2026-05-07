@@ -3,6 +3,7 @@ import { ACCESS_TYPE } from "$lib/access_type"
 
 export async function fetch_managed_properties(
   user_id: number,
+  organization_id: string,
 ) {
   return query_builder
     .selectFrom("property_access")
@@ -18,6 +19,7 @@ export async function fetch_managed_properties(
     )
     .where("property_access.user_id", "=", user_id)
     .where("property_access.type", "=", ACCESS_TYPE.MANAGER)
+    .where("property.realtor_id", "=", organization_id)
     .select([
       "property.id",
       "property.unit",

@@ -9,7 +9,7 @@ export async function fetch_pending_team_invitations(
     .where("status", "=", "pending")
     .where("expires_at", ">", new Date())
     .select(["id", "email", "expires_at"])
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .execute()
 }
 
