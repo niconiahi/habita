@@ -652,6 +652,12 @@ Minimal Better Auth config for session validation only (no login UI, no OAuth).
 - `auth` — Proxy-wrapped Better Auth instance (HMR-safe singleton)
 - `require_authentication(locals, url): asserts locals` — redirects to main app login if not authenticated
 
+## server/auto_accept_pending_invitations.ts
+
+First-login auto-accept for users who were invited before signing up. Called from `hooks.server.ts` after `getSession` returns a user; gates on "user has zero memberships" so it's a one-shot per user.
+
+- `auto_accept_pending_invitations(user_id: number, email: string, headers: Headers): Promise<{ accepted: boolean }>` — accepts every pending invitation matching `email`, then sets `activeOrganizationId` to the most recent one's org. Failures are logged but never block the request.
+
 ## server/clickhouse.ts
 
 ClickHouse HTTP API client. Queries `http://telemetry-db:8123` with `FORMAT JSON`.
