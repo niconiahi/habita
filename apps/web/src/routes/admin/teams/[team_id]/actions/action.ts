@@ -3,4 +3,5 @@ export const ACTION = {
   REMOVE_FROM_TEAM: "remove_from_team",
   UPDATE_TEAM_NAME: "update_team_name",
   DESTROY_TEAM: "destroy_team",
+  CANCEL_INVITATION: "cancel_invitation",
 } as const
