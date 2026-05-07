@@ -59,7 +59,7 @@ export const actions: Actions = {
       form_data,
       realtor_org.id,
       team.id,
-      locals.user.id,
+      request.headers,
     )
   },
 

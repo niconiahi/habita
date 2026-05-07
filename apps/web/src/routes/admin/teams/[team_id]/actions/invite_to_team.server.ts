@@ -1,6 +1,6 @@
 import { fail } from "@sveltejs/kit"
-import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { auth } from "$lib/server/auth"
 import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 
@@ -12,7 +12,7 @@ export async function invite_to_team(
   form_data: FormData,
   organization_id: string,
   team_id: string,
-  inviter_id: number,
+  headers: Headers,
 ) {
   const input_validation = v.safeParse(
     InputSchema,
@@ -25,28 +25,16 @@ export async function invite_to_team(
   }
   const input = input_validation.output
 
-  const now = new Date()
-  const invitation_id = crypto.randomUUID()
-  const expires_at = new Date(
-    now.getTime() + 7 * 24 * 60 * 60 * 1000,
-  )
-
   try {
-    await query_builder
-      .insertInto("invitation")
-      .values({
-        id: invitation_id,
-        organization_id,
-        team_id,
+    await auth.api.createInvitation({
+      body: {
         email: input.email,
+        organizationId: organization_id,
+        teamId: team_id,
         role: "manager",
-        status: "pending",
-        inviter_id,
-        expires_at,
-        created_at: now,
-        updated_at: now,
-      })
-      .execute()
+      },
+      headers,
+    })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(
@@ -55,7 +43,6 @@ export async function invite_to_team(
           email: input.email,
           organization_id,
           team_id,
-          inviter_id,
         },
         error,
       )
@@ -63,7 +50,7 @@ export async function invite_to_team(
       logger.unknown(error)
     }
     return fail(400, {
-      message: "Error al enviar la invitacion",
+      message: "Error al enviar la invitación",
     })
   }
 
@@ -72,4 +59,6 @@ export async function invite_to_team(
     team_id,
     email: input.email,
   })
+
+  return { success: true }
 }
