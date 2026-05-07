@@ -6,6 +6,7 @@ import {
 import { svelteKitHandler } from "better-auth/svelte-kit"
 import { building } from "$app/environment"
 import { auth } from "$lib/server/auth"
+import { auto_accept_pending_invitations } from "$lib/server/auto_accept_pending_invitations"
 import { decrypt } from "$lib/server/encryption"
 import { ensure_bucket } from "$lib/server/object_store"
 import { is_rate_limited } from "$lib/server/rate_limit"
@@ -25,7 +26,7 @@ export const handle: Handle = async ({
     error(429, "too many requests")
   }
 
-  const session = await auth.api.getSession({
+  let session = await auth.api.getSession({
     headers: event.request.headers,
   })
   if (!session) {
@@ -40,6 +41,17 @@ export const handle: Handle = async ({
     })
   }
   const user_id = Number(session.user.id)
+  const { accepted } = await auto_accept_pending_invitations(
+    user_id,
+    session.user.email,
+    event.request.headers,
+  )
+  if (accepted) {
+    session =
+      (await auth.api.getSession({
+        headers: event.request.headers,
+      })) ?? session
+  }
   event.locals.user = {
     id: user_id,
     email: session.user.email,

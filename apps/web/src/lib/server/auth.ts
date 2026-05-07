@@ -2,9 +2,11 @@ import { redirect } from "@sveltejs/kit"
 import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
+import { query_builder } from "db/query_builder"
 import { Pool } from "pg"
 import { logger } from "$lib/telemetry/logger"
-import { encrypt } from "./encryption"
+import { publish_send_team_invite } from "./broker/producer/publish_send_team_invite"
+import { decrypt, encrypt } from "./encryption"
 import { send_email } from "./send_email"
 
 function get_config() {
@@ -248,6 +250,37 @@ function make_auth() {
         teams: {
           enabled: true,
           allowRemovingAllTeams: false,
+        },
+        sendInvitationEmail: async (data) => {
+          const config = get_config()
+          const team_name = data.invitation.teamId
+            ? (
+                await query_builder
+                  .selectFrom("team")
+                  .where("id", "=", data.invitation.teamId)
+                  .select("name")
+                  .executeTakeFirst()
+              )?.name
+            : null
+          const display_team_name =
+            team_name ?? data.organization.name
+          const inviter_name = data.inviter.user.name
+            ? decrypt(data.inviter.user.name)
+            : data.inviter.user.email
+          const subject = `Te invitaron al equipo ${display_team_name}`
+          const link = `${config.base_url}/invitations/${data.id}/accept`
+          const html = `
+<p>${inviter_name} te invitó al equipo <strong>${display_team_name}</strong> en ${data.organization.name}.</p>
+<p><a href="${link}">Aceptar invitación</a></p>
+<p>El link expira en 48 horas.</p>`
+          if (process.env.NODE_ENV === "development") {
+            console.log(`[team_invite] ${data.email}: ${link}`)
+          }
+          await publish_send_team_invite(data.id, {
+            email: data.email,
+            subject,
+            html,
+          })
         },
         organizationHooks: {
           afterCreateOrganization: async ({
