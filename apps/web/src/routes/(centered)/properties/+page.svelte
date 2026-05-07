@@ -2,6 +2,9 @@
   import { enhance } from "$app/forms"
   import * as Dialog from "$lib/components/Dialog"
   import Button from "$lib/components/Button.svelte"
+  import PhotoViewer, {
+    type ViewerPhoto,
+  } from "$lib/components/PhotoViewer.svelte"
   import PropertyCard from "$lib/components/PropertyCard.svelte"
   import ToggleButton from "$lib/components/ToggleButton.svelte"
   import RangeFilter from "$lib/components/RangeFilter.svelte"
@@ -23,6 +26,22 @@
 
   let filters_dialog: HTMLDialogElement | undefined =
     $state()
+
+  let viewer_photos: ViewerPhoto[] = $state([])
+  let open_viewer:
+    | ((photo_index: number) => void)
+    | undefined = $state()
+
+  function handle_card_image_click(
+    images: typeof data.properties[number]["images"],
+    index: number,
+  ) {
+    viewer_photos = images.map((image) => ({
+      src: image.src,
+      basename: image.alt,
+    }))
+    open_viewer?.(index)
+  }
 
   function parse_ids(
     param: string | undefined,
@@ -250,6 +269,8 @@
           total_surface={property.total_surface}
           bathroom_count={property.bathroom_count}
           href={`/properties/${property.id}`}
+          on_image_click={(index) =>
+            handle_card_image_click(property.images, index)}
         />
       </li>
     {/each}
@@ -387,6 +408,8 @@
   </Dialog.Root>
   {@render Properties()}
 </div>
+
+<PhotoViewer photos={viewer_photos} bind:open={open_viewer} />
 
 <style>
   .page {
