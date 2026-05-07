@@ -9,9 +9,14 @@
   interface Props {
     images: CarouselImage[]
     label: string
+    on_image_click?: (index: number) => void
   }
 
-  let { images, label }: Props = $props()
+  let {
+    images,
+    label,
+    on_image_click,
+  }: Props = $props()
 
   let images_el: HTMLDivElement | undefined = $state()
   let current_index = $state(0)
@@ -46,14 +51,21 @@
     }
   }
 
+  const CLICK_DRAG_TOLERANCE = 5
+
   let is_dragging = $state(false)
+  let was_drag = false
   let drag_start_x = 0
   let scroll_start = 0
 
   function handle_pointerdown(event: PointerEvent) {
-    if (event.pointerType === "touch") return
+    if (event.pointerType === "touch") {
+      was_drag = false
+      return
+    }
     if (!images_el) return
     is_dragging = true
+    was_drag = false
     drag_start_x = event.clientX
     scroll_start = images_el.scrollLeft
     images_el.setPointerCapture(event.pointerId)
@@ -62,6 +74,9 @@
   function handle_pointermove(event: PointerEvent) {
     if (!is_dragging || !images_el) return
     const delta = event.clientX - drag_start_x
+    if (Math.abs(delta) >= CLICK_DRAG_TOLERANCE) {
+      was_drag = true
+    }
     images_el.scrollLeft = scroll_start - delta
   }
 
@@ -82,6 +97,14 @@
     current_index = target_index
     scroll_to_slide(current_index)
   }
+
+  function handle_click() {
+    if (was_drag) {
+      was_drag = false
+      return
+    }
+    on_image_click?.(current_index)
+  }
 </script>
 
 <section
@@ -89,15 +112,20 @@
   aria-roledescription="carousel"
   aria-label={label}
 >
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div
     class="images"
     class:grabbing={is_dragging}
+    class:clickable={!!on_image_click}
     role="region"
     bind:this={images_el}
     onscroll={handle_scroll}
     onpointerdown={handle_pointerdown}
     onpointermove={handle_pointermove}
     onpointerup={handle_pointerup}
+    onclick={on_image_click ? handle_click : undefined}
     aria-live="polite"
     aria-atomic="false"
   >
@@ -187,6 +215,14 @@
   .images.grabbing {
     cursor: grabbing;
     scroll-snap-type: none;
+  }
+
+  .images.clickable {
+    cursor: zoom-in;
+  }
+
+  .images.clickable.grabbing {
+    cursor: grabbing;
   }
 
   .images::-webkit-scrollbar {
