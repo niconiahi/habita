@@ -31,6 +31,16 @@
       .join(" ")
     return composed || member.email
   }
+
+  function format_expires(expires_at: Date | string): string {
+    const expires_ms = new Date(expires_at).getTime()
+    const days = Math.ceil(
+      (expires_ms - Date.now()) / (1000 * 60 * 60 * 24),
+    )
+    if (days <= 0) return "Hoy"
+    if (days === 1) return "Mañana"
+    return `En ${days} días`
+  }
 </script>
 
 <div class="page">
@@ -63,6 +73,57 @@
       </Button>
     </div>
   </div>
+  {#if form?.success}
+    <p class="success-banner">Invitación enviada</p>
+  {/if}
+  {#if data.pending_invitations.length > 0}
+    <section class="section">
+      <h2 class="heading-sm section-title">
+        Invitaciones pendientes
+      </h2>
+      <Table.Root>
+        <Table.Header>
+          <Table.Cell header>Email</Table.Cell>
+          <Table.Cell header>Expira</Table.Cell>
+          <Table.Cell header>Acciones</Table.Cell>
+        </Table.Header>
+        <Table.Body>
+          {#each data.pending_invitations as invitation (invitation.id)}
+            <Table.Row>
+              <Table.Cell>{invitation.email}</Table.Cell>
+              <Table.Cell
+                >{format_expires(
+                  invitation.expires_at,
+                )}</Table.Cell
+              >
+              <Table.Cell>
+                <form
+                  method="POST"
+                  action={compose_action(
+                    ACTION.CANCEL_INVITATION,
+                  )}
+                  use:enhance
+                  style="display: inline;"
+                >
+                  <input
+                    type="hidden"
+                    name="invitation_id"
+                    value={invitation.id}
+                  />
+                  <Button
+                    variant="secondary"
+                    type="submit"
+                  >
+                    Cancelar invitación
+                  </Button>
+                </form>
+              </Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+      </Table.Root>
+    </section>
+  {/if}
   {#if data.members.length === 0}
     <p class="empty-state">
       Este equipo no tiene miembros todavia.
@@ -305,6 +366,29 @@
   .empty-state {
     color: var(--color-text-body);
     font-style: italic;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-spacing-3);
+  }
+
+  .section-title {
+    color: var(--color-text-heading);
+  }
+
+  .success-banner {
+    color: var(--color-text-success, var(--color-text-body));
+    background-color: var(
+      --color-surface-success,
+      var(--color-absolute-white)
+    );
+    padding: var(--dimension-spacing-3)
+      var(--dimension-spacing-4);
+    border-radius: var(--dimension-radius-2);
+    border: 1px solid
+      var(--color-border-success, var(--color-border-primary));
   }
 
   .form {
