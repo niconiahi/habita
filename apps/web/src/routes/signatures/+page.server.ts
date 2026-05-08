@@ -1,6 +1,8 @@
+import { error } from "@sveltejs/kit"
 import { require_authentication } from "$lib/server/auth"
 import { query_builder } from "db/query_builder"
 import { ACCESS_TYPE } from "$lib/access_type"
+import { is_webmaster } from "$lib/server/is_webmaster"
 import type { PageServerLoad } from "./$types"
 
 function fetch_signature_documents(user_id: number) {
@@ -52,6 +54,9 @@ export const load: PageServerLoad = async ({
   url,
 }) => {
   require_authentication(locals, url)
+  if (!is_webmaster(locals.user)) {
+    error(404, "Not found")
+  }
   const documents = await fetch_signature_documents(
     locals.user.id,
   )
