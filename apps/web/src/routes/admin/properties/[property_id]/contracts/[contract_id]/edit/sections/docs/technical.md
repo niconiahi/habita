@@ -4,27 +4,29 @@
 
 No page-level loader. All data comes from parent layout (`contract`, `property`, `warranty`).
 
-## Actions (11 total)
+## Mutations
 
-Contract: `UPDATE_CONTRACT` — updates destiny, dates, escalation, cbu, fine_amount, percentage_return, early_termination, showroom_hours, court_id
-Items: `CREATE_CONTRACT_ITEM`, `UPDATE_CONTRACT_ITEM`, `DESTROY_CONTRACT_ITEM`
-Item files: `CREATE_CONTRACT_ITEM_FILE`, `DESTROY_CONTRACT_ITEM_FILE`
-Warranty: `CREATE_WARRANTY`, `UPDATE_WARRANTY`
-Guarantors: `ADD_INCOME_GUARANTOR`, `UPDATE_INCOME_GUARANTOR`, `DESTROY_INCOME_GUARANTOR`
+All mutations are SvelteKit remote forms in `./forms/*.remote.ts`. Each is one intent; the previous fat `update_contract` action is split into 9 narrow per-section forms.
 
-All actions import from parent `/edit/actions/`.
+Contract sections (one form each):
+`update_contract_destiny`, `update_contract_term`, `update_contract_canon`, `update_contract_payment`, `update_contract_fine`, `update_contract_return`, `update_contract_early_termination`, `update_contract_showroom`, `update_contract_jurisdiction`
+
+Items: `create_contract_item`, `update_contract_item`, `destroy_contract_item`
+Item files: `create_contract_item_file`, `destroy_contract_item_file`
+Warranty (per-type): `create_property_warranty`, `create_income_warranty`, `create_surety_warranty`, `update_property_warranty`, `update_income_warranty`, `update_surety_warranty`
+Guarantors: `add_income_guarantor`, `update_income_guarantor`, `destroy_income_guarantor`
 
 ## Auth
 
-Inherited from parent layout (`require_edit_access()`).
+Each remote form calls `require_contract_edit_access_remote({ contract_id, property_id })` from `$lib/server/auth/`. It runs `require_authentication`, `require_edit_access`, and an inline contract-editable guard, throwing `error()` on failure.
 
 ## Key Components
 
-Disclosure, Formulary, LocationInput, Button, Dialog
+Disclosure, LocationInput, Button, Dialog. Forms are plain `<form><label><input/></form>` styled by `$lib/styles/form.css`.
 
 ## Notes
 
-- Warranty form dynamically renders based on type: PROPERTY (cadastral details), SURETY (company/policy), INCOME (guarantor list)
-- Contract items support photo upload via hidden file input
-- Dialog pattern for adding income guarantors
-- Uses `compose_action()` to build action URLs
+- Warranty type dictates which `create_*` / `update_*` form is rendered (separate forms per type since field shapes differ).
+- Contract items support photo upload via hidden file input + `multipart/form-data` remote form.
+- Per-row forms use `update_contract_item.for(id).enhance(...)` so each row has independent `pending`/`result`.
+- Validation errors surface via `form.fields.<name>.issues()`. Execution errors throw `error()` and surface via inline `submit_error` state set inside `.enhance(...)` catch blocks.
