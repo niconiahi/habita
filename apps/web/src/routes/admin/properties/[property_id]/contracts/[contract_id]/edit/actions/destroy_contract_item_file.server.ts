@@ -36,25 +36,31 @@ export async function destroy_contract_item_file(
     .executeTakeFirst()
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      await tx
-        .deleteFrom("contract_item_file")
-        .where((eb) =>
-          eb.and([
-            eb("contract_item_file.file_id", "=", input.id),
-            eb(
-              "contract_item_file.contract_item_id",
-              "=",
-              input.contract_item_id,
-            ),
-          ]),
-        )
-        .execute()
-      await tx
-        .deleteFrom("file")
-        .where("file.id", "=", input.id)
-        .execute()
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        await tx
+          .deleteFrom("contract_item_file")
+          .where((eb) =>
+            eb.and([
+              eb(
+                "contract_item_file.file_id",
+                "=",
+                input.id,
+              ),
+              eb(
+                "contract_item_file.contract_item_id",
+                "=",
+                input.contract_item_id,
+              ),
+            ]),
+          )
+          .execute()
+        await tx
+          .deleteFrom("file")
+          .where("file.id", "=", input.id)
+          .execute()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

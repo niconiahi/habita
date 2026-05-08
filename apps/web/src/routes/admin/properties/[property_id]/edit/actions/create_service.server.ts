@@ -18,11 +18,7 @@ export async function create_service(property_id: number) {
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }

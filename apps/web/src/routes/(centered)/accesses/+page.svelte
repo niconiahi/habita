@@ -45,9 +45,7 @@
               class="body-md-medium go-link"
               type="button"
               onclick={() =>
-                handle_go_to_organization(
-                  organization.id,
-                )}
+                handle_go_to_organization(organization.id)}
             >
               Ir a administrar
             </button>
@@ -72,9 +70,7 @@
               class="body-md-medium go-link"
               type="button"
               onclick={() =>
-                handle_go_to_organization(
-                  organization.id,
-                )}
+                handle_go_to_organization(organization.id)}
             >
               Ir a administrar
             </button>

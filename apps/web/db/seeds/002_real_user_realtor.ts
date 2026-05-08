@@ -31,7 +31,8 @@ const DEMO_MANAGERS = [
     phone_number: "+5491155002001",
     document_number: 31456789,
     property: {
-      address: "Av. Cabildo, Belgrano, Buenos Aires, Argentina",
+      address:
+        "Av. Cabildo, Belgrano, Buenos Aires, Argentina",
       latitude: -34.55853915,
       longitude: -58.46008519965665,
       road: "Av. Cabildo",
@@ -48,7 +49,8 @@ const DEMO_MANAGERS = [
     phone_number: "+5491155002002",
     document_number: 29876543,
     property: {
-      address: "Av. Scalabrini Ortiz, Palermo, Buenos Aires, Argentina",
+      address:
+        "Av. Scalabrini Ortiz, Palermo, Buenos Aires, Argentina",
       latitude: -34.5817861,
       longitude: -58.4119049,
       road: "Av. Scalabrini Ortiz",

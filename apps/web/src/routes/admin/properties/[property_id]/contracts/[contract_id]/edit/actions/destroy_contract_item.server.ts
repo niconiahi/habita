@@ -40,24 +40,26 @@ export async function destroy_contract_item(
     .execute()
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      await tx
-        .deleteFrom("contract_item_file")
-        .where("contract_item_id", "=", input.id)
-        .execute()
-
-      for (const file_hash of file_hashes) {
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
         await tx
-          .deleteFrom("file")
-          .where("id", "=", file_hash.file_id)
+          .deleteFrom("contract_item_file")
+          .where("contract_item_id", "=", input.id)
           .execute()
-      }
 
-      await tx
-        .deleteFrom("contract_item")
-        .where("id", "=", input.id)
-        .execute()
-    })
+        for (const file_hash of file_hashes) {
+          await tx
+            .deleteFrom("file")
+            .where("id", "=", file_hash.file_id)
+            .execute()
+        }
+
+        await tx
+          .deleteFrom("contract_item")
+          .where("id", "=", input.id)
+          .execute()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

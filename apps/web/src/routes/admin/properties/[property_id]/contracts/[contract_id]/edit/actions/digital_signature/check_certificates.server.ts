@@ -32,8 +32,7 @@ export async function check_certificates(
     const landlord_cert = await check_certificate(
       landlord.cuil,
     )
-    landlord_has_cert =
-      landlord_cert.CodigoResultado === 1
+    landlord_has_cert = landlord_cert.CodigoResultado === 1
   } catch (error) {
     if (error instanceof ApiFetchError) {
       landlord_has_cert = false
@@ -43,9 +42,7 @@ export async function check_certificates(
   }
 
   try {
-    const tenant_cert = await check_certificate(
-      tenant.cuil,
-    )
+    const tenant_cert = await check_certificate(tenant.cuil)
     tenant_has_cert = tenant_cert.CodigoResultado === 1
   } catch (error) {
     if (error instanceof ApiFetchError) {

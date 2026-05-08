@@ -29,20 +29,22 @@ export async function create_file(
   const input = input_validation.output
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      const file_id = await upsert_file(input.file, tx)
-      await tx
-        .insertInto("user_file")
-        .values({
-          user_id,
-          file_id,
-          type: input.type,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const file_id = await upsert_file(input.file, tx)
+        await tx
+          .insertInto("user_file")
+          .values({
+            user_id,
+            file_id,
+            type: input.type,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

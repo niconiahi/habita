@@ -103,7 +103,9 @@ There are exactly two `fail()` shapes:
 **Validation errors** — when `v.safeParse` fails:
 
 ```ts
-return fail(400, { errors: v.flatten(input_validation.issues) })
+return fail(400, {
+  errors: v.flatten(input_validation.issues),
+})
 ```
 
 **Execution errors** — when an operation fails:
@@ -185,8 +187,7 @@ try {
       GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
     ) {
       return fail(400, {
-        message:
-          "No se pudo conectar al servicio de PDF",
+        message: "No se pudo conectar al servicio de PDF",
       })
     }
     if (
@@ -218,29 +219,27 @@ When an action performs multiple operations, wrap them in a transaction — all 
 
 ```ts
 try {
-  await query_builder
-    .transaction()
-    .execute(async (tx) => {
-      const guarantor = await tx
-        .insertInto("income_guarantor")
-        .values({
-          name: input.name,
-          income: input.income,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
+  await query_builder.transaction().execute(async (tx) => {
+    const guarantor = await tx
+      .insertInto("income_guarantor")
+      .values({
+        name: input.name,
+        income: input.income,
+        created_at: now,
+        updated_at: now,
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
 
-      await tx
-        .insertInto("contract_income_guarantor")
-        .values({
-          contract_id: input.contract_id,
-          income_guarantor_id: guarantor.id,
-          created_at: now,
-        })
-        .execute()
-    })
+    await tx
+      .insertInto("contract_income_guarantor")
+      .values({
+        contract_id: input.contract_id,
+        income_guarantor_id: guarantor.id,
+        created_at: now,
+      })
+      .execute()
+  })
 } catch (error) {
   if (error instanceof Error) {
     logger.error(error.message, {}, error)
@@ -345,12 +344,12 @@ The `logger` from `$lib/telemetry/logger.ts` is isomorphic — same import works
 
 ### Severity guide
 
-| Method         | When                                                                        |
-| -------------- | --------------------------------------------------------------------------- |
-| `logger.error` | Something broke — unexpected crash or expected operation that failed        |
-| `logger.warn`  | Something is off but not broken — timeouts, retries, degraded state         |
-| `logger.info`  | Notable event for debugging — user completed a flow, feature flag activated |
-| `logger.unknown` | Non-Error value caught — coerces to Error and logs at error severity      |
+| Method           | When                                                                        |
+| ---------------- | --------------------------------------------------------------------------- |
+| `logger.error`   | Something broke — unexpected crash or expected operation that failed        |
+| `logger.warn`    | Something is off but not broken — timeouts, retries, degraded state         |
+| `logger.info`    | Notable event for debugging — user completed a flow, feature flag activated |
+| `logger.unknown` | Non-Error value caught — coerces to Error and logs at error severity        |
 
 ## Rules
 

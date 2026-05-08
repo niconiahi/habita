@@ -1,8 +1,6 @@
 import { fail } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
-import {
-  CONTRACT_FILE_TYPE,
-} from "$lib/contract_file_type"
+import { CONTRACT_FILE_TYPE } from "$lib/contract_file_type"
 import { CONTRACT_STATE } from "$lib/contract_state"
 import { now } from "$lib/server/now"
 import { logger } from "$lib/telemetry/logger"
@@ -31,8 +29,7 @@ export async function activate_contract(
     .executeTakeFirst()
   if (!contract_file) {
     return fail(400, {
-      message:
-        "Generá el contrato antes de activarlo",
+      message: "Generá el contrato antes de activarlo",
     })
   }
 

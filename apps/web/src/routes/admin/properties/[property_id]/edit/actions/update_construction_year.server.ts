@@ -48,8 +48,7 @@ export async function update_construction_year(
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al actualizar el año de construcción",
+      message: "Error al actualizar el año de construcción",
     })
   }
 }

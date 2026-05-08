@@ -23,8 +23,12 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("id", "serial", (col) =>
       col.primaryKey().notNull(),
     )
-    .addColumn("preference_id", "text", (col) => col.notNull())
-    .addColumn("operation_id", "text", (col) => col.unique())
+    .addColumn("preference_id", "text", (col) =>
+      col.notNull(),
+    )
+    .addColumn("operation_id", "text", (col) =>
+      col.unique(),
+    )
     .addColumn("status", "integer", (col) => col.notNull())
     .addColumn("payment_id", "integer", (col) =>
       col.notNull(),

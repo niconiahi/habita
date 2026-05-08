@@ -119,7 +119,10 @@ export async function create_property(form_data: FormData) {
     if (error instanceof Error) {
       logger.error(
         error.message,
-        { property_id: property.id, user_id: input.user_id },
+        {
+          property_id: property.id,
+          user_id: input.user_id,
+        },
         error,
       )
     } else {

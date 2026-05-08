@@ -19,7 +19,10 @@ export function require_active_realtor_organization(
     (s) => s.organization_id === active_organization_id,
   )
   if (subscription?.type !== SUBSCRIPTION_TYPE.REALTOR) {
-    error(403, "La organización activa no es una inmobiliaria")
+    error(
+      403,
+      "La organización activa no es una inmobiliaria",
+    )
   }
   return { id: active_organization_id }
 }

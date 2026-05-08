@@ -11,7 +11,10 @@ export async function publish_send_team_invite(
   invitation_id: string,
   payload: SendTeamInviteEvent,
 ) {
-  const validation = v.safeParse(SendTeamInviteEvent, payload)
+  const validation = v.safeParse(
+    SendTeamInviteEvent,
+    payload,
+  )
   if (!validation.success) {
     throw new Error(
       "invalid payload for send_team_invite event",

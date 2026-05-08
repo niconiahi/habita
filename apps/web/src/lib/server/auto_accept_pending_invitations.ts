@@ -60,7 +60,10 @@ export async function auto_accept_pending_invitations(
       if (error instanceof Error) {
         logger.error(
           "auto-accept setActiveOrganization failed",
-          { user_id, organization_id: last_organization_id },
+          {
+            user_id,
+            organization_id: last_organization_id,
+          },
           error,
         )
       } else {

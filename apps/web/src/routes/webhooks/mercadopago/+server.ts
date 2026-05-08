@@ -93,7 +93,11 @@ function verify_webhook_signature(
     .update(signed_payload)
     .digest("hex")
 
-  console.log("[webhook] signature manifest", { signed_payload, provided_hash, expected_hash })
+  console.log("[webhook] signature manifest", {
+    signed_payload,
+    provided_hash,
+    expected_hash,
+  })
 
   try {
     return crypto.timingSafeEqual(
@@ -108,7 +112,10 @@ function verify_webhook_signature(
 async function handle_payment_notification(
   payment_id: string,
 ) {
-  console.log("[webhook] handle_payment_notification entered", { payment_id })
+  console.log(
+    "[webhook] handle_payment_notification entered",
+    { payment_id },
+  )
   const access_token = get_access_token()
 
   let response: Response
@@ -123,18 +130,18 @@ async function handle_payment_notification(
     )
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { payment_id },
-        error,
-      )
+      logger.error(error.message, { payment_id }, error)
     } else {
       logger.unknown(error)
     }
     return
   }
 
-  console.log("[webhook] MP payments API response", { payment_id, status: response.status, ok: response.ok })
+  console.log("[webhook] MP payments API response", {
+    payment_id,
+    status: response.status,
+    ok: response.ok,
+  })
   if (!response.ok) {
     logger.error(
       `Failed to fetch payment ${payment_id}: ${response.status}`,
@@ -148,11 +155,7 @@ async function handle_payment_notification(
     data = await response.json()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { payment_id },
-        error,
-      )
+      logger.error(error.message, { payment_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -165,7 +168,10 @@ async function handle_payment_notification(
     data,
   )
   if (!payment_validation.success) {
-    console.log("[webhook] schema validation FAILED", v.flatten(payment_validation.issues))
+    console.log(
+      "[webhook] schema validation FAILED",
+      v.flatten(payment_validation.issues),
+    )
     logger.error("Schema validation failed", {
       payment_id,
     })
@@ -173,10 +179,16 @@ async function handle_payment_notification(
   }
   const payment = payment_validation.output
   const status = MERCADOPAGO_STATUS_MAP[payment.status]
-  console.log("[webhook] parsed payment", { mp_status: payment.status, mapped_status: status, external_reference: payment.external_reference })
+  console.log("[webhook] parsed payment", {
+    mp_status: payment.status,
+    mapped_status: status,
+    external_reference: payment.external_reference,
+  })
 
   if (status !== PAYMENT_STATUS.APPROVED) {
-    console.log("[webhook] not approved, skipping insert", { mp_status: payment.status })
+    console.log("[webhook] not approved, skipping insert", {
+      mp_status: payment.status,
+    })
     logger.info(
       `Payment ${payment_id} skipped: status ${payment.status}`,
       { payment_id },
@@ -200,18 +212,23 @@ async function handle_payment_notification(
     return
   }
 
-  console.log("[webhook] approved + valid external_reference", { subscription_id, order_id: payment.order.id })
+  console.log(
+    "[webhook] approved + valid external_reference",
+    { subscription_id, order_id: payment.order.id },
+  )
   const existing = await query_builder
     .selectFrom("payment_mercado_pago")
     .where("operation_id", "=", payment_id)
     .select("id")
     .executeTakeFirst()
   if (existing) {
-    console.log("[webhook] operation already recorded, skipping", { operation_id: payment_id })
-    logger.info(
-      `Payment ${payment_id} already recorded`,
-      { payment_id },
+    console.log(
+      "[webhook] operation already recorded, skipping",
+      { operation_id: payment_id },
     )
+    logger.info(`Payment ${payment_id} already recorded`, {
+      payment_id,
+    })
     return
   }
 
@@ -226,7 +243,10 @@ async function handle_payment_notification(
       },
     )
   } catch (error) {
-    console.log("[webhook] merchant_orders fetch threw", error)
+    console.log(
+      "[webhook] merchant_orders fetch threw",
+      error,
+    )
     if (error instanceof Error) {
       logger.error(error.message, { payment_id }, error)
     } else {
@@ -235,7 +255,11 @@ async function handle_payment_notification(
     return
   }
 
-  console.log("[webhook] merchant_orders API response", { order_id: payment.order.id, status: order_response.status, ok: order_response.ok })
+  console.log("[webhook] merchant_orders API response", {
+    order_id: payment.order.id,
+    status: order_response.status,
+    ok: order_response.ok,
+  })
   if (!order_response.ok) {
     logger.error(
       `Failed to fetch merchant_order ${payment.order.id}: ${order_response.status}`,
@@ -256,13 +280,23 @@ async function handle_payment_notification(
     return
   }
 
-  const order_validation = v.safeParse(MercadoPagoMerchantOrderSchema, order_data)
+  const order_validation = v.safeParse(
+    MercadoPagoMerchantOrderSchema,
+    order_data,
+  )
   if (!order_validation.success) {
-    console.log("[webhook] merchant_order schema validation FAILED", v.flatten(order_validation.issues))
+    console.log(
+      "[webhook] merchant_order schema validation FAILED",
+      v.flatten(order_validation.issues),
+    )
     return
   }
-  const preference_id = order_validation.output.preference_id
-  console.log("[webhook] resolved preference_id from merchant_order", { preference_id })
+  const preference_id =
+    order_validation.output.preference_id
+  console.log(
+    "[webhook] resolved preference_id from merchant_order",
+    { preference_id },
+  )
 
   let subscription_payment_id: number
   try {
@@ -301,7 +335,11 @@ async function handle_payment_notification(
           .returning("id")
           .executeTakeFirstOrThrow()
 
-        console.log("[webhook] inserted rows", { payment_id: inserted_payment.id, subscription_payment_id: inserted_subscription_payment.id })
+        console.log("[webhook] inserted rows", {
+          payment_id: inserted_payment.id,
+          subscription_payment_id:
+            inserted_subscription_payment.id,
+        })
         return inserted_subscription_payment.id
       })
   } catch (error) {
@@ -345,11 +383,7 @@ export const POST: RequestHandler = async ({ request }) => {
     data = await request.json()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { request_id },
-        error,
-      )
+      logger.error(error.message, { request_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -365,7 +399,10 @@ export const POST: RequestHandler = async ({ request }) => {
     data,
   )
   if (!webhook_validation.success) {
-    console.log("[webhook] envelope validation FAILED", v.flatten(webhook_validation.issues))
+    console.log(
+      "[webhook] envelope validation FAILED",
+      v.flatten(webhook_validation.issues),
+    )
     logger.error("Invalid webhook payload")
     return json(
       { error: "Invalid webhook payload" },
@@ -373,10 +410,19 @@ export const POST: RequestHandler = async ({ request }) => {
     )
   }
   const webhook = webhook_validation.output
-  console.log("[webhook] envelope parsed", { type: webhook.type, data_id: webhook.data.id })
+  console.log("[webhook] envelope parsed", {
+    type: webhook.type,
+    data_id: webhook.data.id,
+  })
 
-  const sig_ok = verify_webhook_signature(signature, request_id, webhook.data.id)
-  console.log("[webhook] signature outcome", { valid: sig_ok })
+  const sig_ok = verify_webhook_signature(
+    signature,
+    request_id,
+    webhook.data.id,
+  )
+  console.log("[webhook] signature outcome", {
+    valid: sig_ok,
+  })
   if (!sig_ok) {
     logger.error("Invalid MercadoPago webhook signature")
     return json(
@@ -388,7 +434,9 @@ export const POST: RequestHandler = async ({ request }) => {
   if (webhook.type === "payment") {
     await handle_payment_notification(webhook.data.id)
   } else {
-    console.log("[webhook] non-payment type, ignoring", { type: webhook.type })
+    console.log("[webhook] non-payment type, ignoring", {
+      type: webhook.type,
+    })
   }
 
   console.log("[webhook] returning 200")

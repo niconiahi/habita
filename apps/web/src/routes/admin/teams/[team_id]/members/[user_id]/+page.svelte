@@ -8,10 +8,8 @@
   import { ACTION } from "./actions/action"
   import type { ActionData, PageData } from "./$types"
 
-  let {
-    data,
-    form,
-  }: { data: PageData; form: ActionData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
 
   let dialog_element: HTMLDialogElement | undefined =
     $state()
@@ -91,13 +89,13 @@
           {#each data.properties as property (property.id)}
             <Table.Row>
               <Table.Cell>{property.address}</Table.Cell>
-              <Table.Cell>{property.unit ?? "-"}</Table.Cell>
+              <Table.Cell>{property.unit ?? "-"}</Table.Cell
+              >
               <Table.Cell>
                 <Button
                   variant="secondary"
                   type="button"
-                  onclick={() =>
-                    open_reassign(property.id)}
+                  onclick={() => open_reassign(property.id)}
                 >
                   Reasignar
                 </Button>
@@ -142,8 +140,9 @@
           name="property_id"
           value={pending_property_id}
         />
-        <label class="body-sm-bold field-label" for="new_manager_id"
-          >Nuevo gestor</label
+        <label
+          class="body-sm-bold field-label"
+          for="new_manager_id">Nuevo gestor</label
         >
         <select
           id="new_manager_id"

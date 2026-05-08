@@ -158,7 +158,8 @@ export async function create_warranty(form_data: FormData) {
                 guarantor_dni: input.guarantor_dni,
                 guarantor_email: input.guarantor_email,
                 location_id: location.id,
-                cadastral_district: input.cadastral_district,
+                cadastral_district:
+                  input.cadastral_district,
                 cadastral_section: input.cadastral_section,
                 cadastral_block: input.cadastral_block,
                 cadastral_parcel: input.cadastral_parcel,
