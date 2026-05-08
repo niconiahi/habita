@@ -186,5 +186,5 @@ export async function create_account(
     }
   }
 
-  redirect(303, "/admin/settings")
+  redirect(303, "/admin")
 }

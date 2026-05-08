@@ -45,7 +45,7 @@ export async function create_property(form_data: FormData) {
 
   const unit =
     input.type === PROPERTY_TYPE.DEPARTMENT
-      ? (input.unit ?? null)
+      ? (input.unit?.toUpperCase() ?? null)
       : null
 
   let property

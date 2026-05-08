@@ -49,31 +49,37 @@
             {get_property_state_label(property.state)}
           </td>
           <td class="actions-cell">
-            {#if property.state === PROPERTY_STATE.EDITING || property.state === PROPERTY_STATE.PUBLISHED}
-              <Popover.Root
+            <Popover.Root
+              id={`property-actions-${property.id}`}
+            >
+              <Popover.Trigger
                 id={`property-actions-${property.id}`}
               >
-                <Popover.Trigger
-                  id={`property-actions-${property.id}`}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <circle cx="12" cy="5" r="2" />
-                    <circle cx="12" cy="12" r="2" />
-                    <circle cx="12" cy="19" r="2" />
-                  </svg>
-                </Popover.Trigger>
-                <Popover.Content
-                  id={`property-actions-${property.id}`}
-                >
-                  {#snippet children({ close })}
-                    <div class="actions-menu">
-                      {#if property.state === PROPERTY_STATE.EDITING}
+                  <circle cx="12" cy="5" r="2" />
+                  <circle cx="12" cy="12" r="2" />
+                  <circle cx="12" cy="19" r="2" />
+                </svg>
+              </Popover.Trigger>
+              <Popover.Content
+                id={`property-actions-${property.id}`}
+              >
+                {#snippet children({ close })}
+                  <div class="actions-menu">
+                    <a
+                      class="body-md-medium action-item"
+                      href={`/admin/properties/${property.id}/edit/characteristics`}
+                      onclick={close}
+                    >
+                      Editar
+                    </a>
+                    {#if property.state === PROPERTY_STATE.EDITING}
                         <form
                           method="POST"
                           action={`?/${ACTION.PUBLISH_PROPERTY}`}
@@ -117,7 +123,6 @@
                   {/snippet}
                 </Popover.Content>
               </Popover.Root>
-            {/if}
           </td>
         </tr>
       {/each}
