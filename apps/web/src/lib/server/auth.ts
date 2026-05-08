@@ -7,7 +7,7 @@ import { Pool } from "pg"
 import { logger } from "$lib/telemetry/logger"
 import { publish_send_team_invite } from "./broker/producer/publish_send_team_invite"
 import { decrypt, encrypt } from "./encryption"
-import { send_email } from "./send_email"
+import { SendEmailError, send_email } from "./send_email"
 
 function get_config() {
   const secret = process.env.BETTER_AUTH_SECRET
@@ -106,18 +106,23 @@ function make_auth() {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,
       sendVerificationEmail: async ({ user, url }) => {
-        // NOTE: log verification URL to stdout so we can verify emails locally via `just logs svelte`
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            `[verification] ${user.email}: ${url}`,
-          )
-          return
+        try {
+          await send_email({
+            to: { email: user.email, name: user.name },
+            subject: "Verificá tu email",
+            html: `<p>Hacé clic en el enlace para verificar tu email: <a href="${url}">${url}</a></p>`,
+          })
+        } catch (error) {
+          if (error instanceof SendEmailError) {
+            logger.error(
+              error.message,
+              { email: user.email },
+              error,
+            )
+          } else {
+            logger.unknown(error)
+          }
         }
-        send_email({
-          to: { email: user.email, name: user.name },
-          subject: "Verificá tu email",
-          html: `<p>Hacé clic en el enlace para verificar tu email: <a href="${url}">${url}</a></p>`,
-        }).catch(() => {})
       },
     },
     database: new Pool({
