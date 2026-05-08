@@ -22,7 +22,7 @@
     "src/**/*.ts",
     "src/**/*.svelte",
     "src/**/*.svx",
-    "e2e/**/*",
+    "test/**/*",
     "db/seeds/**/*.ts"
   ]
 }
