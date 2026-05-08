@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import * as Dialog from "$lib/components/Dialog"
   import * as Formulary from "$lib/components/Formulary"
@@ -24,7 +25,12 @@
         <Dialog.Title>Agregar garante</Dialog.Title>
         <Dialog.Close onclick={close} />
       </Dialog.Header>
-      <form {...add_income_guarantor}>
+      <form
+        {...add_income_guarantor.enhance(async ({ submit }) => {
+          const ok = await submit()
+          if (ok) await invalidateAll()
+        })}
+      >
         <input
           type="hidden"
           name="warranty_id"

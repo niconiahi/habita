@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { destroy_income_guarantor } from "../forms/destroy_income_guarantor.remote"
@@ -30,7 +31,12 @@
 </script>
 
 <li class="item-card">
-  <form {...update_form}>
+  <form
+    {...update_form.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input type="hidden" name="id" value={guarantor.id} />
     <input
       type="hidden"
@@ -97,7 +103,12 @@
       </Formulary.Submission>
     </div>
   </form>
-  <form {...destroy_form}>
+  <form
+    {...destroy_form.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input type="hidden" name="id" value={guarantor.id} />
     <input
       type="hidden"

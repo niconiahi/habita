@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SectionTerm from "../components/section_term.svelte"
+  import SectionSix from "../components/section_six.svelte"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
@@ -7,7 +7,7 @@
 
 <h1>dev: section_term isolated</h1>
 
-<SectionTerm {data} />
+<SectionSix {data} />
 
 <details>
   <summary>raw contract dates from loader</summary>

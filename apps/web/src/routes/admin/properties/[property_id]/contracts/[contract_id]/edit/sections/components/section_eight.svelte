@@ -1,25 +1,31 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
-  import { update_contract_return } from "../forms/update_contract_return.remote"
+  import { update_contract_payment } from "../forms/update_contract_payment.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "return")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "return", event)}
-  title="Sección 14: devoluciones"
+  name="section"
+  open={is_disclosure_open("section", "eight")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "eight", event)}
+  title="Sección 8: forma de pago"
 >
-  <form {...update_contract_return}>
+  <form
+    {...update_contract_payment.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input
       type="hidden"
       name="contract_id"
@@ -32,17 +38,17 @@
     />
     <div class="form-fields">
       <div class="form-field">
-        <label for="percentage_return">porcentaje</label>
+        <label for="cbu">cbu</label>
         <input
-          id="percentage_return"
-          name="percentage_return"
-          type="number"
-          value={data.contract.percentage_return ?? ""}
+          id="cbu"
+          name="cbu"
+          type="text"
+          value={data.contract.cbu ?? ""}
         />
       </div>
     </div>
     <div class="form-actions">
-      <Formulary.Submission form={update_contract_return}>
+      <Formulary.Submission form={update_contract_payment}>
         {#snippet children({ is_busy, is_done })}
           <Button
             variant="primary"
@@ -52,8 +58,8 @@
             <Formulary.SubmissionLabel
               is_busy={is_busy()}
               is_done={is_done()}
-              idle="Guardar porcentaje"
-              busy="Guardando porcentaje..."
+              idle="Guardar CBU"
+              busy="Guardando CBU..."
               done="Guardado"
             />
           </Button>

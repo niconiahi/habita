@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from "svelte"
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
@@ -9,7 +10,7 @@
     get_warranty_type_label,
   } from "$lib/warranty_type"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
   import { create_income_warranty } from "../forms/create_income_warranty.remote"
@@ -274,15 +275,22 @@
 {/snippet}
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "warranty")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "warranty", event)}
+  name="section"
+  open={is_disclosure_open("section", "seventeen")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "seventeen", event)}
   title="Sección 17: garantía"
 >
   {#if !data.warranty}
     {#if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
-      <form {...create_property_warranty}>
+      <form
+        {...create_property_warranty.enhance(
+          async ({ submit }) => {
+            const ok = await submit()
+            if (ok) await invalidateAll()
+          },
+        )}
+      >
         {@render HiddenIds()}
         <div class="form-fields">
           {@render TypeSelect()}
@@ -313,7 +321,14 @@
         </div>
       </form>
     {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
-      <form {...create_surety_warranty}>
+      <form
+        {...create_surety_warranty.enhance(
+          async ({ submit }) => {
+            const ok = await submit()
+            if (ok) await invalidateAll()
+          },
+        )}
+      >
         {@render HiddenIds()}
         <div class="form-fields">
           {@render TypeSelect()}
@@ -342,7 +357,14 @@
         </div>
       </form>
     {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
-      <form {...create_income_warranty}>
+      <form
+        {...create_income_warranty.enhance(
+          async ({ submit }) => {
+            const ok = await submit()
+            if (ok) await invalidateAll()
+          },
+        )}
+      >
         {@render HiddenIds()}
         <div class="form-fields">
           {@render TypeSelect()}
@@ -374,7 +396,14 @@
       </div>
     {/if}
   {:else if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
-    <form {...update_property_warranty}>
+    <form
+      {...update_property_warranty.enhance(
+        async ({ submit }) => {
+          const ok = await submit()
+          if (ok) await invalidateAll()
+        },
+      )}
+    >
       {@render HiddenIds()}
       <div class="form-fields">
         {@render TypeSelect()}
@@ -403,7 +432,14 @@
       </div>
     </form>
   {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
-    <form {...update_surety_warranty}>
+    <form
+      {...update_surety_warranty.enhance(
+        async ({ submit }) => {
+          const ok = await submit()
+          if (ok) await invalidateAll()
+        },
+      )}
+    >
       {@render HiddenIds()}
       <div class="form-fields">
         {@render TypeSelect()}
@@ -430,7 +466,14 @@
       </div>
     </form>
   {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
-    <form {...update_income_warranty}>
+    <form
+      {...update_income_warranty.enhance(
+        async ({ submit }) => {
+          const ok = await submit()
+          if (ok) await invalidateAll()
+        },
+      )}
+    >
       {@render HiddenIds()}
       <div class="form-fields">
         {@render TypeSelect()}
