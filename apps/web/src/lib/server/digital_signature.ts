@@ -101,6 +101,65 @@ function make_auth_token(): string {
   return encrypt_auth(auth_string, private_key, salt, iv)
 }
 
+function log_alpha2000_probe(
+  endpoint: string,
+  http_status: number,
+  raw: unknown,
+) {
+  let body: unknown = raw
+  if (typeof raw === "string") {
+    try {
+      body = JSON.parse(raw)
+    } catch {
+      console.info(
+        `[alpha2000] ${endpoint} http=${http_status} body_not_json="${raw.slice(0, 200)}"`,
+      )
+      return
+    }
+  }
+  if (typeof body !== "object" || body === null) {
+    console.info(
+      `[alpha2000] ${endpoint} http=${http_status} body=${String(body)}`,
+    )
+    return
+  }
+  const root = body as Record<string, unknown>
+  const codigo_resultado = root.CodigoResultado
+  const mensaje_resultado = root.MensajeResultado
+  const datos =
+    typeof root.Datos === "object" && root.Datos !== null
+      ? (root.Datos as Record<string, unknown>)
+      : null
+  const doc_codigo_estado = datos?.CodigoEstado
+  const doc_descripcion_estado = datos?.DescripcionEstado
+  const estados_raw = datos?.Estados
+  const estados_str = Array.isArray(estados_raw)
+    ? estados_raw
+        .map((entry) => {
+          if (typeof entry !== "object" || entry === null)
+            return String(entry)
+          const e = entry as Record<string, unknown>
+          return `${e.CodigoUnicoIdentificacion ?? "?"}=${e.CodigoEstado ?? "?"}("${e.DescripcionEstado ?? ""}")`
+        })
+        .join(",")
+    : null
+  const parts = [
+    `[alpha2000] ${endpoint}`,
+    `http=${http_status}`,
+    `CodigoResultado=${codigo_resultado ?? "?"}`,
+    `mensaje="${mensaje_resultado ?? ""}"`,
+  ]
+  if (doc_codigo_estado !== undefined) {
+    parts.push(
+      `doc.CodigoEstado=${doc_codigo_estado}("${doc_descripcion_estado ?? ""}")`,
+    )
+  }
+  if (estados_str !== null) {
+    parts.push(`estados=[${estados_str}]`)
+  }
+  console.info(parts.join(" | "))
+}
+
 async function api_fetch<T>(
   endpoint: string,
   body: object,
@@ -137,6 +196,7 @@ async function api_fetch<T>(
 
   if (!response.ok) {
     const error_text = await response.text()
+    log_alpha2000_probe(endpoint, response.status, error_text)
     const api_error = new Error(
       `Digital signature API error (${endpoint}): ${error_text}`,
     )
@@ -166,6 +226,7 @@ async function api_fetch<T>(
     }
   }
 
+  log_alpha2000_probe(endpoint, response.status, data)
   const parsed_validation = v.safeParse(schema, data)
   if (!parsed_validation.success) {
     const parse_error = new Error(
