@@ -1,6 +1,7 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { guard_contract_editable } from "$lib/server/guard_contract_editable"
 import { require_edit_access } from "$lib/server/property_access"
 import type { Actions } from "./$types"
 import { ACTION } from "../actions/action"
@@ -30,6 +31,8 @@ export const actions: Actions = {
       property_id,
       locals.session?.activeOrganizationId,
     )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return create_period(form_data, contract_id)
   },
@@ -45,12 +48,18 @@ export const actions: Actions = {
       ForceNumberSchema,
       params.property_id,
     )
+    const contract_id = v.parse(
+      ForceNumberSchema,
+      params.contract_id,
+    )
     await require_edit_access(
       request.headers,
       locals.user.id,
       property_id,
       locals.session?.activeOrganizationId,
     )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return update_period(form_data)
   },
