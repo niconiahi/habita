@@ -1,8 +1,7 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
   import * as Dialog from "$lib/components/Dialog"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
-  import { submission_disabled } from "$lib/submission_disabled"
+  import * as Formulary from "$lib/components/Formulary"
   import { add_income_guarantor } from "../forms/add_income_guarantor.remote"
 
   let {
@@ -68,20 +67,23 @@
           </div>
         </div>
         <div class="form-actions">
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={submission_disabled(
-              add_income_guarantor,
-            )}
-          >
-            <SubmitLabel
-              form={add_income_guarantor}
-              idle="Agregar"
-              busy="Agregando..."
-              done="Agregado"
-            />
-          </Button>
+          <Formulary.Submission form={add_income_guarantor}>
+            {#snippet children({ is_busy, is_done })}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={is_busy()}
+              >
+                <Formulary.SubmissionLabel
+                  is_busy={is_busy()}
+                  is_done={is_done()}
+                  idle="Agregar"
+                  busy="Agregando..."
+                  done="Agregado"
+                />
+              </Button>
+            {/snippet}
+          </Formulary.Submission>
         </div>
       </form>
     </Dialog.Content>
