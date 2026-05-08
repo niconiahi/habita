@@ -1,7 +1,6 @@
 export const ACTION = {
   UPDATE_CONTRACT: "update_contract",
   CREATE_FILE: "create_file",
-  DESTROY_FILE: "destroy_file",
   CREATE_PDF: "create_pdf",
   CREATE_CONTRACT_ITEM: "create_contract_item",
   UPDATE_CONTRACT_ITEM: "update_contract_item",
@@ -15,6 +14,7 @@ export const ACTION = {
   ADD_INCOME_GUARANTOR: "add_income_guarantor",
   UPDATE_INCOME_GUARANTOR: "update_income_guarantor",
   DESTROY_INCOME_GUARANTOR: "destroy_income_guarantor",
+  ACTIVATE_CONTRACT: "activate_contract",
   CHECK_CERTIFICATES: "check_certificates",
   START_ONBOARDING: "start_onboarding",
   SEND_FOR_SIGNING: "send_for_signing",
