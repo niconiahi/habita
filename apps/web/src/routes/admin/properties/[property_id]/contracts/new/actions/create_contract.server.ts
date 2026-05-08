@@ -77,6 +77,6 @@ export async function create_contract(
 
   redirect(
     303,
-    `/admin/properties/${property_id}/contracts/${contract.id}/edit`,
+    `/admin/properties/${property_id}/contracts/${contract.id}/edit/sections`,
   )
 }

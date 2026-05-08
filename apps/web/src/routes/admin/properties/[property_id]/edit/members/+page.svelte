@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Dialog from "$lib/components/Dialog"
   import * as Formulary from "$lib/components/Formulary"
   import Button from "$lib/components/Button.svelte"
   import { display_name } from "$lib/display_name"
@@ -13,11 +14,17 @@
 
   let { data }: { data: PageData } = $props()
 
+  let invite_dialog: HTMLDialogElement | undefined = $state()
+
   const has_landlord = $derived(
     data.property.members.some(
       (member) => member.type === ACCESS_TYPE.LANDLORD,
     ),
   )
+
+  function handle_open_invite() {
+    invite_dialog?.showModal()
+  }
 </script>
 
 <section id="members">
@@ -53,26 +60,46 @@
     {/each}
   </ul>
   {#if !has_landlord}
-    <Formulary.Root
-      method="POST"
-      action={compose_action(ACTION.INVITE_LANDLORD)}
+    <Button
+      variant="primary"
+      type="button"
+      onclick={handle_open_invite}
     >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label for="email"
-            >email</Formulary.Label
-          >
-          <input id="email" name="email" type="email" />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Invitar dueño</Button
-        >
-      </Formulary.Actions>
-    </Formulary.Root>
+      Invitar dueño
+    </Button>
   {/if}
 </section>
+
+{#if !has_landlord}
+  <Dialog.Root bind:element={invite_dialog}>
+    {#snippet children({ close })}
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Invitar dueño</Dialog.Title>
+          <Dialog.Close onclick={close} />
+        </Dialog.Header>
+        <Formulary.Root
+          method="POST"
+          action={compose_action(ACTION.INVITE_LANDLORD)}
+        >
+          <Formulary.Fields>
+            <Formulary.Field>
+              <Formulary.Label for="email"
+                >email</Formulary.Label
+              >
+              <input id="email" name="email" type="email" />
+            </Formulary.Field>
+          </Formulary.Fields>
+          <Formulary.Actions>
+            <Button variant="primary" type="submit"
+              >Invitar dueño</Button
+            >
+          </Formulary.Actions>
+        </Formulary.Root>
+      </Dialog.Content>
+    {/snippet}
+  </Dialog.Root>
+{/if}
 
 <style>
   .tab-title {
