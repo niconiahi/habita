@@ -1,6 +1,7 @@
 import { redirect } from "@sveltejs/kit"
 import * as v from "valibot"
 import { ForceNumberSchema } from "$lib/force_number"
+import { guard_contract_editable } from "$lib/server/guard_contract_editable"
 import { require_edit_access } from "$lib/server/property_access"
 import type { Actions } from "./$types"
 import { ACTION } from "../actions/action"
@@ -16,28 +17,41 @@ import { update_contract_item } from "../actions/update_contract_item.server"
 import { update_income_guarantor } from "../actions/update_income_guarantor.server"
 import { update_warranty } from "../actions/update_warranty.server"
 
+async function require_authorized(
+  request: Request,
+  locals: App.Locals,
+  params: { property_id?: string; contract_id?: string },
+) {
+  if (!locals.user) {
+    redirect(302, "/properties")
+  }
+  const property_id = v.parse(
+    ForceNumberSchema,
+    params.property_id,
+  )
+  const contract_id = v.parse(
+    ForceNumberSchema,
+    params.contract_id,
+  )
+  await require_edit_access(
+    request.headers,
+    locals.user.id,
+    property_id,
+    locals.session?.activeOrganizationId,
+  )
+  return { property_id, contract_id }
+}
+
 export const actions: Actions = {
   [ACTION.UPDATE_CONTRACT]: async ({
     request,
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
-      {
-        message: "property id should be a number",
-      },
-    )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const { property_id, contract_id } =
+      await require_authorized(request, locals, params)
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return update_contract(form_data, property_id)
   },
@@ -46,26 +60,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
-    const contract_id = v.parse(
-      ForceNumberSchema,
-      params.contract_id,
-      {
-        message: "contract id should be a number",
-      },
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     return create_contract_item(contract_id)
   },
   [ACTION.UPDATE_CONTRACT_ITEM]: async ({
@@ -73,19 +74,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return update_contract_item(form_data)
   },
@@ -94,19 +89,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return destroy_contract_item(form_data)
   },
@@ -115,19 +104,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return create_contract_item_file(form_data)
   },
@@ -136,19 +119,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return destroy_contract_item_file(form_data)
   },
@@ -157,19 +134,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return create_warranty(form_data)
   },
@@ -178,19 +149,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return update_warranty(form_data)
   },
@@ -199,19 +164,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return add_income_guarantor(form_data)
   },
@@ -220,19 +179,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return update_income_guarantor(form_data)
   },
@@ -241,19 +194,13 @@ export const actions: Actions = {
     locals,
     params,
   }) => {
-    if (!locals.user) {
-      redirect(302, "/properties")
-    }
-    const property_id = v.parse(
-      ForceNumberSchema,
-      params.property_id,
+    const { contract_id } = await require_authorized(
+      request,
+      locals,
+      params,
     )
-    await require_edit_access(
-      request.headers,
-      locals.user.id,
-      property_id,
-      locals.session?.activeOrganizationId,
-    )
+    const guard = await guard_contract_editable(contract_id)
+    if (guard) return guard
     const form_data = await request.formData()
     return destroy_income_guarantor(form_data)
   },

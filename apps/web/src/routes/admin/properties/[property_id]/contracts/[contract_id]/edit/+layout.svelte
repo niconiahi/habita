@@ -10,7 +10,6 @@
     { route: "sections", label: "secciones" },
     { route: "documents", label: "documentos" },
     { route: "periods", label: "periodos" },
-    { route: "operations", label: "acciones" },
   ] as const
 
   let {
@@ -44,6 +43,13 @@
   <h1 class="heading-md page-title">
     contrato {data.contract.id}
   </h1>
+  {#if data.is_read_only}
+    <div class="read-only-banner">
+      <p class="body-sm-medium">
+        El contrato está activo. La edición está bloqueada.
+      </p>
+    </div>
+  {/if}
   <TabGroup>
     {#each CONTRACT_TABS as tab}
       <Tab active={is_active(tab.route)}>
@@ -63,6 +69,14 @@
   }
 
   .page-title {
+    color: var(--color-text-heading);
+  }
+
+  .read-only-banner {
+    padding: var(--dimension-spacing-3);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--dimension-radius-2);
+    background-color: var(--color-neutrals-50);
     color: var(--color-text-heading);
   }
 </style>

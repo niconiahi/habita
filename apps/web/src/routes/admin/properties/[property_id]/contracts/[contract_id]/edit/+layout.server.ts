@@ -1,8 +1,10 @@
 import { require_authentication } from "$lib/server/auth"
-import { error, redirect } from "@sveltejs/kit"
+import { error } from "@sveltejs/kit"
 import { query_builder } from "db/query_builder"
 import * as v from "valibot"
+import { CONTRACT_STATE } from "$lib/contract_state"
 import { ForceNumberSchema } from "$lib/force_number"
+import { is_webmaster } from "$lib/server/is_webmaster"
 import { require_edit_access } from "$lib/server/property_access"
 import type { LayoutServerLoad } from "./$types"
 import { fetch_contract } from "./fetchers/contract.server"
@@ -80,5 +82,7 @@ export const load: LayoutServerLoad = async ({
     property,
     warranty,
     signature: signature ?? null,
+    is_webmaster: is_webmaster(locals.user),
+    is_read_only: contract.state !== CONTRACT_STATE.EDITING,
   }
 }
