@@ -1,21 +1,34 @@
 <script lang="ts">
   import * as Table from "$lib/components/Table"
   import Button from "$lib/components/Button.svelte"
-  import { get_contract_state_label } from "$lib/contract_state"
+  import {
+    CONTRACT_STATE,
+    get_contract_state_label,
+  } from "$lib/contract_state"
   import { display_date } from "$lib/display_date"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
+
+  const has_editing_contract = $derived(
+    data.property.contracts.some(
+      (contract) => contract.state === CONTRACT_STATE.EDITING,
+    ),
+  )
 </script>
 
 <section>
   <div class="tab-header">
     <h2 class="heading-sm tab-title">Contratos</h2>
-    <a
-      href={`/admin/properties/${data.property.id}/contracts/new`}
-    >
-      <Button variant="secondary">Crear contrato</Button>
-    </a>
+    {#if has_editing_contract}
+      <Button variant="secondary" disabled>Crear contrato</Button>
+    {:else}
+      <a
+        href={`/admin/properties/${data.property.id}/contracts/new`}
+      >
+        <Button variant="secondary">Crear contrato</Button>
+      </a>
+    {/if}
   </div>
   <Table.Root>
     <Table.Header>
