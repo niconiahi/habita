@@ -2,6 +2,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_early_termination } from "../forms/update_contract_early_termination.remote"
   import type { PageData } from "../$types"
 
@@ -10,6 +14,13 @@
 
 <Disclosure
   name="sections"
+  open={is_disclosure_open("sections", "early_termination")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle(
+      "sections",
+      "early_termination",
+      event,
+    )}
   title="Sección 15: recesión anticipada"
 >
   <form {...update_contract_early_termination}>

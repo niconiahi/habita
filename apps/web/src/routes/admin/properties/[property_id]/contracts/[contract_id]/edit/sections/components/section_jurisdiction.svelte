@@ -3,13 +3,23 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { COURT, get_court_label } from "$lib/court"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_jurisdiction } from "../forms/update_contract_jurisdiction.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
-<Disclosure name="sections" title="Sección 21: jurisdicción">
+<Disclosure
+  name="sections"
+  open={is_disclosure_open("sections", "jurisdiction")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "jurisdiction", event)}
+  title="Sección 21: jurisdicción"
+>
   <form {...update_contract_jurisdiction}>
     <input
       type="hidden"

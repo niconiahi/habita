@@ -8,6 +8,10 @@
     WARRANTY_TYPE,
     get_warranty_type_label,
   } from "$lib/warranty_type"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { create_income_warranty } from "../forms/create_income_warranty.remote"
   import { create_property_warranty } from "../forms/create_property_warranty.remote"
   import { create_surety_warranty } from "../forms/create_surety_warranty.remote"
@@ -269,7 +273,13 @@
   </div>
 {/snippet}
 
-<Disclosure name="sections" title="Sección 17: garantía">
+<Disclosure
+  name="sections"
+  open={is_disclosure_open("sections", "warranty")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "warranty", event)}
+  title="Sección 17: garantía"
+>
   {#if !data.warranty}
     {#if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
       <form {...create_property_warranty}>

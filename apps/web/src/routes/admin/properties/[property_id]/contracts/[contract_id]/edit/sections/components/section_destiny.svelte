@@ -3,13 +3,23 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { get_property_destiny_label } from "$lib/property_destiny"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_destiny } from "../forms/update_contract_destiny.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
-<Disclosure name="sections" title="Sección 3: destino">
+<Disclosure
+  name="sections"
+  open={is_disclosure_open("sections", "destiny")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "destiny", event)}
+  title="Sección 3: destino"
+>
   <form {...update_contract_destiny}>
     <input
       type="hidden"

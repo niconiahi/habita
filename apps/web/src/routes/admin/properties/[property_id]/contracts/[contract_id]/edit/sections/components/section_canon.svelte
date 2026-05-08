@@ -10,13 +10,23 @@
     ESCALATION_TYPE,
     get_escalation_label,
   } from "$lib/escalation_type"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_canon } from "../forms/update_contract_canon.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
-<Disclosure name="sections" title="Sección 7: canon locativo">
+<Disclosure
+  name="sections"
+  open={is_disclosure_open("sections", "canon")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "canon", event)}
+  title="Sección 7: canon locativo"
+>
   <form {...update_contract_canon}>
     <input
       type="hidden"

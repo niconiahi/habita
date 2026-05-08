@@ -2,6 +2,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_showroom } from "../forms/update_contract_showroom.remote"
   import type { PageData } from "../$types"
 
@@ -10,6 +14,9 @@
 
 <Disclosure
   name="sections"
+  open={is_disclosure_open("sections", "showroom")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "showroom", event)}
   title="Sección 16: muestra de propiedad"
 >
   <form {...update_contract_showroom}>
