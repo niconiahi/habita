@@ -23,6 +23,12 @@ This rule overrides brevity, speed, and "obvious" tasks. A one-line shell comman
 
 ---
 
+## Never Read Dependency Source
+
+Never read files inside `node_modules/` (or any third-party package source) to inspect APIs, type definitions, or implementations. If official docs are insufficient, ASK the user for permission before reading dependency source — do not do it on your own initiative.
+
+---
+
 ## Always-On Rules
 
 YOU MUST READ THE SKILL FILE FOR EVERY ITEM BELOW THAT APPLIES TO THE CURRENT TASK, BEFORE TOUCHING ANY TOOL. The summaries here are NOT a substitute for the skill — they exist so you know which skill to reach for. Reading the summary and skipping the skill is a violation.

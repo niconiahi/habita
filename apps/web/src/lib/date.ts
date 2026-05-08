@@ -1,3 +1,5 @@
+import { tz } from "@date-fns/tz"
+import { format } from "date-fns"
 import * as v from "valibot"
 
 export const DateSchema = v.pipe(
@@ -7,8 +9,12 @@ export const DateSchema = v.pipe(
   }),
 )
 
+const ARGENTINA_TIMEZONE = "America/Argentina/Buenos_Aires"
+
 export function format_date_for_input(date: string | Date) {
-  return new Date(date).toISOString().slice(0, -8)
+  return format(date, "yyyy-MM-dd'T'HH:mm", {
+    in: tz(ARGENTINA_TIMEZONE),
+  })
 }
 
 export function get_date(date: Date) {

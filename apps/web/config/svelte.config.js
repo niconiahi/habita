@@ -13,6 +13,7 @@ const config = {
     alias: {
       db: "./db",
       $icon: "./src/icon",
+      $test: "./test",
     },
     router: {
       resolution: "server",

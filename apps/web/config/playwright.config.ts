@@ -10,15 +10,16 @@ if (!process.env.POSTGRES_USER) {
 }
 
 export default defineConfig({
-  testDir: "e2e",
+  testDir: ".",
   forbidOnly: !!process.env.CI,
   workers: 1,
   reporter: "list",
+  timeout: 5000,
+  expect: { timeout: 5000 },
   use: {
     baseURL: "https://dev.habita.rent",
     ignoreHTTPSErrors: true,
     launchOptions: {
-      slowMo: 500,
       args: ["--start-maximized"],
     },
     viewport: null,
@@ -26,17 +27,20 @@ export default defineConfig({
   projects: [
     {
       name: "setup",
-      testMatch: /global\.setup\.ts/,
+      testMatch: "test/e2e/global.setup.ts",
       teardown: "teardown",
     },
     {
       name: "teardown",
-      testMatch: /global\.teardown\.ts/,
+      testMatch: "test/e2e/global.teardown.ts",
     },
     {
       name: "chromium",
       dependencies: ["setup"],
-      testIgnore: /global\.(setup|teardown)\.ts/,
+      testMatch: [
+        "test/e2e/cases/**/*.test.ts",
+        "src/**/e2e/**/*.test.ts",
+      ],
     },
   ],
 })

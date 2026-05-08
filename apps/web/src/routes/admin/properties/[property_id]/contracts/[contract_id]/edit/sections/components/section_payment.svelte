@@ -2,13 +2,23 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
+  import {
+    handle_disclosure_toggle,
+    is_disclosure_open,
+  } from "../disclosure_url"
   import { update_contract_payment } from "../forms/update_contract_payment.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
-<Disclosure name="sections" title="Sección 8: forma de pago">
+<Disclosure
+  name="sections"
+  open={is_disclosure_open("sections", "payment")}
+  ontoggle={(event) =>
+    handle_disclosure_toggle("sections", "payment", event)}
+  title="Sección 8: forma de pago"
+>
   <form {...update_contract_payment}>
     <input
       type="hidden"
