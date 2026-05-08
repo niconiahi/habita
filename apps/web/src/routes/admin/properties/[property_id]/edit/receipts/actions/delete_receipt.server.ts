@@ -53,16 +53,18 @@ export async function delete_receipt(form_data: FormData) {
   }
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      await tx
-        .deleteFrom("receipt")
-        .where("id", "=", input.receipt_id)
-        .execute()
-      await tx
-        .deleteFrom("file")
-        .where("id", "=", receipt.file_id)
-        .execute()
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        await tx
+          .deleteFrom("receipt")
+          .where("id", "=", input.receipt_id)
+          .execute()
+        await tx
+          .deleteFrom("file")
+          .where("id", "=", receipt.file_id)
+          .execute()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

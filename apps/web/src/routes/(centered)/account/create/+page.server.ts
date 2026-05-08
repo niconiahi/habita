@@ -29,10 +29,7 @@ export const load: PageServerLoad = async ({
 }
 
 export const actions: Actions = {
-  [ACTION.CREATE_ACCOUNT]: async ({
-    locals,
-    request,
-  }) => {
+  [ACTION.CREATE_ACCOUNT]: async ({ locals, request }) => {
     require_authentication(locals)
     const form_data = await request.formData()
     return create_account(

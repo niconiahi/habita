@@ -7,10 +7,15 @@ export function display_location(location: {
   state: string | null
 }) {
   const road_and_number = `${location.road} ${location.house_number}`
-  const area = location.suburb ?? location.city ?? location.town
+  const area =
+    location.suburb ?? location.city ?? location.town
   if (!area) {
     return "direccion invalida. Por favor, informar asi se arregla"
   }
-  const parts = [road_and_number, area, location.state].filter((part) => part !== null && part !== "")
+  const parts = [
+    road_and_number,
+    area,
+    location.state,
+  ].filter((part) => part !== null && part !== "")
   return parts.join(", ")
 }

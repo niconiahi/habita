@@ -39,8 +39,7 @@ export async function destroy_room_file(
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al eliminar la foto de la habitación",
+      message: "Error al eliminar la foto de la habitación",
     })
   }
 }

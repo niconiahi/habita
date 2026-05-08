@@ -15,14 +15,20 @@ const REALTOR_SEAT_PRICE_USD = 40
 export async function create_subscription_payment(
   organization_id: string,
 ) {
-  console.log("[mp/helper] entered with organization_id", organization_id)
+  console.log(
+    "[mp/helper] entered with organization_id",
+    organization_id,
+  )
   const subscriptions = await query_builder
     .selectFrom("subscription")
     .where("organization_id", "=", organization_id)
     .selectAll()
     .execute()
 
-  console.log("[mp/helper] fetched subs for org", { count: subscriptions.length, ids: subscriptions.map(s => s.id) })
+  console.log("[mp/helper] fetched subs for org", {
+    count: subscriptions.length,
+    ids: subscriptions.map((s) => s.id),
+  })
   if (subscriptions.length === 0) {
     console.log("[mp/helper] no subs for org, failing")
     return fail(400, {
@@ -44,7 +50,11 @@ export async function create_subscription_payment(
 
   const origin = get_origin()
 
-  console.log("[mp/helper] about to create preference", { external_reference: String(first_subscription.id), amount, title })
+  console.log("[mp/helper] about to create preference", {
+    external_reference: String(first_subscription.id),
+    amount,
+    title,
+  })
 
   let preference: { id: string; init_point: string }
   try {
@@ -58,13 +68,18 @@ export async function create_subscription_payment(
         pending: `${origin}/subscribe`,
       },
     })
-    console.log("[mp/helper] preference created", { id: preference.id, init_point: preference.init_point })
+    console.log("[mp/helper] preference created", {
+      id: preference.id,
+      init_point: preference.init_point,
+    })
   } catch (error) {
-    console.log("[mp/helper] create_preference threw", error)
+    console.log(
+      "[mp/helper] create_preference threw",
+      error,
+    )
     if (error instanceof CreatePreferenceError) {
       if (
-        error.type ===
-        CREATE_PREFERENCE_ERROR.FETCH_FAILED
+        error.type === CREATE_PREFERENCE_ERROR.FETCH_FAILED
       ) {
         return fail(400, {
           message:

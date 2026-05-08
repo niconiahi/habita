@@ -33,7 +33,7 @@
     | undefined = $state()
 
   function handle_card_image_click(
-    images: typeof data.properties[number]["images"],
+    images: (typeof data.properties)[number]["images"],
     index: number,
   ) {
     viewer_photos = images.map((image) => ({
@@ -409,7 +409,10 @@
   {@render Properties()}
 </div>
 
-<PhotoViewer photos={viewer_photos} bind:open={open_viewer} />
+<PhotoViewer
+  photos={viewer_photos}
+  bind:open={open_viewer}
+/>
 
 <style>
   .page {

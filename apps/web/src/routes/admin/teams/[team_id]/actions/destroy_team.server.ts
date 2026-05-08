@@ -47,7 +47,8 @@ export async function destroy_team(
         logger.unknown(error)
       }
       return fail(400, {
-        message: "Error al cancelar invitaciones del equipo",
+        message:
+          "Error al cancelar invitaciones del equipo",
       })
     }
   }

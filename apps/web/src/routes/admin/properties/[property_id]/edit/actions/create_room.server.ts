@@ -19,11 +19,7 @@ export async function create_room(floor_id: number) {
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { floor_id },
-        error,
-      )
+      logger.error(error.message, { floor_id }, error)
     } else {
       logger.unknown(error)
     }

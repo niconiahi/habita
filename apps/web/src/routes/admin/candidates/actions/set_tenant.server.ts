@@ -45,8 +45,7 @@ export async function set_tenant(form_data: FormData) {
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al revocar el acceso del inquilino",
+      message: "Error al revocar el acceso del inquilino",
     })
   }
 
@@ -70,8 +69,7 @@ export async function set_tenant(form_data: FormData) {
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al asignar el acceso del inquilino",
+      message: "Error al asignar el acceso del inquilino",
     })
   }
 

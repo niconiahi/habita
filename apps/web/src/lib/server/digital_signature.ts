@@ -196,7 +196,11 @@ async function api_fetch<T>(
 
   if (!response.ok) {
     const error_text = await response.text()
-    log_alpha2000_probe(endpoint, response.status, error_text)
+    log_alpha2000_probe(
+      endpoint,
+      response.status,
+      error_text,
+    )
     const api_error = new Error(
       `Digital signature API error (${endpoint}): ${error_text}`,
     )

@@ -7,7 +7,9 @@
 
 <div class="page">
   {#if data.state === "not_found"}
-    <h1 class="heading-md title">Invitación no encontrada</h1>
+    <h1 class="heading-md title">
+      Invitación no encontrada
+    </h1>
     <p class="body-md-regular message">
       No pudimos encontrar esta invitación. Pedile a quien
       te invitó que te envíe un nuevo link.

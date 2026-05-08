@@ -34,27 +34,29 @@ export async function update_room_positions(
   const input = input_validation.output
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      for (const pos of input.positions) {
-        await tx
-          .insertInto("room_map")
-          .values({
-            room_id: pos.room_id,
-            position_x: String(pos.position_x),
-            position_y: String(pos.position_y),
-            created_at: now,
-            updated_at: now,
-          })
-          .onConflict((oc) =>
-            oc.column("room_id").doUpdateSet({
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        for (const pos of input.positions) {
+          await tx
+            .insertInto("room_map")
+            .values({
+              room_id: pos.room_id,
               position_x: String(pos.position_x),
               position_y: String(pos.position_y),
+              created_at: now,
               updated_at: now,
-            }),
-          )
-          .execute()
-      }
-    })
+            })
+            .onConflict((oc) =>
+              oc.column("room_id").doUpdateSet({
+                position_x: String(pos.position_x),
+                position_y: String(pos.position_y),
+                updated_at: now,
+              }),
+            )
+            .execute()
+        }
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(
@@ -66,8 +68,7 @@ export async function update_room_positions(
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al guardar las posiciones del mapa",
+      message: "Error al guardar las posiciones del mapa",
     })
   }
 }

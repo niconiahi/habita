@@ -41,15 +41,13 @@ export async function send_for_signing(
   }
   const input = input_validation.output
 
-  let contract_file: { hash: string; file_id: number } | undefined
+  let contract_file:
+    | { hash: string; file_id: number }
+    | undefined
   try {
     contract_file = await query_builder
       .selectFrom("contract_file")
-      .innerJoin(
-        "file",
-        "file.id",
-        "contract_file.file_id",
-      )
+      .innerJoin("file", "file.id", "contract_file.file_id")
       .where(
         "contract_file.contract_id",
         "=",
@@ -119,7 +117,9 @@ export async function send_for_signing(
   const base_path = `${origin}/webhooks/digital_signature/signing`
   const group_id = randomUUID()
 
-  let submit_result: Awaited<ReturnType<typeof submit_for_signing>>
+  let submit_result: Awaited<
+    ReturnType<typeof submit_for_signing>
+  >
   try {
     submit_result = await submit_for_signing({
       DocumentoBase64: document_base64,
@@ -145,9 +145,7 @@ export async function send_for_signing(
     })
   } catch (error) {
     if (error instanceof ApiFetchError) {
-      if (
-        error.type === API_FETCH_ERROR.FETCH_FAILED
-      ) {
+      if (error.type === API_FETCH_ERROR.FETCH_FAILED) {
         return fail(400, {
           message:
             "No se pudo conectar al servicio de firma digital",
@@ -155,13 +153,11 @@ export async function send_for_signing(
       }
       if (error.type === API_FETCH_ERROR.API_ERROR) {
         return fail(400, {
-          message:
-            "Error en el servicio de firma digital",
+          message: "Error en el servicio de firma digital",
         })
       }
       if (
-        error.type ===
-        API_FETCH_ERROR.JSON_PARSE_FAILED
+        error.type === API_FETCH_ERROR.JSON_PARSE_FAILED
       ) {
         return fail(400, {
           message:

@@ -279,7 +279,9 @@ function make_auth() {
 <p><a href="${link}">Aceptar invitación</a></p>
 <p>El link expira en 48 horas.</p>`
           if (process.env.NODE_ENV === "development") {
-            console.log(`[team_invite] ${data.email}: ${link}`)
+            console.log(
+              `[team_invite] ${data.email}: ${link}`,
+            )
           }
           await publish_send_team_invite(data.id, {
             email: data.email,

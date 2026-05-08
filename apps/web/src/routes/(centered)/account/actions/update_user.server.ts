@@ -114,11 +114,7 @@ export async function update_user(
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { user_id },
-        error,
-      )
+      logger.error(error.message, { user_id }, error)
     } else {
       logger.unknown(error)
     }

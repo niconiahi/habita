@@ -73,8 +73,7 @@ export async function create_pdf(
         GENERATE_PDF_WITH_PLAYWRIGHT_ERROR.FETCH_FAILED
       ) {
         return fail(400, {
-          message:
-            "No se pudo conectar al servicio de PDF",
+          message: "No se pudo conectar al servicio de PDF",
         })
       }
       if (
@@ -107,41 +106,43 @@ export async function create_pdf(
   }
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      const contract_file = await tx
-        .selectFrom("contract_file")
-        .select("file_id")
-        .where((eb) =>
-          eb.and([
-            eb("type", "=", CONTRACT_FILE_TYPE.CONTRACT),
-            eb("contract_id", "=", input.id),
-          ]),
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const contract_file = await tx
+          .selectFrom("contract_file")
+          .select("file_id")
+          .where((eb) =>
+            eb.and([
+              eb("type", "=", CONTRACT_FILE_TYPE.CONTRACT),
+              eb("contract_id", "=", input.id),
+            ]),
+          )
+          .executeTakeFirst()
+        if (contract_file) {
+          await tx
+            .deleteFrom("file")
+            .where("id", "=", contract_file.file_id)
+            .executeTakeFirstOrThrow()
+        }
+        const file_id = await upsert_file_from_buffer(
+          content,
+          "contract.pdf",
+          "application/pdf",
+          tx,
         )
-        .executeTakeFirst()
-      if (contract_file) {
         await tx
-          .deleteFrom("file")
-          .where("id", "=", contract_file.file_id)
+          .insertInto("contract_file")
+          .values({
+            file_id,
+            type: CONTRACT_FILE_TYPE.CONTRACT,
+            contract_id: input.id,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
           .executeTakeFirstOrThrow()
-      }
-      const file_id = await upsert_file_from_buffer(
-        content,
-        "contract.pdf",
-        "application/pdf",
-        tx,
-      )
-      await tx
-        .insertInto("contract_file")
-        .values({
-          file_id,
-          type: CONTRACT_FILE_TYPE.CONTRACT,
-          contract_id: input.id,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-    })
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

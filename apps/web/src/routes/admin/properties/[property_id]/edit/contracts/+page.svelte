@@ -12,7 +12,8 @@
 
   const has_editing_contract = $derived(
     data.property.contracts.some(
-      (contract) => contract.state === CONTRACT_STATE.EDITING,
+      (contract) =>
+        contract.state === CONTRACT_STATE.EDITING,
     ),
   )
 </script>
@@ -21,7 +22,9 @@
   <div class="tab-header">
     <h2 class="heading-sm tab-title">Contratos</h2>
     {#if has_editing_contract}
-      <Button variant="secondary" disabled>Crear contrato</Button>
+      <Button variant="secondary" disabled
+        >Crear contrato</Button
+      >
     {:else}
       <a
         href={`/admin/properties/${data.property.id}/contracts/new`}
