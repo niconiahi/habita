@@ -1,34 +1,16 @@
 <script lang="ts">
-  import { defer_changing } from "$lib/defer_changing.svelte"
-
-  const MIN_BUSY_MS = 400
-  const MIN_DONE_MS = 1500
-
-  interface Form {
-    pending: number
-    result: { ok?: boolean } | undefined
-  }
-
   interface Props {
-    form: Form
+    is_busy: boolean
+    is_done: boolean
     idle: string
     busy: string
     done: string
   }
 
-  let { form, idle, busy, done }: Props = $props()
-
-  const is_busy = defer_changing(
-    () => form.pending > 0,
-    MIN_BUSY_MS,
-  )
-  const is_done = defer_changing(
-    () => form.pending === 0 && form.result?.ok === true,
-    MIN_DONE_MS,
-  )
+  let { is_busy, is_done, idle, busy, done }: Props = $props()
 
   const state = $derived(
-    is_busy() ? "busy" : is_done() ? "done" : "idle",
+    is_busy ? "busy" : is_done ? "done" : "idle",
   )
 
   const live_message = $derived(

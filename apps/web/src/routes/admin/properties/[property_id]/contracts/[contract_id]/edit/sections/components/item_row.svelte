@@ -1,11 +1,10 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import {
     CONTRACT_ITEM_STATE,
     get_contract_item_state_label,
   } from "$lib/contract_item_state"
-  import { submission_disabled } from "$lib/submission_disabled"
   import { create_contract_item_file } from "../forms/create_contract_item_file.remote"
   import { destroy_contract_item } from "../forms/destroy_contract_item.remote"
   import { destroy_contract_item_file } from "../forms/destroy_contract_item_file.remote"
@@ -91,18 +90,23 @@
       </div>
     </div>
     <div class="form-actions">
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={submission_disabled(update_form)}
-      >
-        <SubmitLabel
-          form={update_form}
-          idle="Guardar item"
-          busy="Guardando item..."
-          done="Guardado"
-        />
-      </Button>
+      <Formulary.Submission form={update_form}>
+        {#snippet children({ is_busy, is_done })}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={is_busy()}
+          >
+            <Formulary.SubmissionLabel
+              is_busy={is_busy()}
+              is_done={is_done()}
+              idle="Guardar item"
+              busy="Guardando item..."
+              done="Guardado"
+            />
+          </Button>
+        {/snippet}
+      </Formulary.Submission>
     </div>
   </form>
   <form {...destroy_form}>
@@ -117,18 +121,23 @@
       name="property_id"
       value={property_id}
     />
-    <Button
-      variant="secondary"
-      type="submit"
-      disabled={submission_disabled(destroy_form)}
-    >
-      <SubmitLabel
-        form={destroy_form}
-        idle="Eliminar item"
-        busy="Eliminando item..."
-        done="Eliminado"
-      />
-    </Button>
+    <Formulary.Submission form={destroy_form}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="secondary"
+          type="submit"
+          disabled={is_busy()}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Eliminar item"
+            busy="Eliminando item..."
+            done="Eliminado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
   </form>
   <div class="photos-section">
     <div class="photos-header">
@@ -166,13 +175,15 @@
               value={property_id}
               name="property_id"
             />
-            <Button
-              variant="secondary"
-              type="submit"
-              disabled={submission_disabled(
-                destroy_file_form,
-              )}>X</Button
-            >
+            <Formulary.Submission form={destroy_file_form}>
+              {#snippet children({ is_busy })}
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  disabled={is_busy()}>X</Button
+                >
+              {/snippet}
+            </Formulary.Submission>
           </form>
         </li>
       {/each}

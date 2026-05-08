@@ -2,9 +2,8 @@
   import { untrack } from "svelte"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import LocationInput from "$lib/components/LocationInput.svelte"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
-  import { submission_disabled } from "$lib/submission_disabled"
   import {
     WARRANTY_TYPE,
     get_warranty_type_label,
@@ -282,20 +281,25 @@
           )}
         </div>
         <div class="form-actions">
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={submission_disabled(
-              create_property_warranty,
-            )}
+          <Formulary.Submission
+            form={create_property_warranty}
           >
-            <SubmitLabel
-              form={create_property_warranty}
-              idle="Crear garantía"
-              busy="Creando garantía..."
-              done="Creado"
-            />
-          </Button>
+            {#snippet children({ is_busy, is_done })}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={is_busy()}
+              >
+                <Formulary.SubmissionLabel
+                  is_busy={is_busy()}
+                  is_done={is_done()}
+                  idle="Crear garantía"
+                  busy="Creando garantía..."
+                  done="Creado"
+                />
+              </Button>
+            {/snippet}
+          </Formulary.Submission>
         </div>
       </form>
     {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
@@ -308,20 +312,23 @@
           )}
         </div>
         <div class="form-actions">
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={submission_disabled(
-              create_surety_warranty,
-            )}
-          >
-            <SubmitLabel
-              form={create_surety_warranty}
-              idle="Crear garantía"
-              busy="Creando garantía..."
-              done="Creado"
-            />
-          </Button>
+          <Formulary.Submission form={create_surety_warranty}>
+            {#snippet children({ is_busy, is_done })}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={is_busy()}
+              >
+                <Formulary.SubmissionLabel
+                  is_busy={is_busy()}
+                  is_done={is_done()}
+                  idle="Crear garantía"
+                  busy="Creando garantía..."
+                  done="Creado"
+                />
+              </Button>
+            {/snippet}
+          </Formulary.Submission>
         </div>
       </form>
     {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
@@ -332,20 +339,23 @@
           <p class="hint">Guardar para agregar garantes</p>
         </div>
         <div class="form-actions">
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={submission_disabled(
-              create_income_warranty,
-            )}
-          >
-            <SubmitLabel
-              form={create_income_warranty}
-              idle="Crear garantía"
-              busy="Creando garantía..."
-              done="Creado"
-            />
-          </Button>
+          <Formulary.Submission form={create_income_warranty}>
+            {#snippet children({ is_busy, is_done })}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={is_busy()}
+              >
+                <Formulary.SubmissionLabel
+                  is_busy={is_busy()}
+                  is_done={is_done()}
+                  idle="Crear garantía"
+                  busy="Creando garantía..."
+                  done="Creado"
+                />
+              </Button>
+            {/snippet}
+          </Formulary.Submission>
         </div>
       </form>
     {:else}
@@ -363,20 +373,23 @@
         )}
       </div>
       <div class="form-actions">
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={submission_disabled(
-            update_property_warranty,
-          )}
-        >
-          <SubmitLabel
-            form={update_property_warranty}
-            idle="Guardar garantía"
-            busy="Guardando garantía..."
-            done="Guardado"
-          />
-        </Button>
+        <Formulary.Submission form={update_property_warranty}>
+          {#snippet children({ is_busy, is_done })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={is_busy()}
+            >
+              <Formulary.SubmissionLabel
+                is_busy={is_busy()}
+                is_done={is_done()}
+                idle="Guardar garantía"
+                busy="Guardando garantía..."
+                done="Guardado"
+              />
+            </Button>
+          {/snippet}
+        </Formulary.Submission>
       </div>
     </form>
   {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
@@ -387,20 +400,23 @@
         {@render SuretyFields(update_surety_warranty.fields)}
       </div>
       <div class="form-actions">
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={submission_disabled(
-            update_surety_warranty,
-          )}
-        >
-          <SubmitLabel
-            form={update_surety_warranty}
-            idle="Guardar garantía"
-            busy="Guardando garantía..."
-            done="Guardado"
-          />
-        </Button>
+        <Formulary.Submission form={update_surety_warranty}>
+          {#snippet children({ is_busy, is_done })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={is_busy()}
+            >
+              <Formulary.SubmissionLabel
+                is_busy={is_busy()}
+                is_done={is_done()}
+                idle="Guardar garantía"
+                busy="Guardando garantía..."
+                done="Guardado"
+              />
+            </Button>
+          {/snippet}
+        </Formulary.Submission>
       </div>
     </form>
   {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
@@ -410,20 +426,23 @@
         {@render TypeSelect()}
       </div>
       <div class="form-actions">
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={submission_disabled(
-            update_income_warranty,
-          )}
-        >
-          <SubmitLabel
-            form={update_income_warranty}
-            idle="Guardar garantía"
-            busy="Guardando garantía..."
-            done="Guardado"
-          />
-        </Button>
+        <Formulary.Submission form={update_income_warranty}>
+          {#snippet children({ is_busy, is_done })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={is_busy()}
+            >
+              <Formulary.SubmissionLabel
+                is_busy={is_busy()}
+                is_done={is_done()}
+                idle="Guardar garantía"
+                busy="Guardando garantía..."
+                done="Guardado"
+              />
+            </Button>
+          {/snippet}
+        </Formulary.Submission>
         {#if data.warranty.income_warranty}
           <Button
             type="button"
