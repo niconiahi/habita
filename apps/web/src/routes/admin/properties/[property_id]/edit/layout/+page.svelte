@@ -274,77 +274,100 @@
           {#each selected_floor.rooms as room (room.id)}
             <li class="room-card">
               <Formulary.Root method="POST">
-                <Formulary.Fields>
-                  <input
-                    type="hidden"
-                    value={room.id}
-                    name="id"
-                  />
-                  <Formulary.Field>
-                    <Formulary.Label for={`type_${room.id}`}
-                      >tipo</Formulary.Label
-                    >
-                    <Formulary.Select
-                      name="type"
-                      id={`type_${room.id}`}
-                      value={room.type}
-                    >
-                      {#each Object.values(ROOM_TYPE) as type}
-                        <option value={type}
-                          >{display_room_type(type)}</option
-                        >
-                      {/each}
-                    </Formulary.Select>
-                  </Formulary.Field>
-                  <Formulary.Field>
-                    <Formulary.Label
-                      for={`width_${room.id}`}
-                      >ancho</Formulary.Label
-                    >
+                {#snippet children({ submit_state })}
+                  <Formulary.Fields>
                     <input
-                      id={`width_${room.id}`}
-                      type="number"
-                      name="width"
-                      value={room.width}
+                      type="hidden"
+                      value={room.id}
+                      name="id"
                     />
-                  </Formulary.Field>
-                  <Formulary.Field>
-                    <Formulary.Label
-                      for={`length_${room.id}`}
-                      >largo</Formulary.Label
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`type_${room.id}`}
+                        >tipo</Formulary.Label
+                      >
+                      <Formulary.Select
+                        name="type"
+                        id={`type_${room.id}`}
+                        value={room.type}
+                      >
+                        {#each Object.values(ROOM_TYPE) as type}
+                          <option value={type}
+                            >{display_room_type(
+                              type,
+                            )}</option
+                          >
+                        {/each}
+                      </Formulary.Select>
+                    </Formulary.Field>
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`width_${room.id}`}
+                        >ancho</Formulary.Label
+                      >
+                      <input
+                        id={`width_${room.id}`}
+                        type="number"
+                        name="width"
+                        value={room.width}
+                      />
+                    </Formulary.Field>
+                    <Formulary.Field>
+                      <Formulary.Label
+                        for={`length_${room.id}`}
+                        >largo</Formulary.Label
+                      >
+                      <input
+                        id={`length_${room.id}`}
+                        type="number"
+                        name="length"
+                        step="0.1"
+                        value={room.length}
+                      />
+                    </Formulary.Field>
+                  </Formulary.Fields>
+                  <Formulary.Actions>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={submit_state === "busy"}
+                      formaction={compose_action(
+                        ACTION.UPDATE_ROOM,
+                      )}
                     >
-                    <input
-                      id={`length_${room.id}`}
-                      type="number"
-                      name="length"
-                      step="0.1"
-                      value={room.length}
-                    />
-                  </Formulary.Field>
-                </Formulary.Fields>
-                <Formulary.Actions>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    formaction={compose_action(
-                      ACTION.UPDATE_ROOM,
-                    )}>Guardar habitación</Button
-                  >
-                  <Button
-                    variant="secondary"
-                    type="submit"
-                    formaction={compose_action(
-                      ACTION.DESTROY_ROOM,
-                    )}>Eliminar habitación</Button
-                  >
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    onclick={() =>
-                      handle_add_photo_click(room.id)}
-                    >Agregar foto</Button
-                  >
-                </Formulary.Actions>
+                      <Formulary.SubmitLabel
+                        state={submit_state}
+                        idle="Guardar habitación"
+                        busy="Guardando habitación..."
+                      done="Guardado"
+                      error="No se pudo guardar"
+                      />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="submit"
+                      disabled={submit_state === "busy"}
+                      formaction={compose_action(
+                        ACTION.DESTROY_ROOM,
+                      )}
+                    >
+                      <Formulary.SubmitLabel
+                        state={submit_state}
+                        idle="Eliminar habitación"
+                        busy="Eliminando habitación..."
+                      done="Eliminado"
+                      error="No se pudo eliminar"
+                      />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="button"
+                      onclick={() =>
+                        handle_add_photo_click(room.id)}
+                      >Agregar foto</Button
+                    >
+                  </Formulary.Actions>
+                {/snippet}
               </Formulary.Root>
               {#if room.photos.length > 0}
                 <ul class="room-photos">
@@ -443,39 +466,53 @@
             ACTION.UPDATE_ROOM_POSITIONS,
           )}
         >
-          <Formulary.Fields>
-            <input
-              type="hidden"
-              name="positions"
-              value={JSON.stringify(
-                selected_floor.rooms
-                  .filter((room) => {
-                    const pos = room_positions.get(room.id)
-                    return pos !== undefined
-                  })
-                  .map((room) => {
-                    const pos = room_positions.get(room.id)!
-                    return {
-                      room_id: room.id,
-                      position_x: pos.x,
-                      position_y: pos.y,
-                    }
-                  }),
-              )}
-            />
-            <RoomMap
-              rooms={selected_floor.rooms}
-              on_positions_change={handle_positions_change}
-            />
-          </Formulary.Fields>
-          <Formulary.Actions>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={room_positions.size === 0}
-              >Guardar mapa</Button
-            >
-          </Formulary.Actions>
+          {#snippet children({ submit_state })}
+            <Formulary.Fields>
+              <input
+                type="hidden"
+                name="positions"
+                value={JSON.stringify(
+                  selected_floor.rooms
+                    .filter((room) => {
+                      const pos = room_positions.get(
+                        room.id,
+                      )
+                      return pos !== undefined
+                    })
+                    .map((room) => {
+                      const pos = room_positions.get(
+                        room.id,
+                      )!
+                      return {
+                        room_id: room.id,
+                        position_x: pos.x,
+                        position_y: pos.y,
+                      }
+                    }),
+                )}
+              />
+              <RoomMap
+                rooms={selected_floor.rooms}
+                on_positions_change={handle_positions_change}
+              />
+            </Formulary.Fields>
+            <Formulary.Actions>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={room_positions.size === 0 ||
+                  submit_state === "busy"}
+              >
+                <Formulary.SubmitLabel
+                  state={submit_state}
+                  idle="Guardar mapa"
+                  busy="Guardando mapa..."
+                done="Guardado"
+                error="No se pudo guardar"
+                />
+              </Button>
+            </Formulary.Actions>
+          {/snippet}
         </Formulary.Root>
       {/if}
     {:else}

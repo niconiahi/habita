@@ -21,19 +21,31 @@
       )}
       method="POST"
     >
-      <Formulary.Input
-        label="Nombre"
-        name="name"
-        value={data.organization.name}
-        error={form?.errors?.nested?.name?.[0] ??
-          form?.message}
-        required
-      />
-      <Formulary.Actions>
-        <Button variant="primary" type="submit">
-          Guardar
-        </Button>
-      </Formulary.Actions>
+      {#snippet children({ submit_state })}
+        <Formulary.Input
+          label="Nombre"
+          name="name"
+          value={data.organization.name}
+          error={form?.errors?.nested?.name?.[0] ??
+            form?.message}
+          required
+        />
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar"
+              busy="Guardando..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Content.Section>
 </Content.Root>

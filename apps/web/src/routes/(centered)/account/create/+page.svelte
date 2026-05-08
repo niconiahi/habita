@@ -119,36 +119,45 @@
           action={compose_action(ACTION.CREATE_ACCOUNT)}
           method="POST"
         >
-          <div class="options">
-            {#if !has_freelance}
+          {#snippet children({ submit_state })}
+            <div class="options">
+              {#if !has_freelance}
+                {@render SubscriptionTypeOption(
+                  SUBSCRIPTION_TYPE.FREELANCE,
+                  "Asesor inmobiliario",
+                  "Administro propiedades por mi cuenta y no pertenezco a ninguna inmobiliaria",
+                )}
+              {/if}
               {@render SubscriptionTypeOption(
-                SUBSCRIPTION_TYPE.FREELANCE,
-                "Asesor inmobiliario",
-                "Administro propiedades por mi cuenta y no pertenezco a ninguna inmobiliaria",
+                SUBSCRIPTION_TYPE.REALTOR,
+                "Inmobiliaria",
+                "Tengo o manejo una inmobiliaria y tengo un equipo de asesores inmobiliarios",
               )}
+            </div>
+            {#if selected_subscription_type !== null}
+              <input
+                type="hidden"
+                name="type"
+                value={selected_subscription_type}
+              />
             {/if}
-            {@render SubscriptionTypeOption(
-              SUBSCRIPTION_TYPE.REALTOR,
-              "Inmobiliaria",
-              "Tengo o manejo una inmobiliaria y tengo un equipo de asesores inmobiliarios",
-            )}
-          </div>
-          {#if selected_subscription_type !== null}
-            <input
-              type="hidden"
-              name="type"
-              value={selected_subscription_type}
-            />
-          {/if}
-          <div class="actions">
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={selected_subscription_type === null}
-            >
-              Crear cuenta
-            </Button>
-          </div>
+            <div class="actions">
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={selected_subscription_type ===
+                  null || submit_state === "busy"}
+              >
+                <Formulary.SubmitLabel
+                  state={submit_state}
+                  idle="Crear cuenta"
+                  busy="Creando cuenta..."
+                done="Creado"
+                error="No se pudo crear"
+                />
+              </Button>
+            </div>
+          {/snippet}
         </Formulary.Root>
       </div>
     {/if}

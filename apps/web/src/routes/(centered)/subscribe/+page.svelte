@@ -59,9 +59,21 @@
           )}
           method="POST"
         >
-          <Button variant="primary" type="submit"
-            >Pagar</Button
-          >
+          {#snippet children({ submit_state })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={submit_state === "busy"}
+            >
+              <Formulary.SubmitLabel
+                state={submit_state}
+                idle="Pagar"
+                busy="Pagando..."
+              done="Pagado"
+              error="No se pudo pagar"
+              />
+            </Button>
+          {/snippet}
         </Formulary.Root>
       {/if}
     </div>

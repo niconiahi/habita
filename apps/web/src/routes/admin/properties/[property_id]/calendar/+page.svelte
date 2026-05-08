@@ -46,45 +46,58 @@
       method="POST"
       action={`?/${ACTION.CREATE_SLOT}`}
     >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label for="date">Fecha</Formulary.Label
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label for="date"
+              >Fecha</Formulary.Label
+            >
+            <input
+              type="date"
+              id="date"
+              name="date"
+              required
+            />
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="start_time"
+              >Hora inicio</Formulary.Label
+            >
+            <input
+              type="time"
+              id="start_time"
+              name="start_time"
+              required
+            />
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="end_time"
+              >Hora fin</Formulary.Label
+            >
+            <input
+              type="time"
+              id="end_time"
+              name="end_time"
+              required
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
           >
-          <input
-            type="date"
-            id="date"
-            name="date"
-            required
-          />
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="start_time"
-            >Hora inicio</Formulary.Label
-          >
-          <input
-            type="time"
-            id="start_time"
-            name="start_time"
-            required
-          />
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="end_time"
-            >Hora fin</Formulary.Label
-          >
-          <input
-            type="time"
-            id="end_time"
-            name="end_time"
-            required
-          />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Crear horario</Button
-        >
-      </Formulary.Actions>
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Crear horario"
+              busy="Creando horario..."
+            done="Creado"
+            error="No se pudo crear"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Content.Section>
   <Content.Section>
@@ -126,15 +139,26 @@
                     action={`?/${ACTION.DESTROY_SLOT}`}
                     style="display: inline;"
                   >
-                    <input
-                      type="hidden"
-                      name="id"
-                      value={slot.id}
-                    />
-                    <Button
-                      variant="secondary"
-                      type="submit">Eliminar</Button
-                    >
+                    {#snippet children({ submit_state })}
+                      <input
+                        type="hidden"
+                        name="id"
+                        value={slot.id}
+                      />
+                      <Button
+                        variant="secondary"
+                        type="submit"
+                        disabled={submit_state === "busy"}
+                      >
+                        <Formulary.SubmitLabel
+                          state={submit_state}
+                          idle="Eliminar"
+                          busy="Eliminando..."
+                        done="Eliminado"
+                        error="No se pudo eliminar"
+                        />
+                      </Button>
+                    {/snippet}
                   </Formulary.Root>
                 {:else}
                   <span class="inactive">-</span>

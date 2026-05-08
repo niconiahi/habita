@@ -44,27 +44,39 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_LOCATION)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.property.location.id}
-          name="id"
-        />
-        <LocationInput
-          default_value={data.property.location.address}
-          default_lon={String(
-            data.property.location.longitude,
-          )}
-          default_lat={String(
-            data.property.location.latitude,
-          )}
-        />
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar ubicación</Button
-        >
-      </Formulary.Actions>
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={data.property.location.id}
+            name="id"
+          />
+          <LocationInput
+            default_value={data.property.location.address}
+            default_lon={String(
+              data.property.location.longitude,
+            )}
+            default_lat={String(
+              data.property.location.latitude,
+            )}
+          />
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar ubicación"
+              busy="Guardando ubicación..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -75,31 +87,43 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_DESTINIES)}
     >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label>tipos</Formulary.Label>
-          <fieldset class="checkbox-list">
-            {#each property_destinies as destiny}
-              {@const is_checked =
-                data.property.destinies.includes(destiny)}
-              <label class="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="destiny"
-                  value={destiny}
-                  checked={is_checked}
-                />
-                {get_property_destiny_label(destiny)}
-              </label>
-            {/each}
-          </fieldset>
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar destino</Button
-        >
-      </Formulary.Actions>
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label>tipos</Formulary.Label>
+            <fieldset class="checkbox-list">
+              {#each property_destinies as destiny}
+                {@const is_checked =
+                  data.property.destinies.includes(destiny)}
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="destiny"
+                    value={destiny}
+                    checked={is_checked}
+                  />
+                  {get_property_destiny_label(destiny)}
+                </label>
+              {/each}
+            </fieldset>
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar destino"
+              busy="Guardando destino..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -148,27 +172,39 @@
         ACTION.UPDATE_CONSTRUCTION_YEAR,
       )}
     >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label for="construction_year"
-            >año de construcción</Formulary.Label
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label for="construction_year"
+              >año de construcción</Formulary.Label
+            >
+            <input
+              id="construction_year"
+              type="number"
+              name="construction_year"
+              min={1900}
+              max={2026}
+              placeholder="2015"
+              value={data.property.construction_year ?? ""}
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
           >
-          <input
-            id="construction_year"
-            type="number"
-            name="construction_year"
-            min={1900}
-            max={2026}
-            placeholder="2015"
-            value={data.property.construction_year ?? ""}
-          />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar año</Button
-        >
-      </Formulary.Actions>
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar año"
+              busy="Guardando año..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -179,60 +215,82 @@
       {#each data.property.services as service (`service_${service.id}`)}
         <li>
           <Formulary.Root method="POST">
-            <Formulary.Fields>
-              <input
-                type="hidden"
-                value={service.id}
-                name="id"
-              />
-              <Formulary.Field>
-                <Formulary.Label for={`type_${service.id}`}
-                  >tipo</Formulary.Label
-                >
-                <Formulary.Select
-                  name="type"
-                  id={`type_${service.id}`}
-                  value={service.type}
-                >
-                  {#each Object.values(SERVICE_TYPE) as type}
-                    {#if type === service.type || !used_service_types.has(type)}
-                      <option value={type}
-                        >{get_service_type_label(
-                          type as ServiceType,
-                        )}</option
-                      >
-                    {/if}
-                  {/each}
-                </Formulary.Select>
-              </Formulary.Field>
-              <Formulary.Field>
-                <Formulary.Label for={`code_${service.id}`}
-                  >identificador</Formulary.Label
-                >
+            {#snippet children({ submit_state })}
+              <Formulary.Fields>
                 <input
-                  id={`code_${service.id}`}
-                  type="number"
-                  name="code"
-                  value={service.code}
+                  type="hidden"
+                  value={service.id}
+                  name="id"
                 />
-              </Formulary.Field>
-            </Formulary.Fields>
-            <Formulary.Actions>
-              <Button
-                variant="primary"
-                type="submit"
-                formaction={compose_action(
-                  ACTION.UPDATE_SERVICE,
-                )}>Guardar servicio</Button
-              >
-              <Button
-                variant="secondary"
-                type="submit"
-                formaction={compose_action(
-                  ACTION.DESTROY_SERVICE,
-                )}>Eliminar servicio</Button
-              >
-            </Formulary.Actions>
+                <Formulary.Field>
+                  <Formulary.Label
+                    for={`type_${service.id}`}
+                    >tipo</Formulary.Label
+                  >
+                  <Formulary.Select
+                    name="type"
+                    id={`type_${service.id}`}
+                    value={service.type}
+                  >
+                    {#each Object.values(SERVICE_TYPE) as type}
+                      {#if type === service.type || !used_service_types.has(type)}
+                        <option value={type}
+                          >{get_service_type_label(
+                            type as ServiceType,
+                          )}</option
+                        >
+                      {/if}
+                    {/each}
+                  </Formulary.Select>
+                </Formulary.Field>
+                <Formulary.Field>
+                  <Formulary.Label
+                    for={`code_${service.id}`}
+                    >identificador</Formulary.Label
+                  >
+                  <input
+                    id={`code_${service.id}`}
+                    type="number"
+                    name="code"
+                    value={service.code}
+                  />
+                </Formulary.Field>
+              </Formulary.Fields>
+              <Formulary.Actions>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={submit_state === "busy"}
+                  formaction={compose_action(
+                    ACTION.UPDATE_SERVICE,
+                  )}
+                >
+                  <Formulary.SubmitLabel
+                    state={submit_state}
+                    idle="Guardar servicio"
+                    busy="Guardando servicio..."
+                  done="Guardado"
+                  error="No se pudo guardar"
+                  />
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  disabled={submit_state === "busy"}
+                  formaction={compose_action(
+                    ACTION.DESTROY_SERVICE,
+                  )}
+                >
+                  <Formulary.SubmitLabel
+                    state={submit_state}
+                    idle="Eliminar servicio"
+                    busy="Eliminando servicio..."
+                  done="Eliminado"
+                  error="No se pudo eliminar"
+                  /></Button
+                >
+              </Formulary.Actions>
+            {/snippet}
           </Formulary.Root>
         </li>
       {/each}

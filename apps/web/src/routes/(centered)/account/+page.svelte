@@ -33,49 +33,62 @@
         method="POST"
         action={compose_action(ACTION.UPDATE_USER)}
       >
-        <div class="fields">
-          <Formulary.Input
-            label="Nombre"
-            name="name"
-            type="text"
-            value={data.user_profile.name}
-            required
-            error={input_errors.name?.[0]}
-          />
-          <Formulary.Input
-            label="Apellido"
-            name="surname"
-            type="text"
-            value={data.user_profile.surname}
-            required
-            error={input_errors.surname?.[0]}
-          />
-          <Formulary.PhoneInput
-            name="phone_number"
-            value={data.user_profile.phone_number ?? ""}
-            error={input_errors.phone_number?.[0]}
-          />
-          <Formulary.Input
-            label="Número de documento"
-            name="document_number"
-            type="number"
-            value={data.user_profile.document_number ?? ""}
-            error={input_errors.document_number?.[0]}
-          />
-          <Formulary.CuilInput
-            name="cuil"
-            value={data.user_profile.cuil ?? ""}
-            error={input_errors.cuil?.[0]}
-          />
-          {#if execution_error}
-            <Formulary.Error
-              >{execution_error}</Formulary.Error
+        {#snippet children({ submit_state })}
+          <div class="fields">
+            <Formulary.Input
+              label="Nombre"
+              name="name"
+              type="text"
+              value={data.user_profile.name}
+              required
+              error={input_errors.name?.[0]}
+            />
+            <Formulary.Input
+              label="Apellido"
+              name="surname"
+              type="text"
+              value={data.user_profile.surname}
+              required
+              error={input_errors.surname?.[0]}
+            />
+            <Formulary.PhoneInput
+              name="phone_number"
+              value={data.user_profile.phone_number ?? ""}
+              error={input_errors.phone_number?.[0]}
+            />
+            <Formulary.Input
+              label="Número de documento"
+              name="document_number"
+              type="number"
+              value={data.user_profile.document_number ??
+                ""}
+              error={input_errors.document_number?.[0]}
+            />
+            <Formulary.CuilInput
+              name="cuil"
+              value={data.user_profile.cuil ?? ""}
+              error={input_errors.cuil?.[0]}
+            />
+            {#if execution_error}
+              <Formulary.Error
+                >{execution_error}</Formulary.Error
+              >
+            {/if}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={submit_state === "busy"}
             >
-          {/if}
-          <Button variant="primary" type="submit"
-            >Guardar información</Button
-          >
-        </div>
+              <Formulary.SubmitLabel
+                state={submit_state}
+                idle="Guardar información"
+                busy="Guardando información..."
+              done="Guardado"
+              error="No se pudo guardar"
+              />
+            </Button>
+          </div>
+        {/snippet}
       </Formulary.Root>
     {/key}
   </section>

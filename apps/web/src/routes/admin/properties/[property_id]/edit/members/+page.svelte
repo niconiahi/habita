@@ -14,7 +14,8 @@
 
   let { data }: { data: PageData } = $props()
 
-  let invite_dialog: HTMLDialogElement | undefined = $state()
+  let invite_dialog: HTMLDialogElement | undefined =
+    $state()
 
   const has_landlord = $derived(
     data.property.members.some(
@@ -82,19 +83,35 @@
           method="POST"
           action={compose_action(ACTION.INVITE_LANDLORD)}
         >
-          <Formulary.Fields>
-            <Formulary.Field>
-              <Formulary.Label for="email"
-                >email</Formulary.Label
+          {#snippet children({ submit_state })}
+            <Formulary.Fields>
+              <Formulary.Field>
+                <Formulary.Label for="email"
+                  >email</Formulary.Label
+                >
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                />
+              </Formulary.Field>
+            </Formulary.Fields>
+            <Formulary.Actions>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={submit_state === "busy"}
               >
-              <input id="email" name="email" type="email" />
-            </Formulary.Field>
-          </Formulary.Fields>
-          <Formulary.Actions>
-            <Button variant="primary" type="submit"
-              >Invitar dueño</Button
-            >
-          </Formulary.Actions>
+                <Formulary.SubmitLabel
+                  state={submit_state}
+                  idle="Invitar dueño"
+                  busy="Invitando dueño..."
+                done="Invitado"
+                error="No se pudo invitar"
+                />
+              </Button>
+            </Formulary.Actions>
+          {/snippet}
         </Formulary.Root>
       </Dialog.Content>
     {/snippet}

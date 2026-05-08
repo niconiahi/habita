@@ -68,12 +68,24 @@
     method="POST"
     action={compose_action(ACTION.CREATE_CONTRACT)}
   >
-    {@render TypeSection()}
-    {@render PriceSection()}
-    <Formulary.Actions>
-      <Button variant="primary" type="submit"
-        >Crear contrato</Button
-      >
-    </Formulary.Actions>
+    {#snippet children({ submit_state })}
+      {@render TypeSection()}
+      {@render PriceSection()}
+      <Formulary.Actions>
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={submit_state === "busy"}
+        >
+          <Formulary.SubmitLabel
+            state={submit_state}
+            idle="Crear contrato"
+            busy="Creando contrato..."
+          done="Creado"
+          error="No se pudo crear"
+          />
+        </Button>
+      </Formulary.Actions>
+    {/snippet}
   </Formulary.Root>
 </Content.Root>
