@@ -1,0 +1,36 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+form .form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+form label {
+  color: var(--color-text-heading);
+  display: block;
+}
+
+form label::first-letter {
+  text-transform: uppercase;
+}
+
+form .form-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+form .form-error {
+  color: var(--color-text-error);
+  font-size: var(--font-size-body-sm);
+}
