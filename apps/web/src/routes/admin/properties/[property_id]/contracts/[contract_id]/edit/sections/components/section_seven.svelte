@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
@@ -11,7 +12,7 @@
     get_escalation_label,
   } from "$lib/escalation_type"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
   import { update_contract_canon } from "../forms/update_contract_canon.remote"
@@ -21,13 +22,18 @@
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "canon")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "canon", event)}
+  name="section"
+  open={is_disclosure_open("section", "seven")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "seven", event)}
   title="Sección 7: canon locativo"
 >
-  <form {...update_contract_canon}>
+  <form
+    {...update_contract_canon.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input
       type="hidden"
       name="contract_id"

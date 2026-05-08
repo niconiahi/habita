@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import {
@@ -47,7 +48,12 @@
 </script>
 
 <li class="item-card">
-  <form {...update_form}>
+  <form
+    {...update_form.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input type="hidden" name="id" value={contract_item.id} />
     <input
       type="hidden"
@@ -109,7 +115,12 @@
       </Formulary.Submission>
     </div>
   </form>
-  <form {...destroy_form}>
+  <form
+    {...destroy_form.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input type="hidden" name="id" value={contract_item.id} />
     <input
       type="hidden"
@@ -158,7 +169,13 @@
             alt="Foto del item"
             src={`/files/${file.id}`}
           />
-          <form {...destroy_file_form} class="photo-delete">
+          <form
+            {...destroy_file_form.enhance(async ({ submit }) => {
+              const ok = await submit()
+              if (ok) await invalidateAll()
+            })}
+            class="photo-delete"
+          >
             <input type="hidden" value={file.id} name="id" />
             <input
               type="hidden"

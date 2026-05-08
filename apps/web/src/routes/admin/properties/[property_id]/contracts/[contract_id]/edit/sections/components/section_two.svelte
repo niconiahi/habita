@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
   import { create_contract_item } from "../forms/create_contract_item.remote"
@@ -14,13 +15,18 @@
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "items")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "items", event)}
+  name="section"
+  open={is_disclosure_open("section", "two")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "two", event)}
   title="Sección 2: estado"
 >
-  <form {...create_contract_item}>
+  <form
+    {...create_contract_item.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input
       type="hidden"
       name="contract_id"

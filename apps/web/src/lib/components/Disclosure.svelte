@@ -5,7 +5,7 @@
     title: string
     open?: boolean
     name?: string
-    ontoggle?: (event: Event) => void
+    onclick?: (event: MouseEvent) => void
     children: Snippet
   }
 
@@ -13,13 +13,13 @@
     title,
     open = false,
     name,
-    ontoggle,
+    onclick,
     children,
   }: Props = $props()
 </script>
 
-<details class="disclosure" {open} {name} {ontoggle}>
-  <summary class="body-md-bold header">
+<details class="disclosure" {open} {name}>
+  <summary class="body-md-bold header" {onclick}>
     <span>{title}</span>
     <svg
       class="chevron"

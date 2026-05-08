@@ -8,19 +8,17 @@ export function is_disclosure_open(
   return page.url.searchParams.get(name) === id
 }
 
-export function handle_disclosure_toggle(
+export function handle_disclosure_click(
   name: string,
   id: string,
-  event: Event,
+  event: MouseEvent,
 ): void {
-  const target = event.currentTarget as HTMLDetailsElement
-  const url = new URL(page.url)
-  if (target.open) {
-    if (url.searchParams.get(name) === id) return
-    url.searchParams.set(name, id)
-  } else {
-    if (url.searchParams.get(name) !== id) return
+  event.preventDefault()
+  const url = new URL(window.location.href)
+  if (url.searchParams.get(name) === id) {
     url.searchParams.delete(name)
+  } else {
+    url.searchParams.set(name, id)
   }
   goto(url, {
     keepFocus: true,

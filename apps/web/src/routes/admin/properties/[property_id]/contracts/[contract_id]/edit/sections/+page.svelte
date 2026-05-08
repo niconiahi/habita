@@ -1,28 +1,28 @@
 <script lang="ts">
-  import SectionCanon from "./components/section_canon.svelte"
-  import SectionDestiny from "./components/section_destiny.svelte"
-  import SectionEarlyTermination from "./components/section_early_termination.svelte"
-  import SectionFine from "./components/section_fine.svelte"
-  import SectionItems from "./components/section_items.svelte"
-  import SectionJurisdiction from "./components/section_jurisdiction.svelte"
-  import SectionPayment from "./components/section_payment.svelte"
-  import SectionReturn from "./components/section_return.svelte"
-  import SectionShowroom from "./components/section_showroom.svelte"
-  import SectionTerm from "./components/section_term.svelte"
-  import SectionWarranty from "./components/section_warranty.svelte"
+  import SectionEight from "./components/section_eight.svelte"
+  import SectionFifteen from "./components/section_fifteen.svelte"
+  import SectionFourteen from "./components/section_fourteen.svelte"
+  import SectionNine from "./components/section_nine.svelte"
+  import SectionSeven from "./components/section_seven.svelte"
+  import SectionSeventeen from "./components/section_seventeen.svelte"
+  import SectionSix from "./components/section_six.svelte"
+  import SectionSixteen from "./components/section_sixteen.svelte"
+  import SectionThree from "./components/section_three.svelte"
+  import SectionTwentyOne from "./components/section_twenty_one.svelte"
+  import SectionTwo from "./components/section_two.svelte"
   import type { PageData } from "./$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
-<SectionItems {data} />
-<SectionDestiny {data} />
-<SectionTerm {data} />
-<SectionCanon {data} />
-<SectionPayment {data} />
-<SectionFine {data} />
-<SectionReturn {data} />
-<SectionEarlyTermination {data} />
-<SectionShowroom {data} />
-<SectionWarranty {data} />
-<SectionJurisdiction {data} />
+<SectionTwo {data} />
+<SectionThree {data} />
+<SectionSix {data} />
+<SectionSeven {data} />
+<SectionEight {data} />
+<SectionNine {data} />
+<SectionFourteen {data} />
+<SectionFifteen {data} />
+<SectionSixteen {data} />
+<SectionSeventeen {data} />
+<SectionTwentyOne {data} />

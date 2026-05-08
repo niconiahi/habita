@@ -5,7 +5,7 @@
   import * as Formulary from "$lib/components/Formulary"
   import { format_date_for_input } from "$lib/date"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
   import { update_contract_term } from "../forms/update_contract_term.remote"
@@ -19,10 +19,10 @@
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "term")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "term", event)}
+  name="section"
+  open={is_disclosure_open("section", "six")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "six", event)}
   title="Sección 6: plazo"
 >
   <form
