@@ -1,6 +1,7 @@
 import { require_authentication } from "$lib/server/auth"
 import { get_property_destinies } from "$lib/property_destiny"
 import { get_property_types } from "$lib/property_type"
+import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 import type { Actions, PageServerLoad } from "./$types"
 import { ACTION } from "./actions/action"
 import { create_property } from "./actions/create_property.server"
@@ -22,10 +23,20 @@ export const actions: Actions = {
     const form_data = await request.formData()
     form_data.set("user_id", String(locals.user.id))
     if (locals.session.activeOrganizationId) {
-      form_data.set(
-        "organization_id",
-        locals.session.activeOrganizationId,
+      const active_subscription = locals.subscriptions.find(
+        (s) =>
+          s.organization_id ===
+          locals.session?.activeOrganizationId,
       )
+      if (
+        active_subscription?.type !==
+        SUBSCRIPTION_TYPE.FREELANCE
+      ) {
+        form_data.set(
+          "organization_id",
+          locals.session.activeOrganizationId,
+        )
+      }
     }
     return create_property(form_data)
   },

@@ -93,6 +93,30 @@ export async function create_account(
     })
   }
 
+  if (result.output.type === SUBSCRIPTION_TYPE.FREELANCE) {
+    try {
+      await query_builder
+        .updateTable("member")
+        .set({ role: "manager", updated_at: now })
+        .where("organization_id", "=", organization.id)
+        .where("user_id", "=", user_id)
+        .execute()
+    } catch (error) {
+      if (error instanceof Error) {
+        logger.error(
+          error.message,
+          { user_id, organization_id: organization.id },
+          error,
+        )
+      } else {
+        logger.unknown(error)
+      }
+      return fail(400, {
+        message: "Error al asignar el rol",
+      })
+    }
+  }
+
   const period_start = new Date(now)
   const period_end = new Date(now)
   period_end.setDate(
