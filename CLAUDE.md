@@ -1,12 +1,31 @@
 # Habita — Agent Guide
 
-Read the skill file linked in each entry **only when the task requires it**. The summaries here give enough context to know which ones to reach for.
+## STOP — Read Before Any Tool Call
+
+Before your FIRST tool call in every user turn, you MUST:
+
+1. Identify which Always-On skills below apply to the request.
+2. Read each applicable `SKILL.md` with the Read tool. No exceptions, even if you "remember" it from earlier in the session — memory is unreliable and skills change.
+3. Only then make tool calls.
+
+Trigger map (non-exhaustive — read the skill if in doubt):
+
+- ANY shell command → `cli/SKILL.md`
+- ANY `just db` / SQL / migration → `database/SKILL.md`
+- ANY code edit → `coding_guidelines/SKILL.md` + `naming_conventions/SKILL.md`
+- ANY new utility in `apps/web/src/lib/` → `lib_utilities/SKILL.md`
+- ANY UI work → `styled_system/SKILL.md`
+- ANY commit → `git/SKILL.md`
+
+If you call a tool without having read the relevant skill, you have violated CLAUDE.md. Stop, acknowledge the violation explicitly to the user, read the skill, and restart the task.
+
+This rule overrides brevity, speed, and "obvious" tasks. A one-line shell command still requires reading `cli/SKILL.md` if you haven't this turn.
 
 ---
 
 ## Always-On Rules
 
-These apply to **every line of code you write**. Internalize the summaries; read the full skill when you need examples.
+YOU MUST READ THE SKILL FILE FOR EVERY ITEM BELOW THAT APPLIES TO THE CURRENT TASK, BEFORE TOUCHING ANY TOOL. The summaries here are NOT a substitute for the skill — they exist so you know which skill to reach for. Reading the summary and skipping the skill is a violation.
 
 - **Coding guidelines** — `snake_case` everywhere (functions, variables). Standalone functions use `function` keyword; arrow functions only for framework handlers/callbacks. No non-null assertions (`!`). No `void expression` hacks for reactivity. Every `<Button>` needs an explicit `variant`. No magic numbers/strings. Inline single-use variables. Schemas/types/constants live in the file where they are used, never in sibling `.schemas.ts` files. Read [`.claude/skills/coding_guidelines/SKILL.md`](.claude/skills/coding_guidelines/SKILL.md) for the full list with examples.
 
