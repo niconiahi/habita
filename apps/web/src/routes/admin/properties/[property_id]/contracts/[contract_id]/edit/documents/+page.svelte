@@ -99,7 +99,9 @@
     {/if}
     {#if create_pdf_errors.property_road || create_pdf_errors.property_house_number || create_pdf_errors.property_state || create_pdf_errors.property_unit}
       <div class="error-block">
-        <p class="error-block-title">Errores de propiedad:</p>
+        <p class="error-block-title">
+          Errores de propiedad:
+        </p>
         {#if create_pdf_errors.property_road}
           <span class="error block"
             >{create_pdf_errors.property_road}</span
@@ -365,9 +367,21 @@
           method="POST"
           action={compose_action(ACTION.ACTIVATE_CONTRACT)}
         >
-          <Button variant="primary" type="submit"
-            >Activar contrato</Button
-          >
+          {#snippet children({ submit_state })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={submit_state === "busy"}
+            >
+              <Formulary.SubmitLabel
+                state={submit_state}
+                idle="Activar contrato"
+                busy="Activando contrato..."
+              done="Activado"
+              error="No se pudo activar"
+              />
+            </Button>
+          {/snippet}
         </Formulary.Root>
       </Dialog.Actions>
     </Dialog.Content>

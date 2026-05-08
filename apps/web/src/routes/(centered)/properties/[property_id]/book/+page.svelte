@@ -206,26 +206,38 @@
               method="POST"
               action={compose_action(ACTION.UPDATE_SLOT)}
             >
-              <input
-                type="hidden"
-                name="id"
-                value={selected_slot.id}
-              />
-              <input
-                type="hidden"
-                name="visitant_id"
-                value={data.user.id}
-              />
-              <input
-                type="hidden"
-                name="date"
-                value={new Date(
-                  selected_slot.start_date,
-                ).toISOString()}
-              />
-              <Button variant="primary" type="submit"
-                >Confirmar</Button
-              >
+              {#snippet children({ submit_state })}
+                <input
+                  type="hidden"
+                  name="id"
+                  value={selected_slot.id}
+                />
+                <input
+                  type="hidden"
+                  name="visitant_id"
+                  value={data.user.id}
+                />
+                <input
+                  type="hidden"
+                  name="date"
+                  value={new Date(
+                    selected_slot.start_date,
+                  ).toISOString()}
+                />
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={submit_state === "busy"}
+                >
+                  <Formulary.SubmitLabel
+                    state={submit_state}
+                    idle="Confirmar"
+                    busy="Confirmando..."
+                  done="Confirmado"
+                  error="No se pudo confirmar"
+                  />
+                </Button>
+              {/snippet}
             </Formulary.Root>
           </Dialog.Actions>
         </Dialog.Content>

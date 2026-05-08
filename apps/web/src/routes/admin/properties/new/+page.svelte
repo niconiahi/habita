@@ -98,16 +98,28 @@
       method="POST"
       action={compose_action(ACTION.CREATE_PROPERTY)}
     >
-      <Formulary.Fields>
-        {@render Location()}
-        {@render Characteristics()}
-        {@render Destiny()}
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Crear propiedad</Button
-        >
-      </Formulary.Actions>
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          {@render Location()}
+          {@render Characteristics()}
+          {@render Destiny()}
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Crear propiedad"
+              busy="Creando propiedad..."
+            done="Creado"
+            error="No se pudo crear"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Content.Section>
 </Content.Root>
