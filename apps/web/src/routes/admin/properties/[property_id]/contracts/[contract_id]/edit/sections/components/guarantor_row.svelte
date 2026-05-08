@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
-  import { submission_disabled } from "$lib/submission_disabled"
+  import * as Formulary from "$lib/components/Formulary"
   import { destroy_income_guarantor } from "../forms/destroy_income_guarantor.remote"
   import { update_income_guarantor } from "../forms/update_income_guarantor.remote"
 
@@ -79,18 +78,23 @@
       </div>
     </div>
     <div class="form-actions">
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={submission_disabled(update_form)}
-      >
-        <SubmitLabel
-          form={update_form}
-          idle="Guardar"
-          busy="Guardando..."
-          done="Guardado"
-        />
-      </Button>
+      <Formulary.Submission form={update_form}>
+        {#snippet children({ is_busy, is_done })}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={is_busy()}
+          >
+            <Formulary.SubmissionLabel
+              is_busy={is_busy()}
+              is_done={is_done()}
+              idle="Guardar"
+              busy="Guardando..."
+              done="Guardado"
+            />
+          </Button>
+        {/snippet}
+      </Formulary.Submission>
     </div>
   </form>
   <form {...destroy_form}>
@@ -105,18 +109,23 @@
       name="property_id"
       value={property_id}
     />
-    <Button
-      variant="secondary"
-      type="submit"
-      disabled={submission_disabled(destroy_form)}
-    >
-      <SubmitLabel
-        form={destroy_form}
-        idle="Eliminar"
-        busy="Eliminando..."
-        done="Eliminado"
-      />
-    </Button>
+    <Formulary.Submission form={destroy_form}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="secondary"
+          type="submit"
+          disabled={is_busy()}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Eliminar"
+            busy="Eliminando..."
+            done="Eliminado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
   </form>
 </li>
 

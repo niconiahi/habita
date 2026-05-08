@@ -1,7 +1,7 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import {
     DURATIONS,
     get_duration_label,
@@ -10,7 +10,6 @@
     ESCALATION_TYPE,
     get_escalation_label,
   } from "$lib/escalation_type"
-  import { submission_disabled } from "$lib/submission_disabled"
   import { update_contract_canon } from "../forms/update_contract_canon.remote"
   import type { PageData } from "../$types"
 
@@ -66,18 +65,23 @@
       </div>
     </div>
     <div class="form-actions">
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={submission_disabled(update_contract_canon)}
-      >
-        <SubmitLabel
-          form={update_contract_canon}
-          idle="Guardar valores"
-          busy="Guardando valores..."
-          done="Guardado"
-        />
-      </Button>
+      <Formulary.Submission form={update_contract_canon}>
+        {#snippet children({ is_busy, is_done })}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={is_busy()}
+          >
+            <Formulary.SubmissionLabel
+              is_busy={is_busy()}
+              is_done={is_done()}
+              idle="Guardar valores"
+              busy="Guardando valores..."
+              done="Guardado"
+            />
+          </Button>
+        {/snippet}
+      </Formulary.Submission>
     </div>
   </form>
 </Disclosure>

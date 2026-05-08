@@ -1,9 +1,8 @@
 <script lang="ts">
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
-  import SubmitLabel from "$lib/components/SubmitLabel.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import { get_property_destiny_label } from "$lib/property_destiny"
-  import { submission_disabled } from "$lib/submission_disabled"
   import { update_contract_destiny } from "../forms/update_contract_destiny.remote"
   import type { PageData } from "../$types"
 
@@ -42,18 +41,23 @@
       </div>
     </div>
     <div class="form-actions">
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={submission_disabled(update_contract_destiny)}
-      >
-        <SubmitLabel
-          form={update_contract_destiny}
-          idle="Guardar destino"
-          busy="Guardando destino..."
-          done="Guardado"
-        />
-      </Button>
+      <Formulary.Submission form={update_contract_destiny}>
+        {#snippet children({ is_busy, is_done })}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={is_busy()}
+          >
+            <Formulary.SubmissionLabel
+              is_busy={is_busy()}
+              is_done={is_done()}
+              idle="Guardar destino"
+              busy="Guardando destino..."
+              done="Guardado"
+            />
+          </Button>
+        {/snippet}
+      </Formulary.Submission>
     </div>
   </form>
 </Disclosure>
