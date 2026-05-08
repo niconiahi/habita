@@ -83,60 +83,80 @@
       {#each data.contract.contract_items as contract_item (contract_item.id)}
         <li class="item-card">
           <Formulary.Root method="POST">
-            <Formulary.Fields>
-              <input
-                type="hidden"
-                value={contract_item.id}
-                name="id"
-              />
-              <Formulary.Field>
-                <Formulary.Label
-                  for={`name_${contract_item.id}`}
-                  >nombre</Formulary.Label
-                >
+            {#snippet children({ submit_state })}
+              <Formulary.Fields>
                 <input
-                  id={`name_${contract_item.id}`}
-                  type="text"
-                  name="name"
-                  value={contract_item.name}
+                  type="hidden"
+                  value={contract_item.id}
+                  name="id"
                 />
-              </Formulary.Field>
-              <Formulary.Field>
-                <Formulary.Label
-                  for={`state_${contract_item.id}`}
-                  >estado</Formulary.Label
+                <Formulary.Field>
+                  <Formulary.Label
+                    for={`name_${contract_item.id}`}
+                    >nombre</Formulary.Label
+                  >
+                  <input
+                    id={`name_${contract_item.id}`}
+                    type="text"
+                    name="name"
+                    value={contract_item.name}
+                  />
+                </Formulary.Field>
+                <Formulary.Field>
+                  <Formulary.Label
+                    for={`state_${contract_item.id}`}
+                    >estado</Formulary.Label
+                  >
+                  <Formulary.Select
+                    name="state"
+                    id={`state_${contract_item.id}`}
+                    value={contract_item.state}
+                  >
+                    {#each Object.values(CONTRACT_ITEM_STATE) as state}
+                      <option value={state}
+                        >{get_contract_item_state_label(
+                          state,
+                        )}</option
+                      >
+                    {/each}
+                  </Formulary.Select>
+                </Formulary.Field>
+              </Formulary.Fields>
+              <Formulary.Actions>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={submit_state === "busy"}
+                  formaction={compose_action(
+                    ACTION.UPDATE_CONTRACT_ITEM,
+                  )}
                 >
-                <Formulary.Select
-                  name="state"
-                  id={`state_${contract_item.id}`}
-                  value={contract_item.state}
+                  <Formulary.SubmitLabel
+                    state={submit_state}
+                    idle="Guardar item"
+                    busy="Guardando item..."
+                  done="Guardado"
+                  error="No se pudo guardar"
+                  />
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  disabled={submit_state === "busy"}
+                  formaction={compose_action(
+                    ACTION.DESTROY_CONTRACT_ITEM,
+                  )}
                 >
-                  {#each Object.values(CONTRACT_ITEM_STATE) as state}
-                    <option value={state}
-                      >{get_contract_item_state_label(
-                        state,
-                      )}</option
-                    >
-                  {/each}
-                </Formulary.Select>
-              </Formulary.Field>
-            </Formulary.Fields>
-            <Formulary.Actions>
-              <Button
-                variant="primary"
-                type="submit"
-                formaction={compose_action(
-                  ACTION.UPDATE_CONTRACT_ITEM,
-                )}>Guardar item</Button
-              >
-              <Button
-                variant="secondary"
-                type="submit"
-                formaction={compose_action(
-                  ACTION.DESTROY_CONTRACT_ITEM,
-                )}>Eliminar item</Button
-              >
-            </Formulary.Actions>
+                  <Formulary.SubmitLabel
+                    state={submit_state}
+                    idle="Eliminar item"
+                    busy="Eliminando item..."
+                  done="Eliminado"
+                  error="No se pudo eliminar"
+                  />
+                </Button>
+              </Formulary.Actions>
+            {/snippet}
           </Formulary.Root>
           <div class="photos-section">
             <div class="photos-header">
@@ -230,33 +250,46 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <span class="field-label">Tipo</span>
-          {#each data.property.destinies as destiny}
-            <label class="radio-label">
-              <input
-                type="radio"
-                id="destiny"
-                name="destiny"
-                value={destiny}
-                checked={data.contract.destiny === destiny}
-              />
-              {get_property_destiny_label(destiny)}
-            </label>
-          {/each}
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar destino</Button
-        >
-      </Formulary.Actions>
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={data.contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <span class="field-label">Tipo</span>
+            {#each data.property.destinies as destiny}
+              <label class="radio-label">
+                <input
+                  type="radio"
+                  id="destiny"
+                  name="destiny"
+                  value={destiny}
+                  checked={data.contract.destiny ===
+                    destiny}
+                />
+                {get_property_destiny_label(destiny)}
+              </label>
+            {/each}
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar destino"
+              busy="Guardando destino..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -267,54 +300,66 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="start_date"
-            >fecha de inicio</Formulary.Label
-          >
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            id="start_date"
-            name="start_date"
-            type="datetime-local"
-            value={data.contract.start_date
-              ? format_date_for_input(
-                  data.contract.start_date,
-                )
-              : ""}
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-          {#if errors.start_date}
-            <span class="error">{errors.start_date}</span>
-          {/if}
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="end_date"
-            >fecha de finalización</Formulary.Label
+          <Formulary.Field>
+            <Formulary.Label for="start_date"
+              >fecha de inicio</Formulary.Label
+            >
+            <input
+              id="start_date"
+              name="start_date"
+              type="datetime-local"
+              value={data.contract.start_date
+                ? format_date_for_input(
+                    data.contract.start_date,
+                  )
+                : ""}
+            />
+            {#if errors.start_date}
+              <span class="error">{errors.start_date}</span>
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="end_date"
+              >fecha de finalización</Formulary.Label
+            >
+            <input
+              id="end_date"
+              name="end_date"
+              type="datetime-local"
+              value={data.contract.end_date
+                ? format_date_for_input(
+                    data.contract.end_date,
+                  )
+                : ""}
+            />
+            {#if errors.end_date}
+              <span class="error">{errors.end_date}</span>
+            {/if}
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
           >
-          <input
-            id="end_date"
-            name="end_date"
-            type="datetime-local"
-            value={data.contract.end_date
-              ? format_date_for_input(
-                  data.contract.end_date,
-                )
-              : ""}
-          />
-          {#if errors.end_date}
-            <span class="error">{errors.end_date}</span>
-          {/if}
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar plazo</Button
-        >
-      </Formulary.Actions>
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar plazo"
+              busy="Guardando plazo..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -328,60 +373,73 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="escalation_type"
-            >tipo</Formulary.Label
-          >
-          <Formulary.Select
-            name="escalation_type"
-            id="escalation_type"
-            value={data.contract.escalation_type ?? ""}
-          >
-            {#each Object.values(ESCALATION_TYPE) as type}
-              <option value={type}
-                >{get_escalation_label(type)}</option
-              >
-            {/each}
-          </Formulary.Select>
-          {#if errors.escalation_type}
-            <span class="error"
-              >{errors.escalation_type}</span
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={data.contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label for="escalation_type"
+              >tipo</Formulary.Label
             >
-          {/if}
-        </Formulary.Field>
-        <Formulary.Field>
-          <Formulary.Label for="escalation_duration"
-            >cada</Formulary.Label
-          >
-          <Formulary.Select
-            name="escalation_duration"
-            id="escalation_duration"
-            value={data.contract.escalation_duration ?? ""}
-          >
-            {#each DURATIONS as duration}
-              <option value={duration}
-                >{get_duration_label(duration)}</option
-              >
-            {/each}
-          </Formulary.Select>
-          {#if errors.escalation_duration}
-            <span class="error"
-              >{errors.escalation_duration}</span
+            <Formulary.Select
+              name="escalation_type"
+              id="escalation_type"
+              value={data.contract.escalation_type ?? ""}
             >
-          {/if}
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar valores</Button
-        >
-      </Formulary.Actions>
+              {#each Object.values(ESCALATION_TYPE) as type}
+                <option value={type}
+                  >{get_escalation_label(type)}</option
+                >
+              {/each}
+            </Formulary.Select>
+            {#if errors.escalation_type}
+              <span class="error"
+                >{errors.escalation_type}</span
+              >
+            {/if}
+          </Formulary.Field>
+          <Formulary.Field>
+            <Formulary.Label for="escalation_duration"
+              >cada</Formulary.Label
+            >
+            <Formulary.Select
+              name="escalation_duration"
+              id="escalation_duration"
+              value={data.contract.escalation_duration ??
+                ""}
+            >
+              {#each DURATIONS as duration}
+                <option value={duration}
+                  >{get_duration_label(duration)}</option
+                >
+              {/each}
+            </Formulary.Select>
+            {#if errors.escalation_duration}
+              <span class="error"
+                >{errors.escalation_duration}</span
+              >
+            {/if}
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar valores"
+              busy="Guardando valores..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -395,27 +453,39 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="cbu">cbu</Formulary.Label>
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            id="cbu"
-            name="cbu"
-            type="text"
-            value={data.contract.cbu ?? ""}
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar CBU</Button
-        >
-      </Formulary.Actions>
+          <Formulary.Field>
+            <Formulary.Label for="cbu">cbu</Formulary.Label>
+            <input
+              id="cbu"
+              name="cbu"
+              type="text"
+              value={data.contract.cbu ?? ""}
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar CBU"
+              busy="Guardando CBU..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -426,32 +496,45 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="fine_percentage"
-            >porcentaje</Formulary.Label
-          >
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            id="fine_percentage"
-            name="fine_percentage"
-            type="number"
-            value={data.contract.fine_amount ?? ""}
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-          {#if errors.fine_amount}
-            <span class="error">{errors.fine_amount}</span>
-          {/if}
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar porcentaje</Button
-        >
-      </Formulary.Actions>
+          <Formulary.Field>
+            <Formulary.Label for="fine_percentage"
+              >porcentaje</Formulary.Label
+            >
+            <input
+              id="fine_percentage"
+              name="fine_percentage"
+              type="number"
+              value={data.contract.fine_amount ?? ""}
+            />
+            {#if errors.fine_amount}
+              <span class="error">{errors.fine_amount}</span
+              >
+            {/if}
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar porcentaje"
+              busy="Guardando porcentaje..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -465,29 +548,41 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="percentage_return"
-            >porcentaje</Formulary.Label
-          >
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            id="percentage_return"
-            name="percentage_return"
-            type="number"
-            value={data.contract.percentage_return ?? ""}
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar porcentaje</Button
-        >
-      </Formulary.Actions>
+          <Formulary.Field>
+            <Formulary.Label for="percentage_return"
+              >porcentaje</Formulary.Label
+            >
+            <input
+              id="percentage_return"
+              name="percentage_return"
+              type="number"
+              value={data.contract.percentage_return ?? ""}
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar porcentaje"
+              busy="Guardando porcentaje..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -501,30 +596,42 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="early_termination"
-            >días de preaviso</Formulary.Label
-          >
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            type="number"
-            id="early_termination"
-            name="early_termination"
-            value={data.contract.early_termination ?? ""}
-            min="0"
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar recesión anticipada</Button
-        >
-      </Formulary.Actions>
+          <Formulary.Field>
+            <Formulary.Label for="early_termination"
+              >días de preaviso</Formulary.Label
+            >
+            <input
+              type="number"
+              id="early_termination"
+              name="early_termination"
+              value={data.contract.early_termination ?? ""}
+              min="0"
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar recesión anticipada"
+              busy="Guardando recesión anticipada..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -538,29 +645,41 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="showroom_hours"
-            >cantidad de horas</Formulary.Label
-          >
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
-            id="showroom_hours"
-            name="showroom_hours"
-            type="number"
-            value={data.contract.showroom_hours ?? ""}
+            type="hidden"
+            value={data.contract.id}
+            name="id"
           />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar cantidad</Button
-        >
-      </Formulary.Actions>
+          <Formulary.Field>
+            <Formulary.Label for="showroom_hours"
+              >cantidad de horas</Formulary.Label
+            >
+            <input
+              id="showroom_hours"
+              name="showroom_hours"
+              type="number"
+              value={data.contract.showroom_hours ?? ""}
+            />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
+          >
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar cantidad"
+              busy="Guardando cantidad..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}
@@ -575,319 +694,338 @@
           : ACTION.CREATE_WARRANTY,
       )}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="contract_id"
-        />
-        {#if data.warranty}
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
           <input
             type="hidden"
-            value={data.warranty.id}
-            name="warranty_id"
+            value={data.contract.id}
+            name="contract_id"
           />
-        {/if}
-        <Formulary.Field>
-          <Formulary.Label for="warranty_type"
-            >tipo de garantía</Formulary.Label
-          >
-          <Formulary.Select
-            name="warranty_type"
-            id="warranty_type"
-            bind:value={selected_warranty_type}
-          >
-            <option value="">Seleccionar tipo</option>
-            {#each Object.values(WARRANTY_TYPE) as type}
-              <option value={type}
-                >{get_warranty_type_label(type)}</option
-              >
-            {/each}
-          </Formulary.Select>
-          {#if warranty_errors.warranty_type}
-            <span class="error"
-              >{warranty_errors.warranty_type}</span
-            >
-          {/if}
-        </Formulary.Field>
-        {#if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_name"
-              >nombre del garante</Formulary.Label
-            >
+          {#if data.warranty}
             <input
-              id="guarantor_name"
-              name="guarantor_name"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.guarantor_name ?? ""}
+              type="hidden"
+              value={data.warranty.id}
+              name="warranty_id"
             />
-            {#if warranty_errors.guarantor_name}
-              <span class="error"
-                >{warranty_errors.guarantor_name}</span
-              >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_dni"
-              >DNI del garante</Formulary.Label
-            >
-            <input
-              id="guarantor_dni"
-              name="guarantor_dni"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.guarantor_dni ?? ""}
-            />
-            {#if warranty_errors.guarantor_dni}
-              <span class="error"
-                >{warranty_errors.guarantor_dni}</span
-              >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_email"
-              >email del garante</Formulary.Label
-            >
-            <input
-              id="guarantor_email"
-              name="guarantor_email"
-              type="email"
-              value={data.warranty?.property_warranty
-                ?.guarantor_email ?? ""}
-            />
-            {#if warranty_errors.guarantor_email}
-              <span class="error"
-                >{warranty_errors.guarantor_email}</span
-              >
-            {/if}
-          </Formulary.Field>
-          <LocationInput
-            default_value={data.warranty?.property_warranty
-              ? `${data.warranty.property_warranty.road} ${data.warranty.property_warranty.house_number}`
-              : ""}
-            default_lat={data.warranty?.property_warranty
-              ?.latitude ?? ""}
-            default_lon={data.warranty?.property_warranty
-              ?.longitude ?? ""}
-          />
-          {#if warranty_errors.location}
-            <span class="error"
-              >{warranty_errors.location}</span
-            >
           {/if}
           <Formulary.Field>
-            <Formulary.Label for="cadastral_district"
-              >circunscripción</Formulary.Label
+            <Formulary.Label for="warranty_type"
+              >tipo de garantía</Formulary.Label
             >
-            <input
-              id="cadastral_district"
-              name="cadastral_district"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.cadastral_district ?? ""}
-            />
-            {#if warranty_errors.cadastral_district}
+            <Formulary.Select
+              name="warranty_type"
+              id="warranty_type"
+              bind:value={selected_warranty_type}
+            >
+              <option value="">Seleccionar tipo</option>
+              {#each Object.values(WARRANTY_TYPE) as type}
+                <option value={type}
+                  >{get_warranty_type_label(type)}</option
+                >
+              {/each}
+            </Formulary.Select>
+            {#if warranty_errors.warranty_type}
               <span class="error"
-                >{warranty_errors.cadastral_district}</span
+                >{warranty_errors.warranty_type}</span
               >
             {/if}
           </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="cadastral_section"
-              >sección</Formulary.Label
-            >
-            <input
-              id="cadastral_section"
-              name="cadastral_section"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.cadastral_section ?? ""}
+          {#if selected_warranty_type === WARRANTY_TYPE.PROPERTY}
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_name"
+                >nombre del garante</Formulary.Label
+              >
+              <input
+                id="guarantor_name"
+                name="guarantor_name"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.guarantor_name ?? ""}
+              />
+              {#if warranty_errors.guarantor_name}
+                <span class="error"
+                  >{warranty_errors.guarantor_name}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_dni"
+                >DNI del garante</Formulary.Label
+              >
+              <input
+                id="guarantor_dni"
+                name="guarantor_dni"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.guarantor_dni ?? ""}
+              />
+              {#if warranty_errors.guarantor_dni}
+                <span class="error"
+                  >{warranty_errors.guarantor_dni}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_email"
+                >email del garante</Formulary.Label
+              >
+              <input
+                id="guarantor_email"
+                name="guarantor_email"
+                type="email"
+                value={data.warranty?.property_warranty
+                  ?.guarantor_email ?? ""}
+              />
+              {#if warranty_errors.guarantor_email}
+                <span class="error"
+                  >{warranty_errors.guarantor_email}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <LocationInput
+              default_value={data.warranty
+                ?.property_warranty
+                ? `${data.warranty.property_warranty.road} ${data.warranty.property_warranty.house_number}`
+                : ""}
+              default_lat={data.warranty?.property_warranty
+                ?.latitude ?? ""}
+              default_lon={data.warranty?.property_warranty
+                ?.longitude ?? ""}
             />
-            {#if warranty_errors.cadastral_section}
+            {#if warranty_errors.location}
               <span class="error"
-                >{warranty_errors.cadastral_section}</span
+                >{warranty_errors.location}</span
               >
             {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="cadastral_block"
-              >manzana</Formulary.Label
-            >
-            <input
-              id="cadastral_block"
-              name="cadastral_block"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.cadastral_block ?? ""}
-            />
-            {#if warranty_errors.cadastral_block}
-              <span class="error"
-                >{warranty_errors.cadastral_block}</span
+            <Formulary.Field>
+              <Formulary.Label for="cadastral_district"
+                >circunscripción</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="cadastral_parcel"
-              >parcela</Formulary.Label
-            >
-            <input
-              id="cadastral_parcel"
-              name="cadastral_parcel"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.cadastral_parcel ?? ""}
-            />
-            {#if warranty_errors.cadastral_parcel}
-              <span class="error"
-                >{warranty_errors.cadastral_parcel}</span
+              <input
+                id="cadastral_district"
+                name="cadastral_district"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.cadastral_district ?? ""}
+              />
+              {#if warranty_errors.cadastral_district}
+                <span class="error"
+                  >{warranty_errors.cadastral_district}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="cadastral_section"
+                >sección</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="property_tax_id"
-              >partida inmobiliaria</Formulary.Label
-            >
-            <input
-              id="property_tax_id"
-              name="property_tax_id"
-              type="text"
-              value={data.warranty?.property_warranty
-                ?.property_tax_id ?? ""}
-            />
-            {#if warranty_errors.property_tax_id}
-              <span class="error"
-                >{warranty_errors.property_tax_id}</span
+              <input
+                id="cadastral_section"
+                name="cadastral_section"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.cadastral_section ?? ""}
+              />
+              {#if warranty_errors.cadastral_section}
+                <span class="error"
+                  >{warranty_errors.cadastral_section}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="cadastral_block"
+                >manzana</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-        {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_name"
-              >nombre del garante</Formulary.Label
-            >
-            <input
-              id="guarantor_name"
-              name="guarantor_name"
-              type="text"
-              value={data.warranty?.surety_warranty
-                ?.guarantor_name ?? ""}
-            />
-            {#if warranty_errors.guarantor_name}
-              <span class="error"
-                >{warranty_errors.guarantor_name}</span
+              <input
+                id="cadastral_block"
+                name="cadastral_block"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.cadastral_block ?? ""}
+              />
+              {#if warranty_errors.cadastral_block}
+                <span class="error"
+                  >{warranty_errors.cadastral_block}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="cadastral_parcel"
+                >parcela</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_dni"
-              >DNI del garante</Formulary.Label
-            >
-            <input
-              id="guarantor_dni"
-              name="guarantor_dni"
-              type="text"
-              value={data.warranty?.surety_warranty
-                ?.guarantor_dni ?? ""}
-            />
-            {#if warranty_errors.guarantor_dni}
-              <span class="error"
-                >{warranty_errors.guarantor_dni}</span
+              <input
+                id="cadastral_parcel"
+                name="cadastral_parcel"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.cadastral_parcel ?? ""}
+              />
+              {#if warranty_errors.cadastral_parcel}
+                <span class="error"
+                  >{warranty_errors.cadastral_parcel}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="property_tax_id"
+                >partida inmobiliaria</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="guarantor_email"
-              >email del garante</Formulary.Label
-            >
-            <input
-              id="guarantor_email"
-              name="guarantor_email"
-              type="email"
-              value={data.warranty?.surety_warranty
-                ?.guarantor_email ?? ""}
-            />
-            {#if warranty_errors.guarantor_email}
-              <span class="error"
-                >{warranty_errors.guarantor_email}</span
+              <input
+                id="property_tax_id"
+                name="property_tax_id"
+                type="text"
+                value={data.warranty?.property_warranty
+                  ?.property_tax_id ?? ""}
+              />
+              {#if warranty_errors.property_tax_id}
+                <span class="error"
+                  >{warranty_errors.property_tax_id}</span
+                >
+              {/if}
+            </Formulary.Field>
+          {:else if selected_warranty_type === WARRANTY_TYPE.SURETY}
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_name"
+                >nombre del garante</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="company_name"
-              >nombre de la aseguradora</Formulary.Label
-            >
-            <input
-              id="company_name"
-              name="company_name"
-              type="text"
-              value={data.warranty?.surety_warranty
-                ?.company_name ?? ""}
-            />
-            {#if warranty_errors.company_name}
-              <span class="error"
-                >{warranty_errors.company_name}</span
+              <input
+                id="guarantor_name"
+                name="guarantor_name"
+                type="text"
+                value={data.warranty?.surety_warranty
+                  ?.guarantor_name ?? ""}
+              />
+              {#if warranty_errors.guarantor_name}
+                <span class="error"
+                  >{warranty_errors.guarantor_name}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_dni"
+                >DNI del garante</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="policy_number"
-              >número de póliza</Formulary.Label
-            >
-            <input
-              id="policy_number"
-              name="policy_number"
-              type="text"
-              value={data.warranty?.surety_warranty
-                ?.policy_number ?? ""}
-            />
-            {#if warranty_errors.policy_number}
-              <span class="error"
-                >{warranty_errors.policy_number}</span
+              <input
+                id="guarantor_dni"
+                name="guarantor_dni"
+                type="text"
+                value={data.warranty?.surety_warranty
+                  ?.guarantor_dni ?? ""}
+              />
+              {#if warranty_errors.guarantor_dni}
+                <span class="error"
+                  >{warranty_errors.guarantor_dni}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="guarantor_email"
+                >email del garante</Formulary.Label
               >
-            {/if}
-          </Formulary.Field>
-          <Formulary.Field>
-            <Formulary.Label for="company_email"
-              >email de la aseguradora</Formulary.Label
-            >
-            <input
-              id="company_email"
-              name="company_email"
-              type="email"
-              value={data.warranty?.surety_warranty
-                ?.company_email ?? ""}
-            />
-            {#if warranty_errors.company_email}
-              <span class="error"
-                >{warranty_errors.company_email}</span
+              <input
+                id="guarantor_email"
+                name="guarantor_email"
+                type="email"
+                value={data.warranty?.surety_warranty
+                  ?.guarantor_email ?? ""}
+              />
+              {#if warranty_errors.guarantor_email}
+                <span class="error"
+                  >{warranty_errors.guarantor_email}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="company_name"
+                >nombre de la aseguradora</Formulary.Label
               >
+              <input
+                id="company_name"
+                name="company_name"
+                type="text"
+                value={data.warranty?.surety_warranty
+                  ?.company_name ?? ""}
+              />
+              {#if warranty_errors.company_name}
+                <span class="error"
+                  >{warranty_errors.company_name}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="policy_number"
+                >número de póliza</Formulary.Label
+              >
+              <input
+                id="policy_number"
+                name="policy_number"
+                type="text"
+                value={data.warranty?.surety_warranty
+                  ?.policy_number ?? ""}
+              />
+              {#if warranty_errors.policy_number}
+                <span class="error"
+                  >{warranty_errors.policy_number}</span
+                >
+              {/if}
+            </Formulary.Field>
+            <Formulary.Field>
+              <Formulary.Label for="company_email"
+                >email de la aseguradora</Formulary.Label
+              >
+              <input
+                id="company_email"
+                name="company_email"
+                type="email"
+                value={data.warranty?.surety_warranty
+                  ?.company_email ?? ""}
+              />
+              {#if warranty_errors.company_email}
+                <span class="error"
+                  >{warranty_errors.company_email}</span
+                >
+              {/if}
+            </Formulary.Field>
+          {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
+            {#if !data.warranty}
+              <p class="hint">
+                Guardar para agregar garantes
+              </p>
             {/if}
-          </Formulary.Field>
-        {:else if selected_warranty_type === WARRANTY_TYPE.INCOME}
-          {#if !data.warranty}
-            <p class="hint">
-              Guardar para agregar garantes
-            </p>
           {/if}
-        {/if}
-      </Formulary.Fields>
-      {#if selected_warranty_type}
-        <Formulary.Actions>
-          <Button variant="primary" type="submit"
-            >{data.warranty ? "Guardar" : "Crear"} garantía</Button
-          >
-          {#if selected_warranty_type === WARRANTY_TYPE.INCOME && data.warranty && data.warranty.income_warranty}
+        </Formulary.Fields>
+        {#if selected_warranty_type}
+          <Formulary.Actions>
             <Button
-              type="button"
-              variant="secondary"
-              onclick={() =>
-                add_guarantor_dialog?.showModal()}
-              >Agregar garante</Button
+              variant="primary"
+              type="submit"
+              disabled={submit_state === "busy"}
             >
-          {/if}
-        </Formulary.Actions>
-      {/if}
+              <Formulary.SubmitLabel
+                state={submit_state}
+                idle={data.warranty
+                  ? "Guardar garantía"
+                  : "Crear garantía"}
+                busy={data.warranty
+                  ? "Guardando garantía..."
+                  : "Creando garantía..."}
+                done={data.warranty ? "Guardado" : "Creado"}
+                error={data.warranty
+                  ? "No se pudo guardar"
+                  : "No se pudo crear"}
+              />
+            </Button>
+            {#if selected_warranty_type === WARRANTY_TYPE.INCOME && data.warranty && data.warranty.income_warranty}
+              <Button
+                type="button"
+                variant="secondary"
+                onclick={() =>
+                  add_guarantor_dialog?.showModal()}
+                >Agregar garante</Button
+              >
+            {/if}
+          </Formulary.Actions>
+        {/if}
+      {/snippet}
     </Formulary.Root>
     {#if selected_warranty_type === WARRANTY_TYPE.INCOME && data.warranty}
       {#if data.warranty.income_warranty}
@@ -905,62 +1043,82 @@
                       ACTION.UPDATE_INCOME_GUARANTOR,
                     )}
                   >
-                    <Formulary.Fields>
-                      <input
-                        type="hidden"
-                        value={guarantor.id}
-                        name="id"
-                      />
-                      <Formulary.Field>
-                        <Formulary.Label
-                          for={`guarantor_name_${guarantor.id}`}
-                          >nombre</Formulary.Label
-                        >
+                    {#snippet children({ submit_state })}
+                      <Formulary.Fields>
                         <input
-                          id={`guarantor_name_${guarantor.id}`}
-                          name="guarantor_name"
-                          type="text"
-                          value={guarantor.guarantor_name}
+                          type="hidden"
+                          value={guarantor.id}
+                          name="id"
                         />
-                      </Formulary.Field>
-                      <Formulary.Field>
-                        <Formulary.Label
-                          for={`guarantor_dni_${guarantor.id}`}
-                          >DNI</Formulary.Label
+                        <Formulary.Field>
+                          <Formulary.Label
+                            for={`guarantor_name_${guarantor.id}`}
+                            >nombre</Formulary.Label
+                          >
+                          <input
+                            id={`guarantor_name_${guarantor.id}`}
+                            name="guarantor_name"
+                            type="text"
+                            value={guarantor.guarantor_name}
+                          />
+                        </Formulary.Field>
+                        <Formulary.Field>
+                          <Formulary.Label
+                            for={`guarantor_dni_${guarantor.id}`}
+                            >DNI</Formulary.Label
+                          >
+                          <input
+                            id={`guarantor_dni_${guarantor.id}`}
+                            name="guarantor_dni"
+                            type="text"
+                            value={guarantor.guarantor_dni}
+                          />
+                        </Formulary.Field>
+                        <Formulary.Field>
+                          <Formulary.Label
+                            for={`guarantor_email_${guarantor.id}`}
+                            >email</Formulary.Label
+                          >
+                          <input
+                            id={`guarantor_email_${guarantor.id}`}
+                            name="guarantor_email"
+                            type="email"
+                            value={guarantor.guarantor_email}
+                          />
+                        </Formulary.Field>
+                      </Formulary.Fields>
+                      <Formulary.Actions>
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          disabled={submit_state === "busy"}
                         >
-                        <input
-                          id={`guarantor_dni_${guarantor.id}`}
-                          name="guarantor_dni"
-                          type="text"
-                          value={guarantor.guarantor_dni}
-                        />
-                      </Formulary.Field>
-                      <Formulary.Field>
-                        <Formulary.Label
-                          for={`guarantor_email_${guarantor.id}`}
-                          >email</Formulary.Label
+                          <Formulary.SubmitLabel
+                            state={submit_state}
+                            idle="Guardar"
+                            busy="Guardando..."
+                          done="Guardado"
+                          error="No se pudo guardar"
+                          />
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          type="submit"
+                          disabled={submit_state === "busy"}
+                          formaction={compose_action(
+                            ACTION.DESTROY_INCOME_GUARANTOR,
+                          )}
                         >
-                        <input
-                          id={`guarantor_email_${guarantor.id}`}
-                          name="guarantor_email"
-                          type="email"
-                          value={guarantor.guarantor_email}
-                        />
-                      </Formulary.Field>
-                    </Formulary.Fields>
-                    <Formulary.Actions>
-                      <Button
-                        variant="primary"
-                        type="submit">Guardar</Button
-                      >
-                      <Button
-                        variant="secondary"
-                        type="submit"
-                        formaction={compose_action(
-                          ACTION.DESTROY_INCOME_GUARANTOR,
-                        )}>Eliminar</Button
-                      >
-                    </Formulary.Actions>
+                          <Formulary.SubmitLabel
+                            state={submit_state}
+                            idle="Eliminar"
+                            busy="Eliminando..."
+                          done="Eliminado"
+                          error="No se pudo eliminar"
+                          />
+                        </Button>
+                      </Formulary.Actions>
+                    {/snippet}
                   </Formulary.Root>
                 </li>
               {/each}
@@ -982,48 +1140,62 @@
                 ACTION.ADD_INCOME_GUARANTOR,
               )}
             >
-              <Formulary.Fields>
-                <input
-                  type="hidden"
-                  value={warranty_id}
-                  name="warranty_id"
-                />
-                <Formulary.Field>
-                  <Formulary.Label for="new_guarantor_name"
-                    >nombre</Formulary.Label
-                  >
+              {#snippet children({ submit_state })}
+                <Formulary.Fields>
                   <input
-                    id="new_guarantor_name"
-                    name="guarantor_name"
-                    type="text"
+                    type="hidden"
+                    value={warranty_id}
+                    name="warranty_id"
                   />
-                </Formulary.Field>
-                <Formulary.Field>
-                  <Formulary.Label for="new_guarantor_dni"
-                    >DNI</Formulary.Label
+                  <Formulary.Field>
+                    <Formulary.Label
+                      for="new_guarantor_name"
+                      >nombre</Formulary.Label
+                    >
+                    <input
+                      id="new_guarantor_name"
+                      name="guarantor_name"
+                      type="text"
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label for="new_guarantor_dni"
+                      >DNI</Formulary.Label
+                    >
+                    <input
+                      id="new_guarantor_dni"
+                      name="guarantor_dni"
+                      type="text"
+                    />
+                  </Formulary.Field>
+                  <Formulary.Field>
+                    <Formulary.Label
+                      for="new_guarantor_email"
+                      >email</Formulary.Label
+                    >
+                    <input
+                      id="new_guarantor_email"
+                      name="guarantor_email"
+                      type="email"
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={submit_state === "busy"}
                   >
-                  <input
-                    id="new_guarantor_dni"
-                    name="guarantor_dni"
-                    type="text"
-                  />
-                </Formulary.Field>
-                <Formulary.Field>
-                  <Formulary.Label for="new_guarantor_email"
-                    >email</Formulary.Label
-                  >
-                  <input
-                    id="new_guarantor_email"
-                    name="guarantor_email"
-                    type="email"
-                  />
-                </Formulary.Field>
-              </Formulary.Fields>
-              <Formulary.Actions>
-                <Button variant="primary" type="submit"
-                  >Agregar</Button
-                >
-              </Formulary.Actions>
+                    <Formulary.SubmitLabel
+                      state={submit_state}
+                      idle="Agregar"
+                      busy="Agregando..."
+                    done="Agregado"
+                    error="No se pudo agregar"
+                    />
+                  </Button>
+                </Formulary.Actions>
+              {/snippet}
             </Formulary.Root>
           </Dialog.Content>
         {/snippet}
@@ -1041,34 +1213,46 @@
       method="POST"
       action={compose_action(ACTION.UPDATE_CONTRACT)}
     >
-      <Formulary.Fields>
-        <input
-          type="hidden"
-          value={data.contract.id}
-          name="id"
-        />
-        <Formulary.Field>
-          <Formulary.Label for="court_id"
-            >tribunal</Formulary.Label
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <input
+            type="hidden"
+            value={data.contract.id}
+            name="id"
+          />
+          <Formulary.Field>
+            <Formulary.Label for="court_id"
+              >tribunal</Formulary.Label
+            >
+            <Formulary.Select
+              name="court_id"
+              id="court_id"
+              value={data.contract.court_id ?? ""}
+            >
+              {#each Object.values(COURT) as type}
+                <option value={type}
+                  >{get_court_label(type)}</option
+                >
+              {/each}
+            </Formulary.Select>
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
           >
-          <Formulary.Select
-            name="court_id"
-            id="court_id"
-            value={data.contract.court_id ?? ""}
-          >
-            {#each Object.values(COURT) as type}
-              <option value={type}
-                >{get_court_label(type)}</option
-              >
-            {/each}
-          </Formulary.Select>
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Guardar jurisdicción</Button
-        >
-      </Formulary.Actions>
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Guardar jurisdicción"
+              busy="Guardando jurisdicción..."
+            done="Guardado"
+            error="No se pudo guardar"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   </Disclosure>
 {/snippet}

@@ -27,19 +27,31 @@
       method="POST"
       action={compose_action(ACTION.CREATE_PERIOD)}
     >
-      <Formulary.Fields>
-        <Formulary.Field>
-          <Formulary.Label for="price"
-            >precio inicial</Formulary.Label
+      {#snippet children({ submit_state })}
+        <Formulary.Fields>
+          <Formulary.Field>
+            <Formulary.Label for="price"
+              >precio inicial</Formulary.Label
+            >
+            <input id="price" name="price" type="number" />
+          </Formulary.Field>
+        </Formulary.Fields>
+        <Formulary.Actions>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={submit_state === "busy"}
           >
-          <input id="price" name="price" type="number" />
-        </Formulary.Field>
-      </Formulary.Fields>
-      <Formulary.Actions>
-        <Button variant="primary" type="submit"
-          >Crear período</Button
-        >
-      </Formulary.Actions>
+            <Formulary.SubmitLabel
+              state={submit_state}
+              idle="Crear período"
+              busy="Creando período..."
+            done="Creado"
+            error="No se pudo crear"
+            />
+          </Button>
+        </Formulary.Actions>
+      {/snippet}
     </Formulary.Root>
   {:else}
     <ul class="period-list">
@@ -50,29 +62,41 @@
               method="POST"
               action={compose_action(ACTION.UPDATE_PERIOD)}
             >
-              <Formulary.Fields>
-                <input
-                  type="hidden"
-                  value={period.id}
-                  name="id"
-                />
-                <Formulary.Field>
-                  <Formulary.Label for="price"
-                    >inicial</Formulary.Label
-                  >
+              {#snippet children({ submit_state })}
+                <Formulary.Fields>
                   <input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={period.price}
+                    type="hidden"
+                    value={period.id}
+                    name="id"
                   />
-                </Formulary.Field>
-              </Formulary.Fields>
-              <Formulary.Actions>
-                <Button variant="primary" type="submit"
-                  >Guardar precio</Button
-                >
-              </Formulary.Actions>
+                  <Formulary.Field>
+                    <Formulary.Label for="price"
+                      >inicial</Formulary.Label
+                    >
+                    <input
+                      id="price"
+                      name="price"
+                      type="number"
+                      value={period.price}
+                    />
+                  </Formulary.Field>
+                </Formulary.Fields>
+                <Formulary.Actions>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={submit_state === "busy"}
+                  >
+                    <Formulary.SubmitLabel
+                      state={submit_state}
+                      idle="Guardar precio"
+                      busy="Guardando precio..."
+                    done="Guardado"
+                    error="No se pudo guardar"
+                    />
+                  </Button>
+                </Formulary.Actions>
+              {/snippet}
             </Formulary.Root>
           </li>
         {:else}

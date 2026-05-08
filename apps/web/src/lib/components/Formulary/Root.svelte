@@ -3,24 +3,75 @@
   import type { Snippet } from "svelte"
   import type { HTMLFormAttributes } from "svelte/elements"
 
-  interface Props extends HTMLFormAttributes {
-    children: Snippet
+  const MIN_BUSY_DURATION_MS = 400
+  const TERMINAL_DURATION_MS = 1500
+
+  type SubmitState = "idle" | "busy" | "done" | "error"
+
+  interface Props
+    extends Omit<HTMLFormAttributes, "children"> {
+    children: Snippet<[{ submit_state: SubmitState }]>
   }
 
   let { children, ...rest }: Props = $props()
+
+  let submit_state = $state<SubmitState>("idle")
+  let started_at: number | null = null
+  let revert_timer: ReturnType<typeof setTimeout> | null =
+    null
+
+  function clear_revert_timer() {
+    if (revert_timer) {
+      clearTimeout(revert_timer)
+      revert_timer = null
+    }
+  }
+
+  const live_message = $derived.by(() => {
+    if (submit_state === "busy") return "Enviando"
+    if (submit_state === "done") return "Guardado"
+    if (submit_state === "error") return "No se pudo guardar"
+    return ""
+  })
 </script>
 
 <form
   class="formulary"
   data-sveltekit-noscroll
+  aria-busy={submit_state === "busy"}
   use:enhance={() => {
-    return async ({ update }) => {
+    clear_revert_timer()
+    submit_state = "busy"
+    started_at = Date.now()
+    return async ({ update, result }) => {
       await update({ reset: false })
+      if (started_at !== null) {
+        const remaining =
+          MIN_BUSY_DURATION_MS - (Date.now() - started_at)
+        if (remaining > 0) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, remaining),
+          )
+        }
+      }
+      submit_state =
+        result.type === "success" ||
+        result.type === "redirect"
+          ? "done"
+          : "error"
+      revert_timer = setTimeout(() => {
+        submit_state = "idle"
+        revert_timer = null
+      }, TERMINAL_DURATION_MS)
+      started_at = null
     }
   }}
   {...rest}
 >
-  {@render children()}
+  <span aria-live="polite" class="sr-only">
+    {live_message}
+  </span>
+  {@render children({ submit_state })}
 </form>
 
 <style>
@@ -28,5 +79,16 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 </style>

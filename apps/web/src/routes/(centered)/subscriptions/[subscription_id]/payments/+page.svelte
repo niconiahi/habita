@@ -33,14 +33,26 @@
             ACTION.CREATE_SUBSCRIPTION_PAYMENT,
           )}
         >
-          <input
-            type="hidden"
-            name="organization_id"
-            value={data.subscription.organization_id}
-          />
-          <Button variant="primary" type="submit"
-            >Pagar</Button
-          >
+          {#snippet children({ submit_state })}
+            <input
+              type="hidden"
+              name="organization_id"
+              value={data.subscription.organization_id}
+            />
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={submit_state === "busy"}
+            >
+              <Formulary.SubmitLabel
+                state={submit_state}
+                idle="Pagar"
+                busy="Pagando..."
+              done="Pagado"
+              error="No se pudo pagar"
+              />
+            </Button>
+          {/snippet}
         </Formulary.Root>
       </Content.Actions>
     {/if}
