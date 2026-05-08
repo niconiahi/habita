@@ -9,6 +9,7 @@ import {
   resolve_subscription_status,
 } from "$lib/server/subscription"
 import { SUBSCRIPTION_STATUS } from "$lib/subscription_status"
+import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 import type { LayoutServerLoad } from "./$types"
 
 export const load: LayoutServerLoad = async ({
@@ -33,9 +34,14 @@ export const load: LayoutServerLoad = async ({
 
     const active_organization_id =
       locals.session?.activeOrganizationId ?? null
-    const subscription = locals.subscriptions.find(
-      (s) => s.organization_id === active_organization_id,
-    )
+    const subscription = active_organization_id
+      ? locals.subscriptions.find(
+          (s) =>
+            s.organization_id === active_organization_id,
+        )
+      : locals.subscriptions.find(
+          (s) => s.type === SUBSCRIPTION_TYPE.FREELANCE,
+        )
     if (subscription) {
       const status = resolve_subscription_status(
         new Date(subscription.ends_at),
