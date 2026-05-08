@@ -11,6 +11,7 @@ import { decrypt } from "$lib/server/encryption"
 import { ensure_bucket } from "$lib/server/object_store"
 import { is_rate_limited } from "$lib/server/rate_limit"
 import { fetch_user_subscriptions_cached } from "$lib/server/subscription"
+import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
 import { init_telemetry } from "$lib/server/telemetry/sdk"
 
 export const init: ServerInit = async () => {
@@ -63,17 +64,26 @@ export const handle: Handle = async ({
       : null,
     image: session.user.image ?? null,
   }
+  const subscriptions =
+    await fetch_user_subscriptions_cached(user_id)
+  const raw_active_organization_id =
+    session.session.activeOrganizationId ?? null
+  const is_freelance_active =
+    subscriptions.find(
+      (s) =>
+        s.organization_id === raw_active_organization_id,
+    )?.type === SUBSCRIPTION_TYPE.FREELANCE
   event.locals.session = {
     id: session.session.id,
     userId: user_id,
     expiresAt: session.session.expiresAt,
     createdAt: session.session.createdAt,
     updatedAt: session.session.updatedAt,
-    activeOrganizationId:
-      session.session.activeOrganizationId ?? null,
+    activeOrganizationId: is_freelance_active
+      ? null
+      : raw_active_organization_id,
   }
-  event.locals.subscriptions =
-    await fetch_user_subscriptions_cached(user_id)
+  event.locals.subscriptions = subscriptions
   return svelteKitHandler({
     event,
     resolve,
