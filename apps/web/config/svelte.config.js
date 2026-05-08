@@ -17,6 +17,14 @@ const config = {
     router: {
       resolution: "server",
     },
+    experimental: {
+      remoteFunctions: true,
+    },
+  },
+  compilerOptions: {
+    experimental: {
+      async: true,
+    },
   },
   extensions: [".svelte", ".svx"],
 }
