@@ -63,7 +63,9 @@
       organization?.subscription_type ===
       SUBSCRIPTION_TYPE.FREELANCE
     ) {
-      await goto("/admin/properties", { invalidateAll: true })
+      await goto("/admin/properties", {
+        invalidateAll: true,
+      })
     } else {
       await invalidateAll()
     }

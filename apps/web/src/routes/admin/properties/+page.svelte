@@ -80,49 +80,49 @@
                       Editar
                     </a>
                     {#if property.state === PROPERTY_STATE.EDITING}
-                        <form
-                          method="POST"
-                          action={`?/${ACTION.PUBLISH_PROPERTY}`}
-                          use:enhance
+                      <form
+                        method="POST"
+                        action={`?/${ACTION.PUBLISH_PROPERTY}`}
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="property_id"
+                          value={property.id}
+                        />
+                        <button
+                          class="body-md-medium action-item"
+                          type="submit"
+                          onclick={close}
                         >
-                          <input
-                            type="hidden"
-                            name="property_id"
-                            value={property.id}
-                          />
-                          <button
-                            class="body-md-medium action-item"
-                            type="submit"
-                            onclick={close}
-                          >
-                            Publicar
-                          </button>
-                        </form>
-                      {/if}
-                      {#if property.state === PROPERTY_STATE.PUBLISHED}
-                        <form
-                          method="POST"
-                          action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
-                          use:enhance
+                          Publicar
+                        </button>
+                      </form>
+                    {/if}
+                    {#if property.state === PROPERTY_STATE.PUBLISHED}
+                      <form
+                        method="POST"
+                        action={`?/${ACTION.UNPUBLISH_PROPERTY}`}
+                        use:enhance
+                      >
+                        <input
+                          type="hidden"
+                          name="property_id"
+                          value={property.id}
+                        />
+                        <button
+                          class="body-md-medium action-item"
+                          type="submit"
+                          onclick={close}
                         >
-                          <input
-                            type="hidden"
-                            name="property_id"
-                            value={property.id}
-                          />
-                          <button
-                            class="body-md-medium action-item"
-                            type="submit"
-                            onclick={close}
-                          >
-                            Despublicar
-                          </button>
-                        </form>
-                      {/if}
-                    </div>
-                  {/snippet}
-                </Popover.Content>
-              </Popover.Root>
+                          Despublicar
+                        </button>
+                      </form>
+                    {/if}
+                  </div>
+                {/snippet}
+              </Popover.Content>
+            </Popover.Root>
           </td>
         </tr>
       {/each}

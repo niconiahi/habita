@@ -123,7 +123,8 @@ export async function update_warranty(form_data: FormData) {
                   guarantor_email: input.guarantor_email,
                   cadastral_district:
                     input.cadastral_district,
-                  cadastral_section: input.cadastral_section,
+                  cadastral_section:
+                    input.cadastral_section,
                   cadastral_block: input.cadastral_block,
                   cadastral_parcel: input.cadastral_parcel,
                   property_tax_id: input.property_tax_id,
@@ -165,7 +166,8 @@ export async function update_warranty(form_data: FormData) {
                   location_id: location.id,
                   cadastral_district:
                     input.cadastral_district,
-                  cadastral_section: input.cadastral_section,
+                  cadastral_section:
+                    input.cadastral_section,
                   cadastral_block: input.cadastral_block,
                   cadastral_parcel: input.cadastral_parcel,
                   property_tax_id: input.property_tax_id,

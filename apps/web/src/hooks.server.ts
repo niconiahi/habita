@@ -42,11 +42,12 @@ export const handle: Handle = async ({
     })
   }
   const user_id = Number(session.user.id)
-  const { accepted } = await auto_accept_pending_invitations(
-    user_id,
-    session.user.email,
-    event.request.headers,
-  )
+  const { accepted } =
+    await auto_accept_pending_invitations(
+      user_id,
+      session.user.email,
+      event.request.headers,
+    )
   if (accepted) {
     session =
       (await auth.api.getSession({

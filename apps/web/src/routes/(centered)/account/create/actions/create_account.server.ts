@@ -75,11 +75,7 @@ export async function create_account(
     })
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { user_id },
-        error,
-      )
+      logger.error(error.message, { user_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -139,11 +135,7 @@ export async function create_account(
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { user_id },
-        error,
-      )
+      logger.error(error.message, { user_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -176,11 +168,7 @@ export async function create_account(
     await invalidate_user_subscriptions_cache(user_id)
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { user_id },
-        error,
-      )
+      logger.error(error.message, { user_id }, error)
     } else {
       logger.unknown(error)
     }

@@ -12,11 +12,7 @@
     on_image_click?: (index: number) => void
   }
 
-  let {
-    images,
-    label,
-    on_image_click,
-  }: Props = $props()
+  let { images, label, on_image_click }: Props = $props()
 
   let images_el: HTMLDivElement | undefined = $state()
   let current_index = $state(0)

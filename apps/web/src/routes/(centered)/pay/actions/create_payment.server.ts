@@ -21,8 +21,7 @@ export async function create_payment() {
   } catch (error) {
     if (error instanceof CreatePreferenceError) {
       if (
-        error.type ===
-        CREATE_PREFERENCE_ERROR.FETCH_FAILED
+        error.type === CREATE_PREFERENCE_ERROR.FETCH_FAILED
       ) {
         return fail(400, {
           message:
@@ -30,8 +29,7 @@ export async function create_payment() {
         })
       }
       if (
-        error.type ===
-        CREATE_PREFERENCE_ERROR.API_ERROR
+        error.type === CREATE_PREFERENCE_ERROR.API_ERROR
       ) {
         return fail(400, {
           message: "Error en el servicio de pagos",
@@ -67,27 +65,29 @@ export async function create_payment() {
   }
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      const payment = await tx
-        .insertInto("payment")
-        .values({
-          payment_method_id: PAYMENT_METHOD_MERCADO_PAGO,
-          created_at: now,
-          updated_at: now,
-        })
-        .returning("id")
-        .executeTakeFirstOrThrow()
-      await tx
-        .insertInto("payment_mercado_pago")
-        .values({
-          preference_id: preference.id,
-          status: PAYMENT_STATUS_PENDING,
-          payment_id: payment.id,
-          created_at: now,
-          updated_at: now,
-        })
-        .execute()
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const payment = await tx
+          .insertInto("payment")
+          .values({
+            payment_method_id: PAYMENT_METHOD_MERCADO_PAGO,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning("id")
+          .executeTakeFirstOrThrow()
+        await tx
+          .insertInto("payment_mercado_pago")
+          .values({
+            preference_id: preference.id,
+            status: PAYMENT_STATUS_PENDING,
+            payment_id: payment.id,
+            created_at: now,
+            updated_at: now,
+          })
+          .execute()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

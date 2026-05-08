@@ -50,11 +50,7 @@ export async function create_floor(
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }

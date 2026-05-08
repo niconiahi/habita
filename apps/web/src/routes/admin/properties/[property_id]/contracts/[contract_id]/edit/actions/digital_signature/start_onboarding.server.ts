@@ -53,24 +53,19 @@ export async function start_onboarding(
     })
   } catch (error) {
     if (error instanceof ApiFetchError) {
-      if (
-        error.type === API_FETCH_ERROR.FETCH_FAILED
-      ) {
+      if (error.type === API_FETCH_ERROR.FETCH_FAILED) {
         return fail(400, {
           message:
             "No se pudo conectar al servicio de registro",
         })
       }
-      if (
-        error.type === API_FETCH_ERROR.API_ERROR
-      ) {
+      if (error.type === API_FETCH_ERROR.API_ERROR) {
         return fail(400, {
           message: "Error en el servicio de registro",
         })
       }
       if (
-        error.type ===
-        API_FETCH_ERROR.JSON_PARSE_FAILED
+        error.type === API_FETCH_ERROR.JSON_PARSE_FAILED
       ) {
         return fail(400, {
           message:

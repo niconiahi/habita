@@ -29,7 +29,11 @@ export async function fetch_team_members_with_property_counts(
           "property_access.property_id",
         )
         .where("property_access.user_id", "=", member.id)
-        .where("property_access.type", "=", ACCESS_TYPE.MANAGER)
+        .where(
+          "property_access.type",
+          "=",
+          ACCESS_TYPE.MANAGER,
+        )
         .where("property.realtor_id", "=", organization_id)
         .select(sql<number>`count(*)::int`.as("count"))
         .executeTakeFirst()

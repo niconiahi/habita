@@ -46,11 +46,7 @@ export async function reject_slot(form_data: FormData) {
       .executeTakeFirstOrThrow()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { slot_id: id },
-        error,
-      )
+      logger.error(error.message, { slot_id: id }, error)
     } else {
       logger.unknown(error)
     }
@@ -71,11 +67,7 @@ export async function reject_slot(form_data: FormData) {
       .execute()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { slot_id: id },
-        error,
-      )
+      logger.error(error.message, { slot_id: id }, error)
     } else {
       logger.unknown(error)
     }

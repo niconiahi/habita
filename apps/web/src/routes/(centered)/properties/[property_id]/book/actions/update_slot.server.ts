@@ -58,7 +58,9 @@ export async function update_slot(
   span.setAttribute("visitant.id", visitant_id)
 
   const notification_type = NOTIFICATION_TYPE.PROPERTY_VISIT
-  let tx_result: Awaited<ReturnType<typeof execute_transaction>>
+  let tx_result: Awaited<
+    ReturnType<typeof execute_transaction>
+  >
   async function execute_transaction() {
     return query_builder
       .transaction()

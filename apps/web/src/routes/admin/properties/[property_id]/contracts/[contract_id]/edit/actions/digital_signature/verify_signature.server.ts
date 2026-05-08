@@ -72,16 +72,8 @@ export async function verify_signature(
   try {
     contract_file = await query_builder
       .selectFrom("contract_file")
-      .innerJoin(
-        "file",
-        "file.id",
-        "contract_file.file_id",
-      )
-      .where(
-        "contract_file.contract_id",
-        "=",
-        contract_id,
-      )
+      .innerJoin("file", "file.id", "contract_file.file_id")
+      .where("contract_file.contract_id", "=", contract_id)
       .where(
         "contract_file.type",
         "=",
@@ -106,8 +98,12 @@ export async function verify_signature(
   }
   const original_hash = contract_file.hash
 
-  let certificate: Awaited<ReturnType<typeof check_certificate>>
-  let signed_document: Awaited<ReturnType<typeof fetch_signed_document>>
+  let certificate: Awaited<
+    ReturnType<typeof check_certificate>
+  >
+  let signed_document: Awaited<
+    ReturnType<typeof fetch_signed_document>
+  >
   try {
     ;[certificate, signed_document] = await Promise.all([
       check_certificate(person.cuil),
@@ -115,25 +111,19 @@ export async function verify_signature(
     ])
   } catch (error) {
     if (error instanceof ApiFetchError) {
-      if (
-        error.type === API_FETCH_ERROR.FETCH_FAILED
-      ) {
+      if (error.type === API_FETCH_ERROR.FETCH_FAILED) {
         return fail(400, {
           message:
             "No se pudo conectar al servicio de firma digital",
         })
       }
-      if (
-        error.type === API_FETCH_ERROR.API_ERROR
-      ) {
+      if (error.type === API_FETCH_ERROR.API_ERROR) {
         return fail(400, {
-          message:
-            "Error en el servicio de firma digital",
+          message: "Error en el servicio de firma digital",
         })
       }
       if (
-        error.type ===
-        API_FETCH_ERROR.JSON_PARSE_FAILED
+        error.type === API_FETCH_ERROR.JSON_PARSE_FAILED
       ) {
         return fail(400, {
           message:
@@ -150,15 +140,13 @@ export async function verify_signature(
         })
       }
       return fail(400, {
-        message:
-          "Error al obtener datos de firma digital",
+        message: "Error al obtener datos de firma digital",
       })
     } else {
       logger.unknown(error)
     }
     return fail(400, {
-      message:
-        "Error al obtener datos de firma digital",
+      message: "Error al obtener datos de firma digital",
     })
   }
 
@@ -169,7 +157,9 @@ export async function verify_signature(
     })
   }
 
-  let verify_result: Awaited<ReturnType<typeof api_verify_signature>>
+  let verify_result: Awaited<
+    ReturnType<typeof api_verify_signature>
+  >
   try {
     verify_result = await api_verify_signature({
       CertificadoBase64:
@@ -180,25 +170,19 @@ export async function verify_signature(
     })
   } catch (error) {
     if (error instanceof ApiFetchError) {
-      if (
-        error.type === API_FETCH_ERROR.FETCH_FAILED
-      ) {
+      if (error.type === API_FETCH_ERROR.FETCH_FAILED) {
         return fail(400, {
           message:
             "No se pudo conectar al servicio de verificación",
         })
       }
-      if (
-        error.type === API_FETCH_ERROR.API_ERROR
-      ) {
+      if (error.type === API_FETCH_ERROR.API_ERROR) {
         return fail(400, {
-          message:
-            "Error en el servicio de verificación",
+          message: "Error en el servicio de verificación",
         })
       }
       if (
-        error.type ===
-        API_FETCH_ERROR.JSON_PARSE_FAILED
+        error.type === API_FETCH_ERROR.JSON_PARSE_FAILED
       ) {
         return fail(400, {
           message:

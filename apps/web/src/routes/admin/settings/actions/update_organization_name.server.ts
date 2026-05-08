@@ -5,7 +5,11 @@ import { normalize_input } from "$lib/server/form"
 import { logger } from "$lib/telemetry/logger"
 
 const InputSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
+  name: v.pipe(
+    v.string(),
+    v.minLength(1),
+    v.maxLength(100),
+  ),
 })
 
 export async function update_organization_name(

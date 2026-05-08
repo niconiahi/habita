@@ -9,17 +9,16 @@
   import { ACTION } from "./actions/action"
   import type { ActionData, PageData } from "./$types"
 
-  let {
-    data,
-    form,
-  }: { data: PageData; form: ActionData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
 
   let invite_dialog_element: HTMLDialogElement | undefined =
     $state()
   let edit_dialog_element: HTMLDialogElement | undefined =
     $state()
-  let destroy_dialog_element: HTMLDialogElement | undefined =
-    $state()
+  let destroy_dialog_element:
+    | HTMLDialogElement
+    | undefined = $state()
 
   function display_name(member: {
     name: string | null
@@ -32,7 +31,9 @@
     return composed || member.email
   }
 
-  function format_expires(expires_at: Date | string): string {
+  function format_expires(
+    expires_at: Date | string,
+  ): string {
     const expires_ms = new Date(expires_at).getTime()
     const days = Math.ceil(
       (expires_ms - Date.now()) / (1000 * 60 * 60 * 24),
@@ -48,7 +49,8 @@
     <Breadcrumb.Link href="/admin/teams"
       >Equipos</Breadcrumb.Link
     >
-    <Breadcrumb.Current>{data.team.name}</Breadcrumb.Current>
+    <Breadcrumb.Current>{data.team.name}</Breadcrumb.Current
+    >
   </Breadcrumb.Root>
   <div class="header">
     <h1 class="heading-md title">{data.team.name}</h1>
@@ -110,10 +112,7 @@
                     name="invitation_id"
                     value={invitation.id}
                   />
-                  <Button
-                    variant="secondary"
-                    type="submit"
-                  >
+                  <Button variant="secondary" type="submit">
                     Cancelar invitación
                   </Button>
                 </form>
@@ -193,7 +192,9 @@
         }}
       >
         <Formulary.Field>
-          <Formulary.Label for="email">Email</Formulary.Label>
+          <Formulary.Label for="email"
+            >Email</Formulary.Label
+          >
           <input
             type="email"
             id="email"
@@ -203,7 +204,8 @@
           />
           {#if form?.errors?.nested?.email?.[0]}
             <Formulary.Error
-              >{form.errors.nested.email[0]}</Formulary.Error
+              >{form.errors.nested
+                .email[0]}</Formulary.Error
             >
           {/if}
         </Formulary.Field>
@@ -231,7 +233,8 @@
   {#snippet children({ close })}
     <Dialog.Content>
       <Dialog.Header>
-        <Dialog.Title>Editar nombre del equipo</Dialog.Title>
+        <Dialog.Title>Editar nombre del equipo</Dialog.Title
+        >
         <Dialog.Close onclick={close} />
       </Dialog.Header>
       <form
@@ -246,7 +249,9 @@
         }}
       >
         <Formulary.Field>
-          <Formulary.Label for="name">Nombre</Formulary.Label>
+          <Formulary.Label for="name"
+            >Nombre</Formulary.Label
+          >
           <input
             type="text"
             id="name"
@@ -379,7 +384,10 @@
   }
 
   .success-banner {
-    color: var(--color-text-success, var(--color-text-body));
+    color: var(
+      --color-text-success,
+      var(--color-text-body)
+    );
     background-color: var(
       --color-surface-success,
       var(--color-absolute-white)
@@ -388,7 +396,10 @@
       var(--dimension-spacing-4);
     border-radius: var(--dimension-radius-2);
     border: 1px solid
-      var(--color-border-success, var(--color-border-primary));
+      var(
+        --color-border-success,
+        var(--color-border-primary)
+      );
   }
 
   .form {

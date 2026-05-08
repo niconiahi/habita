@@ -57,11 +57,7 @@ export async function create_contract(
       })
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }

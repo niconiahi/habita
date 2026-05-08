@@ -42,25 +42,23 @@ export async function reorder_floors(
     .sort((a, b) => a - b)
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      for (let i = 0; i < floor_ids.length; i++) {
-        await tx
-          .updateTable("floor")
-          .set({
-            number: sorted_numbers[i],
-            updated_at: now,
-          })
-          .where("floor.id", "=", floor_ids[i])
-          .execute()
-      }
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        for (let i = 0; i < floor_ids.length; i++) {
+          await tx
+            .updateTable("floor")
+            .set({
+              number: sorted_numbers[i],
+              updated_at: now,
+            })
+            .where("floor.id", "=", floor_ids[i])
+            .execute()
+        }
+      })
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }

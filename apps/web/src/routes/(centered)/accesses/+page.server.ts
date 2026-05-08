@@ -17,9 +17,7 @@ export const load: PageServerLoad = async ({
   return { properties, organizations }
 }
 
-async function fetch_user_organizations(
-  user_id: number,
-) {
+async function fetch_user_organizations(user_id: number) {
   return query_builder
     .selectFrom("member")
     .innerJoin(

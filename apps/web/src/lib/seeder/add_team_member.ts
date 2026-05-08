@@ -16,8 +16,6 @@ export async function add_team_member(
       created_at: now,
     })
     .execute()
-  console.log(
-    `added user ${user_id} to team ${team_id}`,
-  )
+  console.log(`added user ${user_id} to team ${team_id}`)
   return id
 }

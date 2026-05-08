@@ -157,11 +157,7 @@ async function notify_no_available_slots(
     existing = await kv.get(dedup_key)
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -174,11 +170,7 @@ async function notify_no_available_slots(
     manager = await fetch_property_manager(property_id)
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -200,11 +192,7 @@ async function notify_no_available_slots(
     location = await fetch_property_location(property_id)
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -228,9 +216,7 @@ async function notify_no_available_slots(
       .insertInto("notification")
       .values({
         type: notification_type,
-        href: compose_no_available_slots_href(
-          property_id,
-        ),
+        href: compose_no_available_slots_href(property_id),
         property_id,
         created_at: now_date,
         updated_at: now_date,
@@ -245,11 +231,7 @@ async function notify_no_available_slots(
       .executeTakeFirstOrThrow()
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -271,20 +253,20 @@ async function notify_no_available_slots(
 
   const visits_url = `${get_origin()}${compose_no_available_slots_href(property_id)}`
   try {
-    await publish_send_no_slots_alert(property_id, user.id, {
-      manager_email: manager.email,
-      manager_name: decrypt(manager.name),
-      visitant_name: user.name ?? "Visitante",
-      property_address: display_location(location),
-      visits_url,
-    })
+    await publish_send_no_slots_alert(
+      property_id,
+      user.id,
+      {
+        manager_email: manager.email,
+        manager_name: decrypt(manager.name),
+        visitant_name: user.name ?? "Visitante",
+        property_address: display_location(location),
+        visits_url,
+      },
+    )
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }
@@ -295,11 +277,7 @@ async function notify_no_available_slots(
     await kv.set(dedup_key, "1", NO_SLOTS_ALERT_TTL_SECONDS)
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(
-        error.message,
-        { property_id },
-        error,
-      )
+      logger.error(error.message, { property_id }, error)
     } else {
       logger.unknown(error)
     }

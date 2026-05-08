@@ -27,30 +27,36 @@ export async function toggle_tag(
   const input = input_validation.output
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      const existing = await tx
-        .selectFrom("property_tag")
-        .select("property_tag.id")
-        .where("property_tag.property_id", "=", property_id)
-        .where("property_tag.type", "=", input.type)
-        .executeTakeFirst()
-      if (existing) {
-        await tx
-          .deleteFrom("property_tag")
-          .where("property_tag.id", "=", existing.id)
-          .execute()
-      } else {
-        await tx
-          .insertInto("property_tag")
-          .values({
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const existing = await tx
+          .selectFrom("property_tag")
+          .select("property_tag.id")
+          .where(
+            "property_tag.property_id",
+            "=",
             property_id,
-            type: input.type,
-            created_at: now,
-            updated_at: now,
-          })
-          .execute()
-      }
-    })
+          )
+          .where("property_tag.type", "=", input.type)
+          .executeTakeFirst()
+        if (existing) {
+          await tx
+            .deleteFrom("property_tag")
+            .where("property_tag.id", "=", existing.id)
+            .execute()
+        } else {
+          await tx
+            .insertInto("property_tag")
+            .values({
+              property_id,
+              type: input.type,
+              created_at: now,
+              updated_at: now,
+            })
+            .execute()
+        }
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

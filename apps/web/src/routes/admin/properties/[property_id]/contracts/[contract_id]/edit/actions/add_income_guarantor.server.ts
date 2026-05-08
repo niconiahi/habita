@@ -28,28 +28,30 @@ export async function add_income_guarantor(
   const input = input_validation.output
 
   try {
-    await query_builder.transaction().execute(async (tx) => {
-      const income_warranty = await tx
-        .selectFrom("income_warranty")
-        .select("id")
-        .where(
-          "income_warranty.warranty_id",
-          "=",
-          input.warranty_id,
-        )
-        .executeTakeFirstOrThrow()
-      await tx
-        .insertInto("income_warranty_guarantor")
-        .values({
-          income_warranty_id: income_warranty.id,
-          guarantor_name: input.guarantor_name,
-          guarantor_dni: input.guarantor_dni,
-          guarantor_email: input.guarantor_email,
-          created_at: now,
-          updated_at: now,
-        })
-        .execute()
-    })
+    await query_builder
+      .transaction()
+      .execute(async (tx) => {
+        const income_warranty = await tx
+          .selectFrom("income_warranty")
+          .select("id")
+          .where(
+            "income_warranty.warranty_id",
+            "=",
+            input.warranty_id,
+          )
+          .executeTakeFirstOrThrow()
+        await tx
+          .insertInto("income_warranty_guarantor")
+          .values({
+            income_warranty_id: income_warranty.id,
+            guarantor_name: input.guarantor_name,
+            guarantor_dni: input.guarantor_dni,
+            guarantor_email: input.guarantor_email,
+            created_at: now,
+            updated_at: now,
+          })
+          .execute()
+      })
   } catch (error) {
     if (error instanceof Error) {
       logger.error(

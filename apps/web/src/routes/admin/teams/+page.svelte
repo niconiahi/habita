@@ -8,10 +8,8 @@
   import { ACTION } from "./actions/action"
   import type { ActionData, PageData } from "./$types"
 
-  let {
-    data,
-    form,
-  }: { data: PageData; form: ActionData } = $props()
+  let { data, form }: { data: PageData; form: ActionData } =
+    $props()
 
   let dialog_element: HTMLDialogElement | undefined =
     $state()
@@ -59,7 +57,9 @@
             </Table.Cell>
             <Table.Cell>{team.member_count}</Table.Cell>
             <Table.Cell
-              >{format_short_date(team.created_at)}</Table.Cell
+              >{format_short_date(
+                team.created_at,
+              )}</Table.Cell
             >
           </Table.Row>
         {/each}
@@ -87,7 +87,9 @@
         }}
       >
         <Formulary.Field>
-          <Formulary.Label for="name">Nombre</Formulary.Label>
+          <Formulary.Label for="name"
+            >Nombre</Formulary.Label
+          >
           <input
             type="text"
             id="name"

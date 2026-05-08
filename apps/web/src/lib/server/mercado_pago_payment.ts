@@ -124,7 +124,10 @@ export async function create_preference(
     }
   }
 
-  console.log("[mp/lib] MP preferences API response", { status: response.status, ok: response.ok })
+  console.log("[mp/lib] MP preferences API response", {
+    status: response.status,
+    ok: response.ok,
+  })
   if (!response.ok) {
     const error_text = await response.text()
     console.log("[mp/lib] MP API non-OK body", error_text)

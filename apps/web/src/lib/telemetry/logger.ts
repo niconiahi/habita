@@ -75,9 +75,7 @@ function unknown(thrown: unknown) {
       ? thrown.message
       : String(thrown)
   const synthetic_error =
-    thrown instanceof Error
-      ? thrown
-      : new Error(message)
+    thrown instanceof Error ? thrown : new Error(message)
 
   error("unknown error caught", {}, synthetic_error)
 }
