@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { COURT, get_court_label } from "$lib/court"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
   import { update_contract_jurisdiction } from "../forms/update_contract_jurisdiction.remote"
@@ -14,13 +15,20 @@
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "jurisdiction")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle("sections", "jurisdiction", event)}
+  name="section"
+  open={is_disclosure_open("section", "twenty_one")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "twenty_one", event)}
   title="Sección 21: jurisdicción"
 >
-  <form {...update_contract_jurisdiction}>
+  <form
+    {...update_contract_jurisdiction.enhance(
+      async ({ submit }) => {
+        const ok = await submit()
+        if (ok) await invalidateAll()
+      },
+    )}
+  >
     <input
       type="hidden"
       name="contract_id"

@@ -1,29 +1,31 @@
 <script lang="ts">
+  import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import {
-    handle_disclosure_toggle,
+    handle_disclosure_click,
     is_disclosure_open,
   } from "../disclosure_url"
-  import { update_contract_early_termination } from "../forms/update_contract_early_termination.remote"
+  import { update_contract_return } from "../forms/update_contract_return.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
 </script>
 
 <Disclosure
-  name="sections"
-  open={is_disclosure_open("sections", "early_termination")}
-  ontoggle={(event) =>
-    handle_disclosure_toggle(
-      "sections",
-      "early_termination",
-      event,
-    )}
-  title="Sección 15: recesión anticipada"
+  name="section"
+  open={is_disclosure_open("section", "fourteen")}
+  onclick={(event) =>
+    handle_disclosure_click("section", "fourteen", event)}
+  title="Sección 14: devoluciones"
 >
-  <form {...update_contract_early_termination}>
+  <form
+    {...update_contract_return.enhance(async ({ submit }) => {
+      const ok = await submit()
+      if (ok) await invalidateAll()
+    })}
+  >
     <input
       type="hidden"
       name="contract_id"
@@ -36,20 +38,17 @@
     />
     <div class="form-fields">
       <div class="form-field">
-        <label for="early_termination">días de preaviso</label>
+        <label for="percentage_return">porcentaje</label>
         <input
+          id="percentage_return"
+          name="percentage_return"
           type="number"
-          id="early_termination"
-          name="early_termination"
-          value={data.contract.early_termination ?? ""}
-          min="0"
+          value={data.contract.percentage_return ?? ""}
         />
       </div>
     </div>
     <div class="form-actions">
-      <Formulary.Submission
-        form={update_contract_early_termination}
-      >
+      <Formulary.Submission form={update_contract_return}>
         {#snippet children({ is_busy, is_done })}
           <Button
             variant="primary"
@@ -59,8 +58,8 @@
             <Formulary.SubmissionLabel
               is_busy={is_busy()}
               is_done={is_done()}
-              idle="Guardar recesión anticipada"
-              busy="Guardando recesión anticipada..."
+              idle="Guardar porcentaje"
+              busy="Guardando porcentaje..."
               done="Guardado"
             />
           </Button>
