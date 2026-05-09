@@ -4,21 +4,25 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { COURT, get_court_label } from "$lib/court"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { update_contract_jurisdiction } from "../forms/update_contract_jurisdiction.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 </script>
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "twenty_one")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "twenty_one", event)}
+  open={(await current) === "twenty_one"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "twenty_one" ? "" : "twenty_one",
+    })
+  }}
   title="Sección 21: jurisdicción"
 >
   <form

@@ -3,21 +3,25 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { update_contract_payment } from "../forms/update_contract_payment.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 </script>
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "eight")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "eight", event)}
+  open={(await current) === "eight"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "eight" ? "" : "eight",
+    })
+  }}
   title="Sección 8: forma de pago"
 >
   <form

@@ -11,21 +11,25 @@
     ESCALATION_TYPE,
     get_escalation_label,
   } from "$lib/escalation_type"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { update_contract_canon } from "../forms/update_contract_canon.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 </script>
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "seven")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "seven", event)}
+  open={(await current) === "seven"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "seven" ? "" : "seven",
+    })
+  }}
   title="Sección 7: canon locativo"
 >
   <form
