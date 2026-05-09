@@ -3,21 +3,25 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { update_contract_return } from "../forms/update_contract_return.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 </script>
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "fourteen")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "fourteen", event)}
+  open={(await current) === "fourteen"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "fourteen" ? "" : "fourteen",
+    })
+  }}
   title="Sección 14: devoluciones"
 >
   <form

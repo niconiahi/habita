@@ -9,10 +9,7 @@
     WARRANTY_TYPE,
     get_warranty_type_label,
   } from "$lib/warranty_type"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { create_income_warranty } from "../forms/create_income_warranty.remote"
   import { create_property_warranty } from "../forms/create_property_warranty.remote"
   import { create_surety_warranty } from "../forms/create_surety_warranty.remote"
@@ -24,6 +21,8 @@
   import GuarantorRow from "./guarantor_row.svelte"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 
   let selected_warranty_type = $state(
     untrack(() => data.warranty?.type ?? ""),
@@ -276,9 +275,14 @@
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "seventeen")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "seventeen", event)}
+  open={(await current) === "seventeen"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "seventeen" ? "" : "seventeen",
+    })
+  }}
   title="Sección 17: garantía"
 >
   {#if !data.warranty}
