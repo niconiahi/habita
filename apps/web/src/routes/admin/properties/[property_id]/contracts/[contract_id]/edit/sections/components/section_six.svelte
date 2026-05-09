@@ -4,14 +4,13 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { format_date_for_input } from "$lib/date"
-  import {
-    handle_disclosure_click,
-    is_disclosure_open,
-  } from "../disclosure_url"
+  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
   import { update_contract_term } from "../forms/update_contract_term.remote"
   import type { PageData } from "../$types"
 
   let { data }: { data: PageData } = $props()
+
+  const current = get_current_disclosure("sections")
 
   const min_date = format_date_for_input(new Date())
   const start_field = update_contract_term.fields.start_date
@@ -20,9 +19,14 @@
 
 <Disclosure
   name="section"
-  open={is_disclosure_open("section", "six")}
-  onclick={(event) =>
-    handle_disclosure_click("section", "six", event)}
+  open={(await current) === "six"}
+  onclick={(event) => {
+    event.preventDefault()
+    set_current_disclosure({
+      key: "sections",
+      value: current.current === "six" ? "" : "six",
+    })
+  }}
   title="Sección 6: plazo"
 >
   <form
