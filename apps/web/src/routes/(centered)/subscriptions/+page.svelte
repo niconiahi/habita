@@ -82,7 +82,6 @@
                             idle="Pagar"
                             busy="Pagando..."
                           done="Pagado"
-                          error="No se pudo pagar"
                           />
                         </Button>
                       {/snippet}

@@ -6,7 +6,7 @@
   const MIN_BUSY_DURATION_MS = 400
   const TERMINAL_DURATION_MS = 1500
 
-  type SubmitState = "idle" | "busy" | "done" | "error"
+  type SubmitState = "idle" | "busy" | "done"
 
   interface Props
     extends Omit<HTMLFormAttributes, "children"> {
@@ -30,7 +30,6 @@
   const live_message = $derived.by(() => {
     if (submit_state === "busy") return "Enviando"
     if (submit_state === "done") return "Guardado"
-    if (submit_state === "error") return "No se pudo guardar"
     return ""
   })
 </script>
@@ -54,15 +53,16 @@
           )
         }
       }
-      submit_state =
+      const succeeded =
         result.type === "success" ||
         result.type === "redirect"
-          ? "done"
-          : "error"
-      revert_timer = setTimeout(() => {
-        submit_state = "idle"
-        revert_timer = null
-      }, TERMINAL_DURATION_MS)
+      submit_state = succeeded ? "done" : "idle"
+      if (succeeded) {
+        revert_timer = setTimeout(() => {
+          submit_state = "idle"
+          revert_timer = null
+        }, TERMINAL_DURATION_MS)
+      }
       started_at = null
     }
   }}

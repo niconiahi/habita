@@ -1,15 +1,14 @@
 <script lang="ts">
-  type SubmitState = "idle" | "busy" | "done" | "error"
+  type SubmitState = "idle" | "busy" | "done"
 
   interface Props {
     state: SubmitState
     idle: string
     busy: string
     done: string
-    error: string
   }
 
-  let { state, idle, busy, done, error }: Props = $props()
+  let { state, idle, busy, done }: Props = $props()
 </script>
 
 <span class="stack">
@@ -34,13 +33,6 @@
   >
     {done} ✓
   </span>
-  <span
-    class="label error"
-    class:hidden={state !== "error"}
-    aria-hidden={state !== "error"}
-  >
-    {error} ✕
-  </span>
 </span>
 
 <style>
@@ -55,9 +47,6 @@
     visibility: hidden;
   }
   .done {
-    color: var(--button-primary-fg-hover);
-  }
-  .error {
     color: var(--button-primary-fg-hover);
   }
 </style>
