@@ -1,0 +1,11 @@
+export const CODE_FILE_PATH = "code.file.path"
+export const CODE_LINE_NUMBER = "code.line.number"
+export const CODE_COLUMN_NUMBER = "code.column.number"
+export const CODE_FUNCTION_NAME = "code.function.name"
+export const CODE_STACKTRACE = "code.stacktrace"
+
+export const VCS_REF_HEAD_REVISION = "vcs.ref.head.revision"
+export const VCS_REF_HEAD_NAME = "vcs.ref.head.name"
+export const VCS_REF_HEAD_TYPE = "vcs.ref.head.type"
+export const VCS_REPOSITORY_URL_FULL = "vcs.repository.url.full"
+export const VCS_REPOSITORY_NAME = "vcs.repository.name"
