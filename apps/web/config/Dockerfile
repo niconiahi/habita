@@ -63,6 +63,7 @@ COPY package.json pnpm-lock.yaml ./
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/instrument.mjs ./instrument.mjs
 
 COPY --from=builder /app/db ./db
 COPY --from=builder /app/kysely.config.ts ./
@@ -76,4 +77,4 @@ USER appuser
 
 EXPOSE 3000
 
-CMD ["node", "build"]
+CMD ["node", "--import", "./instrument.mjs", "build"]
