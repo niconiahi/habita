@@ -38,6 +38,8 @@
     create_contract_item_file.for(contract_item.id),
   )
 
+  const issues = $derived(update_form.fields.name.issues())
+
   function handle_file_click() {
     file_input?.click()
   }
@@ -74,9 +76,11 @@
           name="name"
           value={contract_item.name}
         />
-        {#each update_form.fields.name.issues() as issue}
-          <span class="form-error">{issue.message}</span>
-        {/each}
+        {#if issues}
+          {#each issues as issue}
+            <span class="form-error">{issue.message}</span>
+          {/each}
+        {/if}
       </div>
       <div class="form-field">
         <label for={`state_${contract_item.id}`}

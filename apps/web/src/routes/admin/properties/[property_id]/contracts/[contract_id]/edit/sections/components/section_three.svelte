@@ -11,6 +11,10 @@
   let { data }: { data: PageData } = $props()
 
   const current = get_current_disclosure("sections")
+
+  const issues = $derived(
+    update_contract_destiny.fields.destiny.issues(),
+  )
 </script>
 
 <Disclosure
@@ -55,9 +59,11 @@
             {get_property_destiny_label(destiny)}
           </label>
         {/each}
-        {#each update_contract_destiny.fields.destiny.issues() as issue}
-          <span class="form-error">{issue.message}</span>
-        {/each}
+        {#if issues}
+          {#each issues as issue}
+            <span class="form-error">{issue.message}</span>
+          {/each}
+        {/if}
       </div>
     </div>
     <div class="form-actions">

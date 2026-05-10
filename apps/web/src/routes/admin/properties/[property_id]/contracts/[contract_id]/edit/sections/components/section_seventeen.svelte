@@ -31,6 +31,14 @@
     $state()
 </script>
 
+{#snippet errors(issues: { message: string }[] | undefined)}
+  {#if issues}
+    {#each issues as issue}
+      <span class="form-error">{issue.message}</span>
+    {/each}
+  {/if}
+{/snippet}
+
 {#snippet TypeSelect()}
   <div class="form-field">
     <label for="warranty_type">tipo de garantía</label>
@@ -81,9 +89,7 @@
       value={data.warranty?.property_warranty
         ?.guarantor_name ?? ""}
     />
-    {#each fields.guarantor_name.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_name.issues())}
   </div>
   <div class="form-field">
     <label for="guarantor_dni">DNI del garante</label>
@@ -94,9 +100,7 @@
       value={data.warranty?.property_warranty
         ?.guarantor_dni ?? ""}
     />
-    {#each fields.guarantor_dni.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_dni.issues())}
   </div>
   <div class="form-field">
     <label for="guarantor_email">email del garante</label>
@@ -107,9 +111,7 @@
       value={data.warranty?.property_warranty
         ?.guarantor_email ?? ""}
     />
-    {#each fields.guarantor_email.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_email.issues())}
   </div>
   <LocationInput
     default_value={data.warranty?.property_warranty
@@ -120,9 +122,7 @@
     default_lon={data.warranty?.property_warranty
       ?.longitude ?? ""}
   />
-  {#each fields.location.issues() as issue}
-    <span class="form-error">{issue.message}</span>
-  {/each}
+  {@render errors(fields.location.issues())}
   <div class="form-field">
     <label for="cadastral_district">circunscripción</label>
     <input
@@ -132,9 +132,7 @@
       value={data.warranty?.property_warranty
         ?.cadastral_district ?? ""}
     />
-    {#each fields.cadastral_district.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.cadastral_district.issues())}
   </div>
   <div class="form-field">
     <label for="cadastral_section">sección</label>
@@ -145,9 +143,7 @@
       value={data.warranty?.property_warranty
         ?.cadastral_section ?? ""}
     />
-    {#each fields.cadastral_section.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.cadastral_section.issues())}
   </div>
   <div class="form-field">
     <label for="cadastral_block">manzana</label>
@@ -158,9 +154,7 @@
       value={data.warranty?.property_warranty
         ?.cadastral_block ?? ""}
     />
-    {#each fields.cadastral_block.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.cadastral_block.issues())}
   </div>
   <div class="form-field">
     <label for="cadastral_parcel">parcela</label>
@@ -171,9 +165,7 @@
       value={data.warranty?.property_warranty
         ?.cadastral_parcel ?? ""}
     />
-    {#each fields.cadastral_parcel.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.cadastral_parcel.issues())}
   </div>
   <div class="form-field">
     <label for="property_tax_id">partida inmobiliaria</label>
@@ -184,9 +176,7 @@
       value={data.warranty?.property_warranty
         ?.property_tax_id ?? ""}
     />
-    {#each fields.property_tax_id.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.property_tax_id.issues())}
   </div>
 {/snippet}
 
@@ -202,9 +192,7 @@
       value={data.warranty?.surety_warranty?.guarantor_name ??
         ""}
     />
-    {#each fields.guarantor_name.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_name.issues())}
   </div>
   <div class="form-field">
     <label for="guarantor_dni">DNI del garante</label>
@@ -215,9 +203,7 @@
       value={data.warranty?.surety_warranty?.guarantor_dni ??
         ""}
     />
-    {#each fields.guarantor_dni.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_dni.issues())}
   </div>
   <div class="form-field">
     <label for="guarantor_email">email del garante</label>
@@ -228,9 +214,7 @@
       value={data.warranty?.surety_warranty?.guarantor_email ??
         ""}
     />
-    {#each fields.guarantor_email.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.guarantor_email.issues())}
   </div>
   <div class="form-field">
     <label for="company_name">nombre de la aseguradora</label>
@@ -241,9 +225,7 @@
       value={data.warranty?.surety_warranty?.company_name ??
         ""}
     />
-    {#each fields.company_name.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.company_name.issues())}
   </div>
   <div class="form-field">
     <label for="policy_number">número de póliza</label>
@@ -254,9 +236,7 @@
       value={data.warranty?.surety_warranty?.policy_number ??
         ""}
     />
-    {#each fields.policy_number.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.policy_number.issues())}
   </div>
   <div class="form-field">
     <label for="company_email">email de la aseguradora</label>
@@ -267,9 +247,7 @@
       value={data.warranty?.surety_warranty?.company_email ??
         ""}
     />
-    {#each fields.company_email.issues() as issue}
-      <span class="form-error">{issue.message}</span>
-    {/each}
+    {@render errors(fields.company_email.issues())}
   </div>
 {/snippet}
 
