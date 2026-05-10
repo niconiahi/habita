@@ -340,7 +340,6 @@
                         idle="Guardar habitación"
                         busy="Guardando habitación..."
                       done="Guardado"
-                      error="No se pudo guardar"
                       />
                     </Button>
                     <Button
@@ -356,7 +355,6 @@
                         idle="Eliminar habitación"
                         busy="Eliminando habitación..."
                       done="Eliminado"
-                      error="No se pudo eliminar"
                       />
                     </Button>
                     <Button
@@ -508,7 +506,6 @@
                   idle="Guardar mapa"
                   busy="Guardando mapa..."
                 done="Guardado"
-                error="No se pudo guardar"
                 />
               </Button>
             </Formulary.Actions>

@@ -378,7 +378,6 @@
                 idle="Activar contrato"
                 busy="Activando contrato..."
               done="Activado"
-              error="No se pudo activar"
               />
             </Button>
           {/snippet}

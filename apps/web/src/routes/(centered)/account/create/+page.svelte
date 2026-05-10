@@ -153,7 +153,6 @@
                   idle="Crear cuenta"
                   busy="Creando cuenta..."
                 done="Creado"
-                error="No se pudo crear"
                 />
               </Button>
             </div>

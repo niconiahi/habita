@@ -115,7 +115,6 @@
               idle="Crear propiedad"
               busy="Creando propiedad..."
             done="Creado"
-            error="No se pudo crear"
             />
           </Button>
         </Formulary.Actions>

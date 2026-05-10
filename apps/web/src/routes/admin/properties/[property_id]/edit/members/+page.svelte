@@ -107,7 +107,6 @@
                   idle="Invitar dueño"
                   busy="Invitando dueño..."
                 done="Invitado"
-                error="No se pudo invitar"
                 />
               </Button>
             </Formulary.Actions>

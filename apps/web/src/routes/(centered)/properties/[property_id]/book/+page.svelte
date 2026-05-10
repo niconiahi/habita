@@ -234,7 +234,6 @@
                     idle="Confirmar"
                     busy="Confirmando..."
                   done="Confirmado"
-                  error="No se pudo confirmar"
                   />
                 </Button>
               {/snippet}

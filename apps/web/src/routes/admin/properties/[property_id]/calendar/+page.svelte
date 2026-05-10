@@ -93,7 +93,6 @@
               idle="Crear horario"
               busy="Creando horario..."
             done="Creado"
-            error="No se pudo crear"
             />
           </Button>
         </Formulary.Actions>
@@ -155,7 +154,6 @@
                           idle="Eliminar"
                           busy="Eliminando..."
                         done="Eliminado"
-                        error="No se pudo eliminar"
                         />
                       </Button>
                     {/snippet}

@@ -82,7 +82,6 @@
             idle="Crear contrato"
             busy="Creando contrato..."
           done="Creado"
-          error="No se pudo crear"
           />
         </Button>
       </Formulary.Actions>

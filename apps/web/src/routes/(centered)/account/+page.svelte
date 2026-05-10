@@ -84,7 +84,6 @@
                 idle="Guardar información"
                 busy="Guardando información..."
               done="Guardado"
-              error="No se pudo guardar"
               />
             </Button>
           </div>
