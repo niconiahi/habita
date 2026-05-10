@@ -47,7 +47,6 @@
               idle="Crear período"
               busy="Creando período..."
             done="Creado"
-            error="No se pudo crear"
             />
           </Button>
         </Formulary.Actions>
@@ -92,7 +91,6 @@
                       idle="Guardar precio"
                       busy="Guardando precio..."
                     done="Guardado"
-                    error="No se pudo guardar"
                     />
                   </Button>
                 </Formulary.Actions>

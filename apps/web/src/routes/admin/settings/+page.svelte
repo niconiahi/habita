@@ -41,7 +41,6 @@
               idle="Guardar"
               busy="Guardando..."
             done="Guardado"
-            error="No se pudo guardar"
             />
           </Button>
         </Formulary.Actions>
