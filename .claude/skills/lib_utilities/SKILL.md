@@ -628,6 +628,21 @@ Isomorphic logger for server and client. Uses OpenTelemetry log API.
 - `logger.error(message: string, attributes?: LogAttributes, thrown_error?: Error): void`
 - `logger.unknown(thrown: unknown): void` — handles non-Error values in catch blocks, coerces to Error and logs at error severity
 
+## telemetry/semconv.ts
+
+OpenTelemetry attribute key constants. Indirection layer over `code.*` (Stable) and `vcs.*` (Development) namespaces. All telemetry code references these constants instead of inline strings.
+
+- `CODE_FILE_PATH`, `CODE_LINE_NUMBER`, `CODE_COLUMN_NUMBER`, `CODE_FUNCTION_NAME`, `CODE_STACKTRACE`
+- `VCS_REF_HEAD_REVISION`, `VCS_REF_HEAD_NAME`, `VCS_REF_HEAD_TYPE`, `VCS_REPOSITORY_URL_FULL`, `VCS_REPOSITORY_NAME`
+
+## telemetry/parse_stack_frame.ts
+
+Parses `Error.stack` into normalized frames. Shared between server logger, client logger, and observability symbolicator.
+
+- `StackFrame` — `{ file, line, column, function_name }`
+- `parse_stack_frames(stack: string): StackFrame[]`
+- `normalize_path(file_path: string): string` — canonicalizes to repo-relative POSIX path
+
 ## telemetry/sdk.ts
 
 Server-side OpenTelemetry initialization. Called in `hooks.server.ts` init hook before any HTTP calls.
