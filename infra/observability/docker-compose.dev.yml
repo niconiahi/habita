@@ -14,6 +14,8 @@ services:
   otel-collector:
     ports:
       - "4318:4318"
+    volumes:
+      - ./otel-collector-config.dev.yaml:/etc/otelcol-contrib/config.yaml:ro
     deploy:
       resources:
         limits:

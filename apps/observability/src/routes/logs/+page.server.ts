@@ -9,7 +9,7 @@ import type { PageServerLoad } from "./$types"
 
 const LogRowSchema = v.object({
   Timestamp: v.string(),
-  SeverityText: v.string(),
+  SeverityNumber: v.number(),
   ServiceName: v.string(),
   Body: v.string(),
   TraceId: v.string(),
@@ -19,6 +19,26 @@ const LogRowSchema = v.object({
 const ServiceRowSchema = v.object({
   ServiceName: v.string(),
 })
+
+const SEVERITY = {
+  TRACE: { min: 1, max: 4 },
+  DEBUG: { min: 5, max: 8 },
+  INFO: { min: 9, max: 12 },
+  WARN: { min: 13, max: 16 },
+  ERROR: { min: 17, max: 20 },
+  FATAL: { min: 21, max: 24 },
+} as const
+
+type SeverityLabel = keyof typeof SEVERITY
+
+function get_severity_label(number: number): SeverityLabel {
+  for (const [label, range] of Object.entries(SEVERITY)) {
+    if (number >= range.min && number <= range.max) {
+      return label as SeverityLabel
+    }
+  }
+  return "INFO"
+}
 
 export const load: PageServerLoad = async ({
   locals,
@@ -48,13 +68,17 @@ export const load: PageServerLoad = async ({
       `ServiceName = '${escape_clickhouse(service)}'`,
     )
   }
-  if (severity) {
+  const severity_range =
+    severity in SEVERITY
+      ? SEVERITY[severity as SeverityLabel]
+      : null
+  if (severity_range) {
     conditions.push(
-      `SeverityText = '${escape_clickhouse(severity)}'`,
+      `SeverityNumber BETWEEN ${severity_range.min} AND ${severity_range.max}`,
     )
   }
 
-  const sql = `SELECT Timestamp, SeverityText, ServiceName, Body, TraceId, SpanId
+  const sql = `SELECT Timestamp, SeverityNumber, ServiceName, Body, TraceId, SpanId
     FROM otel_logs
     WHERE ${conditions.join(" AND ")}
     ORDER BY Timestamp DESC
@@ -76,7 +100,10 @@ export const load: PageServerLoad = async ({
   }
 
   return {
-    logs,
+    logs: logs.map((row) => ({
+      ...row,
+      severity: get_severity_label(row.SeverityNumber),
+    })),
     services: services_error
       ? []
       : services.map((s) => s.ServiceName),

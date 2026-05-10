@@ -107,7 +107,7 @@
           {#each data.logs as log, index}
             <tr
               class="row"
-              class:error-row={log.SeverityText === "ERROR"}
+              class:error-row={log.severity === "ERROR"}
               onclick={() => toggle_row(index)}
             >
               <td class="mono">
@@ -116,11 +116,11 @@
               <td>
                 <span
                   class="severity"
-                  class:severity-error={log.SeverityText === "ERROR"}
-                  class:severity-warn={log.SeverityText === "WARN"}
-                  class:severity-info={log.SeverityText === "INFO"}
+                  class:severity-error={log.severity === "ERROR"}
+                  class:severity-warn={log.severity === "WARN"}
+                  class:severity-info={log.severity === "INFO"}
                 >
-                  {log.SeverityText}
+                  {log.severity}
                 </span>
               </td>
               <td class="mono">{log.ServiceName}</td>
