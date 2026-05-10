@@ -55,7 +55,9 @@ FROM runtime AS production
 
 WORKDIR /app
 
+ARG COMMIT_SHA
 ENV NODE_ENV=production
+ENV COMMIT_SHA=$COMMIT_SHA
 
 RUN useradd -m -u 10001 appuser
 
