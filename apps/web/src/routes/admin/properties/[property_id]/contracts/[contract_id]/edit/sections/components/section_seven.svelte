@@ -20,6 +20,14 @@
   const current = get_current_disclosure("sections")
 </script>
 
+{#snippet errors(issues: { message: string }[] | undefined)}
+  {#if issues}
+    {#each issues as issue}
+      <span class="form-error">{issue.message}</span>
+    {/each}
+  {/if}
+{/snippet}
+
 <Disclosure
   name="section"
   open={(await current) === "seven"}
@@ -62,9 +70,9 @@
             >
           {/each}
         </select>
-        {#each update_contract_canon.fields.escalation_type.issues() as issue}
-          <span class="form-error">{issue.message}</span>
-        {/each}
+        {@render errors(
+          update_contract_canon.fields.escalation_type.issues(),
+        )}
       </div>
       <div class="form-field">
         <label for="escalation_duration">cada</label>
@@ -79,9 +87,9 @@
             >
           {/each}
         </select>
-        {#each update_contract_canon.fields.escalation_duration.issues() as issue}
-          <span class="form-error">{issue.message}</span>
-        {/each}
+        {@render errors(
+          update_contract_canon.fields.escalation_duration.issues(),
+        )}
       </div>
     </div>
     <div class="form-actions">

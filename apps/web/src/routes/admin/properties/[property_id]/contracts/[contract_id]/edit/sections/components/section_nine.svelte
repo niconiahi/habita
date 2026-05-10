@@ -10,6 +10,10 @@
   let { data }: { data: PageData } = $props()
 
   const current = get_current_disclosure("sections")
+
+  const issues = $derived(
+    update_contract_fine.fields.fine_amount.issues(),
+  )
 </script>
 
 <Disclosure
@@ -49,9 +53,11 @@
           type="number"
           value={data.contract.fine_amount ?? ""}
         />
-        {#each update_contract_fine.fields.fine_amount.issues() as issue}
-          <span class="form-error">{issue.message}</span>
-        {/each}
+        {#if issues}
+          {#each issues as issue}
+            <span class="form-error">{issue.message}</span>
+          {/each}
+        {/if}
       </div>
     </div>
     <div class="form-actions">
