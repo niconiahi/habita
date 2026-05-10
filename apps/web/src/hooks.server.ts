@@ -12,10 +12,8 @@ import { ensure_bucket } from "$lib/server/object_store"
 import { is_rate_limited } from "$lib/server/rate_limit"
 import { fetch_user_subscriptions_cached } from "$lib/server/subscription"
 import { SUBSCRIPTION_TYPE } from "$lib/subscription_type"
-import { init_telemetry } from "$lib/server/telemetry/sdk"
 
 export const init: ServerInit = async () => {
-  init_telemetry()
   await ensure_bucket()
 }
 
