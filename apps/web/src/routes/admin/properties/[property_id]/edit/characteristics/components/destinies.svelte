@@ -74,12 +74,26 @@
     </fieldset>
     {#if issues}
       {#each issues as issue}
-        <Formulary.Error>{issue.message}</Formulary.Error>
+        <span class="form-error">{issue.message}</span>
       {/each}
     {/if}
-    <Button variant="primary" type="submit">
-      Guardar destino
-    </Button>
+    <Formulary.Submission form={update_destinies}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={is_busy()}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Guardar destino"
+            busy="Guardando destino..."
+            done="Guardado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
   </form>
 </Disclosure>
 
