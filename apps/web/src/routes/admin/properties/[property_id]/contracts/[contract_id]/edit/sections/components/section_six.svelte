@@ -4,7 +4,10 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { format_date_for_input } from "$lib/date"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_term } from "../forms/update_contract_term.remote"
   import type { PageData } from "../$types"
 
@@ -59,6 +62,7 @@
               : "",
           )}
           min={min_date}
+          required
         />
         {#each start_field.issues() ?? [] as issue}
           <span class="form-error">{issue.message}</span>
@@ -77,6 +81,7 @@
               : "",
           )}
           min={start_field.value() || min_date}
+          required
         />
         {#each end_field.issues() ?? [] as issue}
           <span class="form-error">{issue.message}</span>

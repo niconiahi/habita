@@ -3,7 +3,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_return } from "../forms/update_contract_return.remote"
   import type { PageData } from "../$types"
 
@@ -19,16 +22,19 @@
     event.preventDefault()
     set_current_disclosure({
       key: "sections",
-      value: current.current === "fourteen" ? "" : "fourteen",
+      value:
+        current.current === "fourteen" ? "" : "fourteen",
     })
   }}
   title="Sección 14: devoluciones"
 >
   <form
-    {...update_contract_return.enhance(async ({ submit }) => {
-      const ok = await submit()
-      if (ok) await invalidateAll()
-    })}
+    {...update_contract_return.enhance(
+      async ({ submit }) => {
+        const ok = await submit()
+        if (ok) await invalidateAll()
+      },
+    )}
   >
     <input
       type="hidden"
@@ -47,6 +53,9 @@
           id="percentage_return"
           name="percentage_return"
           type="number"
+          step="0.1"
+          required
+          min="0.1"
           value={data.contract.percentage_return ?? ""}
         />
       </div>

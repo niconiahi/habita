@@ -9,7 +9,10 @@
     WARRANTY_TYPE,
     get_warranty_type_label,
   } from "$lib/warranty_type"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { create_income_warranty } from "../forms/create_income_warranty.remote"
   import { create_property_warranty } from "../forms/create_property_warranty.remote"
   import { create_surety_warranty } from "../forms/create_surety_warranty.remote"
@@ -45,6 +48,7 @@
     <select
       name="warranty_type"
       id="warranty_type"
+      required
       bind:value={selected_warranty_type}
     >
       <option value="">Seleccionar tipo</option>
@@ -86,6 +90,7 @@
       id="guarantor_name"
       name="guarantor_name"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.guarantor_name ?? ""}
     />
@@ -96,7 +101,13 @@
     <input
       id="guarantor_dni"
       name="guarantor_dni"
-      type="text"
+      type="number"
+      required
+      min="1000000"
+      max="99999999"
+      step="1"
+      title="El DNI debe tener 7 u 8 dígitos"
+      inputmode="numeric"
       value={data.warranty?.property_warranty
         ?.guarantor_dni ?? ""}
     />
@@ -108,6 +119,7 @@
       id="guarantor_email"
       name="guarantor_email"
       type="email"
+      required
       value={data.warranty?.property_warranty
         ?.guarantor_email ?? ""}
     />
@@ -117,8 +129,8 @@
     default_value={data.warranty?.property_warranty
       ? `${data.warranty.property_warranty.road} ${data.warranty.property_warranty.house_number}`
       : ""}
-    default_lat={data.warranty?.property_warranty?.latitude ??
-      ""}
+    default_lat={data.warranty?.property_warranty
+      ?.latitude ?? ""}
     default_lon={data.warranty?.property_warranty
       ?.longitude ?? ""}
   />
@@ -129,6 +141,7 @@
       id="cadastral_district"
       name="cadastral_district"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.cadastral_district ?? ""}
     />
@@ -140,6 +153,7 @@
       id="cadastral_section"
       name="cadastral_section"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.cadastral_section ?? ""}
     />
@@ -151,6 +165,7 @@
       id="cadastral_block"
       name="cadastral_block"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.cadastral_block ?? ""}
     />
@@ -162,17 +177,20 @@
       id="cadastral_parcel"
       name="cadastral_parcel"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.cadastral_parcel ?? ""}
     />
     {@render errors(fields.cadastral_parcel.issues())}
   </div>
   <div class="form-field">
-    <label for="property_tax_id">partida inmobiliaria</label>
+    <label for="property_tax_id">partida inmobiliaria</label
+    >
     <input
       id="property_tax_id"
       name="property_tax_id"
       type="text"
+      required
       value={data.warranty?.property_warranty
         ?.property_tax_id ?? ""}
     />
@@ -189,8 +207,9 @@
       id="guarantor_name"
       name="guarantor_name"
       type="text"
-      value={data.warranty?.surety_warranty?.guarantor_name ??
-        ""}
+      required
+      value={data.warranty?.surety_warranty
+        ?.guarantor_name ?? ""}
     />
     {@render errors(fields.guarantor_name.issues())}
   </div>
@@ -199,9 +218,15 @@
     <input
       id="guarantor_dni"
       name="guarantor_dni"
-      type="text"
-      value={data.warranty?.surety_warranty?.guarantor_dni ??
-        ""}
+      type="number"
+      required
+      min="1000000"
+      max="99999999"
+      step="1"
+      title="El DNI debe tener 7 u 8 dígitos"
+      inputmode="numeric"
+      value={data.warranty?.surety_warranty
+        ?.guarantor_dni ?? ""}
     />
     {@render errors(fields.guarantor_dni.issues())}
   </div>
@@ -211,17 +236,21 @@
       id="guarantor_email"
       name="guarantor_email"
       type="email"
-      value={data.warranty?.surety_warranty?.guarantor_email ??
-        ""}
+      required
+      value={data.warranty?.surety_warranty
+        ?.guarantor_email ?? ""}
     />
     {@render errors(fields.guarantor_email.issues())}
   </div>
   <div class="form-field">
-    <label for="company_name">nombre de la aseguradora</label>
+    <label for="company_name"
+      >nombre de la aseguradora</label
+    >
     <input
       id="company_name"
       name="company_name"
       type="text"
+      required
       value={data.warranty?.surety_warranty?.company_name ??
         ""}
     />
@@ -233,19 +262,23 @@
       id="policy_number"
       name="policy_number"
       type="text"
-      value={data.warranty?.surety_warranty?.policy_number ??
-        ""}
+      required
+      value={data.warranty?.surety_warranty
+        ?.policy_number ?? ""}
     />
     {@render errors(fields.policy_number.issues())}
   </div>
   <div class="form-field">
-    <label for="company_email">email de la aseguradora</label>
+    <label for="company_email"
+      >email de la aseguradora</label
+    >
     <input
       id="company_email"
       name="company_email"
       type="email"
-      value={data.warranty?.surety_warranty?.company_email ??
-        ""}
+      required
+      value={data.warranty?.surety_warranty
+        ?.company_email ?? ""}
     />
     {@render errors(fields.company_email.issues())}
   </div>
@@ -258,7 +291,8 @@
     event.preventDefault()
     set_current_disclosure({
       key: "sections",
-      value: current.current === "seventeen" ? "" : "seventeen",
+      value:
+        current.current === "seventeen" ? "" : "seventeen",
     })
   }}
   title="Sección 17: garantía"
@@ -319,7 +353,9 @@
           )}
         </div>
         <div class="form-actions">
-          <Formulary.Submission form={create_surety_warranty}>
+          <Formulary.Submission
+            form={create_surety_warranty}
+          >
             {#snippet children({ is_busy, is_done })}
               <Button
                 variant="primary"
@@ -353,7 +389,9 @@
           <p class="hint">Guardar para agregar garantes</p>
         </div>
         <div class="form-actions">
-          <Formulary.Submission form={create_income_warranty}>
+          <Formulary.Submission
+            form={create_income_warranty}
+          >
             {#snippet children({ is_busy, is_done })}
               <Button
                 variant="primary"
@@ -394,7 +432,9 @@
         )}
       </div>
       <div class="form-actions">
-        <Formulary.Submission form={update_property_warranty}>
+        <Formulary.Submission
+          form={update_property_warranty}
+        >
           {#snippet children({ is_busy, is_done })}
             <Button
               variant="primary"
@@ -425,7 +465,9 @@
       {@render HiddenIds()}
       <div class="form-fields">
         {@render TypeSelect()}
-        {@render SuretyFields(update_surety_warranty.fields)}
+        {@render SuretyFields(
+          update_surety_warranty.fields,
+        )}
       </div>
       <div class="form-actions">
         <Formulary.Submission form={update_surety_warranty}>
@@ -482,7 +524,8 @@
           <Button
             type="button"
             variant="secondary"
-            onclick={() => add_guarantor_dialog?.showModal()}
+            onclick={() =>
+              add_guarantor_dialog?.showModal()}
             >Agregar garante</Button
           >
         {/if}

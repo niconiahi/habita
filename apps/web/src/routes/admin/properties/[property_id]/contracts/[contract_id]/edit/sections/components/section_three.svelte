@@ -4,7 +4,10 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { get_property_destiny_label } from "$lib/property_destiny"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_destiny } from "../forms/update_contract_destiny.remote"
   import type { PageData } from "../$types"
 
@@ -30,10 +33,12 @@
   title="Sección 3: destino"
 >
   <form
-    {...update_contract_destiny.enhance(async ({ submit }) => {
-      const ok = await submit()
-      if (ok) await invalidateAll()
-    })}
+    {...update_contract_destiny.enhance(
+      async ({ submit }) => {
+        const ok = await submit()
+        if (ok) await invalidateAll()
+      },
+    )}
   >
     <input
       type="hidden"
@@ -48,13 +53,14 @@
     <div class="form-fields">
       <div class="form-field">
         <span class="field-label">Tipo</span>
-        {#each data.property.destinies as destiny}
+        {#each data.property.destinies as destiny, index}
           <label class="radio-label">
             <input
               type="radio"
               name="destiny"
               value={destiny}
-              checked={data.contract.destiny === destiny}
+              checked={data.contract.destiny === destiny ||
+                (data.contract.destiny === null && index === 0)}
             />
             {get_property_destiny_label(destiny)}
           </label>

@@ -3,7 +3,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_fine } from "../forms/update_contract_fine.remote"
   import type { PageData } from "../$types"
 
@@ -50,6 +53,9 @@
         <input
           id="fine_amount"
           name="fine_amount"
+          step="0.1"
+          required
+          min="0.1"
           type="number"
           value={data.contract.fine_amount ?? ""}
         />

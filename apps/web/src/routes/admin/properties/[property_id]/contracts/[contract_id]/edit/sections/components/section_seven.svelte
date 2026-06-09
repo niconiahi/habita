@@ -11,7 +11,10 @@
     ESCALATION_TYPE,
     get_escalation_label,
   } from "$lib/escalation_type"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_canon } from "../forms/update_contract_canon.remote"
   import type { PageData } from "../$types"
 
@@ -41,10 +44,12 @@
   title="Sección 7: canon locativo"
 >
   <form
-    {...update_contract_canon.enhance(async ({ submit }) => {
-      const ok = await submit()
-      if (ok) await invalidateAll()
-    })}
+    {...update_contract_canon.enhance(
+      async ({ submit }) => {
+        const ok = await submit()
+        if (ok) await invalidateAll()
+      },
+    )}
   >
     <input
       type="hidden"
@@ -62,6 +67,7 @@
         <select
           name="escalation_type"
           id="escalation_type"
+          required
           value={data.contract.escalation_type ?? ""}
         >
           {#each Object.values(ESCALATION_TYPE) as type}
@@ -79,6 +85,7 @@
         <select
           name="escalation_duration"
           id="escalation_duration"
+          required
           value={data.contract.escalation_duration ?? ""}
         >
           {#each DURATIONS as duration}

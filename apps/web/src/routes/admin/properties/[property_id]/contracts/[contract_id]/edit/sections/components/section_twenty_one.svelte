@@ -4,7 +4,10 @@
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
   import { COURT, get_court_label } from "$lib/court"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_jurisdiction } from "../forms/update_contract_jurisdiction.remote"
   import type { PageData } from "../$types"
 
@@ -20,7 +23,10 @@
     event.preventDefault()
     set_current_disclosure({
       key: "sections",
-      value: current.current === "twenty_one" ? "" : "twenty_one",
+      value:
+        current.current === "twenty_one"
+          ? ""
+          : "twenty_one",
     })
   }}
   title="Sección 21: jurisdicción"
@@ -49,6 +55,7 @@
         <select
           name="court_id"
           id="court_id"
+          required
           value={data.contract.court_id ?? ""}
         >
           {#each Object.values(COURT) as type}

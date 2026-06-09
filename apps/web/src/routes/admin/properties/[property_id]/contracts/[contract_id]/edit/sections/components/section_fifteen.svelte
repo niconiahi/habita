@@ -3,7 +3,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_early_termination } from "../forms/update_contract_early_termination.remote"
   import type { PageData } from "../$types"
 
@@ -44,13 +47,17 @@
     />
     <div class="form-fields">
       <div class="form-field">
-        <label for="early_termination">días de preaviso</label>
+        <label for="early_termination"
+          >días de preaviso</label
+        >
         <input
           type="number"
           id="early_termination"
+          step="1"
+          required
+          min="1"
           name="early_termination"
           value={data.contract.early_termination ?? ""}
-          min="0"
         />
       </div>
     </div>
