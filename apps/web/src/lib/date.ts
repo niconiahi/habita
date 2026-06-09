@@ -1,6 +1,9 @@
 import { tz } from "@date-fns/tz"
-import { format } from "date-fns"
+import { format, isValid, parse } from "date-fns"
 import * as v from "valibot"
+
+const INPUT_FORMAT = "yyyy-MM-dd'T'HH:mm"
+const ARGENTINA_TIMEZONE = "America/Argentina/Buenos_Aires"
 
 export const DateSchema = v.pipe(
   v.string(),
@@ -9,10 +12,27 @@ export const DateSchema = v.pipe(
   }),
 )
 
-const ARGENTINA_TIMEZONE = "America/Argentina/Buenos_Aires"
+export function RemoteDateSchema({
+  empty,
+  invalid,
+}: {
+  empty: string
+  invalid: string
+}) {
+  return v.pipe(
+    v.string(),
+    v.minLength(1, empty),
+    v.transform((string) =>
+      parse(string, INPUT_FORMAT, new Date(), {
+        in: tz(ARGENTINA_TIMEZONE),
+      }),
+    ),
+    v.check((date) => isValid(date), invalid),
+  )
+}
 
 export function format_date_for_input(date: string | Date) {
-  return format(date, "yyyy-MM-dd'T'HH:mm", {
+  return format(date, INPUT_FORMAT, {
     in: tz(ARGENTINA_TIMEZONE),
   })
 }
