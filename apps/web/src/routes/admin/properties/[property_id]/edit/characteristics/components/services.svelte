@@ -2,6 +2,7 @@
   import { invalidateAll } from "$app/navigation"
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
+  import * as Formulary from "$lib/components/Formulary"
   import {
     get_current_disclosure,
     set_current_disclosure,
@@ -57,13 +58,23 @@
       name="property_id"
       value={data.property.id}
     />
-    <Button
-      variant="secondary"
-      type="submit"
-      disabled={all_services_added}
-    >
-      Agregar servicio
-    </Button>
+    <Formulary.Submission form={create_service}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="secondary"
+          type="submit"
+          disabled={is_busy() || all_services_added}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Agregar servicio"
+            busy="Agregando servicio..."
+            done="Agregado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
   </form>
 </Disclosure>
 

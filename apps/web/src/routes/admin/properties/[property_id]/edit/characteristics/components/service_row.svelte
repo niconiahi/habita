@@ -70,7 +70,7 @@
     </select>
     {#if type_issues}
       {#each type_issues as issue}
-        <Formulary.Error>{issue.message}</Formulary.Error>
+        <span class="form-error">{issue.message}</span>
       {/each}
     {/if}
     <label for={`code_${service.id}`}>identificador</label>
@@ -81,7 +81,7 @@
     />
     {#if code_issues}
       {#each code_issues as issue}
-        <Formulary.Error>{issue.message}</Formulary.Error>
+        <span class="form-error">{issue.message}</span>
       {/each}
     {/if}
   </form>
@@ -100,20 +100,42 @@
     />
   </form>
   <div class="actions">
-    <Button
-      variant="primary"
-      type="submit"
-      form={`update_service_${service.id}`}
-    >
-      Guardar servicio
-    </Button>
-    <Button
-      variant="secondary"
-      type="submit"
-      form={`destroy_service_${service.id}`}
-    >
-      Eliminar servicio
-    </Button>
+    <Formulary.Submission form={update_form}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="primary"
+          type="submit"
+          form={`update_service_${service.id}`}
+          disabled={is_busy()}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Guardar servicio"
+            busy="Guardando servicio..."
+            done="Guardado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
+    <Formulary.Submission form={destroy_form}>
+      {#snippet children({ is_busy, is_done })}
+        <Button
+          variant="secondary"
+          type="submit"
+          form={`destroy_service_${service.id}`}
+          disabled={is_busy()}
+        >
+          <Formulary.SubmissionLabel
+            is_busy={is_busy()}
+            is_done={is_done()}
+            idle="Eliminar servicio"
+            busy="Eliminando servicio..."
+            done="Eliminado"
+          />
+        </Button>
+      {/snippet}
+    </Formulary.Submission>
   </div>
 </li>
 
