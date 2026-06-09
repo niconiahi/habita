@@ -7,7 +7,8 @@
     done: string
   }
 
-  let { is_busy, is_done, idle, busy, done }: Props = $props()
+  let { is_busy, is_done, idle, busy, done }: Props =
+    $props()
 
   const state = $derived(
     is_busy ? "busy" : is_done ? "done" : "idle",
@@ -23,7 +24,9 @@
 </script>
 
 <span class="stack" aria-busy={state === "busy"}>
-  <span aria-live="polite" class="sr-only">{live_message}</span>
+  <span aria-live="polite" class="sr-only"
+    >{live_message}</span
+  >
   <span
     class="label"
     class:hidden={state !== "idle"}
@@ -59,7 +62,7 @@
     visibility: hidden;
   }
   .done {
-    color: var(--button-primary-fg-hover);
+    color: var(--color-secondary-fg);
   }
   .sr-only {
     position: absolute;
