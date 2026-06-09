@@ -10,18 +10,38 @@
     type PropertyType,
   } from "$lib/property_type"
   import { get_property_destiny_label } from "$lib/property_destiny"
-  import { compose_action } from "$lib/compose_action"
-  import { ACTION } from "./actions/action"
+  import { create_property } from "./forms/create_property.remote"
   import type { PageData } from "./$types"
+
   let { data }: { data: PageData } = $props()
   let property_type = $state<PropertyType>(
     PROPERTY_TYPE.DEPARTMENT,
   )
+
   function handle_type_change(event: Event) {
     const target = event.currentTarget as HTMLSelectElement
     property_type = Number(target.value) as PropertyType
   }
+
+  function destiny_attrs(destiny: number) {
+    return (
+      create_property.fields.destiny as unknown as {
+        as: (
+          type: "checkbox",
+          value: string,
+        ) => Record<string, unknown>
+      }
+    ).as("checkbox", String(destiny))
+  }
 </script>
+
+{#snippet errors(issues: { message: string }[] | undefined)}
+  {#if issues}
+    {#each issues as issue}
+      <span class="form-error">{issue.message}</span>
+    {/each}
+  {/if}
+{/snippet}
 
 {#snippet Location()}
   <section>
@@ -29,6 +49,7 @@
       <Section.Title>ubicación</Section.Title>
     </Section.Header>
     <LocationInput />
+    {@render errors(create_property.fields.location.issues())}
   </section>
 {/snippet}
 
@@ -37,10 +58,10 @@
     <Section.Header>
       <Section.Title>características</Section.Title>
     </Section.Header>
-    <Formulary.Fields>
-      <Formulary.Field>
-        <Formulary.Label for="type">tipo</Formulary.Label>
-        <Formulary.Select
+    <div class="form-fields">
+      <div class="form-field">
+        <label for="type">tipo</label>
+        <select
           name="type"
           id="type"
           required
@@ -51,13 +72,12 @@
               >{get_property_type_label(type)}</option
             >
           {/each}
-        </Formulary.Select>
-      </Formulary.Field>
+        </select>
+        {@render errors(create_property.fields.type.issues())}
+      </div>
       {#if property_type === PROPERTY_TYPE.DEPARTMENT}
-        <Formulary.Field>
-          <Formulary.Label for="unit"
-            >unidad</Formulary.Label
-          >
+        <div class="form-field">
+          <label for="unit">unidad</label>
           <input
             placeholder="ej. 9A o 4011"
             required
@@ -65,9 +85,12 @@
             id="unit"
             type="text"
           />
-        </Formulary.Field>
+          {@render errors(
+            create_property.fields.unit.issues(),
+          )}
+        </div>
       {/if}
-    </Formulary.Fields>
+    </div>
   </section>
 {/snippet}
 
@@ -79,47 +102,46 @@
     <fieldset class="checkbox-list">
       {#each data.property_destinies as destiny}
         <label class="checkbox-label">
-          <input
-            type="checkbox"
-            name="destiny"
-            value={destiny}
-          />
+          <input {...destiny_attrs(destiny)} />
           {get_property_destiny_label(destiny)}
         </label>
       {/each}
     </fieldset>
+    {@render errors(create_property.fields.destiny.issues())}
   </section>
 {/snippet}
 
 <Content.Root>
   <Content.Title>Creación de propiedad</Content.Title>
   <Content.Section>
-    <Formulary.Root
-      method="POST"
-      action={compose_action(ACTION.CREATE_PROPERTY)}
+    <form
+      {...create_property.enhance(async ({ submit }) => {
+        await submit()
+      })}
     >
-      {#snippet children({ submit_state })}
-        <Formulary.Fields>
-          {@render Location()}
-          {@render Characteristics()}
-          {@render Destiny()}
-        </Formulary.Fields>
-        <Formulary.Actions>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={submit_state === "busy"}
-          >
-            <Formulary.SubmitLabel
-              state={submit_state}
-              idle="Crear propiedad"
-              busy="Creando propiedad..."
-            done="Creado"
-            />
-          </Button>
-        </Formulary.Actions>
-      {/snippet}
-    </Formulary.Root>
+      {@render Location()}
+      {@render Characteristics()}
+      {@render Destiny()}
+      <div class="form-actions">
+        <Formulary.Submission form={create_property}>
+          {#snippet children({ is_busy, is_done })}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={is_busy()}
+            >
+              <Formulary.SubmissionLabel
+                is_busy={is_busy()}
+                is_done={is_done()}
+                idle="Crear propiedad"
+                busy="Creando propiedad..."
+                done="Creado"
+              />
+            </Button>
+          {/snippet}
+        </Formulary.Submission>
+      </div>
+    </form>
   </Content.Section>
 </Content.Root>
 
@@ -128,6 +150,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    border: none;
+    padding: 0;
+    margin: 0;
   }
   .checkbox-label {
     display: flex;
