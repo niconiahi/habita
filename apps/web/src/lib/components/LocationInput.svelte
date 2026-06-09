@@ -340,6 +340,55 @@
   function handle_option_select(location: Location) {
     send({ type: "SELECT", location })
   }
+
+  let input_element = $state<HTMLInputElement | null>(null)
+  let listbox_element = $state<HTMLUListElement | null>(
+    null,
+  )
+  let listbox_position = $state({
+    top: 0,
+    left: 0,
+    width: 0,
+  })
+
+  function update_listbox_position() {
+    if (!input_element) return
+    const rect = input_element.getBoundingClientRect()
+    listbox_position = {
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: rect.width,
+    }
+  }
+
+  $effect(() => {
+    const has_results =
+      $snapshot.context.locations.length > 0
+    if (!has_results || !listbox_element) return
+    update_listbox_position()
+    listbox_element.showPopover()
+    window.addEventListener(
+      "scroll",
+      update_listbox_position,
+      true,
+    )
+    window.addEventListener(
+      "resize",
+      update_listbox_position,
+    )
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        update_listbox_position,
+        true,
+      )
+      window.removeEventListener(
+        "resize",
+        update_listbox_position,
+      )
+      listbox_element?.hidePopover()
+    }
+  })
 </script>
 
 <div>
@@ -348,8 +397,10 @@
     <div class="location">
       <input
         {id}
+        bind:this={input_element}
         class:navigating={$snapshot.matches("navigating")}
         role="combobox"
+        required
         aria-autocomplete="list"
         aria-haspopup="listbox"
         aria-controls={list_id}
@@ -364,7 +415,16 @@
         onkeydown={handle_keydown}
       />
       {#if $snapshot.context.locations.length}
-        <ul role="listbox" id={list_id} class="listbox">
+        <ul
+          bind:this={listbox_element}
+          popover="manual"
+          role="listbox"
+          id={list_id}
+          class="listbox"
+          style:top="{listbox_position.top}px"
+          style:left="{listbox_position.left}px"
+          style:width="{listbox_position.width}px"
+        >
           {#each $snapshot.context.locations as location, index (location.place_id)}
             <li
               id={`${list_id}_option_${index}`}
@@ -396,7 +456,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button variant="secondary"
+        <Button variant="secondary" type="button"
           >View on Google Maps</Button
         >
       </a>
@@ -406,7 +466,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button variant="secondary"
+        <Button variant="secondary" type="button"
           >View on Google Maps</Button
         >
       </a>
@@ -440,16 +500,15 @@
   }
 
   .listbox {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: var(--spacing-1);
+    position: fixed;
+    margin: 0;
+    padding: 0;
     max-height: 300px;
     overflow-y: auto;
-    background-color: var(--gray-700);
-    border: 1px solid var(--gray-400);
-    z-index: 10;
+    background-color: var(--color-neutrals-0);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-body);
+    inset: unset;
   }
 
   .option {
@@ -467,12 +526,12 @@
   }
 
   .option:hover {
-    background-color: var(--gray-600);
+    background-color: var(--popover-bg-hover);
   }
 
   .option.highlighted {
     outline: var(--focus-ring-width) solid
       var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+    outline-offset: calc(var(--focus-ring-width) * -1);
   }
 </style>
