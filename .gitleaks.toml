@@ -1,0 +1,14 @@
+# Gitleaks config — extends the built-in ruleset.
+# Docs: https://github.com/gitleaks/gitleaks#configuration
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Habita false positives — files that look secret-like but are safe to ship"
+
+paths = [
+  '\.enc$',
+  '(^|/)\.sops\.yaml$',
+  '^infra/(gateway|media)/certs/[^/]+\.pem$',
+]
