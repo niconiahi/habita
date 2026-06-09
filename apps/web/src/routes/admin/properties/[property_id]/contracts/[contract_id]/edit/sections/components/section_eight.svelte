@@ -3,7 +3,10 @@
   import Button from "$lib/components/Button.svelte"
   import Disclosure from "$lib/components/Disclosure.svelte"
   import * as Formulary from "$lib/components/Formulary"
-  import { get_current_disclosure, set_current_disclosure } from "$lib/disclousure_cookie.remote"
+  import {
+    get_current_disclosure,
+    set_current_disclosure,
+  } from "$lib/disclousure_cookie.remote"
   import { update_contract_payment } from "../forms/update_contract_payment.remote"
   import type { PageData } from "../$types"
 
@@ -25,10 +28,12 @@
   title="Sección 8: forma de pago"
 >
   <form
-    {...update_contract_payment.enhance(async ({ submit }) => {
-      const ok = await submit()
-      if (ok) await invalidateAll()
-    })}
+    {...update_contract_payment.enhance(
+      async ({ submit }) => {
+        const ok = await submit()
+        if (ok) await invalidateAll()
+      },
+    )}
   >
     <input
       type="hidden"
@@ -46,6 +51,10 @@
         <input
           id="cbu"
           name="cbu"
+          required
+          pattern={"\\d{22}"}
+          title="El CBU debe tener exactamente 22 dígitos"
+          inputmode="numeric"
           type="text"
           value={data.contract.cbu ?? ""}
         />
