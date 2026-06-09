@@ -6,12 +6,16 @@ import { RemoteNumberSchema } from "$lib/remote_number"
 import { now } from "$lib/server/now"
 import { require_contract_edit_access_remote } from "$lib/server/auth/require_contract_edit_access_remote"
 import { logger } from "$lib/telemetry/logger"
+import { PropertyDestinySchema } from "$lib/property_destiny"
 
 export const update_contract_destiny = form(
   v.object({
     contract_id: RemoteNumberSchema,
     property_id: RemoteNumberSchema,
-    destiny: RemoteNumberSchema,
+    destiny: v.pipe(
+      RemoteNumberSchema,
+      PropertyDestinySchema
+    )
   }),
   async (input) => {
     await require_contract_edit_access_remote(input)
