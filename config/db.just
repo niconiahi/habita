@@ -34,7 +34,7 @@ seed:
 make name:
   {{app_compose}} run --rm svelte pnpm kysely migrate:make {{name}}
 
-# Reset database: tear down storage + app, remove volumes, restart fresh with migrations and seeds
+# Reset database: wipe storage volumes (db + kv), keep app deps, restart with fresh migrations and seeds
 reset:
   #!/usr/bin/env bash
   set -euo pipefail
@@ -44,17 +44,13 @@ reset:
   RUN="$APP_COMPOSE run --rm -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 svelte"
 
   echo ""
-  echo "=== Tearing down app and storage, removing volumes ==="
-  $APP_COMPOSE down -v
+  echo "=== Stopping app, wiping storage volumes ==="
+  $APP_COMPOSE down
   $STORAGE_COMPOSE down -v
 
   echo ""
   echo "=== Starting storage (db + kv) ==="
   $STORAGE_COMPOSE up -d
-
-  echo ""
-  echo "=== Installing dependencies ==="
-  $RUN pnpm install --force
 
   echo ""
   echo "=== Waiting for database to be healthy ==="
