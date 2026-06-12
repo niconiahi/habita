@@ -54,7 +54,7 @@ reset:
 
   echo ""
   echo "=== Waiting for database to be healthy ==="
-  until $STORAGE_COMPOSE exec db pg_isready -U postgres > /dev/null 2>&1; do
+  until $STORAGE_COMPOSE exec -T db pg_isready -h 127.0.0.1 -p 5432 -U postgres > /dev/null 2>&1; do
     sleep 1
   done
 
