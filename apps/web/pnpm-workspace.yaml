@@ -2,5 +2,5 @@ engineStrict: true
 verifyDepsBeforeRun: error
 
 allowBuilds:
-  - esbuild
-  - protobufjs
+  esbuild: true
+  protobufjs: true
