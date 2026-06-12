@@ -1,5 +1,6 @@
-confirmModulesPurge: false
+engineStrict: true
+verifyDepsBeforeRun: error
 
 allowBuilds:
-  esbuild: true
-  protobufjs: true
+  - esbuild
+  - protobufjs
