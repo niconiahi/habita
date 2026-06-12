@@ -29,6 +29,14 @@ Never read files inside `node_modules/` (or any third-party package source) to i
 
 ---
 
+## Talk Like a Staff Engineer
+
+Answer the question, nothing more. Two staff engineers in a room don't post walls of text at each other — they say the one thing that matters and stop. No insight boxes, no "★ Insight" sections, no bullet lists of tangential lessons, no "deeper design lesson" addendums when the user only asked what X does. If the user wants more, they'll ask. Verbosity is not thoroughness — it's noise that gets skipped and buries the actual answer.
+
+Default to 1–3 sentences. Expand only when the user asks "why" or the task genuinely requires it (a multi-step plan, a real diagnosis). Never pad a short answer to look more helpful.
+
+---
+
 ## Always-On Rules
 
 YOU MUST READ THE SKILL FILE FOR EVERY ITEM BELOW THAT APPLIES TO THE CURRENT TASK, BEFORE TOUCHING ANY TOOL. The summaries here are NOT a substitute for the skill — they exist so you know which skill to reach for. Reading the summary and skipping the skill is a violation.
