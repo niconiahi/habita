@@ -1,5 +1,4 @@
-engineStrict: true
-verifyDepsBeforeRun: error
+verifyDepsBeforeRun: false
 
 allowBuilds:
   esbuild: true
